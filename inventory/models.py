@@ -17,8 +17,6 @@ class Shuttle(SoftDeletionModel):
     def __str__(self):
         return f"{self.id} - {self.make} - {self.model}"
 
-# TODO Complete these fields
-
 
 class Item(SoftDeletionModel):
     name = CharField(max_length=64)

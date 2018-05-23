@@ -11,7 +11,7 @@ CV_STATUS = [
 EDUCATIONAL_ATTAINMENT = [
     ('P', 'Preschool'),
     ('E', 'Elementary'),
-    ('H', 'HighSchool'),
+    ('H', 'High School'),
     ('V', 'Vocational'),
     ('B', 'Bachelors Degree'),
     ('M', 'Masters Degree'),
