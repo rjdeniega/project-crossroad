@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'core',
     'inventory',
     'members',
-    'remittances'
+    'remittances',
+
 ]
 
 MIDDLEWARE = [
