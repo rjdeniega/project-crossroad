@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from core.models import SoftDeletionModel
 from django.db.models import *
@@ -33,10 +34,12 @@ class Person(SoftDeletionModel):
 
 
 class Driver(Person):
+    user = OneToOneField(User, on_delete=models.CASCADE,null=True)
     application_date = DateField()
 
 
 class Member(Person):
+    user = OneToOneField(User, on_delete=models.CASCADE,null=True)
     tin_number = PositiveIntegerField()
     accepted_date = DateField()
     civil_status = CharField(max_length=1, choices=CV_STATUS)
