@@ -7,6 +7,7 @@ class DriverSerializer(ModelSerializer):
         model = Driver
         fields = "__all__"
 
+
 class PersonSerializer(ModelSerializer):
     class Meta:
         model = Person
