@@ -49,3 +49,8 @@ class ItemView(APIView):
         item = Item.objects.get(id=pk)
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @staticmethod
+    def put(request):
+        # write edit functionality
+        pass

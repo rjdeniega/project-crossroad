@@ -16,10 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include
 from django.urls import path
+
+from core.views import SignInView
 from members.urls import *
 from inventory.urls import *
 
 urlpatterns = [
+    path('sign-in', SignInView.as_view()),
     path('admin/', admin.site.urls),
     path('members/', include(members_urls)),
     path('inventory/', include(inventory_urls))
