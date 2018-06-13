@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import include
 from django.urls import path
 from members.urls import *
+from inventory.urls import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('members/', include(members_urls))
+    path('members/', include(members_urls)),
+    path('inventory/', include(inventory_urls))
 ]

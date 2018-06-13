@@ -21,6 +21,8 @@ class Shuttle(SoftDeletionModel):
 class Item(SoftDeletionModel):
     name = CharField(max_length=64)
     quantity = PositiveIntegerField()
+    brand = CharField(max_length=64)
+    vendor = CharField(max_length=64)
 
     def __str__(self):
         return f"{self.name}"
@@ -53,7 +55,7 @@ class Repair(SoftDeletionModel):
     findings = ManyToManyField(RepairFinding)
     modifications = ManyToManyField(RepairModifications)
 
-# TODO @Paolo I dont know the fields for this
+# TODO @Paolo I don't know the fields for this
 # class ItemMovement(SoftDeletionModel):
 
 # TODO - fill these up
