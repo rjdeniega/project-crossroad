@@ -43,3 +43,13 @@ class ItemView(APIView):
             return Response(data={
                 "errors": item_serializer.errors
             })
+
+    @staticmethod
+    def put(request):
+        # write edit functionality
+        pass
+
+    @staticmethod
+    def delete(request, key):
+        # write delete functionality
+        pass
