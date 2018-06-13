@@ -1,6 +1,6 @@
 from django.shortcuts import render
 import rest_framework
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404
 from django.views import View
 from rest_framework.authentication import TokenAuthentication
