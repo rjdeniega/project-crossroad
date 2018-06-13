@@ -43,3 +43,9 @@ class ItemView(APIView):
             return Response(data={
                 "errors": item_serializer.errors
             })
+
+    @staticmethod
+    def delete(request, pk):
+        item = Item.objects.get(id=pk)
+        item.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
