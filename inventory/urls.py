@@ -1,7 +1,7 @@
 from django.urls import path
 
-# from inventory.views import
+from inventory.views import ItemView
 
 inventory_urls = [
-
+    path('items/', ItemView.as_view()),
 ]

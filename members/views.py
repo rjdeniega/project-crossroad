@@ -3,6 +3,7 @@ from django.shortcuts import render
 # Create your views here.
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import status
 
 from members.serializers import PersonSerializer, DriverSerializer
 from .models import *
@@ -17,7 +18,9 @@ class DriverView(APIView):
         # returns all driver objects
         return Response(data={
             "drivers": drivers.data
-        }, status=200)
+        }, status=status.HTTP_200_OK)
+        # Using bare status codes in your responses isn't recommended. REST framework
+        # includes a set of named constants that you can use to make your code more obvious and readable.
 
     @staticmethod
     def post(request):
@@ -36,7 +39,7 @@ class DriverView(APIView):
                                               driver_serializer.validated_data)
             return Response(data={
                 'driver_name': driver.name
-            }, status=200)
+            }, status=status.HTTP_200_OK)
         else:
             return Response(data={
                 "errors": driver_serializer.errors
