@@ -3,14 +3,14 @@
  */
 import React, {Component} from 'react';
 import './style.css'
-import index from '../../images/index.png'
+import logo from '../../images/logo.png'
 
 
-export default class NavBar extends Component {
+export class NavBar extends Component {
     render() {
         return (
             <div className="container">
-               <image src={index}/>
+               <img id='logo' src={logo}/>
             </div>
         );
     }

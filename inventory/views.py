@@ -46,6 +46,7 @@ class ItemView(APIView):
 
     @staticmethod
     def delete(request, pk):
+        # audit trail add info on who deleted the item
         Item.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
