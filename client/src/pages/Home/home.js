@@ -5,23 +5,42 @@ import React, {Component} from "react";
 import {NavBar} from "../../components/navbar"
 import './style.css'
 
-class Page1 extends Component {
+
+export class Page1 extends Component {
     render() {
-        return <h1>Page </h1>
+        return (
+            <div className="body-container">
+                <h1>Page 1</h1>
+            </div>
+        );
     }
 }
 
-class Page2 extends Component {
+export class Page2 extends Component {
     render() {
-        return <h1>Page 2</h1>
+        return (
+            <div className="body-container">
+            <h1>Page 2</h1>
+            </div>
+        )
     }
 }
+const PAGES = [<Page1 />, <Page2 />];
 
 export default class App extends Component {
+    state = {
+        currentPage: PAGES[0],
+    };
+
+    onCurrentPageChange = newPage => this.setState({
+        currentPage: newPage,
+    });
+
     render() {
         return (
             <div id="page-container">
-                <NavBar/>
+                <NavBar onCurrentPageChange={this.onCurrentPageChange}/>
+                {this.state.currentPage}
             </div>
         );
     }

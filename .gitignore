@@ -91,3 +91,4 @@ db.sqlite3
 .idea/Crossroad.iml
 .idea/misc.xml
 .idea/workspace.xml
+*.xml

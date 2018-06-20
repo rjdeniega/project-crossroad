@@ -1,14 +1,30 @@
 
-.container{
+.nav-container{
     background: white;
     width:70px;
+    height: 100vh;
     overflow: hidden;
     box-shadow: 1px;
     display: flex;
+    flex-direction: column;
+    align-items:center;
+    position: relative
+    }
+.logo-container{
+    width: inherit;
+    height: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
     }
 #logo{
+    position: absolute;
+    display: inline-block;
     padding-top: 10px;
     height: 70px;
     width: 55px;
+    }
+#navbar-items{
+    display:block
     }
