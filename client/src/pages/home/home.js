@@ -2,7 +2,6 @@
  * Created by JasonDeniega on 24/05/2018.
  */
 import React, {Component} from "react";
-import {NavBar} from "../../components/navbar"
 import './style.css'
 
 

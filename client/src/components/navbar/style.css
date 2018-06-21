@@ -1,7 +1,7 @@
 
 .nav-container{
     background: white;
-    width:70px;
+    width:80px;
     height: 100vh;
     box-shadow: 1px;
     display: inline-flex;
@@ -9,21 +9,32 @@
     align-items:center;
     position: relative;
     }
-.logo-container{
-    width: inherit;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    }
+
 #logo{
     display: inline-block;
     padding-top: 10px;
     height: 70px;
     width: 55px;
     }
-#navbar-items{
-    display:block;
-    height: 40px;
+.nav-item-container{
+    width: inherit;
+    height: 100vh;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    }
+.navbar-items{
+    position: relative;
+    display:inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    width:auto;
+    }
+.navbar-icon{
+    height:40px;
+    width:40px;
+    position: absolute;
     }
