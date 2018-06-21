@@ -7,6 +7,10 @@ from django.db.models import ManyToManyField
 
 from core.models import SoftDeletionModel
 
+MOVEMENT_TYPE = [
+    ('G', 'Get'),
+    ('R', 'Return')
+]
 
 class Shuttle(SoftDeletionModel):
     plate_number = CharField(max_length=6, unique=True)
@@ -55,11 +59,15 @@ class Repair(SoftDeletionModel):
     findings = ManyToManyField(RepairFinding)
     modifications = ManyToManyField(RepairModifications)
 
+
 # TODO @Paolo I don't know the fields for this
-# class ItemMovement(SoftDeletionModel):
+class ItemMovement(SoftDeletionModel):
+    item = ForeignKey(Item, on_delete=models.PROTECT)
+    type = CharField(max_length=1, choices=MOVEMENT_TYPE)
+    quantity = PositiveIntegerField()
+    repair = ForeignKey(Repair, on_delete=models.PROTECT)
 
 # TODO - fill these up
 
 # class PreventiveMaintenance(SoftDeletionModel):
 # class ItemMovement(SoftDeletionModel):
-
