@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from members.serializers import PersonSerializer, DriverSerializer
+from members.serializers import *
 from .models import *
 import json
 
@@ -44,3 +44,33 @@ class DriverView(APIView):
             return Response(data={
                 "errors": driver_serializer.errors
             })
+
+
+class MemberView(APIView):
+    @staticmethod
+    def get(request):
+        members = MemberSerializer(Member.objects.all(), many=True)
+        return Response(data={
+            "members": members.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        member_serializer = MemberSerializer(data=data)
+
+        if member_serializer.is_valid():
+            member = member_serializer.create(validated_data=member_serializer.validated_data)
+
+            return Response(data={
+                'member_name': member.name
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": member_serializer.errors
+            })
+
+    @staticmethod
+    def delete(request, pk):
+        Member.objects.get(id=pk).delete(user=request.user.username)
+        return Response(status=status.HTTP_204_NO_CONTENT)

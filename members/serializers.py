@@ -21,3 +21,9 @@ class PersonSerializer(ModelSerializer):
     class Meta:
         model = Person
         fields = '__all__'
+
+
+class MemberSerializer(ModelSerializer):
+    class Meta:
+        model = Member
+        fields = '__all__'
