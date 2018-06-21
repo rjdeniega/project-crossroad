@@ -3,26 +3,44 @@
  */
 import React, {Component} from 'react';
 import './style.css'
-import logo from '../../images/logo.png'
-import userIcon from '../../images/users.png'
+import logo from '../../images/crossroad_logo.png'
+import colors from '../../utilities/colors.css'
+import { Icon } from 'react-icons-kit'
 import {Page1, Page2} from '../../pages/home/home.js'
+import {groupOutline} from 'react-icons-kit/typicons/groupOutline'
+import {users} from 'react-icons-kit/feather/'
+import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
+import {driversLicenseO} from 'react-icons-kit/fa/driversLicenseO'
+import {cube} from 'react-icons-kit/fa/cube'
+import {userCircle} from 'react-icons-kit/fa/userCircle'
 
 const TABS = [
     {
-        name: "Page 1",
+        name: "Users",
         component: <Page1 />,
-        image: userIcon
+        image: userCircle
     },
     {
-        name: "Page 2",
+        name: "Drivers",
         component: <Page2 />,
+        image: u1F46E
+    },
+    {
+        name: "Members",
+        component: <Page2 />,
+        image: driversLicenseO
+    },
+     {
+        name: "Inventory",
+        component: <Page2 />,
+        image: cube
     },
 ];
 export class NavBar extends Component {
     // function to append all NavBar items
     renderNavbarItems = () => TABS.map(tab =>
         <NavBarItems name={tab.name}
-                     image={tab.image}
+                     icon={tab.image}
                      onClick={() => {
                          this.props.onCurrentPageChange(tab.component);
                      }}/>,
@@ -44,8 +62,9 @@ export class NavBar extends Component {
 class NavBarItems extends Component {
     render() {
         return (
-            <div className="navbar-items" onClick={this.props.onClick}>
-                <img className="navbar-icon" src={this.props.image}/>
+            <div className="navbar-item" onClick={this.props.onClick}>
+                <Icon icon={this.props.icon} size={30}/>
+                <p className="icon-label"> {this.props.name} </p>
             </div>
         );
     }

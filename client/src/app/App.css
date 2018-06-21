@@ -34,6 +34,7 @@
 
 #page-container {
     background: rgba(243, 244, 245, 1);
+    /*background: white;*/
     height: 100vh;
     position: relative;
     overflow: hidden;
