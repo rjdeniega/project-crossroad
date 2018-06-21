@@ -5,13 +5,13 @@ import React, {Component} from 'react';
 import './style.css'
 import logo from '../../images/logo.png'
 import userIcon from '../../images/users.png'
-import {Page1, Page2} from '../../pages/Home/home.js'
+import {Page1,Page2} from '../../pages/home/home.js'
 
+console.log(Page1,Page2);
 const TABS = [
     {
         name: "Page 1",
         component: <Page1 />,
-        image: userIcon
     },
     {
         name: "Page 2",
@@ -45,7 +45,6 @@ class NavBarItems extends Component {
     render() {
         return (
             <div className="navbar-items" onClick={this.props.onClick}>{this.props.name}
-                <img className="navbar-item" src={this.props.image}/>
             </div>
         );
     }

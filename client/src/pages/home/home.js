@@ -25,23 +25,4 @@ export class Page2 extends Component {
         )
     }
 }
-const PAGES = [<Page1 />, <Page2 />];
 
-export default class App extends Component {
-    state = {
-        currentPage: PAGES[0],
-    };
-
-    onCurrentPageChange = newPage => this.setState({
-        currentPage: newPage,
-    });
-
-    render() {
-        return (
-            <div id="page-container">
-                <NavBar onCurrentPageChange={this.onCurrentPageChange}/>
-                {this.state.currentPage}
-            </div>
-        );
-    }
-}
