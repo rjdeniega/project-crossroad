@@ -38,8 +38,8 @@ import {me} from '../../images/me.jpg'
 export class UserAvatar extends Component {
     render() {
         return (
-            <div className="top-bar-wrapper">
-                <div className="topbar-icons">
+            <div className="header-wrapper">
+                <div className="header-icons">
                     <div className="user-full-name"> Jason Deniega</div>
                     <Tag className="user-type" color="#6c54d0">OM</Tag>
                     <div className="user-avatar">

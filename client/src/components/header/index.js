@@ -14,7 +14,7 @@ export class TopBar extends Component {
     render() {
         return (
             //render logo and all items
-            <div className="top-bar">
+            <div className="header">
                 <UserAvatar/>
             </div>
         );

@@ -6,7 +6,7 @@
     align-self: center;
     }
 
-.topbar-icons {
+.header-icons {
     right: 0;
     position: absolute;
     display: grid;
@@ -34,7 +34,7 @@
     align-self: center;
     }
 
-.top-bar-wrapper {
+.header-wrapper {
     position: relative;
     height: 100%;
     width: 100%;
