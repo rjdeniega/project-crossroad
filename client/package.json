@@ -6,7 +6,8 @@
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
-    "react-icons-kit": "latest"
+    "react-icons-kit": "latest",
+    "antd": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

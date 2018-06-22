@@ -1,0 +1,53 @@
+.user-avatar {
+    display: inline-block;
+    justify-content: center;
+    grid-column: 3 / 4;
+    grid-row: 2 / 3;
+    align-self: center;
+    }
+
+.topbar-icons {
+    right: 0;
+    position: absolute;
+    display: grid;
+    grid-column: 3 / 4;
+    grid-template-columns: auto 100px 50px;
+    grid-template-rows: 30px 60px auto;
+    grid-column-gap: 8px;
+    }
+
+.user-full-name {
+    font-weight: normal;
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    word-wrap: break-word;
+    align-self: center;
+    justify-self: start;
+    word-break: break-all;
+    margin-bottom: 5px;
+    }
+
+.user-type {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    justify-self: center;
+    align-self: center;
+    }
+
+.top-bar-wrapper {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    }
+/*.name-tag-grid{*/
+    /*display: grid;*/
+    /*grid-column: 2 / 3;*/
+    /*grid-row: 2 / 3;*/
+    /*grid-template-rows: 25% 25% 25% 25%;*/
+    /*grid-row-gap: 0px;*/
+    /*}*/
+
+.ant-tag {
+    margin-right: 0 !important;
+    margin-bottom: 5px!important;
+    }

@@ -1,0 +1,13 @@
+.top-bar{
+    display: inline-block;
+    width:93.7vw;
+    height: 20%;
+    position: absolute;
+    min-height: 80px;
+    min-width: 600px;
+    background: white;
+    border-bottom: 1px solid rgba(194,205,218,1);
+    /*box-shadow: 2px 1px 7px -2px #636363;*/
+    /*box-shadow: 0 10px 50px -5px rgba(51,71,91,0.12)*/
+    }
+

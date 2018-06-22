@@ -12,13 +12,14 @@ import {users} from 'react-icons-kit/feather/'
 import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
 import {driversLicenseO} from 'react-icons-kit/fa/driversLicenseO'
 import {cube} from 'react-icons-kit/fa/cube'
-import {userCircle} from 'react-icons-kit/fa/userCircle'
+import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 
+//define tabs
 const TABS = [
     {
         name: "Users",
         component: <Page1 />,
-        image: userCircle
+        image: userCircleO
     },
     {
         name: "Drivers",
@@ -38,6 +39,7 @@ const TABS = [
 ];
 export class NavBar extends Component {
     // function to append all NavBar items
+    // get every item in tab array and transform it to a component
     renderNavbarItems = () => TABS.map(tab =>
         <NavBarItems name={tab.name}
                      icon={tab.image}
@@ -50,7 +52,7 @@ export class NavBar extends Component {
         return (
             //render logo and all items
             <div className="nav-container">
-                <img id='logo' src={logo}/>
+                <img className='logo' src={logo}/>
                 <div className="nav-item-container">
                     {this.renderNavbarItems()}
                 </div>
@@ -63,7 +65,7 @@ class NavBarItems extends Component {
     render() {
         return (
             <div className="navbar-item" onClick={this.props.onClick}>
-                <Icon icon={this.props.icon} size={30}/>
+                <Icon icon={this.props.icon} size={25}/>
                 <p className="icon-label"> {this.props.name} </p>
             </div>
         );

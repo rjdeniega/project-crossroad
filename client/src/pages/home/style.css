@@ -1,7 +1,8 @@
 
 .body-container{
-    position: absolute;
+    top: 138px;
     display: inline-block;
-    width: 100%;
+    width: 93.7vw;
     height: auto;
+    position: absolute;
     }
