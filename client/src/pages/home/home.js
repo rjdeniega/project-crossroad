@@ -2,8 +2,10 @@
  * Created by JasonDeniega on 24/05/2018.
  */
 import React, {Component} from "react";
-import {Tag, List, Avatar} from 'antd';
+import {Input ,Tag, List, Avatar} from 'antd';
 import './style.css'
+import emptyStateImage from '../../images/empty state record.png';
+
 
 const data = [
     {
@@ -14,6 +16,18 @@ const data = [
     },
     {
         title: 'Ant Design Title 3',
+    },
+    {
+        title: 'Ant Design Title 4',
+    },
+    {
+        title: 'Ant Design Title 4',
+    },
+    {
+        title: 'Ant Design Title 4',
+    },
+    {
+        title: 'Ant Design Title 4',
     },
     {
         title: 'Ant Design Title 4',
@@ -33,12 +47,16 @@ export class Page1 extends Component {
                                 <List.Item.Meta
                                     avatar={<Avatar className="list-avatar" size="large"
                                                     src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                                    title={<a href="https://ant.design">{item.title}</a>}
-                                    description={<Tag className="list-user-type" color="var(--divider)">OM</Tag>}
+                                    title={<a className="list-title" href="https://ant.design">{item.title}</a>}
+                                    description={<p className="list-description"> operations manager</p>}
                                 />
                             </List.Item>
                         )}
                     />
+                </div>
+                <div className="item-details-wrapper">
+                    <img className="empty-image" src={emptyStateImage}/>
+                    <p className="empty-message">Looks like this user has no historical records yet</p>
                 </div>
             </div>
 

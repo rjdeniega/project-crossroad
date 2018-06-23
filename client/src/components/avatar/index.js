@@ -12,10 +12,9 @@ import {bell} from 'react-icons-kit/fa/bell'
 export class UserAvatar extends Component {
     render() {
         return (
-            <div className="header-wrapper">
                 <div className="header-icons">
                     <div className="user-full-name"> Jason Deniega</div>
-                    <Tag className="user-type" color="var(--purple)">OM</Tag>
+                    <Tag className="user-type" color="var(--orange)">OM</Tag>
                     <div className="user-avatar">
                         <Avatar size="large" style={{backgroundColor: 'var(--purple'}}
                                 src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
@@ -24,7 +23,6 @@ export class UserAvatar extends Component {
                         <Icon icon={bell} size={25}/>
                     </Badge>
                 </div>
-            </div>
         );
     }
 }

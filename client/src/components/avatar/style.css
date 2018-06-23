@@ -2,7 +2,7 @@
     display: inline-block;
     justify-content: center;
     grid-column: 3 / 4;
-    grid-row: 1 / 2;
+    grid-row: 2 / 3;
     align-self: center;
     }
 
@@ -12,14 +12,14 @@
     display: grid;
     grid-column: 3 / 4;
     grid-template-columns: auto 100px 42px 37px;
-    grid-template-rows: 60px auto auto;
+    grid-template-rows: 30px 60px auto;
     grid-column-gap: 8px;
     }
 
 .user-full-name {
     font-weight: 700;
     grid-column: 2 / 3;
-    grid-row: 1 / 2;
+    grid-row: 2 / 3;
     word-wrap: break-word;
     align-self: center;
     justify-self: center;
@@ -29,22 +29,17 @@
 
 .user-type {
     grid-column: 1 / 2;
-    grid-row: 1 / 2;
+    grid-row: 2 / 3;
     justify-self: center;
     align-self: center;
     }
 .notification{
     grid-column: 4 / 5;
-    grid-row: 1 / 2;
+    grid-row: 2 / 2;
     justify-self: start;
     align-self: center;
     }
 
-.header-wrapper {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    }
 /*.name-tag-grid{*/
     /*display: grid;*/
     /*grid-column: 2 / 3;*/
