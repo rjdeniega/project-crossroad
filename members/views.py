@@ -54,6 +54,18 @@ class MemberView(APIView):
             "members": members.data
         }, status=status.HTTP_200_OK)
 
+    #gets all the IDCards for the member
+    #member_ket is the primary key of the Member
+    #not sure if it should be here or if there should be a separate class
+    #TODO test this
+    @staticmethod
+    def get_IDCards(request, member_key):
+        idcards = IDCardSerializer(IDCards.objects.get(member=member_key), many=True)
+        return Response(data={
+            "idcards": idcards.data
+        }, status=status.HTTP_200_OK)
+
+
     @staticmethod
     def post(request):
         data = json.loads(request.body)
@@ -73,4 +85,19 @@ class MemberView(APIView):
     @staticmethod
     def delete(request, pk):
         Member.objects.get(id=pk).delete(user=request.user.username)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ProspectView(APIView):
+    @staticmethod
+    def get(request):
+        prospects = ProspectSerializer(Prospect.objects.all(), many=True)
+        return Response(data={
+            "prospects": prospects.data
+        }, status=status.HTTP_200_OK)
+
+    #TODO function for adding prospects
+
+    @staticmethod
+    def delete(request, pk):
+        Prospect.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)

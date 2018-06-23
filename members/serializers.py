@@ -27,3 +27,13 @@ class MemberSerializer(ModelSerializer):
     class Meta:
         model = Member
         fields = '__all__'
+
+class IDCardSerializer(ModelSerializer):
+    class Meta:
+        model = IDCards
+        fields = '__all__'
+
+class ProspectSerializer(ModelSerializer):
+    class Meta:
+        model = Prospect
+        fields = '__all__'
