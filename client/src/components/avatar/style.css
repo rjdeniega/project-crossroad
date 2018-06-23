@@ -11,13 +11,13 @@
     position: absolute;
     display: grid;
     grid-column: 3 / 4;
-    grid-template-columns: auto 100px 42px 37px;
+    grid-template-columns: auto 105px 42px 37px;
     grid-template-rows: 30px 60px auto;
     grid-column-gap: 8px;
     }
 
 .user-full-name {
-    font-weight: 700;
+    font-weight: 500;
     grid-column: 2 / 3;
     grid-row: 2 / 3;
     word-wrap: break-word;

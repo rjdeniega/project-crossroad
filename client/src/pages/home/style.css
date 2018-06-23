@@ -90,11 +90,12 @@
 .empty-image{
     display: block;
     height: 200px;
-    width: 230px;
+    width: 250px;
     margin-bottom: 20px;
     }
 .empty-message{
     font-family: Montserrat, sans serif;
     size: 14px;
+    font-weight: 700;
     }
 

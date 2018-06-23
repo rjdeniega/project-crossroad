@@ -34,9 +34,9 @@ export class Header extends Component {
                     suffix={<Icon size={18} icon={search}/>}
                 />
                 <Tabs className="user-tabs" defaultActiveKey="1" onChange={callback}>
-                    <TabPane className="tab-item" tab="Tab 1" key="1"></TabPane>
-                    <TabPane className="tab-item" tab="Tab 2" key="2"></TabPane>
-                    <TabPane className="tab-item" tab="Tab 3" key="3"></TabPane>
+                    <TabPane className="tab-item" tab="Overview" key="1"></TabPane>
+                    <TabPane className="tab-item" tab="History" key="2"></TabPane>
+                    <TabPane className="tab-item" tab="Something" key="3"></TabPane>
                 </Tabs>
                 <UserAvatar/>
             </div>
