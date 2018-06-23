@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900|Lato:100,100i,300,300i,400,400i,700,700i,900,900i|Montserrat:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i|Work+Sans:100,200,300,400,500,600,700,800,900');
+
 .App {
     text-align: center;
     }
@@ -33,9 +35,20 @@
 
 .page-container {
     background: rgba(243, 246, 248, 1);
-    /*background: white;*/
     position: relative;
     height: 100%;
     width: 100%;
+    }
+
+.body-wrapper {
+    position: absolute;
+    display: inline-block;
+    width: calc(100% - 80px);
+    height: 100%;
+    right: 0;
     overflow: hidden;
+    }
+
+body {
+    font-family:"Lato", "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     }

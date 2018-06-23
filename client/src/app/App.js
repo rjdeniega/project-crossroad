@@ -1,14 +1,13 @@
-import React, { Component } from 'react';
-import logo from '../logo.svg';
+import React, {Component} from 'react';
 import './App.css';
-import {Page1,Page2} from '../pages/home/home.js'
+import {Page1, Page2} from '../pages/home/home.js'
 import {NavBar} from "../components/navbar"
-import {UserAvatar} from "../components/avatar"
-import {TopBar} from "../components/topbar"
+import {Header} from "../components/header"
 import 'antd/dist/antd.css';
+import '../utilities/colorsFonts.css'
 
 
-const  PAGES = [<Page1 />, <Page2 />];
+const PAGES = [<Page1 />, <Page2 />];
 export default class App extends Component {
 
     state = {
@@ -22,8 +21,10 @@ export default class App extends Component {
         return (
             <div className="page-container">
                 <NavBar onCurrentPageChange={this.onCurrentPageChange}/>
-                <TopBar/>
-                {this.state.currentPage}
+                <div className="body-wrapper">
+                    <Header/>
+                    {this.state.currentPage}
+                </div>
             </div>
         );
     }

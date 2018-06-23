@@ -4,7 +4,7 @@
 import React, {Component} from 'react';
 import './style.css'
 import logo from '../../images/crossroad_logo.png'
-import colors from '../../utilities/colors.css'
+import colors from '../../utilities/colorsFonts.css'
 import { Icon } from 'react-icons-kit'
 import {Page1, Page2} from '../../pages/home/home.js'
 import {groupOutline} from 'react-icons-kit/typicons/groupOutline'
