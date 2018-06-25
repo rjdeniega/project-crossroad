@@ -59,7 +59,7 @@ class SoftDeletionModel(Model):
 
     def delete(self, **kwargs):
         self.archived_at = timezone.now()
-        self.archiver = kwargs['user']
+        self.archiver = kwargs['users']
         self.save()
 
     def hard_delete(self):

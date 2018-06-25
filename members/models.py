@@ -51,6 +51,10 @@ class Member(Person):
     termination_date = DateField()
     BOD_resolution = CharField(max_length=64)
 
+    @property
+    def id_cards(self):
+        return self.idcards_set
+
 
 class IDCards(SoftDeletionModel):
     member = ForeignKey(Member, on_delete=models.CASCADE)

@@ -14,5 +14,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "theme": {
+    "primary-color": "47798A",
+    "font-family": "Montserrat"
   }
 }

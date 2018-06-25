@@ -1,4 +1,11 @@
-
+.body-wrapper {
+    position: absolute;
+    display: inline-block;
+    width: calc(100% - 80px);
+    height: 100%;
+    right: 0;
+    overflow: hidden;
+    }
 .page-body {
     height: 100%;
     position: relative;
@@ -7,7 +14,6 @@
     }
 
 /*div container entire list + search*/
-
 .user-list-wrapper {
     display: inline-flex;
     flex-direction: column;
@@ -58,7 +64,7 @@
 
 .list-title {
     /*color: rgb(71, 130, 120) !important;*/
-    font-weight: 500;
+    font-weight: 600;
     }
 /*.list-title:hover {*/
     /*color: var(--teal);*/
@@ -66,12 +72,6 @@
 
 .list-description {
     font-weight: 300 !important;
-    }
-
-.user-search {
-    display: inline-block;
-    width: 60% !important;
-    background-color: var(--bgcolor);
     }
 
 .item-details-wrapper {
@@ -82,6 +82,7 @@
     align-items: center;
     height: 77%;
     width: 68%;
+    min-width: 500px;
     /*css for floating card design*/
     border-radius: 5px;
     background: white;
