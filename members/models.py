@@ -64,3 +64,16 @@ class IDCards(SoftDeletionModel):
 
 class Prospect(Person):
     can = PositiveIntegerField()
+
+
+class Share(SoftDeletionModel):
+    member = ForeignKey(Member, on_delete=models.CASCADE)
+    value = DecimalField(max_digits=6, decimal_places=2)
+
+
+class ShareCertificate(SoftDeletionModel):
+    member = ForeignKey(Member, on_delete=models.CASCADE)
+    serial_number = CharField(max_length=64)
+    quantity = PositiveIntegerField()
+    date_created = DateField()
+    date_issued = DateField() #date when it was actually given to the member; NOT SURE IF THIS IS NEEDED

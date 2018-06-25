@@ -37,3 +37,13 @@ class ProspectSerializer(ModelSerializer):
     class Meta:
         model = Prospect
         fields = '__all__'
+
+class ShareSerializer(ModelSerializer):
+    class Meta:
+        model = Share
+        fields = '__all__'
+
+class ShareCertificateSerializer(ModelSerializer):
+    class Meta:
+        model = ShareCertificate
+        fields = '__all__'
