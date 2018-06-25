@@ -6,7 +6,7 @@ import './style.css'
 import logo from '../../images/crossroad_logo.png'
 import colors from '../../utilities/colorsFonts.css'
 import { Icon } from 'react-icons-kit'
-import {Page1, Page2} from '../../pages/users/index.js'
+import {UsersPage, Page2} from '../../pages/users/index.js'
 import {groupOutline} from 'react-icons-kit/typicons/groupOutline'
 import {users} from 'react-icons-kit/feather/'
 import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
@@ -40,6 +40,7 @@ const TABS = [
 export class NavBar extends Component {
     // function to append all NavBar items
     // get every item in tab array and transform it to a component
+    //props is passed from the class calling the component [app.js]
     renderNavbarItems = () => TABS.map(tab =>
         <NavBarItems name={tab.name}
                      icon={tab.image}

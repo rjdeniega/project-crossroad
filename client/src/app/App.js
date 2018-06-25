@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import './App.css';
-import {Page1, Page2} from '../pages/users/index.js'
+import {UsersPage, Page2} from '../pages/users/index.js'
 import {NavBar} from "../components/navbar"
 import 'antd/dist/antd.css';
 import '../utilities/colorsFonts.css'
 
 
-const PAGES = [<Page1 />, <Page2 />];
+const PAGES = [<UsersPage />, <Page2 />];
 export default class App extends Component {
 
     state = {

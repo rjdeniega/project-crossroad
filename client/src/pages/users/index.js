@@ -35,7 +35,7 @@ const data = [
         title: 'Ant Design Title 4',
     },
 ];
-export class Page1 extends Component {
+export class UsersPage extends Component {
     render() {
         return (
             <div className="body-wrapper">
