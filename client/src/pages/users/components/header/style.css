@@ -1,3 +1,11 @@
+.ant-modal .add-user-modal{
+    width: 700px!important;
+    }
+.add-user-modal .ant-modal-title {
+    font-family: Montserrat, sans-serif!important;
+    font-size: 15px!important;
+    font-weight: 500!important;
+    }
 .header {
     display: block;
     position: relative;

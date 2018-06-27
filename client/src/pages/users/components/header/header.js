@@ -5,10 +5,11 @@
 import React, {Component} from 'react';
 import './style.css'
 import {UserAvatar} from '../../../../components/avatar/avatar'
-import {Button,Input, Tabs} from 'antd'
+import {Modal,Button, Input, Tabs} from 'antd'
 import {Icon} from 'react-icons-kit'
 import {search} from 'react-icons-kit/fa/search'
 import {group} from 'react-icons-kit/typicons/group'
+import {Stepper} from '../user_stepper/stepper'
 
 
 const TabPane = Tabs.TabPane;
@@ -16,6 +17,26 @@ function callback(key) {
     console.log(key);
 }
 export class Header extends Component {
+    state = {visible: false};
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+    handleOk = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
+
     render() {
         return (
             //render logo and all items
@@ -24,7 +45,17 @@ export class Header extends Component {
                     <Icon className="page-icon" icon={group} size={42}/>
                     <div className="page-title"> Users</div>
                     <div className="current-date"> Feb 16 2018</div>
-                    <Button className="add-user"> Add User </Button>
+                    <Button className="add-user" onClick={this.showModal}> Add User </Button>
+                    <Modal
+                        className="add-user-modal"
+                        title="Add User"
+                        visible={this.state.visible}
+                        onOk={this.handleOk}
+                        onCancel={this.handleCancel}
+                        footer = {null}
+                    >
+                        <Stepper/>
+                    </Modal>
                 </div>
                 {/*to transfer these components*/}
                 <UserAvatar/>
