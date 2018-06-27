@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import './style.css'
 import {UserAvatar} from '../../../../components/avatar/avatar'
-import {Input, Tabs} from 'antd'
+import {Button,Input, Tabs} from 'antd'
 import {Icon} from 'react-icons-kit'
 import {search} from 'react-icons-kit/fa/search'
 import {group} from 'react-icons-kit/typicons/group'
@@ -24,6 +24,7 @@ export class Header extends Component {
                     <Icon className="page-icon" icon={group} size={42}/>
                     <div className="page-title"> Users</div>
                     <div className="current-date"> Feb 16 2018</div>
+                    <Button className="add-user"> Add User </Button>
                 </div>
                 {/*to transfer these components*/}
                 <UserAvatar/>

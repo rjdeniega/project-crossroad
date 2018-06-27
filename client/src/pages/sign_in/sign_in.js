@@ -26,6 +26,7 @@ export class SignInPage extends Component {
         this.userNameInput.focus();
         this.setState({username: ''});
     };
+    //if the textbox changes change the content
     onChangeUserName = (e) => {
         this.setState({username: e.target.value});
     };

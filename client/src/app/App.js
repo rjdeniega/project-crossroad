@@ -11,7 +11,7 @@ const PAGES = [<SignInPage/>,<UsersPage />, <Page2 />];
 export default class App extends Component {
 
     state = {
-        currentPage: PAGES[0],
+        currentPage: PAGES[1],
     };
 
     // change pages on navbar item click
@@ -20,9 +20,10 @@ export default class App extends Component {
     });
 
     render() {
+        //this is our initial page
         return (
             <div className="page-container">
-                {/*<NavBar onCurrentPageChange={this.onCurrentPageChange}/>*/}
+                <NavBar onCurrentPageChange={this.onCurrentPageChange}/>
                 {this.state.currentPage}
             </div>
         );
