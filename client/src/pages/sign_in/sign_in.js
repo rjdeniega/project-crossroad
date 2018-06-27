@@ -7,19 +7,21 @@ import React, {Component} from 'react'
 import './style.css'
 import {Button} from 'antd'
 import {Icon, Input} from 'antd'
-import '../../network_requests/'
+import {postData} from '../../network_requests/general'
 import crossroad_logo from '../../images/crossroad_logo.png'
 
 
 export class SignInPage extends Component {
     constructor(props) {
         super(props);
+        //the page initially has blank username and pw
         this.state = {
             username: '',
             password: ''
         };
     }
 
+    //handle changes in the page
     emitEmpty = () => {
         this.userNameInput.focus();
         this.setState({username: ''});
@@ -37,28 +39,17 @@ export class SignInPage extends Component {
             'password': this.state.password
         };
         //equivalent to an ajax request (ajax needs jquery; fetch is built in)
-        fetch('/sign-in', {
-            body: JSON.stringify(data), // must match 'Content-Type' header
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, same-origin, *omit
-            headers: {
-                'user-agent': 'Mozilla/4.0 MDN Example',
-                'content-type': 'application/json'
-            },
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, cors, *same-origin
-            redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer', // *client, no-referrer
-        })
-            .then(response => response.json)
+        // this uses a shortcut from general.js from network_requests
+        //.then = onSuccess .catch= onError
+        postData('sign-in',data)
             .then(data => console.log('data is', data))
             .catch(error => console.log('error is', error));
-
     };
 
     render() {
         //same as const username = this.state.username and const password = this.state password
         const {username, password} = this.state;
+        //if theres a username put an icon; otherwise null
         const suffix = username ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
         return (
             <div className="sign-in-body">
