@@ -18,5 +18,7 @@
   "theme": {
     "primary-color": "47798A",
     "font-family": "Montserrat"
-  }
+  },
+  "proxy": "http://localhost:9000/"
 }
+

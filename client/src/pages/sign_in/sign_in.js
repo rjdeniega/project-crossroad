@@ -14,21 +14,46 @@ export class SignInPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userName: '',
+            username: '',
+            password: ''
         };
     }
 
     emitEmpty = () => {
         this.userNameInput.focus();
-        this.setState({userName: ''});
+        this.setState({username: ''});
     };
     onChangeUserName = (e) => {
-        this.setState({userName: e.target.value});
+        this.setState({username: e.target.value});
+    };
+    onChangePassword = (e) => {
+        this.setState({password: e.target.value});
+    };
+
+    attemptSignIn = () => {
+        const data = {
+            'username': this.props.username,
+            'password': this.props.password
+        };
+        //equivalent to an ajax request (ajax needs jquery; fetch is built in)
+        fetch('localhost:9000/sign-in/',)
+            .then(response => {
+                if (response.ok) {
+                    console.log(response);
+                    return response.json()
+                } else {
+                    return Promise.reject('something went wrong!')
+                }
+            })
+            .then(data => console.log('data is', data))
+            .catch(error => console.log('error is', error));
+
     };
 
     render() {
-        const {userName} = this.state;
-        const suffix = userName ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
+        //same as const username = this.state.username and const password = this.state password
+        const {username, password} = this.state;
+        const suffix = username ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
         return (
             <div className="sign-in-body">
                 <div className="content-section">
@@ -52,7 +77,7 @@ export class SignInPage extends Component {
                             size="large"
                             prefix={<Icon type="user" style={{fontSize: 15, color: '#dddd'}}/>}
                             suffix={suffix}
-                            value={userName}
+                            value={username}
                             onChange={this.onChangeUserName}
                             ref={node => this.userNameInput = node}
                         />
@@ -63,15 +88,13 @@ export class SignInPage extends Component {
                             type="password"
                             prefix={<Icon type="lock" style={{fontSize: 15, color: '#dddd'}}/>}
                             suffix={suffix}
-                            value={userName}
-                            onChange={this.onChangeUserName}
+                            value={password}
+                            onChange={this.onChangePassword}
                             ref={node => this.userNameInput = node}
                         />
-                        <Button className="login-button" type="primary">Sign In</Button>
+                        <Button className="login-button" onClick={this.attemptSignIn} type="primary">Sign In</Button>
                     </div>
                 </div>
-                {/*<div className="form-section">*/}
-                {/*</div>*/}
             </div>
 
         )

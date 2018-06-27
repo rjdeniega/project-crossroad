@@ -13,6 +13,8 @@ export default class App extends Component {
     state = {
         currentPage: PAGES[0],
     };
+
+    // change pages on navbar item click
     onCurrentPageChange = newPage => this.setState({
         currentPage: newPage,
     });
