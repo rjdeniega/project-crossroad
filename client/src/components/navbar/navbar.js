@@ -40,7 +40,10 @@ const TABS = [
 export class NavBar extends Component {
     // function to append all NavBar items
     // get every item in tab array and transform it to a component
-    //props is passed from the class calling the component [app.js]
+    //iterate from TABS array and attach the necessary items. OnCurrentPageChange is a props passed from app.js (app folder)
+    //props came from TABS array
+    // you can pass props like a function <NavBarItems name(parameter) = prop>, parameters are defined in
+    // NavBarItem Class(see below line 68)
     renderNavbarItems = () => TABS.map(tab =>
         <NavBarItems name={tab.name}
                      icon={tab.image}
