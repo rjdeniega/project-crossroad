@@ -4,7 +4,7 @@
 
 import React, {Component} from 'react';
 import './style.css'
-import {UserAvatar} from '../../../../components/avatar'
+import {UserAvatar} from '../../../../components/avatar/avatar'
 import {Input, Tabs} from 'antd'
 import {Icon} from 'react-icons-kit'
 import {search} from 'react-icons-kit/fa/search'

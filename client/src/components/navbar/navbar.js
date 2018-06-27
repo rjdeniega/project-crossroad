@@ -6,7 +6,7 @@ import './style.css'
 import logo from '../../images/crossroad_logo.png'
 import colors from '../../utilities/colorsFonts.css'
 import { Icon } from 'react-icons-kit'
-import {UsersPage, Page2} from '../../pages/users/index.js'
+import {UsersPage, Page2} from '../../pages/users/users'
 import {groupOutline} from 'react-icons-kit/typicons/groupOutline'
 import {users} from 'react-icons-kit/feather/'
 import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
@@ -18,7 +18,7 @@ import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 const TABS = [
     {
         name: "Users",
-        component: <Page1 />,
+        component: <UsersPage />,
         image: userCircleO
     },
     {

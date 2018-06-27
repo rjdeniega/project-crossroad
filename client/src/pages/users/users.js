@@ -2,7 +2,7 @@
  * Created by JasonDeniega on 24/05/2018.
  */
 import React, {Component} from "react"
-import {Header} from "./components/header"
+import {Header} from "./components/header/header"
 import '../../utilities/colorsFonts.css'
 import {Input, Tag, List, Avatar} from 'antd'
 import './style.css'

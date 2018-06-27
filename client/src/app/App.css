@@ -36,11 +36,9 @@
 .page-container {
     background: rgba(243, 246, 248, 1);
     position: relative;
-    height: 100%;
+    height: 100vh;
     width: 100%;
     }
-
-
 
 body {
     font-family:"Montserrat", "Chinese Quote", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif !important;

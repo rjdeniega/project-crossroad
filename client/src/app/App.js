@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import './App.css';
-import {UsersPage, Page2} from '../pages/users/index.js'
-import {NavBar} from "../components/navbar"
+import {UsersPage, Page2} from '../pages/users/users.js'
+import {SignInPage} from '../pages/sign_in/sign_in'
+import {NavBar} from "../components/navbar/navbar"
 import 'antd/dist/antd.css';
 import '../utilities/colorsFonts.css'
 
 
-const PAGES = [<UsersPage />, <Page2 />];
+const PAGES = [<SignInPage/>,<UsersPage />, <Page2 />];
 export default class App extends Component {
 
     state = {
@@ -19,8 +20,8 @@ export default class App extends Component {
     render() {
         return (
             <div className="page-container">
-                <NavBar onCurrentPageChange={this.onCurrentPageChange}/>
-                    {this.state.currentPage}
+                {/*<NavBar onCurrentPageChange={this.onCurrentPageChange}/>*/}
+                {this.state.currentPage}
             </div>
         );
     }

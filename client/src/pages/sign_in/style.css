@@ -1,0 +1,107 @@
+.sign-in-body {
+    background-color: var(--navdark);
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content:center;
+    height: inherit;
+    width: inherit;
+    }
+
+.content-section {
+    position: absolute;
+    width: auto;
+    min-width: 800px;
+    height: auto;
+    top: 20%;
+    }
+
+.greeting-intro {
+    display: inline-block;
+    font-size: 50px;
+    color: #dddddd;
+    font-weight: 100;
+    }
+
+.project-name {
+    display: inline-block;
+    font-size: 50px;
+    color: #dddddd;
+    font-weight: 500;
+    }
+
+.project-description {
+    display: block;
+    font-size: 20px;
+    color: #dddd;
+    font-weight: 200;
+    text-align: center;
+    }
+
+.sign-in-logos {
+    display: block;
+    }
+
+.crossroad-logo {
+    display: inline-block;
+    height: 70px;
+    width: 70px;
+    }
+
+.form-section {
+    margin-top: 20px;
+    width: 100%;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    }
+
+.username {
+    display: inline-block !important;
+    width: 70% !important;
+    }
+
+.password {
+    display: inline-block !important;
+    width: 70% !important;
+    margin-top: 15px !important;
+    }
+
+/*modifications for username */
+.username .ant-input {
+    background-color: rgba(50, 55, 58, 1) !important;
+    border: none !important;
+    color: #dddd;
+    }
+
+.username .ant-input::-webkit-input-placeholder {
+    font-family: Montserrat, sans-serif !important;
+    font-weight: 400;
+    font-size: 14px;
+    }
+
+/*modifications for password */
+.password .ant-input {
+    background-color: rgba(50, 55, 58, 1) !important;
+    border: none !important;
+    color: #dddd;
+    }
+
+.password .ant-input::-webkit-input-placeholder {
+    font-family: Montserrat, sans-serif !important;
+    font-weight: 400;
+    font-size: 14px;
+
+    }
+
+.login-button {
+    color: #dddd;
+    margin-top: 20px;
+    height: 40px!important;
+    width: 30%;
+    background-color: var(--teal) !important;
+    border: none !important;
+    border-radius: 5px !important;
+    font-weight: 500!important;
+    }
