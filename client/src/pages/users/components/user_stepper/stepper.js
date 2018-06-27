@@ -52,9 +52,9 @@ export class SecondContent extends Component {
                 <p className="name-label">Please enter address</p>
                 <Input className="name" type="text" placeholder="laguna"/>
                 <p className="name-label">Please enter email</p>
-                <Input addonAfter=".com" defaultValue="someone@belair"/>
+                <Input addonAfter=".com" placeholder="someone@belair"/>
                 <p className="name-label">Please enter contact number</p>
-                <Input addonBefore="+639" defaultValue=""/>
+                <Input addonBefore="+639" placeholder=""/>
             </div>
         );
     }
@@ -116,7 +116,7 @@ export class Stepper extends Component {
                         this.state.current === steps.length - 1
                         &&
                         <Button type="primary" onClick={() => {
-                            message.success('Processing complete!');
+                            message.success('User successfully added!');
                         }}>Done</Button>
                     }
                     {
