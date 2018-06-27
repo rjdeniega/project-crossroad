@@ -88,7 +88,6 @@ local_settings.py
 .env
 db.sqlite3
 *.xml
-.idea/Crossroad.iml
-.idea/misc.xml
-.idea/workspace.xml
+# Remove the .idea folder from git to avoid IDE conflicts
+.idea
 *.xml
