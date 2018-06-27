@@ -7,6 +7,7 @@ import React, {Component} from 'react'
 import './style.css'
 import {Button} from 'antd'
 import {Icon, Input} from 'antd'
+import '../../network_requests/'
 import crossroad_logo from '../../images/crossroad_logo.png'
 
 
@@ -32,19 +33,24 @@ export class SignInPage extends Component {
 
     attemptSignIn = () => {
         const data = {
-            'username': this.props.username,
-            'password': this.props.password
+            'username': this.state.username,
+            'password': this.state.password
         };
         //equivalent to an ajax request (ajax needs jquery; fetch is built in)
-        fetch('localhost:9000/sign-in/',)
-            .then(response => {
-                if (response.ok) {
-                    console.log(response);
-                    return response.json()
-                } else {
-                    return Promise.reject('something went wrong!')
-                }
-            })
+        fetch('/sign-in', {
+            body: JSON.stringify(data), // must match 'Content-Type' header
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, same-origin, *omit
+            headers: {
+                'user-agent': 'Mozilla/4.0 MDN Example',
+                'content-type': 'application/json'
+            },
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'cors', // no-cors, cors, *same-origin
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // *client, no-referrer
+        })
+            .then(response => response.json)
             .then(data => console.log('data is', data))
             .catch(error => console.log('error is', error));
 

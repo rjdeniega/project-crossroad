@@ -9,12 +9,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+import json
 
 
 # Create your views here.
 class SignInView(APIView):
     @staticmethod
     def post(request):
+        print(json.loads(request.body))
+        print(request.data)
         if "username" not in request.data or "password" not in request.data:
             return Response(data={
                 "error": "Missing username or password"
