@@ -28,20 +28,24 @@ class MemberSerializer(ModelSerializer):
         model = Member
         fields = '__all__'
 
+
 class IDCardSerializer(ModelSerializer):
     class Meta:
         model = IDCards
         fields = '__all__'
+
 
 class ProspectSerializer(ModelSerializer):
     class Meta:
         model = Prospect
         fields = '__all__'
 
+
 class ShareSerializer(ModelSerializer):
     class Meta:
         model = Share
         fields = '__all__'
+
 
 class ShareCertificateSerializer(ModelSerializer):
     class Meta:
