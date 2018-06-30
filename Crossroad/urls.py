@@ -20,10 +20,12 @@ from django.urls import path
 from core.views import SignInView
 from members.urls import *
 from inventory.urls import *
+from remittances.urls import *
 
 urlpatterns = [
     path('sign-in', SignInView.as_view()),
     path('admin/', admin.site.urls),
     path('members/', include(members_urls)),
-    path('inventory/', include(inventory_urls))
+    path('inventory/', include(inventory_urls)),
+    path('remittances/', include(remittance_urls))
 ]
