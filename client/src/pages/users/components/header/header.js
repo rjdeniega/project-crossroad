@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import './style.css'
 import {UserAvatar} from '../../../../components/avatar/avatar'
-import {Modal,Button, Input, Tabs} from 'antd'
+import {Modal, Button, Input, Tabs, message} from 'antd'
 import {Icon} from 'react-icons-kit'
 import {search} from 'react-icons-kit/fa/search'
 import {group} from 'react-icons-kit/typicons/group'
@@ -23,8 +23,8 @@ export class Header extends Component {
             visible: true,
         });
     };
-    handleOk = (e) => {
-        console.log(e);
+    handleOk = () => {
+        message.success('User successfully added!');
         this.setState({
             visible: false,
         });
@@ -52,9 +52,9 @@ export class Header extends Component {
                         visible={this.state.visible}
                         onOk={this.handleOk}
                         onCancel={this.handleCancel}
-                        footer = {null}
+                        footer={null}
                     >
-                        <Stepper/>
+                        <Stepper handleOk={this.handleOk}/>
                     </Modal>
                 </div>
                 {/*to transfer these components*/}

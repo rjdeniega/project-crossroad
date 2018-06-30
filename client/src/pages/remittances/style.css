@@ -1,0 +1,8 @@
+.body-wrapper {
+    position: absolute;
+    display: inline-block;
+    width: calc(100% - 80px);
+    height: 100%;
+    right: 0;
+    overflow: hidden;
+    }

@@ -1,7 +1,6 @@
 /**
  * Created by JasonDeniega on 25/06/2018.
  */
-import logo from '../../images/crossroad_logo.png'
 import '../../utilities/colorsFonts.css'
 import React, {Component} from 'react'
 import './style.css'
@@ -16,6 +15,7 @@ export class SignInPage extends Component {
         super(props);
         //the page initially has blank username and pw
         this.state = {
+            user: '',
             username: '',
             password: ''
         };

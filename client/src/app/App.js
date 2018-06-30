@@ -1,17 +1,18 @@
 import React, {Component} from 'react';
 import './App.css';
-import {UsersPage, Page2} from '../pages/users/users.js'
+import {UsersPage} from '../pages/users/users.js'
 import {SignInPage} from '../pages/sign_in/sign_in'
+import {RemittancePage} from '../pages/remittances/remittances'
 import {NavBar} from "../components/navbar/navbar"
 import 'antd/dist/antd.css';
 import '../utilities/colorsFonts.css'
 
 
-const PAGES = [<SignInPage/>,<UsersPage />, <Page2 />];
+const PAGES = [<SignInPage/>,<UsersPage />, <RemittancePage />];
 export default class App extends Component {
 
     state = {
-        currentPage: PAGES[1],
+        currentPage: PAGES[2],
     };
 
     // change pages on navbar item click

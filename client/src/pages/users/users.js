@@ -4,7 +4,7 @@
 import React, {Component} from "react"
 import {Header} from "./components/header/header"
 import '../../utilities/colorsFonts.css'
-import {Input, Tag, List, Avatar} from 'antd'
+import {List, Avatar} from 'antd'
 import './style.css'
 import emptyStateImage from '../../images/empty state record.png'
 
@@ -69,13 +69,4 @@ export class UsersPage extends Component {
     }
 }
 
-export class Page2 extends Component {
-    render() {
-        return (
-            <div className="body-container">
-                <h1>Page 2</h1>
-            </div>
-        )
-    }
-}
 

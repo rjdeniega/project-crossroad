@@ -115,9 +115,7 @@ export class Stepper extends Component {
                     {
                         this.state.current === steps.length - 1
                         &&
-                        <Button type="primary" onClick={() => {
-                            message.success('User successfully added!');
-                        }}>Done</Button>
+                        <Button type="primary" onClick={this.props.handleOk}>Done</Button>
                     }
                     {
                         this.state.current > 0

@@ -48,3 +48,5 @@ class SignInView(APIView):
             "username": username,
             "user_type": user_type
         }, status=200)
+
+

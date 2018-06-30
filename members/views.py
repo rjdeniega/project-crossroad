@@ -16,6 +16,7 @@ class DriverView(APIView):
         # transform django objects to JSON (so it can be interpreted in the front-end_
         drivers = DriverSerializer(Driver.objects.all(), many=True)
         # returns all driver objects
+
         return Response(data={
             "drivers": drivers.data
         }, status=status.HTTP_200_OK)
