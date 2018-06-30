@@ -10,6 +10,7 @@ import {Icon} from 'react-icons-kit'
 import {search} from 'react-icons-kit/fa/search'
 import {group} from 'react-icons-kit/typicons/group'
 import {Stepper} from '../user_stepper/stepper'
+import '../../../../utilities/colorsFonts.css'
 
 
 const TabPane = Tabs.TabPane;

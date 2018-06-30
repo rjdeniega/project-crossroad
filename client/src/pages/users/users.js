@@ -9,7 +9,7 @@ import './style.css'
 import emptyStateImage from '../../images/empty state record.png'
 
 
-const data = [
+export const data = [
     {
         title: 'Ant Design Title 1',
     },

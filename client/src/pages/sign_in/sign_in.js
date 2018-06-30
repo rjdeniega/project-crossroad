@@ -3,6 +3,7 @@
  */
 import '../../utilities/colorsFonts.css'
 import React, {Component} from 'react'
+import '../../utilities/colorsFonts.css'
 import './style.css'
 import {Button} from 'antd'
 import {Icon, Input} from 'antd'
