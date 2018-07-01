@@ -12,6 +12,7 @@ MOVEMENT_TYPE = [
     ('R', 'Return')
 ]
 
+
 class Shuttle(SoftDeletionModel):
     plate_number = CharField(max_length=6, unique=True)
     make = CharField(max_length=64)

@@ -13,7 +13,7 @@ const PAGES = [<SignInPage/>,<UsersPage />, <RemittancePage />,<InventoryPage/>]
 export default class App extends Component {
 
     state = {
-        currentPage: PAGES[2],
+        currentPage: PAGES[3],
     };
 
     // change pages on navbar item click

@@ -12,7 +12,7 @@ import {driversLicenseO} from 'react-icons-kit/fa/driversLicenseO'
 import {cube} from 'react-icons-kit/fa/cube'
 import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 import {RemittancePage} from '../../pages/remittances/remittances'
-import {InventoryPage} from '../pages/inventory/inventory'
+import {InventoryPage} from '../../pages/inventory/inventory'
 import {money} from 'react-icons-kit/fa/money'
 
 

@@ -30,8 +30,6 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,8 +42,8 @@ INSTALLED_APPS = [
     'inventory',
     'members',
     'remittances',
+    'rest_framework',
     'rest_framework.authtoken',
-
 ]
 
 REST_FRAMEWORK = {

@@ -51,7 +51,7 @@ export class SignInPage extends Component {
     render() {
         //same as const username = this.state.username and const password = this.state password
         const {username, password} = this.state;
-        //if theres a username put an icon; otherwise null
+        //if there's a username put an icon; otherwise null
         const suffix = username ? <Icon type="close-circle" onClick={this.emitEmpty}/> : null;
         return (
             <div className="sign-in-body">
