@@ -4,13 +4,21 @@
     border-radius: 6px;
     background-color: #fafafa;
     min-height: 200px;
-    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-content: center;
     }
 
+.name-label, .quantity-label, .brand-label, .vendor-label{
+    margin-bottom: 5px;
+    margin-top: 15px;
+}
+
+.item-form{
+    padding: 0 15px 15px 15px;
+    text-align: left;
+}
 
 .steps-action {
     margin-top: 24px;

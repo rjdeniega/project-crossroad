@@ -1,0 +1,16 @@
+.table-style{
+    background-color: white;
+    margin: 15px;
+}
+
+.warning-icon{
+    position: absolute;
+    padding-top: 5px;
+    padding-left: 10px;
+}
+
+.quantity-text{
+    position: relative;
+    padding-top: 3px;
+    margin-bottom: 0;
+}

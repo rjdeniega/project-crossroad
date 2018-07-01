@@ -5,7 +5,7 @@
 import React, {Component} from 'react';
 import './style.css'
 import {UserAvatar} from '../../../../components/avatar/avatar'
-import {Modal, Button, Input, Tabs, message} from 'antd'
+import {Modal, Button, Input, Tabs, message, Row} from 'antd'
 import {Icon} from 'react-icons-kit'
 import {search} from 'react-icons-kit/fa/search'
 import {dropbox} from 'react-icons-kit/typicons/dropbox'
@@ -53,7 +53,8 @@ export class Header extends Component {
         return (
             //render logo and all items
             <div className="header">
-                <div className="header-text">
+                <div className='upper-header'>
+                    <div className="header-text">
                     <Icon className="page-icon" icon={dropbox} size={42}/>
                     <div className="page-title">Inventory</div>
                     <div className="current-date"> {date}</div>
@@ -68,23 +69,17 @@ export class Header extends Component {
                         <Stepper handleOk={this.handleOk}/>
                     </Modal>
                 </div>
-                {/*to transfer these components*/}
                 <UserAvatar/>
+                </div>
+
                 <div className="header-bottom">
                     <div className="user-search-wrapper">
                         <Input.Search
-                            className="user-search"
-                            placeholder="search for users"
+                            className="item-search"
+                            placeholder="Search for Items"
                             onSearch={value => console.log(value)}
                             suffix={<Icon size={18} icon={search}/>}
                         />
-                    </div>
-                    <div className="user-tabs-wrapper">
-                        <Tabs className="user-tabs" defaultActiveKey="1" onChange={callback}>
-                            <TabPane className="tab-item" tab="Overview" key="1"></TabPane>
-                            <TabPane className="tab-item" tab="History" key="2"></TabPane>
-                            <TabPane className="tab-item" tab="Something" key="3"></TabPane>
-                        </Tabs>
                     </div>
                 </div>
             </div>

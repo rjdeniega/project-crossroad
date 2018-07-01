@@ -33,7 +33,7 @@ ItemForm = Form.create({})(ItemForm);
 export class FirstContent extends Component {
     render() {
         return (
-            <div>
+            <div className='item-form'>
                 <p className='name-label'>Item Name</p>
                 <Input className='name' type="text" placeholder="Item Name"/>
                 <p className='quantity-label'>Initial Quantity</p>
@@ -50,17 +50,23 @@ export class LastContent extends Component {
     render() {
         return (
             <div>
-                <p> User's temporary password is <b>imabelairboy</b></p>
+                <Dragger {...props}>
+                    <p className="ant-upload-drag-icon">
+                        <Icon type="inbox"/>
+                    </p>
+                    <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                    <p className="ant-upload-hint">Upload a single image of the item</p>
+                </Dragger>
             </div>
         );
     }
 }
 
 const steps = [{
-    title: 'Set Username',
+    title: 'Input Item Details',
     content: <FirstContent/>,
 }, {
-    title: 'Confirm',
+    title: 'Upload Item Picture',
     content: <LastContent/>,
 }];
 
