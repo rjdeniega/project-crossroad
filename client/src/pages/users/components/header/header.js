@@ -45,7 +45,7 @@ export class Header extends Component {
                 <div className="header-text">
                     <Icon className="page-icon" icon={group} size={42}/>
                     <div className="page-title"> Users</div>
-                    <div className="current-date"> Feb 16 2018</div>
+                    <div className="current-date"> Create and manage users</div>
                     <Button className="add-user" onClick={this.showModal}> Add User </Button>
                     <Modal
                         className="add-user-modal"

@@ -53,7 +53,7 @@
     }
 
 .current-date {
-    grid-column: 3 / 4;
+    grid-column: 3 / 8;
     grid-row: 3 / 4;
     justify-self: start;
     align-self: center;
