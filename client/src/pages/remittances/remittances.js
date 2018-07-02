@@ -61,7 +61,7 @@ export class RemittancePage extends Component {
                             <UserAvatar/>
                             <div className="header-bottom">
                                 <div className="user-tabs-wrapper">
-                                    <Tabs className="user-tabs" defaultActiveKey="1" onChange={this.callback}>
+                                    <Tabs className="user-tabs" defaultActiveKey="2" onChange={this.callback}>
                                         <TabPane className="tab-item" tab="Overview" key="1"></TabPane>
                                         <TabPane className="tab-item" tab="Ticketing" key="2"></TabPane>
                                         <TabPane className="tab-item" tab="Beep" key="3"></TabPane>

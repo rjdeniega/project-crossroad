@@ -16,7 +16,7 @@ export class SignInPage extends Component {
         super(props);
         //the page initially has blank username and pw
         this.state = {
-            user: '',
+            user: null,
             username: '',
             password: ''
         };
