@@ -19,13 +19,34 @@ import {RemittanceNavBar} from './components/remittance_navigation/navigation'
 import {money} from 'react-icons-kit/fa/money'
 import {data} from '../../pages/users/users'
 import './style.css'
-import {RemittanceList} from './components/remittance_list/remittance_list'
-
+import {TicketingPane} from './tabs/ticketing/ticketing'
+import {BeepPane} from './tabs/beep/beep'
+import {OverviewPane} from './tabs/overview/overview'
 const TabPane = Tabs.TabPane;
-function callback(key) {
-    console.log(key);
-}
+
+// function callback(key) {
+//     console.log(key);
+// }
+
 export class RemittancePage extends Component {
+    state = {
+        currentTab: <OverviewPane/>,
+    };
+
+    // change pages on navbar item click
+    invokeChangeTab = newPage => this.setState({
+        currentTab: newPage,
+    });
+    callback = (key) => {
+        if (key == "1") {
+            this.invokeChangeTab(<OverviewPane/>)
+        } else if (key == "2") {
+            this.invokeChangeTab(<TicketingPane/>)
+        } else {
+            this.invokeChangeTab(<BeepPane/>)
+        }
+    };
+
     render() {
         return (
             <div className="body-wrapper">
@@ -40,7 +61,7 @@ export class RemittancePage extends Component {
                             <UserAvatar/>
                             <div className="header-bottom">
                                 <div className="user-tabs-wrapper">
-                                    <Tabs className="user-tabs" defaultActiveKey="1" onChange={callback}>
+                                    <Tabs className="user-tabs" defaultActiveKey="1" onChange={this.callback}>
                                         <TabPane className="tab-item" tab="Overview" key="1"></TabPane>
                                         <TabPane className="tab-item" tab="Ticketing" key="2"></TabPane>
                                         <TabPane className="tab-item" tab="Beep" key="3"></TabPane>
@@ -49,6 +70,7 @@ export class RemittancePage extends Component {
                             </div>
                         </div>
                         <div className="remittance-content-body">
+                            {this.state.currentTab}
                         </div>
                     </div>
                 </div>

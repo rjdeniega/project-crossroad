@@ -92,13 +92,19 @@
     }
 
 .remittance-content-body {
-    height: 71%;
+    height: 75%;
     width: 100%;
     display: flex;
+    position: relative;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     padding: 10px;
     }
-
+.remittance-tabs-wrapper{
+    top: 0;
+    }
+.remittance-tabs .ant-tabs-bar{
+    width: 100%!important;
+    }
 

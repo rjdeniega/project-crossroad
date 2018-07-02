@@ -1,0 +1,12 @@
+.overview-tab-body{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);
+        flex-direction: column;
+
+    }
