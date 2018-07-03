@@ -27,17 +27,10 @@ DEPLOYMENT_STATUS = [
     ('F', 'Finished')
 ]
 
-
-class AssignedTicket(SoftDeletionModel):
-    driver = ForeignKey(Driver, on_delete=models.CASCADE)
-    range_from = IntegerField()
-    range_to = IntegerField()
-    type = CharField(max_length=1, choices=TICKET_TYPE)
-
-
-class VoidTicket(SoftDeletionModel):
-    ticket_number = CharField(max_length=64)
-    assigned_ticket = ForeignKey(AssignedTicket,on_delete=models.CASCADE)
+FORM_STATUS = [
+    ('P', 'Pending'),
+    ('C', 'Completed')
+]
 
 
 class Deployment(SoftDeletionModel):
@@ -48,11 +41,24 @@ class Deployment(SoftDeletionModel):
     date = DateField(auto_now_add=True)
 
 
+class AssignedTicket(SoftDeletionModel):
+    deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
+    range_from = IntegerField()
+    range_to = IntegerField()
+    type = CharField(max_length=1, choices=TICKET_TYPE)
+
+
+class VoidTicket(SoftDeletionModel):
+    ticket_number = CharField(max_length=64)
+    assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
+
+
 class RemittanceForm(SoftDeletionModel):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     fuel_cost = DecimalField(null=True, max_digits=19, decimal_places=10)
     other_cost = DecimalField(null=True, max_digits=19, decimal_places=10)
     total = DecimalField(max_digits=19, decimal_places=10)
+    status = CharField(max_length=1, choices=FORM_STATUS, default='P')
 
 
 class ConsumedTickets(SoftDeletionModel):
