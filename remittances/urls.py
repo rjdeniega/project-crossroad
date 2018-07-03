@@ -7,5 +7,7 @@ remittance_urls = [
     path('assigned_tickets/', AssignedTicketView.as_view()),
     path('assigned_tickets/<int:pk>', AssignedTicketView.as_view()),
     path('void_tickets/', VoidTicketView.as_view()),
-    path('void_tickets/<int:pk>', VoidTicketView.as_view())
+    path('void_tickets/<int:pk>', VoidTicketView.as_view()),
+    path('deployments/', DeploymentView.as_view()),
+    path('deployments/<int:pk>', DeploymentView.as_view())
 ]
