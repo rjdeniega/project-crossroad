@@ -4,12 +4,14 @@
 import React, {Component} from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
+import {RemittanceList} from '../../components/remittance_list/remittance_list'
 export class TicketingPane extends Component{
     render(){
         return(
             <div className="ticketing-tab-body">
-                <img className="empty-image" src={emptyStateImage}/>
-                <p className="empty-message">Looks like this user has no historical records yet</p>
+                {/*<RemittanceList/>*/}
+                {/*<RemittanceList/>*/}
+                {/*<RemittanceList/>*/}
             </div>
         );
     }

@@ -9,14 +9,15 @@ import {Button} from 'antd'
 import {Icon, Input} from 'antd'
 import {postData} from '../../network_requests/general'
 import crossroad_logo from '../../images/crossroad_logo.png'
+import {RemittancePage} from '../../pages/remittances/remittances'
+import {InventoryPage} from '../../pages/inventory/inventory'
 
-
+const CLERK_PAGES = [<RemittancePage/>,<InventoryPage/>];
 export class SignInPage extends Component {
     constructor(props) {
         super(props);
         //the page initially has blank username and pw
         this.state = {
-            user: null,
             username: '',
             password: ''
         };
@@ -29,23 +30,12 @@ export class SignInPage extends Component {
     };
     //if the textbox changes change the content
     onChangeUserName = (e) => {
+        e.preventDefault();
         this.setState({username: e.target.value});
     };
     onChangePassword = (e) => {
+        e.preventDefault();
         this.setState({password: e.target.value});
-    };
-
-    attemptSignIn = () => {
-        const data = {
-            'username': this.state.username,
-            'password': this.state.password
-        };
-        //equivalent to an ajax request (ajax needs jquery; fetch is built in)
-        // this uses a shortcut from general.js from network_requests
-        //.then = onSuccess .catch= onError
-        postData('sign-in',data)
-            .then(data => console.log('data is', data))
-            .catch(error => console.log('error is', error));
     };
 
     render() {
@@ -91,7 +81,7 @@ export class SignInPage extends Component {
                             onChange={this.onChangePassword}
                             ref={node => this.userNameInput = node}
                         />
-                        <Button className="login-button" onClick={this.attemptSignIn} type="primary">Sign In</Button>
+                        <Button className="login-button" onClick={this.props.attemptSignIn(this.state.username,this.state.password)} type="primary">Sign In</Button>
                     </div>
                 </div>
             </div>

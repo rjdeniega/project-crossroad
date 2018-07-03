@@ -13,6 +13,9 @@ import json
 
 
 # Create your views here.
+from core.serializers import UserSerializer
+
+
 class SignInView(APIView):
     @staticmethod
     def post(request):

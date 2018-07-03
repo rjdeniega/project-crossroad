@@ -30,7 +30,7 @@ const TabPane = Tabs.TabPane;
 
 export class RemittancePage extends Component {
     state = {
-        currentTab: <OverviewPane/>,
+        currentTab: <TicketingPane/>,
     };
 
     // change pages on navbar item click

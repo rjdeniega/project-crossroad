@@ -39,7 +39,7 @@ export class SecondContent extends Component {
     render() {
         return (
             <div>
-                <Dragger {...props}>
+                <Dragger className="dragger"{...props}>
                     <p className="ant-upload-drag-icon">
                         <Icon type="inbox"/>
                     </p>

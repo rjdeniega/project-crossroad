@@ -95,7 +95,7 @@ export class Stepper extends Component {
                 <Steps current={current} size="small">
                     {steps.map(item => <Step key={item.title} title={item.title}/>)}
                 </Steps>
-                <div className="steps-content">{steps[this.state.current].content}</div>
+                <div className="inventory-steps-content">{steps[this.state.current].content}</div>
                 <div className="steps-action">
                     {
                         this.state.current < steps.length - 1
