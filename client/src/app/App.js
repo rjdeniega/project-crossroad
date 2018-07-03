@@ -45,9 +45,6 @@ export default class App extends Component {
     };
 
     // change pages on navbar item click
-    onCurrentPageChange = newPage => this.setState({
-        currentPage: newPage,
-    });
 
     handleStart = () => {
         console.log("this is called");
@@ -79,6 +76,8 @@ export default class App extends Component {
         return (
             <BrowserRouter>
                 <div className="page-container">
+                    {/*define routes*/}
+                    {/*routes are the pages, we no longer change states to change the page*/}
                     <Switch>
                         {this.renderRoutes()}
                     </Switch>

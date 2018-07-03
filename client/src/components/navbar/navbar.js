@@ -58,8 +58,8 @@ export class NavBar extends Component {
     // you can pass props like a function <NavBarItems name(parameter) = prop>, parameters are defined in
     // NavBarItem Class(see below line 68)
     renderNavbarItems = () => TABS.map(tab =>
-            <Link to={tab.path} component={tab.component}>
-                <NavBarItems name={tab.name}
+            <Link className="tab-link" to={tab.path} component={tab.component}>
+                <NavBarItems  name={tab.name}
                              icon={tab.image}/>
             </Link>
     );

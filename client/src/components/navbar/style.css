@@ -58,3 +58,9 @@
     padding-top: 1px;
     margin-top: 5px;
     }
+
+.tab-link, .tab-link:hover, .tab-link:active {
+    text-decoration: none !important;
+    color: transparent !important;
+    border-bottom: none !important;
+    }
