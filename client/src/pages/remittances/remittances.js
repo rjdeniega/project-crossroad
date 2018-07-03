@@ -64,7 +64,7 @@ export class RemittancePage extends Component {
                                     <Tabs className="user-tabs" defaultActiveKey="2" onChange={this.callback}>
                                         <TabPane className="tab-item" tab="Overview" key="1"></TabPane>
                                         <TabPane className="tab-item" tab="Ticketing" key="2"></TabPane>
-                                        <TabPane className="tab-item" tab="Beep" key="3"></TabPane>
+                                        <TabPane className="tab-item" tab="Beep™" key="3"></TabPane>
                                     </Tabs>
                                 </div>
                             </div>

@@ -75,7 +75,7 @@ export class TicketingPane extends Component {
         return (
             <div className="ticketing-tab-body">
                 <div className="filters">
-                    <Divider orientation="left">Left Text</Divider>
+                    <Divider orientation="left">Filters</Divider>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista
                         probare, quae sunt a te dicta? Refert tamen, quo modo.</p>
                 </div>
