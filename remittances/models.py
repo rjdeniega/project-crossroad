@@ -28,6 +28,7 @@ DEPLOYMENT_STATUS = [
 ]
 
 
+# revise DB design for Tickets - Merge Assigned Tickets Range in Deployment
 class AssignedTicket(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     range_from = IntegerField()
