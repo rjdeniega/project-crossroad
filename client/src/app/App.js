@@ -5,23 +5,23 @@ import {SignInPage} from '../pages/sign_in/sign_in'
 import {RemittancePage} from '../pages/remittances/remittances'
 import {NavBar} from "../components/navbar/navbar"
 import {InventoryPage} from '../pages/inventory/inventory'
-import {BrowserRouter,Redirect, Route, Switch} from "react-router-dom";
+import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import 'antd/dist/antd.css';
 import '../utilities/colorsFonts.css'
 import {getPageFromPath} from "./paths";
-import {withRouter} from "react-router-dom";
 import {postData} from "../network_requests/general";
-
-
-const PAGES = [<UsersPage />, <RemittancePage />, <InventoryPage/>];
+import {PAGES} from "./paths"
+// const PAGES = [<UsersPage />, <RemittancePage />, <InventoryPage/>];
 export default class App extends Component {
-
     state = {
         user: localStorage.user,
         currentPage: <SignInPage/>,
     };
+
+
     //componentDidMount is a part of react component lifecycle it is immediately called after render()
     componentDidMount() {
+        console.log(PAGES);
         this.handleStart();
     }
 
@@ -79,10 +79,13 @@ export default class App extends Component {
         return (
             <BrowserRouter>
                 <div className="page-container">
+                    <Switch>
+                        {this.renderRoutes()}
+                    </Switch>
                     {/*render navbar if there is a user*/}
                     {this.state.user &&
                     <NavBar/>}
-                    {!this.state.user&&
+                    {!this.state.user &&
                     <SignInPage attemptSignIn={this.attemptSignIn}/>}
                 </div>
             </BrowserRouter>

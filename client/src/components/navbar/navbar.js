@@ -14,10 +14,7 @@ import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 import {RemittancePage} from '../../pages/remittances/remittances'
 import {InventoryPage} from '../../pages/inventory/inventory'
 import {money} from 'react-icons-kit/fa/money'
-import {BrowserRouter,Link,Redirect, Route, Switch, withRouter} from "react-router-dom";
-
-
-
+import {BrowserRouter, Link, Redirect, Route, Switch, withRouter} from "react-router-dom";
 
 
 //define tabs
@@ -25,31 +22,31 @@ const TABS = [
     {
         name: "Users",
         path: '/users',
-        component: <UsersPage />,
+        component: UsersPage,
         image: userCircleO
     },
     {
         name: "Drivers",
         path: '/drivers',
-        component: <RemittancePage />,
+        component: RemittancePage,
         image: u1F46E
     },
     {
         name: "Remittances",
-        path:'/remittances',
-        component: <RemittancePage />,
+        path: '/remittances',
+        component: RemittancePage,
         image: money
     },
     {
         name: "Members",
         path: '/members',
-        component: <RemittancePage />,
+        component: RemittancePage,
         image: driversLicenseO
     },
     {
         name: "Inventory",
         path: '/inventory',
-        component: <InventoryPage />,
+        component: InventoryPage,
         image: cube
     },
 ];
@@ -61,10 +58,10 @@ export class NavBar extends Component {
     // you can pass props like a function <NavBarItems name(parameter) = prop>, parameters are defined in
     // NavBarItem Class(see below line 68)
     renderNavbarItems = () => TABS.map(tab =>
-        <Link to={tab.path} component={tab.component}>
-        <NavBarItems name={tab.name}
-                     icon={tab.image}/>
-        </Link>
+            <Link to={tab.path} component={tab.component}>
+                <NavBarItems name={tab.name}
+                             icon={tab.image}/>
+            </Link>
     );
 
     render() {
@@ -90,4 +87,4 @@ class NavBarItems extends Component {
         );
     }
 }
-export default withRouter(NavBar,NavBarItems);
+export default withRouter(NavBar, NavBarItems);
