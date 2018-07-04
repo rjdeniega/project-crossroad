@@ -17,14 +17,13 @@ import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 import {UserAvatar} from "../../../../components/avatar/avatar"
 import {money} from 'react-icons-kit/fa/money'
 import './style.css'
-import {Stepper} from '../../components/supervisor_stepper/supervisor_stepper'
 import {TicketingPane} from '../../tabs/ticketing/ticketing'
 import {BeepPane} from '../../tabs/beep/beep'
 import {OverviewPane} from '../../tabs/overview/overview'
 const TabPane = Tabs.TabPane;
 const Step = Steps.Step;
 
-export class FirstContent extends Component {
+export class SupervisorFirstContent extends Component {
     render() {
         return (
             <div>
@@ -34,7 +33,7 @@ export class FirstContent extends Component {
         );
     }
 }
-export class SecondContent extends Component {
+export class SupervisorSecondContent extends Component {
     render() {
         return (
             <div>
@@ -50,7 +49,7 @@ export class SecondContent extends Component {
         );
     }
 }
-export class LastContent extends Component {
+export class SupervisorLastContent extends Component {
     render() {
         return (
             <div>
@@ -61,15 +60,15 @@ export class LastContent extends Component {
 }
 
 
-const steps = [{
+const remSteps = [{
     title: 'Start Shift',
-    content: <FirstContent/>,
+    content: <SupervisorFirstContent/>,
 }, {
     title: 'Deploy Drivers',
-    content: <SecondContent/>,
+    content: <SupervisorSecondContent/>,
 }, {
     title: 'Confirm',
-    content: <LastContent/>,
+    content: <SupervisorLastContent/>,
 }];
 
 export class SupervisorRemittancePage extends Component {
@@ -103,7 +102,7 @@ export class SupervisorRemittancePage extends Component {
                     <div className="header-steps-wrapper">
                         <div className="header-steps">
                             <Steps current={current}>
-                                {steps.map(item => <Step key={item.title} title={item.title}/>)}
+                                {remSteps.map(item => <Step key={item.title} title={item.title}/>)}
                             </Steps>
                         </div>
                     </div>
@@ -111,15 +110,15 @@ export class SupervisorRemittancePage extends Component {
                 </div>
                 <div className="supervisor-rem-content">
                     <div className="sv-transactions">
-                        <div className="sv-steps-content">{steps[this.state.current].content}</div>
+                        <div className="sv-steps-content">{remSteps[this.state.current].content}</div>
                         <div className="steps-action">
                             {
-                                this.state.current < steps.length - 1
+                                this.state.current < remSteps.length - 1
                                 &&
                                 <Button type="primary" onClick={() => this.next()}>Next</Button>
                             }
                             {
-                                this.state.current === steps.length - 1
+                                this.state.current === remSteps.length - 1
                                 &&
                                 <Button type="primary" onClick={this.props.handleOk}>Done</Button>
                             }
