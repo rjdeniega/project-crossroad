@@ -2,9 +2,9 @@ from rest_framework.serializers import ModelSerializer
 from .models import *
 
 
-class AssignedTicketSerializer(ModelSerializer):
+class ShiftSerializer(ModelSerializer):
     class Meta:
-        model = AssignedTicket
+        model = Shift
         fields = '__all__'
 
 
@@ -23,11 +23,5 @@ class DeploymentSerializer(ModelSerializer):
 class RemittanceFormSerializer(ModelSerializer):
     class Meta:
         model = RemittanceForm
-        fields = '__all__'
-
-
-class ConsumedTicketsSerializer(ModelSerializer):
-    class Meta:
-        model = ConsumedTickets
         fields = '__all__'
 

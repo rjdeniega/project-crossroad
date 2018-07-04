@@ -7,7 +7,7 @@ from members.models import *
 TICKET_TYPE = [
     ('A', '9 Pesos'),
     ('B', '11 Pesos'),
-    ('C', '13 Pesos')
+    ('C', '14 Pesos')
 ]
 
 ROUTE = [
@@ -16,7 +16,7 @@ ROUTE = [
     ('L', 'Left Route') #Kaliwa
 ]
 
-SHIFT = [
+SHIFT_TYPE = [
     ('A', 'AM Shift'),
     ('P', 'PM Shift'),
     ('M', 'Midnight Shift')
@@ -32,39 +32,43 @@ FORM_STATUS = [
     ('C', 'Completed')
 ]
 
+class Shift(SoftDeletionModel):
+    type = CharField(max_length=1, choices=SHIFT_TYPE)
+    date = DateField(auto_now_add=True)
 
 class Deployment(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     route = CharField(max_length=1, choices=ROUTE)
-    shift = CharField(max_length=1, choices=SHIFT)
+    shift = ForeignKey(Shift, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS)
-    date = DateField(auto_now_add=True)
-
-
-class AssignedTicket(SoftDeletionModel):
-    deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
-    range_from = IntegerField()
-    range_to = IntegerField()
-    type = CharField(max_length=1, choices=TICKET_TYPE)
+    # 9 Pesos
+    a_range_from = IntegerField()
+    a_range_to = IntegerField()
+    # 11 Pesos
+    b_range_from = IntegerField()
+    b_range_to = IntegerField()
+    # 14 Pesos
+    c_range_from = IntegerField()
+    c_range_to = IntegerField()
 
 
 class VoidTicket(SoftDeletionModel):
     ticket_number = CharField(max_length=64)
-    assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
+    deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
 
 
 class RemittanceForm(SoftDeletionModel):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     fuel_cost = DecimalField(null=True, max_digits=19, decimal_places=10)
     other_cost = DecimalField(null=True, max_digits=19, decimal_places=10)
-    total = DecimalField(max_digits=19, decimal_places=10)
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
+    # Consumed Tickets Fields
+    a_end = IntegerField()
+    a_total = DecimalField(null=True, max_digits=19, decimal_places=10)
+    b_end = IntegerField()
+    b_total = DecimalField(null=True, max_digits=19, decimal_places=10)
+    c_end = IntegerField()
+    c_total = DecimalField(null=True, max_digits=19, decimal_places=10)
+    total = DecimalField(max_digits=19, decimal_places=10) # income - costs
 
-
-class ConsumedTickets(SoftDeletionModel):
-    assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
-    remittance_form = ForeignKey(RemittanceForm, on_delete=models.CASCADE)
-    range_from = IntegerField()
-    range_to = IntegerField()
-    total = DecimalField(max_digits=19, decimal_places=10)
 
