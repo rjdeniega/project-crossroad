@@ -12,44 +12,128 @@ import {users} from 'react-icons-kit/feather/'
 import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
 import {driversLicenseO} from 'react-icons-kit/fa/driversLicenseO'
 import {cube} from 'react-icons-kit/fa/cube'
-import {Avatar, List, Tag, Tabs, Steps, Button, Input} from 'antd'
-import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 import {UserAvatar} from "../../../../components/avatar/avatar"
+import {Avatar, List, Radio, Tabs, Steps, Button, InputNumber,Divider, Input, Modal, message} from 'antd'
+import {DatePicker} from 'antd';
 import {money} from 'react-icons-kit/fa/money'
 import './style.css'
-import {TicketingPane} from '../../tabs/ticketing/ticketing'
-import {BeepPane} from '../../tabs/beep/beep'
-import {OverviewPane} from '../../tabs/overview/overview'
+import {clockO} from 'react-icons-kit/fa/clockO'
+import {data} from '../../../users/users'
+import emptyStateImage from '../../../../images/empty_state_construction.png'
+
 const TabPane = Tabs.TabPane;
 const Step = Steps.Step;
+const ButtonGroup = Button.Group;
+
+function onChange(value, dateString) {
+    console.log('Selected Time: ', value);
+    console.log('Formatted Selected Time: ', dateString);
+}
+
+function onOk(value) {
+    console.log('onOk: ', value);
+}
+
 
 export class SupervisorFirstContent extends Component {
     render() {
         return (
-            <div>
-                <p className="username-label">Please enter username</p>
-                <Input className="username" type="text" placeholder="username"/>
+            <div className="rem-first-content">
+                <div className="content-label">
+                    <Icon icon={clockO} size={30}/>
+                    <p> Create Shift </p>
+                </div>
+                <div>
+                    <DatePicker
+                        format="YYYY-MM-DD"
+                        placeholder="Date Today"
+                        disabled
+                    />
+                    <br />
+                </div>
+                <p> Select Shift Type </p>
+                <Radio.Group>
+                    <Radio.Button className="shift-type" value="large">AM</Radio.Button>
+                    <Radio.Button className="shift-type" value="default">PM</Radio.Button>
+                    <Radio.Button className="shift-type" value="small">Midnight</Radio.Button>
+                </Radio.Group>
             </div>
         );
     }
 }
 export class SupervisorSecondContent extends Component {
+    state = {visible: false};
+
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+    handleOk = (e) => {
+        this.setState({
+            visible: false,
+        });
+    };
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
     render() {
         return (
-            <div>
-                <p className="name-label">Please enter name</p>
-                <Input className="name" type="text" placeholder="username"/>
-                <p className="name-label">Please enter address</p>
-                <Input className="name" type="text" placeholder="laguna"/>
-                <p className="name-label">Please enter email</p>
-                <Input addonAfter=".com" placeholder="someone@belair"/>
-                <p className="name-label">Please enter contact number</p>
-                <Input addonBefore="+639" placeholder=""/>
+            <div className="rem-second-content">
+                <Modal
+                    className="driver-deploy-modal"
+                    title="Deploy Driver"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    <div className="driver-deploy-input">
+                        <p><b>9 Peso Ticket Start</b></p>
+                        <InputNumber size="large" placeholder="###"/>
+                    </div>
+                    <div className="driver-deploy-input">
+                        <p><b>11 Peso Ticket Start</b></p>
+                        <InputNumber size="large" placeholder="###"/>
+                    </div>
+                    <div className="driver-deploy-input">
+                        <p><b>11 Peso Ticket Start</b></p>
+                        <InputNumber size="large" placeholder="###"/>
+                    </div>
+                </Modal>
+                <div className="content-label">
+                    <Icon icon={clockO} size={30}/>
+                    <p> Deploy Drivers </p>
+                </div>
+                <div className="driver-list-wrapper">
+                    <List
+                        className="driver-list"
+                        itemLayout="horizontal"
+                        dataSource={data}
+                        renderItem={item => (
+                            <List.Item className="driver-item">
+                                <List.Item.Meta
+                                    avatar={<Avatar
+                                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                                    title={<a href="https://ant.design">{item.title}</a>}
+                                />
+                                <div>
+                                    <Button className="deploy-button" type="ghost"
+                                            onClick={this.showModal}>Deploy</Button>
+                                </div>
+                            </List.Item>
+                        )}
+                    />
+                </div>
             </div>
         );
     }
 }
 export class SupervisorLastContent extends Component {
+
     render() {
         return (
             <div>
@@ -71,12 +155,19 @@ const remSteps = [{
     content: <SupervisorLastContent/>,
 }];
 
+const confirm = Modal.confirm;
 export class SupervisorRemittancePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             current: 0,
         };
+        this.showConfirm.bind(this);
+    }
+
+    shift_create_next() {
+        const current = this.state.current + 1;
+        this.setState({current});
     }
 
     next() {
@@ -88,7 +179,21 @@ export class SupervisorRemittancePage extends Component {
         const current = this.state.current - 1;
         this.setState({current});
     }
-
+    showConfirm = () => {
+        confirm({
+            title: 'Finalize Shift Creation?',
+            content: 'this shift will be added to your history',
+            onOk: () => {
+                message.success('Shift creation successful');
+                this.setState({
+                    current: 0
+                })
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    };
     render() {
         const {current} = this.state;
         return (
@@ -101,7 +206,7 @@ export class SupervisorRemittancePage extends Component {
                     </div>
                     <div className="header-steps-wrapper">
                         <div className="header-steps">
-                            <Steps current={current}>
+                            <Steps current={current} className="rem-step">
                                 {remSteps.map(item => <Step key={item.title} title={item.title}/>)}
                             </Steps>
                         </div>
@@ -120,20 +225,28 @@ export class SupervisorRemittancePage extends Component {
                             {
                                 this.state.current === remSteps.length - 1
                                 &&
-                                <Button type="primary" onClick={this.props.handleOk}>Done</Button>
+                                <Button type="primary" onClick={() => {
+                                    this.showConfirm();
+                                }}>End Shift</Button>
                             }
-                            {
-                                this.state.current > 0
-                                &&
-                                <Button style={{marginLeft: 8}} onClick={() => this.prev()}>
-                                    Previous
-                                </Button>
-                            }
+                            {/*{*/}
+                            {/*this.state.current > 0*/}
+                            {/*&&*/}
+                            {/*<Button style={{marginLeft: 8}} onClick={() => this.prev()}>*/}
+                            {/*Previous*/}
+                            {/*</Button>*/}
+                            {/*}*/}
                         </div>
                     </div>
-                    <div className="sv-pending-requests">
+                    <div className="sv-deployed-drivers">
+                        <Divider orientation="left">Deployed Drivers</Divider>
+                        <img className="empty-image" src={emptyStateImage}/>
+                        <p>Under Construction</p>
                     </div>
-                    <div className="sv-completed-requests">
+                    <div className="sv-history">
+                        <Divider orientation="left">My Past Transactions</Divider>
+                        <img className="empty-image" src={emptyStateImage}/>
+                        <p>Under Construction</p>
                     </div>
                 </div>
             </div>
