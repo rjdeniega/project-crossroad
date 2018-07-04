@@ -1,6 +1,9 @@
 .table-style{
     background-color: white;
     margin: 15px;
+    box-shadow: 0 1px 5px 0 rgba(45,62,80,.12);
+    border-radius: 5px;
+    padding: 15px;
 }
 
 .warning-icon{
@@ -13,4 +16,38 @@
     position: relative;
     padding-top: 3px;
     margin-bottom: 0;
+}
+
+.whole-table{
+    border:  1px solid #e8e8e8 !important;
+    border-radius: 5px;
+}
+
+.action-icon{
+    padding-top: 5px;
+}
+
+.ant-table-pagination.ant-pagination{
+    margin-right: 35px !important;
+}
+
+.ant-input-affix-wrapper{
+    width: 250px !important;
+    margin: 0 0 15px 0 !important;
+}
+
+.custom-filter-dropdown {
+  padding: 8px;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .2);
+}
+
+.custom-filter-dropdown input {
+  width: 130px;
+  margin-right: 8px;
+}
+
+.highlight {
+  color: #f50;
 }

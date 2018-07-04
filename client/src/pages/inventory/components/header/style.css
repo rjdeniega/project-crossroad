@@ -6,9 +6,10 @@
     font-size: 15px!important;
     font-weight: 500!important;
     }
-.header {
+.inventory-header {
     width: 100%;
     /*min-height: 100px;*/
+    height: 125px;
     min-width: 600px;
     margin-left: 2px;
     background: rgba(255, 255, 255, 1);
