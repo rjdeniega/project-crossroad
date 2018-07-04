@@ -57,7 +57,7 @@ export class Header extends Component {
                     <div className="header-text">
                     <Icon className="page-icon" icon={dropbox} size={42}/>
                     <div className="page-title">Inventory</div>
-                    <div className="current-date"> {date}</div>
+                    <div className="current-date"> Manage item stocks</div>
                     <Button className="add-item" onClick={this.showModal}>Add Item</Button>
                     <Modal
                         className="add-item-modal"
