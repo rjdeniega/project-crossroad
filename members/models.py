@@ -34,12 +34,12 @@ class Person(SoftDeletionModel):
 
 
 class Driver(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = OneToOneField(User, on_delete=models.CASCADE, null=True, unique=True)
     application_date = DateField()
 
 
 class Member(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = OneToOneField(User, on_delete=models.CASCADE, null=True, unique=True)
     tin_number = PositiveIntegerField()
     accepted_date = DateField()
     civil_status = CharField(max_length=1, choices=CV_STATUS)
