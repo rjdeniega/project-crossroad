@@ -8,6 +8,7 @@ import {RemittanceList} from '../../components/remittance_list/remittance_list'
 import {List, Table, Divider, Button, Avatar, Icon} from 'antd'
 import {eye} from 'react-icons-kit/fa/eye'
 
+const ButtonGroup = Button.Group;
 const columns = [{
     title: 'Supervisor',
     dataIndex: 'name',
@@ -57,12 +58,12 @@ const data = [{
     name: 'Joe Black',
     age: 32,
     address: 'Completed',
-},{
+}, {
     key: '4',
     name: 'Joe Black',
     age: 32,
     address: 'Completed',
-},{
+}, {
     key: '5',
     name: 'Joe Black',
     age: 32,
@@ -75,6 +76,11 @@ export class TicketingPane extends Component {
         return (
             <div className="ticketing-tab-body">
                 <div className="filters">
+                    <ButtonGroup>
+                        <Button type="primary" className="shift-type">AM</Button>
+                        <Button className="shift-type">PM</Button>
+                        <Button className="shift-type">Midnight</Button>
+                    </ButtonGroup>
                     <Divider orientation="left">Filters</Divider>
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista
                         probare, quae sunt a te dicta? Refert tamen, quo modo.</p>

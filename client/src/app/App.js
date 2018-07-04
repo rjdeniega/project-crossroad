@@ -7,21 +7,25 @@ import {NavBar} from "../components/navbar/navbar"
 import {InventoryPage} from '../pages/inventory/inventory'
 import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import 'antd/dist/antd.css';
+import createHistory from "history/createBrowserHistory"
 import '../utilities/colorsFonts.css'
-import {getPageFromPath} from "./paths";
+import {getPageFromPath, SIGN_IN_PAGE,REMITTANCE_PAGE} from "./paths";
+import {message} from 'antd'
 import {postData} from "../network_requests/general";
 import {PAGES} from "./paths"
 // const PAGES = [<UsersPage />, <RemittancePage />, <InventoryPage/>];
+
+const history = createHistory();
+// Get the current location.
+const location = history.location;
 export default class App extends Component {
     state = {
         user: localStorage.user,
         currentPage: <SignInPage/>,
     };
 
-
     //componentDidMount is a part of react component lifecycle it is immediately called after render()
     componentDidMount() {
-        console.log(PAGES);
         this.handleStart();
     }
 
@@ -47,12 +51,19 @@ export default class App extends Component {
     // change pages on navbar item click
 
     handleStart = () => {
-        console.log("this is called");
-        if (this.state.user) {
-            return <Redirect to={getPageFromPath('inventory')}/>;
-        } else {
-            return <Redirect to={getPageFromPath('inventory')}/>;
+        // const currentPath = match.params.currentPage;
+        const currentPath = history.location.pathname ;
+        console.log(this.state.user);
+        console.log(currentPath == SIGN_IN_PAGE.path);
+        const userIsSigningIn = currentPath === "/" + SIGN_IN_PAGE.path;
+
+        if (!userIsSigningIn && !this.state.user) {
+            // Force them to sign in
+            // The slash is to specify that it's the root
+            console.log("entered here");
+            history.replace("/"+ SIGN_IN_PAGE.path)
         }
+        // We want to ensure the next conditions have a non-null user
     };
     attemptSignIn = (username, password) => {
         const data = {
@@ -66,10 +77,11 @@ export default class App extends Component {
             .then(data => {
                 localStorage.user = data.username;
                 localStorage.token = data.token;
-                this.state.user = localStorage.user
+                this.state.user = localStorage.user;
             })
-            .catch(error => console.log('error is', error));
+            .catch(error => message("invalid credentials"));
     };
+
 
     render() {
         //this is our initial page
@@ -82,7 +94,7 @@ export default class App extends Component {
                         {this.renderRoutes()}
                     </Switch>
                     {/*render navbar if there is a user*/}
-                    {this.state.user &&
+                    {this.state.user&&
                     <NavBar/>}
                     {!this.state.user &&
                     <SignInPage attemptSignIn={this.attemptSignIn}/>}

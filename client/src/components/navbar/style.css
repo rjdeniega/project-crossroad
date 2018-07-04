@@ -40,9 +40,13 @@
     align-items: center;
     flex-direction: column;
     height: auto;
-    width: auto;
-    padding-top: 25px;
+    width: 80px;
+    padding-top: 20px;
+    padding-bottom: 5px;
     color: var(--inactive)
+    }
+.navbar-item:hover{
+    background: rgb(56, 61, 64);
 
     }
 

@@ -59,8 +59,8 @@
 /*border: 1px solid var(--divider)!important;*/
 /*}*/
 .view-button {
-    border: 1px solid var(--orange) !important;
-    color: var(--orange) !important;
+    border: 1px solid var(--darkgreen) !important;
+    color: var(--darkgreen) !important;
     font-size: 11px !important;
     font-weight: 500 !important;
     border-radius: 30px !important;
@@ -77,10 +77,16 @@
     }
 
 .rem-status {
-    color: var(--teal)
+    color: var(--darkgreen);
+    font-weight: 400;
     }
 
 .status-icon {
     color: #21be4b;
     margin-right: 10px;
+    }
+
+.shift-type{
+    height: 40px!important;
+    /*background: rgba(85, 204, 170, 1)!important;*/
     }

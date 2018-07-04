@@ -4,6 +4,11 @@
     grid-column: 3 / 4;
     grid-row: 2 / 3;
     align-self: center;
+    cursor: pointer;
+    }
+
+.user-avatar:hover{
+    opacity: 0.8;
     }
 
 .header-icons {

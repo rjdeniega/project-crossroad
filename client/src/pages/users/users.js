@@ -36,6 +36,9 @@ export const data = [
     },
 ];
 export class UsersPage extends Component {
+    componentDidMount(){
+        console.log(localStorage.user)
+    }
     render() {
         return (
             <div className="body-wrapper">

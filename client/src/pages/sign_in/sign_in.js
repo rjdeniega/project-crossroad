@@ -22,6 +22,9 @@ export class SignInPage extends Component {
             password: ''
         };
     }
+     componentDidMount(){
+        console.log(localStorage.user)
+    }
 
     //handle changes in the page
     emitEmpty = () => {
