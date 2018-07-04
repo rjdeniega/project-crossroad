@@ -6,8 +6,6 @@
  */
 
 import React, {Component} from 'react';
-import logo from '../../images/crossroad_logo.png'
-import colors from '../../utilities/colorsFonts.css'
 import {Icon} from 'react-icons-kit'
 import {groupOutline} from 'react-icons-kit/typicons/groupOutline'
 import {users} from 'react-icons-kit/feather/'
@@ -31,20 +29,20 @@ export class SupervisorRemittancePage extends Component {
 
     render() {
         return (
-            <div className="body-wrapper">
-                <div className="remittance-page-wrapper">
-                    <div className="remittance-page-body">
-                        <div className="supervisor-remittance-header">
-                            <div className="header-text">
-                                <Icon className="page-icon" icon={money} size={42}/>
-                                <div className="page-title"> Remittances</div>
-                                <div className="rem-page-description"> Manage Driver Deployment</div>
-                            </div>
-                            <UserAvatar/>
-                        </div>
+
+            <div className="remittance-page-body">
+                <div className="supervisor-remittance-header">
+                    <div className="header-text">
+                        <Icon className="page-icon" icon={money} size={42}/>
+                        <div className="page-title"> Remittances</div>
+                        <div className="rem-page-description"> Manage Driver Deployment</div>
                     </div>
+                    <UserAvatar/>
+                </div>
+                <div className="supervisor-rem-content">
                 </div>
             </div>
+
         );
     }
 }

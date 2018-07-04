@@ -13,3 +13,9 @@
     box-shadow: 0 1px 20px -5px rgba(51, 71, 91, 0.12)
     /*box-shadow: 0 2px 8px #f0f1f2;*/
     }
+.supervisor-rem-content{
+    display: inline-grid;
+    height: 83%;
+    width: 100%;
+    grid-template-columns: 65% 35%;
+    }

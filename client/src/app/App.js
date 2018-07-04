@@ -87,6 +87,7 @@ export default class App extends Component {
                 {/*define routes*/}
                 {/*routes are the pages, we no longer change states to change the page*/}
                 <Switch>
+                    {/*note: important to pass functions as lambdas */}
                     <Route path="/sign-in" render={() => <SignInPage attemptSignIn={this.attemptSignIn}/>}/>
                     <Route path="/inventory" render={() => <InventoryPage/>}/>
                     <Route path="/remittances" render={() => <RemittancePage/>}/>
@@ -94,7 +95,7 @@ export default class App extends Component {
                     <Route path="/users" render={() => <UsersPage/>}/>
                 </Switch>
                 {/*render navbar if there is a user*/}
-                {this.state.user &&
+                {this.state.user !== "undefined" &&
                 <NavBar/>
                 }
             </div>

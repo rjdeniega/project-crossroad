@@ -80,7 +80,8 @@ export class SignInPage extends Component {
                             onChange={this.onChangePassword}
                             ref={node => this.userNameInput = node}
                         />
-                        <Button className="login-button" onClick={this.props.attemptSignIn(this.state.username,this.state.password)} type="primary">Sign In</Button>
+                        {/*note : important to pass lambdas if it has paramters*/}
+                        <Button className="login-button" onClick={() => this.props.attemptSignIn(this.state.username,this.state.password)} type="primary">Sign In</Button>
                     </div>
                 </div>
             </div>
