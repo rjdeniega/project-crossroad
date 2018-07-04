@@ -42,7 +42,6 @@ export const NOT_FOUND_PAGE= {
     path: "404",
     component: NotFoundPage,
     name: "Inventory",
-
 };
 
 export const GENERAL_PAGES = [

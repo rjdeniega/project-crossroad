@@ -52,7 +52,7 @@ export class Header extends Component {
     render() {
         return (
             //render logo and all items
-            <div className="header">
+            <div className="inventory-header">
                 <div className='upper-header'>
                     <div className="header-text">
                     <Icon className="page-icon" icon={dropbox} size={42}/>
@@ -70,17 +70,6 @@ export class Header extends Component {
                     </Modal>
                 </div>
                 <UserAvatar/>
-                </div>
-
-                <div className="header-bottom">
-                    <div className="user-search-wrapper">
-                        <Input.Search
-                            className="item-search"
-                            placeholder="Search for Items"
-                            onSearch={value => console.log(value)}
-                            suffix={<Icon size={18} icon={search}/>}
-                        />
-                    </div>
                 </div>
             </div>
         );

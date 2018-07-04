@@ -84,7 +84,6 @@ class RemittanceFormView(APIView):
     def post(request):
         data = json.loads(request.body)
 
-
     @staticmethod
     def delete(request, pk):
         RemittanceForm.objects.get(id=pk).delete(user=request.user.username)
