@@ -9,7 +9,7 @@ import {BrowserRouter, Redirect, Route, Router, Switch} from "react-router-dom";
 import 'antd/dist/antd.css';
 import createHistory from "history/createBrowserHistory"
 import '../utilities/colorsFonts.css'
-import {getPageFromPath, SIGN_IN_PAGE,REMITTANCE_PAGE} from "./paths";
+import {getPageFromPath, SIGN_IN_PAGE, REMITTANCE_PAGE} from "./paths";
 import {message} from 'antd'
 import {postData} from "../network_requests/general";
 import {PAGES} from "./paths"
@@ -20,7 +20,7 @@ const history = createHistory();
 const location = history.location;
 export default class App extends Component {
     state = {
-        user: localStorage.user,
+        user: null,
         currentPage: <SignInPage/>,
     };
 
@@ -51,15 +51,12 @@ export default class App extends Component {
     // change pages on navbar item click
 
     handleStart = () => {
-        // const currentPath = match.params.currentPage;
         const currentPath = history.location.pathname ;
-        console.log(this.state.user);
-        console.log(currentPath == SIGN_IN_PAGE.path);
         const userIsSigningIn = currentPath === "/" + SIGN_IN_PAGE.path;
-
+        console.log(this.state.user);
+        console.log(!userIsSigningIn);
+        console.log(!this.state.user);
         if (!userIsSigningIn && !this.state.user) {
-            // Force them to sign in
-            // The slash is to specify that it's the root
             console.log("entered here");
             history.replace("/"+ SIGN_IN_PAGE.path)
         }
@@ -77,10 +74,15 @@ export default class App extends Component {
             .then(data => {
                 localStorage.user = data.username;
                 localStorage.token = data.token;
-                this.state.user = localStorage.user;
+                this.changeUser(localStorage.user)
+
+
             })
             .catch(error => message("invalid credentials"));
     };
+    changeUser = newUser => this.setState({
+        user: newUser
+    });
 
 
     render() {
@@ -94,10 +96,9 @@ export default class App extends Component {
                         {this.renderRoutes()}
                     </Switch>
                     {/*render navbar if there is a user*/}
-                    {this.state.user&&
+                    {this.state.user &&
                     <NavBar/>}
-                    {!this.state.user &&
-                    <SignInPage attemptSignIn={this.attemptSignIn}/>}
+                    <SignInPage attemptSignIn={this.attemptSignIn}/>
                 </div>
             </BrowserRouter>
         );
