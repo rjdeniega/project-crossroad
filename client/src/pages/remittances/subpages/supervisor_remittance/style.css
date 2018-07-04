@@ -1,11 +1,11 @@
-.supervisor-remittance-header{
+.supervisor-remittance-header {
     display: block;
     position: relative;
     width: inherit;
     height: 17%;
     min-height: 100px;
     margin-left: 2px;
-    min-width: 400px;
+    min-width: 1060px;
     right: 0;
     background: rgba(255, 255, 255, 1);
     /*border-bottom: 1px solid var(--divider);*/
@@ -13,9 +13,55 @@
     box-shadow: 0 1px 20px -5px rgba(51, 71, 91, 0.12)
     /*box-shadow: 0 2px 8px #f0f1f2;*/
     }
-.supervisor-rem-content{
+
+.supervisor-rem-content {
     display: inline-grid;
+    padding: 10px;
     height: 83%;
     width: 100%;
-    grid-template-columns: 65% 35%;
+    grid-template-columns: 60% 40%;
+    grid-template-rows: 50% 50%;
+    }
+
+.sv-transactions {
+    position: relative;
+    grid-column: 1/2;
+    grid-row: 1/4;
+    height: 100%;
+    width: 95%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);
+    }
+
+.sv-pending-requests {
+    grid-column: 2/3;
+    grid-row: 1/2;
+    height: 100%;
+    width: 100%;
+    box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);
+    background: rgba(255, 255, 255, 1);
+    }
+.sv-stepper{
+    height: 600px!important;
+    }
+.header-steps-wrapper{
+    display: grid;
+    position: absolute;
+    width: 300px;
+    min-width: 300px;
+    height: 100%;
+    left: 30%;
+    grid-template-rows: 25px 70px auto;
+    }
+.header-steps{
+    grid-row: 2/3;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     }
