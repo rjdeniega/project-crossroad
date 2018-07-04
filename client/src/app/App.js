@@ -20,48 +20,19 @@ const history = createHistory();
 const location = history.location;
 export default class App extends Component {
     state = {
-        user: null,
-        currentPage: <SignInPage/>,
+        user: localStorage.user,
     };
 
     //componentDidMount is a part of react component lifecycle it is immediately called after render()
     componentDidMount() {
-        this.handleStart();
+        this.handleChange();
     }
 
     componentDidUpdate() {
-        //always check if theres a user
-        console.log("something updated");
-        this.handleStart();
+        // //always check if theres a user
+        this.handleChange();
     }
 
-    renderRoutes = () => {
-        const {user} = this.props;
-        const pageToRoute = ({identifier, path, component}) => (
-            <Route key={identifier} path={"/" + path} component={component}/>
-        );
-
-        // If we have a user, add the pages for the user type in the pages
-        const pages = [
-            ...PAGES
-        ];
-        return pages.map(pageToRoute);
-    };
-
-    // change pages on navbar item click
-
-    handleStart = () => {
-        const currentPath = history.location.pathname ;
-        const userIsSigningIn = currentPath === "/" + SIGN_IN_PAGE.path;
-        console.log(this.state.user);
-        console.log(!userIsSigningIn);
-        console.log(!this.state.user);
-        if (!userIsSigningIn && !this.state.user) {
-            console.log("entered here");
-            history.replace("/"+ SIGN_IN_PAGE.path)
-        }
-        // We want to ensure the next conditions have a non-null user
-    };
     attemptSignIn = (username, password) => {
         const data = {
             'username': username,
@@ -72,35 +43,61 @@ export default class App extends Component {
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
             .then(data => {
+                console.log(data.username);
                 localStorage.user = data.username;
+                console.log(localStorage.user);
                 localStorage.token = data.token;
-                this.changeUser(localStorage.user)
-
-
+                this.changeUser(localStorage.user);
             })
             .catch(error => message("invalid credentials"));
+    };
+    // renderRoutes = () => {
+    //     const pageToRoute = ({identifier, path, component}) => (
+    //         <Route key={identifier} path={"/" + path} component={component}/>
+    //     );
+    //
+    //     // If we have a user, add the pages for the user type in the pages
+    //     const pages = [
+    //         ...PAGES
+    //     ];
+    //     return pages.map(pageToRoute);
+    // };
+
+    // change pages on navbar item click
+
+    handleChange = () => {
+        const currentPath = history.location.pathname;
+        const userIsSigningIn = currentPath === "/" + SIGN_IN_PAGE.path;
+
+        if (this.state.user&&currentPath==="/sign-in") {
+            console.log("entered here");
+            history.replace('/remittances');
+        }
+        return;
+        // We want to ensure the next conditions have a non-null user
     };
     changeUser = newUser => this.setState({
         user: newUser
     });
 
-
     render() {
         //this is our initial page
         return (
-            <BrowserRouter>
-                <div className="page-container">
-                    {/*define routes*/}
-                    {/*routes are the pages, we no longer change states to change the page*/}
-                    <Switch>
-                        {this.renderRoutes()}
-                    </Switch>
-                    {/*render navbar if there is a user*/}
-                    {this.state.user &&
-                    <NavBar/>}
-                    <SignInPage attemptSignIn={this.attemptSignIn}/>
-                </div>
-            </BrowserRouter>
+            <div className="page-container">
+                {/*define routes*/}
+                {/*routes are the pages, we no longer change states to change the page*/}
+                <Switch>
+                    <Route path="/sign-in" render={() => <SignInPage attemptSignIn={this.attemptSignIn}/>}/>
+                    <Route path="/inventory" render={() => <InventoryPage/>}/>
+                    <Route path="/remittances" render={() => <RemittancePage/>}/>
+                    <Route path="/inventory" render={() => <RemittancePage/>}/>
+                    <Route path="/users" render={() => <UsersPage/>}/>
+                </Switch>
+                {/*render navbar if there is a user*/}
+                {this.state.user &&
+                <NavBar/>
+                }
+            </div>
         );
     }
 }

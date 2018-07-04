@@ -54,6 +54,7 @@ export const PAGES = [
     REMITTANCE_PAGE,
     INVENTORY_PAGE,
     USERS_PAGE,
+    SIGN_IN_PAGE,
 ];
 
 
