@@ -9,7 +9,7 @@ class DriversAssignedSerializer(ModelSerializer):
 
 
 class ShiftSerializer(ModelSerializer):
-    drivers_assigned = DriversAssignedSerializer(many=True)
+    drivers_assigned = DriversAssignedSerializer(many=True, write_only=True)
 
     class Meta:
         model = Shift
