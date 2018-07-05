@@ -21,7 +21,18 @@ class ShiftView(APIView):
 
     @staticmethod
     def post(request):
-        pass
+        data = json.loads(request.body)
+        shift_serializer = ShiftSerializer(data=data)
+        if shift_serializer.is_valid():
+            shift = shift_serializer.create(validated_data=shift_serializer.validated_data)
+            return Response(data={
+                'shift_start': shift.start_date,
+                'shift_end': shift.end_date
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": shift_serializer.errors
+            })
 
     @staticmethod
     def delete(request, pk):
