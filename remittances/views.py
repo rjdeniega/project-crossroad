@@ -32,16 +32,16 @@ class DeploymentView(APIView):
     @staticmethod
     def get(request):
         deployments = DeploymentSerializer(Deployment.objects.all(), many=True)
-        am_deployments = DeploymentSerializer(Deployment.objects.filter(shift='A'), many=True)
-        pm_deployments = DeploymentSerializer(Deployment.objects.filter(shift='P'), many=True)
-        mn_deployments = DeploymentSerializer(Deployment.objects.filter(shift='M'), many=True)
+        am_deployments = DeploymentSerializer(Deployment.objects.filter(shift__type='A'), many=True)
+        pm_deployments = DeploymentSerializer(Deployment.objects.filter(shift__type='P'), many=True)
+        mn_deployments = DeploymentSerializer(Deployment.objects.filter(shift__type='M'), many=True)
 
         # edit later
         return Response(data={
             "deployments": deployments.data,
             "am_deployments": am_deployments.data,
             "pm_deployments": pm_deployments.data,
-            "mn_deployments": mn_deployments
+            "mn_deployments": mn_deployments.data
         }, status=status.HTTP_200_OK)
 
     @staticmethod
