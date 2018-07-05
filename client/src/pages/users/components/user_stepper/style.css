@@ -15,6 +15,9 @@
 .user-dragger .ant-upload.ant-upload-drag{
     height: 40% !important;
     }
+.user-dragger * {
+    font-size: 11px! important;
+    }
 
 .user-error-msg{
     margin-top: 10px;

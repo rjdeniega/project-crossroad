@@ -35,7 +35,7 @@ class Person(SoftDeletionModel):
 
 class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
-    photo = FileField(default='media/temp.jpg')
+    # photo = FileField(default='media/temp.jpg')
     application_date = DateField()
 
 

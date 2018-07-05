@@ -52,13 +52,12 @@ export default class App extends Component {
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
             .then(data => {
-                localStorage.user = data.username;
-                localStorage.token = data.token;
-                //set user as state
+                localStorage.user = JSON.stringify(data["user"]);
+                localStorage.token = data["token"];
                 this.setState({
                     user: localStorage.user,
                 });
-                console.log(this.state.user)
+
             })
             .catch(error => message(error));
     };
@@ -71,6 +70,7 @@ export default class App extends Component {
         const currentPath = match.params.currentPage;
         //be careful not to use .setState here it will cause an infinite loop
         this.state.user = localStorage.user;
+
 
         //check if our current path is '/sign-in'
         const userIsSigningIn = currentPath === SIGN_IN_PAGE.path;

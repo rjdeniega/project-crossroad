@@ -36,9 +36,19 @@ export const data = [
     },
 ];
 export class UsersPage extends Component {
-    componentDidMount(){
-        console.log(localStorage.user)
+    state = {
+        drivers: []
+    };
+
+    componentDidMount() {
+         console.log(localStorage.user["username"]);
+        return fetch('/members/drivers').then(response => response.json()).then(data => {
+            this.setState({
+                drivers: data["drivers"]
+            });
+        });
     }
+
     render() {
         return (
             <div className="body-wrapper">
@@ -48,13 +58,13 @@ export class UsersPage extends Component {
                         <List
                             className="user-list"
                             itemLayout="horizontal"
-                            dataSource={data}
+                            dataSource={this.state.drivers}
                             renderItem={item => (
                                 <List.Item className="list-item">
                                     <List.Item.Meta
                                         avatar={<Avatar className="list-avatar" size="large"
                                                         src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                                        title={<a className="list-title" href="https://ant.design">{item.title}</a>}
+                                        title={<a className="list-title" href="https://ant.design">{item.name}</a>}
                                         description={<p className="list-description"> operations manager</p>}
                                     />
                                 </List.Item>

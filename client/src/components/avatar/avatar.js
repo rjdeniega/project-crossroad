@@ -27,9 +27,10 @@ export class UserAvatar extends Component {
                 <Button className="sign-out" onClick={this.signOut}>Sign-out</Button>
             </div>
         );
+        const user = JSON.parse(localStorage.user);
         return (
             <div className="header-icons">
-                <div className="user-full-name"> Jason Deniega</div>
+                <div className="user-full-name"> {user["username"]}</div>
                 <Tag className="user-type" color="var(--orange)">OM</Tag>
                 <Popover placement="bottomRight" content={content} title="User Settings" trigger="click">
                     <div className="user-avatar">
