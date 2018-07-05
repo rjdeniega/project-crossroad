@@ -11,9 +11,6 @@
     align-content: center;
     }
 
-.steps-action {
-    margin-top: 24px;
-    }
 
 .user-dragger .ant-upload.ant-upload-drag{
     height: 40% !important;

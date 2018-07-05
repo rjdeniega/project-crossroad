@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 import json
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -51,5 +52,33 @@ class SignInView(APIView):
             "username": username,
             "user_type": user_type
         }, status=200)
+
+
+class CreateUserView(APIView):
+    @staticmethod
+    def post(request):
+        print(json.loads(request.body))
+        print(request.data)
+        if "username" not in request.data or "password" not in request.data:
+            return Response(data={
+                "error": "Missing username or password"
+            }, status=400)
+        username = request.data["username"]
+        password = request.data["password"]
+        existing_usernames = [user.username for user in User.objects.all()]
+        if username in existing_usernames:
+            print(existing_usernames)
+            return Response(data={
+                "error": "Username already exists"
+            }, status=400)
+        user = User(username=username, password=password)
+        user.save()
+        created_user = UserSerializer(instance=user)
+        return Response(data={
+            "user": created_user.data,
+        }, status=200)
+
+
+
 
 

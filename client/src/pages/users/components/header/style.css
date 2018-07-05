@@ -87,7 +87,7 @@
     width: 80% !important;
     min-width: 154px;
     background: var(--bgcolor) !important;
-    bottom: 10%;
+    bottom: 10%!important;
     grid-column: 2 / 3;
     grid-row: 5 / 6;
     border-radius: 5px;

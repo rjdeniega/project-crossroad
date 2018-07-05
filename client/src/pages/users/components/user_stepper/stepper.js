@@ -26,11 +26,49 @@ const props = {
     },
 };
 export class FirstContent extends Component {
+    state = {
+        "username": "",
+        "password": "",
+        "confirm_password": "",
+        "error": "",
+    };
+    onChangeUserName = (e) => {
+        e.preventDefault();
+        this.setState({username: e.target.value});
+    };
+    onChangePassword = (e) => {
+        e.preventDefault();
+        this.setState({password: e.target.value});
+    };
+    onChangeConfirmPW = (a) => {
+        a.preventDefault();
+        this.setState({confirm_password: a.target.value});
+        console.log(this.state.password);
+        console.log(this.state.confirm_password);
+        if (this.state.password != this.state.confirm_password) {
+            this.setState({
+                error: "Passwords do not match"
+            });
+        } else {
+            this.setState({
+                error: ""
+            });
+        }
+    };
+
     render() {
+        const {username, password, confirm_password} = this.state;
         return (
             <div>
                 <p className="username-label">Please enter username</p>
-                <Input className="username" type="text" placeholder="username"/>
+                <Input className="username" onChange={this.onChangeUserName} value={username} type="text"
+                       placeholder="username"/>
+                <p className="username-label">Please enter password</p>
+                <Input className="password" onChange={this.onChangePassword} value={password} type="password"/>
+                <p className="username-label">Confirm password</p>
+                {/*<Input className="password" type="password" onChange={this.onChangeConfirmPW} value={confirm_password}/>*/}
+                {/*<p>{this.state.error}</p>*/}
+                <Button onClick={this.props.handleUserCreate(this.state.username, this.state.password)}>Next</Button>
             </div>
         );
     }
@@ -55,6 +93,7 @@ export class SecondContent extends Component {
                 <Input addonAfter=".com" placeholder="someone@belair"/>
                 <p className="name-label">Please enter contact number</p>
                 <Input addonBefore="+639" placeholder=""/>
+                <Button onClick={() => this.props.handleSubmit()}>Next</Button>
             </div>
         );
     }
@@ -63,22 +102,11 @@ export class LastContent extends Component {
     render() {
         return (
             <div>
-                <p> User's temporary password is <b>imabelairboy</b></p>
+                <p> User Successfully Created</p>
             </div>
         );
     }
 }
-
-const steps = [{
-    title: 'Set Username',
-    content: <FirstContent/>,
-}, {
-    title: 'Personal Information',
-    content: <SecondContent/>,
-}, {
-    title: 'Confirm',
-    content: <LastContent/>,
-}];
 
 export class Stepper extends Component {
     constructor(props) {
@@ -87,6 +115,10 @@ export class Stepper extends Component {
             current: 0,
         };
     }
+
+    handleUserCreate = (username, password) => {
+        this.next()
+    };
 
     next() {
         const current = this.state.current + 1;
@@ -100,31 +132,22 @@ export class Stepper extends Component {
 
     render() {
         const {current} = this.state;
+        const steps = [{
+            title: 'Set Username',
+            content: <FirstContent handleUserCreate={() => this.handleUserCreate}/>,
+        }, {
+            title: 'Personal Information',
+            content: <SecondContent/>,
+        }, {
+            title: 'Confirm',
+            content: <LastContent/>,
+        }];
         return (
             <div>
                 <Steps current={current} size="small">
                     {steps.map(item => <Step key={item.title} title={item.title}/>)}
                 </Steps>
                 <div className="steps-content">{steps[this.state.current].content}</div>
-                <div className="steps-action">
-                    {
-                        this.state.current < steps.length - 1
-                        &&
-                        <Button type="primary" onClick={() => this.next()}>Next</Button>
-                    }
-                    {
-                        this.state.current === steps.length - 1
-                        &&
-                        <Button type="primary" onClick={this.props.handleOk}>Done</Button>
-                    }
-                    {
-                        this.state.current > 0
-                        &&
-                        <Button style={{marginLeft: 8}} onClick={() => this.prev()}>
-                            Previous
-                        </Button>
-                    }
-                </div>
             </div>
         );
     }

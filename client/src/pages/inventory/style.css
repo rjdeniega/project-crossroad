@@ -36,15 +36,15 @@
 .whole-table .ant-table-thead > tr > th.ant-table-column-sort{
     background: rgba(255,255,255,1)!important;
     }
-.action-icon{
+.whole-table .action-icon{
     padding-top: 5px;
 }
 
-.ant-table-pagination.ant-pagination{
+.whole-table .ant-table-pagination.ant-pagination{
     margin-right: 35px !important;
 }
 
-.ant-input-affix-wrapper{
+.whole-table .ant-input-affix-wrapper{
     width: 250px !important;
     margin: 0 0 15px 0 !important;
 }

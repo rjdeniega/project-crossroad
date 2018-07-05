@@ -14,15 +14,21 @@ import './style.css'
 import {ClerkRemittancePage} from './subpages/clerk_remittance/clerk_remittance'
 import {SupervisorRemittancePage} from './subpages/supervisor_remittance/supervisor_remittance'
 import {DriverRemittancePage} from './subpages/driver_remittance/driver_remittance'
+import {OMRemittancePage} from './subpages/om_remittance/om_remittance'
 
 
 
 const TabPane = Tabs.TabPane;
 
-const REMITTANCE_PAGES = [<ClerkRemittancePage/>,<SupervisorRemittancePage/>,<DriverRemittancePage/>];
+const REMITTANCE_PAGES = [
+    <ClerkRemittancePage/>,
+    <SupervisorRemittancePage/>,
+    <DriverRemittancePage/>,
+    <OMRemittancePage/>
+];
 export class RemittancePage extends Component {
     state = {
-        currentPage: REMITTANCE_PAGES[2]
+        currentPage: REMITTANCE_PAGES[3]
     };
     // change pages on navbar item click
     invokeChangePage = newPage => this.setState({
