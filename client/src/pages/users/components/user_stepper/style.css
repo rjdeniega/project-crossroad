@@ -15,3 +15,8 @@
 .user-dragger .ant-upload.ant-upload-drag{
     height: 40% !important;
     }
+
+.user-error-msg{
+    margin-top: 10px;
+    color: #d04a43;
+    }

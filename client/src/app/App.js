@@ -60,7 +60,7 @@ export default class App extends Component {
                 });
                 console.log(this.state.user)
             })
-            .catch(error => message("invalid credentials"));
+            .catch(error => message(error));
     };
 
     // change pages on navbar item click

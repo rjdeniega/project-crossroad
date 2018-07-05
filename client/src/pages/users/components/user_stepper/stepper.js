@@ -6,6 +6,8 @@ import '../../../../utilities/colorsFonts.css'
 import {Steps} from 'antd'
 import {Upload, Icon, Input, Button, message} from 'antd'
 import './style.css'
+import {postData} from '../../../../network_requests/general'
+
 
 const Step = Steps.Step;
 const Dragger = Upload.Dragger;
@@ -32,6 +34,7 @@ export class FirstContent extends Component {
         "confirm_password": "",
         "error": "",
     };
+
     onChangeUserName = (e) => {
         e.preventDefault();
         this.setState({username: e.target.value});
@@ -55,6 +58,27 @@ export class FirstContent extends Component {
             });
         }
     };
+    handleUserCreate = () => {
+
+        const data = {
+            "username":this.state.username,
+            "password":this.state.password,
+        };
+        // you only have to do then once
+        postData('users', data)
+            .then(data => {
+                if(data.error){
+                    console.log("theres an error");
+                    this.setState({
+                        error: data["error"]
+                    });
+                    console.log(this.state.error);
+                }else{
+                    this.props.next()
+                }
+            })
+            .catch(error => message(error));
+    };
 
     render() {
         const {username, password, confirm_password} = this.state;
@@ -65,10 +89,10 @@ export class FirstContent extends Component {
                        placeholder="username"/>
                 <p className="username-label">Please enter password</p>
                 <Input className="password" onChange={this.onChangePassword} value={password} type="password"/>
-                <p className="username-label">Confirm password</p>
+                {/*<p className="username-label">Confirm password</p>*/}
                 {/*<Input className="password" type="password" onChange={this.onChangeConfirmPW} value={confirm_password}/>*/}
-                {/*<p>{this.state.error}</p>*/}
-                <Button onClick={this.props.handleUserCreate(this.state.username, this.state.password)}>Next</Button>
+                <p className="user-error-msg">{this.state.error}</p>
+                <Button onClick={this.handleUserCreate}>Next</Button>
             </div>
         );
     }
@@ -116,10 +140,6 @@ export class Stepper extends Component {
         };
     }
 
-    handleUserCreate = (username, password) => {
-        this.next()
-    };
-
     next() {
         const current = this.state.current + 1;
         this.setState({current});
@@ -134,7 +154,7 @@ export class Stepper extends Component {
         const {current} = this.state;
         const steps = [{
             title: 'Set Username',
-            content: <FirstContent handleUserCreate={() => this.handleUserCreate}/>,
+            content: <FirstContent next={() => this.next()}/>,
         }, {
             title: 'Personal Information',
             content: <SecondContent/>,
