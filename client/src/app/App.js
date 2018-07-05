@@ -69,6 +69,7 @@ export default class App extends Component {
         //always update user state
         const {match} = this.props;
         const currentPath = match.params.currentPage;
+        //be careful not to use .setState here it will cause an infinite loop
         this.state.user = localStorage.user;
 
         //check if our current path is '/sign-in'
