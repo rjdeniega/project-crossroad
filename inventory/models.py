@@ -28,6 +28,7 @@ class Item(SoftDeletionModel):
     quantity = PositiveIntegerField()
     brand = CharField(max_length=64)
     vendor = CharField(max_length=64)
+    unit_price = PositiveIntegerField()
 
     def __str__(self):
         return f"{self.name}"
