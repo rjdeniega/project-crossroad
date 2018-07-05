@@ -178,6 +178,26 @@ class EditableTable extends React.Component{
                     }, () => this.searchInput && this.searchInput.focus());
                   },
             },{
+                title: 'Brand',
+                dataIndex: 'brand',
+                key: 'brand',
+                width: 300,
+                sorter: (a, b) => {return a.name.localeCompare(b.name)},
+                editable: true,
+            },{
+                title: 'Vendor',
+                dataIndex: 'vendor',
+                key: 'vendor',
+                width: 300,
+                sorter: (a, b) => {return a.name.localeCompare(b.name)},
+                editable: true,
+            },{
+                title: 'Unit Price',
+                dataIndex: 'unit_price',
+                key: 'vendor',
+                width: 150,
+                editable: true,
+            },{
                 title: 'Quantity',
                 dataIndex: 'quantity',
                 key: 'quantity',
@@ -195,20 +215,6 @@ class EditableTable extends React.Component{
                         <p className='quantity-text'>{text}</p>
                     </span>
                 ),
-            },{
-                title: 'Brand',
-                dataIndex: 'brand',
-                key: 'brand',
-                width: 300,
-                sorter: (a, b) => {return a.name.localeCompare(b.name)},
-                editable: true,
-            },{
-                title: 'Vendor',
-                dataIndex: 'vendor',
-                key: 'vendor',
-                width: 300,
-                sorter: (a, b) => {return a.name.localeCompare(b.name)},
-                editable: true,
             },{
                 title: '',
                 key: 'action',
