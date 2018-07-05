@@ -21,30 +21,35 @@ import {BrowserRouter, Link, Redirect, Route, Switch, withRouter} from "react-ro
 const TABS = [
     {
         name: "Users",
+        key: "users",
         path: '/users',
         component: UsersPage,
         image: userCircleO
     },
     {
         name: "Drivers",
+        key: "drivers",
         path: '/drivers',
         component: RemittancePage,
         image: u1F46E
     },
     {
         name: "Remittances",
+        key: "remittances",
         path: '/remittances',
         component: RemittancePage,
         image: money
     },
     {
         name: "Members",
+        key: "members",
         path: '/members',
         component: RemittancePage,
         image: driversLicenseO
     },
     {
         name: "Inventory",
+        key: "inventory",
         path: '/inventory',
         component: InventoryPage,
         image: cube
@@ -58,7 +63,7 @@ export class NavBar extends Component {
     // you can pass props like a function <NavBarItems name(parameter) = prop>, parameters are defined in
     // NavBarItem Class(see below line 68)
     renderNavbarItems = () => TABS.map(tab =>
-            <Link className="tab-link" to={tab.path} component={tab.component}>
+            <Link key ={tab.key} className="tab-link" to={tab.path} component={tab.component}>
                 <NavBarItems  name={tab.name}
                              icon={tab.image}/>
             </Link>
