@@ -7,20 +7,26 @@ import {Button, Badge, Tag, Avatar, Popover} from 'antd'
 import {me} from '../../images/me.jpg'
 import {Icon} from 'react-icons-kit'
 import {bell} from 'react-icons-kit/fa/bell'
-
-const signOut = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-};
-const content = (
-    <div>
-        <p>Content</p>
-        <Button className="sign-out" onClick={signOut}>Sign-out</Button>
-    </div>
-);
-
+import {withRouter} from "react-router-dom";
+import history from '../../utilities/history'
 export class UserAvatar extends Component {
+    constructor(props) {
+        super(props);
+        // Don't call this.setState() here!
+        //set user for any children page of App (which is everything)
+    }
+    signOut = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        history.replace('/sign-in');
+    };
     render() {
+        const content = (
+            <div>
+                <p>Content</p>
+                <Button className="sign-out" onClick={this.signOut}>Sign-out</Button>
+            </div>
+        );
         return (
             <div className="header-icons">
                 <div className="user-full-name"> Jason Deniega</div>
@@ -38,3 +44,5 @@ export class UserAvatar extends Component {
         );
     }
 }
+
+export default withRouter(UserAvatar)

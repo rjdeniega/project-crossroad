@@ -7,22 +7,34 @@ import {NavBar} from "../components/navbar/navbar"
 import {InventoryPage} from '../pages/inventory/inventory'
 import {BrowserRouter, Redirect, Route, Router, Switch, withRouter} from "react-router-dom";
 import 'antd/dist/antd.css';
-import createHistory from "history/createBrowserHistory"
 import '../utilities/colorsFonts.css'
 import {getPageFromPath, SIGN_IN_PAGE, REMITTANCE_PAGE} from "./paths";
 import {message} from 'antd'
 import {postData} from "../network_requests/general";
 import {PAGES} from "./paths"
+import history from '../utilities/history'
 // const PAGES = [<UsersPage />, <RemittancePage />, <InventoryPage/>];
 
 
 // Get the current location.
-export class App extends Component {
-    state = {};
-
+export default class App extends Component {
+    constructor(props) {
+        super(props);
+        // Don't call this.setState() here!
+        //set user for any children page of App (which is everything)
+        this.state = {
+            user: localStorage.user,
+        }
+    }
+    componentWillMount() {
+         this.setState({
+            user: localStorage.user
+        });
+    }
     // componentDidMount is a part of react component lifecycle it is immediately called after render()
     componentDidMount() {
         this.handleChange();
+        // always set user when going to any page
     }
 
     componentDidUpdate() {
@@ -40,50 +52,58 @@ export class App extends Component {
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
             .then(data => {
-                console.log(data.username);
                 localStorage.user = data.username;
-                console.log(localStorage.user);
                 localStorage.token = data.token;
-                this.changeUser(localStorage.user);
+                //set user as state
+                this.setState({
+                    user: localStorage.user,
+                });
+                console.log(this.state.user)
             })
             .catch(error => message("invalid credentials"));
     };
-    // renderRoutes = () => {
-    //     const pageToRoute = ({identifier, path, component}) => (
-    //         <Route key={identifier} path={"/" + path} component={component}/>
-    //     );
-    //
-    //     // If we have a user, add the pages for the user type in the pages
-    //     const pages = [
-    //         ...PAGES
-    //     ];
-    //     return pages.map(pageToRoute);
-    // };
 
     // change pages on navbar item click
 
     handleChange = () => {
-        const {user, match, history} = this.props;
+        //always update user state
+        const {match} = this.props;
         const currentPath = match.params.currentPage;
+        this.state.user = localStorage.user;
+
+        //check if our current path is '/sign-in'
         const userIsSigningIn = currentPath === SIGN_IN_PAGE.path;
 
-        console.log(this.state.user, currentPath, userIsSigningIn);
         if (!this.state.user && !userIsSigningIn) {
+            // check if user is accessing other pages without signing in
             // history comes with withRouter() check end of this file
+            console.log(this.state.user);
+            console.log("enters here");
             history.replace('/sign-in');
+            return;
         }
-        return;
+
+        if (this.state.user && userIsSigningIn) {
+            console.log(localStorage.user);
+            console.log(this.state.user);
+            history.replace('/remittances');
+            return;
+        }
+        console.log(currentPath === undefined);
+        if (this.state.user && currentPath === undefined || this.state.user && currentPath === '/') {
+            //if there is a user and hes trying to go to localhost:3000 or localhost:3000/
+            history.replace('/remittances');
+            return;
+        }
+
         // We want to ensure the next conditions have a non-null user
     };
-    changeUser = newUser => this.setState({
-        user: newUser
-    });
 
     render() {
         //this is our initial page
-        const {user, match, history} = this.props;
+        const user = localStorage.user;
+        const {match, history} = this.props;
         const currentPath = match.params.currentPage;
-
         return (
             <div className="page-container">
                 {/*define routes*/}
@@ -96,15 +116,13 @@ export class App extends Component {
                     <Route path="/inventory" render={() => <RemittancePage/>}/>
                     <Route path="/users" render={() => <UsersPage/>}/>
                 </Switch>
-
                 {/*render navbar if there is a user and path is not sign-in*/}
-                {!this.state.user && currentPath !== "sign-in" &&
+                {user && currentPath !== "sign-in" &&
                 <NavBar/>
                 }
             </div>
         );
     }
 }
-export default withRouter(App)
 
 
