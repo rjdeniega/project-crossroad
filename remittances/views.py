@@ -13,15 +13,20 @@ import json
 class ShiftView(APIView):
     @staticmethod
     def get(request):
-        pass
+        # edit filter later on what is needed
+        shifts = ShiftSerializer(Shift.objects.all(), many=True)
+        return Response(data={
+            "shifts": shifts.data
+        }, status=status.HTTP_200_OK)
 
     @staticmethod
     def post(request):
         pass
 
     @staticmethod
-    def delete(request):
-        pass
+    def delete(request, pk):
+        Shift.objects.get(id=pk).delete(user=request.user.username)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
     def put(request):

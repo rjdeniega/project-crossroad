@@ -25,3 +25,21 @@ class RemittanceFormSerializer(ModelSerializer):
         model = RemittanceForm
         fields = '__all__'
 
+
+class AssignedTicketSerializer(ModelSerializer):
+    class Meta:
+        model = AssignedTicket
+        fields = '__all__'
+
+
+class DriversAssignedSerializer(ModelSerializer):
+    class Meta:
+        model = DriversAssigned
+        fields = '__all__'
+
+
+class ConsumedTicketSerializer(ModelSerializer):
+    class Meta:
+        model = ConsumedTicket
+        fields = '__all__'
+
