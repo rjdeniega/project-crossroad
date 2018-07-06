@@ -67,16 +67,16 @@ class VoidTicket(SoftDeletionModel):
 
 class RemittanceForm(SoftDeletionModel):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
-    fuel_cost = DecimalField(null=True, max_digits=19, decimal_places=10)
-    other_cost = DecimalField(null=True, max_digits=19, decimal_places=10)
+    fuel_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
+    other_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
-    total = DecimalField(max_digits=19, decimal_places=10) # income - costs
+    total = DecimalField(default=0, max_digits=19, decimal_places=10) # income - costs
 
 
 class ConsumedTicket(SoftDeletionModel):
     remittance_form = ForeignKey(RemittanceForm, on_delete=models.CASCADE)
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
     end_ticket = IntegerField()
-    total = DecimalField(null=True, max_digits=19, decimal_places=10)
+    total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
 
 

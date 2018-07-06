@@ -85,9 +85,9 @@ class RemittanceFormView(APIView):
     @staticmethod
     def get(request):
         remittance_forms = RemittanceFormSerializer(RemittanceForm.objects.all(), many=True)
-        am_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift='A'), many=True)
-        pm_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift='P'), many=True)
-        mn_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift='M'), many=True)
+        am_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift__type='A'), many=True)
+        pm_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift__type='P'), many=True)
+        mn_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift__type='M'), many=True)
 
         return Response(data={
             "remittance_forms": remittance_forms.data,
@@ -99,16 +99,15 @@ class RemittanceFormView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        remittance_form_serializer = RemittanceFormSerializer(data=data)
-        if remittance_form_serializer.is_valid():
-            remittance_form = RemittanceFormSerializer.create(validated_data=remittance_form_serializer.validated_data)
-
+        remittance_serializer = RemittanceFormSerializer(data=data)
+        if remittance_serializer.is_valid():
+            remittance_form = remittance_serializer.create(validated_data=remittance_serializer.validated_data)
             return Response(data={
                 "total": remittance_form.total
             }, status=status.HTTP_200_OK)
         else:
             return Response(data={
-                "errors": remittance_form_serializer.errors
+                "errors": remittance_serializer.errors
             })
 
     @staticmethod

@@ -70,9 +70,9 @@ class DeploymentSerializer(ModelSerializer):
 class ConsumedTicketSerializer(ModelSerializer):
     class Meta:
         model = ConsumedTicket
-        fields = '__all__'
+        exclude = ('remittance_form', )
 
-
+# TODO validation that consumed_ticket.end_ticket is within range of assigned_ticket
 class RemittanceFormSerializer(ModelSerializer):
     consumed_ticket = ConsumedTicketSerializer(many=True, write_only=True)
 
@@ -80,9 +80,31 @@ class RemittanceFormSerializer(ModelSerializer):
         model = RemittanceForm
         fields = '__all__'
 
+    # assigned_ticket id is expected to be within validated_data
     def create(self, validated_data):
-        remittance_form = RemittanceForm()
-        consumed_tickets_data = validated_data.pop('consumed_tickets')
+        consumed_tickets_data = validated_data.pop('consumed_ticket')
+        remittance_form = RemittanceForm.objects.create(**validated_data)
+
+        for consumed_ticket_data in consumed_tickets_data:
+            consumed_ticket = ConsumedTicket.objects.create(remittance_form=remittance_form, **consumed_ticket_data)
+            assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket.assigned_ticket.id)
+
+            if assigned_ticket.type == 'A':
+                consumed_ticket.total = 9 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+            elif assigned_ticket.type == 'B':
+                consumed_ticket.total = 11 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+            else:
+                consumed_ticket.total = 14 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+
+            consumed_ticket.save()
+            remittance_form.total += consumed_ticket.total
+            remittance_form.save()
+
+        remittance_form.total -= remittance_form.fuel_cost + remittance_form.other_cost
+        remittance_form.save()
+        return remittance_form
+
+
 
 
 
