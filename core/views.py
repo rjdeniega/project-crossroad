@@ -1,10 +1,10 @@
+from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import render
 import rest_framework
 from django.contrib.auth import authenticate, login
 from django.shortcuts import get_object_or_404
 from django.views import View
-from rest_framework import serializers
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import IsAuthenticated
@@ -15,8 +15,6 @@ import json
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.forms.models import model_to_dict
-
-
 
 # Create your views here.
 from core.serializers import UserSerializer
@@ -60,6 +58,15 @@ class SignInView(APIView):
 
 class CreateUserView(APIView):
     @staticmethod
+    def get(request):
+        users = User.objects.all()
+        # returns all item objects
+        data = serializers.serialize('json', users)
+        return Response(data={
+            "users": data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
     def post(request):
         print(json.loads(request.body))
         print(request.data)
@@ -69,8 +76,9 @@ class CreateUserView(APIView):
             }, status=400)
         print(request.data)
         return Response(data={
-            "user":'reached this point',
+            "user": 'reached this point',
         }, status=200)
+
 
 class UserHandler(APIView):
     @staticmethod
@@ -92,8 +100,3 @@ class UserHandler(APIView):
             return Response(data={
                 "unique": True
             }, status=400)
-
-
-
-
-
