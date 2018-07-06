@@ -27,6 +27,7 @@ urlpatterns = [
     path('sign-in', SignInView.as_view()),
     path('users', CreateUserView.as_view()),
     path('users/is_unique', UserHandler().as_view()),
+    path('users/all', UserView.as_view()),
     path('admin/', admin.site.urls),
     path('members/', include(members_urls)),
     path('inventory/', include(inventory_urls)),
