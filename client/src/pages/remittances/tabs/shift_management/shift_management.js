@@ -9,8 +9,16 @@ import {clockO} from 'react-icons-kit/fa/clockO'
 import {Icon} from 'react-icons-kit'
 import {DatePicker} from 'antd';
 import moment from 'moment';
+import {Table, Avatar} from 'antd';
 
 const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
+const columns = [{
+    title: 'Name',
+    dataIndex: 'name',
+    render: text => <div><Avatar style={{backgroundColor: '#4d9dd0', marginRight: '20px'}} icon="user"/>
+        {text}</div>,
+}];
+
 export class ShiftManagementPane extends Component {
     state = {
         startDateObject: null,
@@ -18,14 +26,40 @@ export class ShiftManagementPane extends Component {
         startDate: null,
         endDate: null,
         endDateObject: null,
+        drivers: null
     };
 
     componentDidMount() {
-        if (this.state.active_shift === null) {
+        if (this.state.activeShift === null) {
             this.openNotification()
         }
+        return fetch('/members/drivers').then(response => response.json()).then(data => {
+            if (!data["error"]) {
+                //for each entry in drivers data, which is in the form of an array with key and value
+                //
+                const tableData = [];
+                data["drivers"].forEach(item => tableData.push({
+                    "key": item.id,
+                    "name": item.name
+                }));
+                this.setState({drivers:tableData});
+                // Object.entries(data["drivers"]).forEach((key,value) => console.log(value));
+            } else {
+                console.log(data["error"]);
+            }
+        });
     }
 
+    // rowSelection object indicates the need for row selection
+    rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+        },
+        getCheckboxProps: record => ({
+            disabled: record.name === 'Disabled User', // Column configuration not to be checked
+            name: record.name,
+        }),
+    };
     close = () => {
         console.log('Notification was closed. Either the close button was clicked or duration time elapsed.');
     };
@@ -53,43 +87,79 @@ export class ShiftManagementPane extends Component {
             startDate: startDateString,
             startDateObject: moment(date),
             endDate: endDateString,
-            endDateObject:endDateObject
+            endDateObject: endDateObject
         }, () => {
-            console.log(this.state.startDate,this.state.endDate)
+            console.log(this.state.startDate, this.state.endDate)
         });
 
     };
 
     render() {
         return (
-            <div className="overview-tab-body">
-                <div className="shift-creation-body">
-                    <div className="label-div">
-                        <div style={{color: 'var(--darkgreen)'}}>
-                            <Icon icon={clockO} size={30} style={{marginRight: '10px', marginTop: '5px'}}/>
+            <div className="om-tab-body">
+                <div className="content-body">
+                    <div className="shift-creation-body">
+                        <div className="label-div">
+                            <div style={{color: 'var(--darkgreen)'}}>
+                                <Icon icon={clockO} size={30} style={{marginRight: '10px', marginTop: '5px'}}/>
+                            </div>
+                            <div className="tab-label">
+                                Create Shift
+                            </div>
                         </div>
-                        <div className="tab-label">
-                            Create Shift
+                        <div className="expiration-label">expiring in 7 days</div>
+
+                        <div className="date-grid">
+                            <DatePicker
+                                className="date-picker"
+                                format="MM-DD-YYYY"
+                                value={this.state.startDateObject}
+                                placeholder="Start Date"
+                                onChange={() => this.handleDateChange()}
+                            />
+                            <DatePicker
+                                className="date-picker"
+                                disabled
+                                placeholder="End Date"
+                                format="MM-DD-YYYY"
+                                value={this.state.endDateObject}
+                            />
                         </div>
-
                     </div>
-                    <div className="date-grid">
-                        <DatePicker
-                            format="MM-DD-YYYY"
-                            value={this.state.startDateObject}
-                            placeholder="Start Date"
-                            onChange={() => this.handleDateChange()}
-                        />
-                        <DatePicker
-                            disabled
-                            placeholder="End Date"
-                            format="MM-DD-YYYY"
-                            value={this.state.endDateObject}
-                        />
-                    </div>
-                </div>
-                <div className="date-grid">
+                    <div className="driver-selection">
+                        {/*<div className="table-label-div">*/}
+                        {/*<div className="tab-label">*/}
+                        {/*Select Drivers*/}
+                        {/*</div>*/}
+                        {/*<div className="guideline">*/}
+                        {/*Select N drivers for each shift*/}
+                        {/*</div>*/}
+                        {/*</div>*/}
+                        <div className="tables-wrapper">
+                            <div className="am-shift-pane">
+                                <div className="label-div">
+                                    <div className="tab-label">AM</div>
+                                </div>
+                                <Table rowSelection={this.rowSelection} pagination={false} columns={columns}
+                                       dataSource={this.state.drivers}/>,
+                            </div>
+                            <div className="pm-shift-pane">
+                                <div className="label-div">
+                                    <div className="tab-label">PM</div>
+                                </div>
+                                <Table rowSelection={this.rowSelection} pagination={false} columns={columns}
+                                       dataSource={this.state.drivers}/>,
 
+                            </div>
+                            <div className="mn-shift-pane">
+                                <div className="label-div">
+                                    <div className="tab-label">Midnight</div>
+                                </div>
+                                <Table rowSelection={this.rowSelection} pagination={false} columns={columns}
+                                       dataSource={this.state.drivers}/>,
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         )
