@@ -99,6 +99,17 @@ class RemittanceFormView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
+        remittance_form_serializer = RemittanceFormSerializer(data=data)
+        if remittance_form_serializer.is_valid():
+            remittance_form = RemittanceFormSerializer.create(validated_data=remittance_form_serializer.validated_data)
+
+            return Response(data={
+                "total": remittance_form.total
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": remittance_form_serializer.errors
+            })
 
     @staticmethod
     def delete(request, pk):

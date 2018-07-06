@@ -51,10 +51,13 @@ class Deployment(SoftDeletionModel):
 
 
 class AssignedTicket(SoftDeletionModel):
-    deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
+    deployment = ForeignKey(Deployment, related_name="assigned_tickets", on_delete=models.CASCADE)
     range_from = IntegerField()
     range_to = IntegerField()
     type = CharField(max_length=1, choices=TICKET_TYPE)
+
+    def __str__(self):
+        return self.get_type_display() + ": " + str(self.range_from) + " - " + str(self.range_to)
 
 
 class VoidTicket(SoftDeletionModel):
