@@ -45,12 +45,14 @@ class AssignedTicketSerializer(ModelSerializer):
         exclude = ('deployment', )
 
 
+
 class DeploymentSerializer(ModelSerializer):
-    assigned_ticket = AssignedTicketSerializer(many=True, write_only=True)
+    assigned_tickets = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Deployment
         fields = '__all__'
+
 
     def create(self, validated_data):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
@@ -65,14 +67,25 @@ class DeploymentSerializer(ModelSerializer):
         return deployment
 
 
-class RemittanceFormSerializer(ModelSerializer):
-    class Meta:
-        model = RemittanceForm
-        fields = '__all__'
-
-
 class ConsumedTicketSerializer(ModelSerializer):
     class Meta:
         model = ConsumedTicket
         fields = '__all__'
+
+
+class RemittanceFormSerializer(ModelSerializer):
+    consumed_ticket = ConsumedTicketSerializer(many=True, write_only=True)
+
+    class Meta:
+        model = RemittanceForm
+        fields = '__all__'
+
+    def create(self, validated_data):
+        remittance_form = RemittanceForm()
+        consumed_tickets_data = validated_data.pop('consumed_tickets')
+
+
+
+
+
 
