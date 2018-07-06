@@ -18,7 +18,7 @@ from django.urls import include
 from django.urls import path
 
 from core.views import SignInView
-from core.views import CreateUserView
+from core.views import *
 from members.urls import *
 from inventory.urls import *
 from remittances.urls import *
@@ -26,6 +26,7 @@ from remittances.urls import *
 urlpatterns = [
     path('sign-in', SignInView.as_view()),
     path('users', CreateUserView.as_view()),
+    path('users/is_unique', UserHandler().as_view()),
     path('admin/', admin.site.urls),
     path('members/', include(members_urls)),
     path('inventory/', include(inventory_urls)),

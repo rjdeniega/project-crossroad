@@ -15,11 +15,13 @@ export class UserAvatar extends Component {
         // Don't call this.setState() here!
         //set user for any children page of App (which is everything)
     }
+
     signOut = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         history.replace('/sign-in');
     };
+
     render() {
         const content = (
             <div>
@@ -27,10 +29,10 @@ export class UserAvatar extends Component {
                 <Button className="sign-out" onClick={this.signOut}>Sign-out</Button>
             </div>
         );
-        const user = JSON.parse(localStorage.user);
+        const {username} = JSON.parse(localStorage.user);
         return (
             <div className="header-icons">
-                <div className="user-full-name"> {user["username"]}</div>
+                <div className="user-full-name"> {username}</div>
                 <Tag className="user-type" color="var(--orange)">OM</Tag>
                 <Popover placement="bottomRight" content={content} title="User Settings" trigger="click">
                     <div className="user-avatar">

@@ -13,37 +13,37 @@ import './style.css'
 import {Items} from '../../network_requests/items'
 
 /*let databoi = [];
-const item = fetch('inventory/items/').then(response => response.json()).then((responseJSON) => {
-    // do stuff with responseJSON here...
-    databoi = responseJSON;
-    console.log(responseJSON);
-});
-console.log(databoi);*/
+ const item = fetch('inventory/items/').then(response => response.json()).then((responseJSON) => {
+ // do stuff with responseJSON here...
+ databoi = responseJSON;
+ console.log(responseJSON);
+ });
+ console.log(databoi);*/
 
 /*const items = Items;
-console.log(items.toString());
-/!* Dummy data to fill the table *!/
-const data = [{
-        key: '0',
-        name: 'Shuttle Light bulb',
-        quantity: '16',
-        brand: 'Fujitsu',
-        vendor: 'Ace Hardware'
-    },
-    {
-        key: '1',
-        name: 'Philips Screws',
-        quantity: '32',
-        brand: 'Generic',
-        vendor: 'Budjolex Repairs'
-    },
-    {
-        key: '2',
-        name: 'Tire Caps',
-        quantity: '1',
-        brand: 'Global Electronics',
-        vendor: 'Home Depot'
-}];*/
+ console.log(items.toString());
+ /!* Dummy data to fill the table *!/
+ const data = [{
+ key: '0',
+ name: 'Shuttle Light bulb',
+ quantity: '16',
+ brand: 'Fujitsu',
+ vendor: 'Ace Hardware'
+ },
+ {
+ key: '1',
+ name: 'Philips Screws',
+ quantity: '32',
+ brand: 'Generic',
+ vendor: 'Budjolex Repairs'
+ },
+ {
+ key: '2',
+ name: 'Tire Caps',
+ quantity: '1',
+ brand: 'Global Electronics',
+ vendor: 'Home Depot'
+ }];*/
 
 const Search = Input.Search;
 const data = [];
@@ -51,9 +51,9 @@ const data = [];
  *  Function that checks whether the item is less than 3 items to comply with the business rule
  * @return {null}
  */
-function CheckItem(props){
+function CheckItem(props) {
     const quantity = props.quantity;
-    if(parseInt(quantity) < 3)
+    if (parseInt(quantity) < 3)
         return <Icon className='warning-icon' icon={warning} size={18} style={{color: 'red'}}/>;
     else
         return null
@@ -70,15 +70,15 @@ const EditableRow = ({form, index, ...props}) => (
 
 const EditableFormRow = Form.create()(EditableRow);
 
-class EditableCell extends React.Component{
+class EditableCell extends React.Component {
     getInput = () => {
-        if(this.props.inputType === 'number'){
+        if (this.props.inputType === 'number') {
             return <InputNumber/>;
         }
         return <Input/>
     };
 
-    render(){
+    render() {
         const {
             editing,
             dataIndex,
@@ -91,20 +91,20 @@ class EditableCell extends React.Component{
         return (
             <EditableContext.Consumer>
                 {(form) => {
-                    const { getFieldDecorator } = form;
+                    const {getFieldDecorator} = form;
                     return (
                         <td {...restProps}>
                             {editing ? (
-                                <FormItem style={{margin: 0}}>
-                                    {getFieldDecorator(dataIndex, {
-                                        rules: [{
-                                            required: true,
-                                            message: `Please Input ${title}!`,
-                                        }],
-                                        initialValue: record[dataIndex],
-                                    })(this.getInput())}
-                                </FormItem>
-                            ) : restProps.children}
+                                    <FormItem style={{margin: 0}}>
+                                        {getFieldDecorator(dataIndex, {
+                                            rules: [{
+                                                required: true,
+                                                message: `Please Input ${title}!`,
+                                            }],
+                                            initialValue: record[dataIndex],
+                                        })(this.getInput())}
+                                    </FormItem>
+                                ) : restProps.children}
                         </td>
                     )
                 }}
@@ -129,9 +129,9 @@ const ItemActions = (props, table) => (
         </Menu.Item>
         <Menu.Item key="0">
             <Popconfirm
-                    title="Are you sure you want to delete this item?"
-                    onConfirm={() => table.onDelete(props.key)}>
-                    <a>Delete</a>
+                title="Are you sure you want to delete this item?"
+                onConfirm={() => table.onDelete(props.key)}>
+                <a>Delete</a>
             </Popconfirm>
         </Menu.Item>
     </Menu>
@@ -140,8 +140,8 @@ const ItemActions = (props, table) => (
 /*
  * The "settings" of the entire table
  */
-class EditableTable extends React.Component{
-    constructor(props){
+class EditableTable extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
             filterDropdownVisible: false,
@@ -160,7 +160,9 @@ class EditableTable extends React.Component{
                 key: 'name',
                 editable: true,
                 defaultSortOrder: 'ascend',
-                sorter: (a, b) => {return a.name.localeCompare(b.name)},
+                sorter: (a, b) => {
+                    return a.name.localeCompare(b.name)
+                },
                 filterDropdown: (
                     <div className='custom-filter-dropdown'>
                         <Search placeholder="Input search text"
@@ -170,34 +172,38 @@ class EditableTable extends React.Component{
                                 onKeyDown={this.onSearch()}/>
                     </div>
                 ),
-                filterIcon: <Icon icon={zoom} style={{ color: this.state.filtered ? '#108ee9': '#aaa'}} />,
+                filterIcon: <Icon icon={zoom} style={{color: this.state.filtered ? '#108ee9' : '#aaa'}}/>,
                 filterDropdownVisible: this.state.filterDropdownVisible,
                 onFilterDropdownVisibleChange: (visible) => {
                     this.setState({
-                      filterDropdownVisible: visible,
+                        filterDropdownVisible: visible,
                     }, () => this.searchInput && this.searchInput.focus());
-                  },
-            },{
+                },
+            }, {
                 title: 'Brand',
                 dataIndex: 'brand',
                 key: 'brand',
                 width: 300,
-                sorter: (a, b) => {return a.name.localeCompare(b.name)},
+                sorter: (a, b) => {
+                    return a.name.localeCompare(b.name)
+                },
                 editable: true,
-            },{
+            }, {
                 title: 'Vendor',
                 dataIndex: 'vendor',
                 key: 'vendor',
                 width: 300,
-                sorter: (a, b) => {return a.name.localeCompare(b.name)},
+                sorter: (a, b) => {
+                    return a.name.localeCompare(b.name)
+                },
                 editable: true,
-            },{
+            }, {
                 title: 'Unit Price',
                 dataIndex: 'unit_price',
                 key: 'vendor',
                 width: 150,
                 editable: true,
-            },{
+            }, {
                 title: 'Quantity',
                 dataIndex: 'quantity',
                 key: 'quantity',
@@ -215,16 +221,16 @@ class EditableTable extends React.Component{
                         <p className='quantity-text'>{text}</p>
                     </span>
                 ),
-            },{
+            }, {
                 title: '',
                 key: 'action',
                 align: 'center',
                 render: record => {
                     const editable = this.isEditing(record);
-                    return(
-                    <div>
-                        {editable ? (
-                            <span>
+                    return (
+                        <div>
+                            {editable ? (
+                                    <span>
                                 <EditableContext.Consumer>
                                     {form => (
                                         <a
@@ -241,7 +247,7 @@ class EditableTable extends React.Component{
                                     <a>Cancel</a>
                                 </Popconfirm>
                             </span>
-                        ) : (<span>
+                                ) : (<span>
                             <Dropdown overlay={ItemActions(record, this)} trigger={['click']}>
                                 <a href="#" className="ant-dropdown-link">
                                     Actions<Icon className="action-icon" icon={arrowSortedDown} size={14}/>
@@ -249,8 +255,9 @@ class EditableTable extends React.Component{
                             </Dropdown>
                         </span>)}
 
-                    </div>
-                );},
+                        </div>
+                    );
+                },
             }]
     }
 
@@ -258,16 +265,20 @@ class EditableTable extends React.Component{
      * Area for methods
      */
 
-    componentDidMount(){
-            this.setState({ isLoading: true });
+    componentDidMount() {
+        this.setState({isLoading: true});
 
-            fetch('inventory/items/')
-                .then(response => response.json())
-                .then(data => this.setState({data: data.items, isLoading: false}));
+        // fetch('inventory/items/')
+        //     .then(response => {
+        //         console.log("response", response);
+        //         return response;
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => this.setState({data: data.items, isLoading: false}));
     }
 
     onInputChange = (e) => {
-        this.setState({ searchText: e.target.value});
+        this.setState({searchText: e.target.value});
     };
 
     onSearch = () => {
@@ -275,23 +286,23 @@ class EditableTable extends React.Component{
         const reg = new RegExp(searchText, 'gi');
         this.setState({
             filtered: !!searchText,
-            data: data.map((record) =>{
+            data: data.map((record) => {
                 const match = record.name.match(reg);
-                if(!match){
+                if (!match) {
                     return null;
                 }
-                return{
+                return {
                     ...record,
                     name: (
-                       <span>
+                        <span>
                            {record.name.split(new RegExp(`(?:${searchText})|(?=${searchText})`, 'i')).map((text, i) => (
                                text.toLowerCase() === searchText.toLowerCase()
                                    ? <span key={i} className="highlight">{text}</span> : text
-                          ))}
+                           ))}
                         </span>
                     ),
                 };
-            }).filter(record=>!!record),
+            }).filter(record => !!record),
         })
     };
 
@@ -301,16 +312,16 @@ class EditableTable extends React.Component{
 
     onDelete = (key) => {
         const data = [...this.state.data];
-        this.setState({ data: data.filter(item => item.key !== key)});
+        this.setState({data: data.filter(item => item.key !== key)});
     };
 
     edit(key) {
         this.setState({editingKey: key});
     }
 
-    save(form, key){
+    save(form, key) {
         form.validateFields((error, row) => {
-            if (error){
+            if (error) {
                 return;
             }
             const newData = [...this.state.data];
@@ -324,13 +335,13 @@ class EditableTable extends React.Component{
                 this.setState({data: newData, editingKey: ''});
             } else {
                 newData.push(data);
-                this.setState({ data: newData, editingKey: ''});
+                this.setState({data: newData, editingKey: ''});
             }
         })
     }
 
     cancel = () => {
-        this.setState({ editingKey: ''});
+        this.setState({editingKey: ''});
     };
 
     render() {
@@ -358,7 +369,7 @@ class EditableTable extends React.Component{
         });
 
         const {data, isLoading} = this.state;
-        if (isLoading){
+        if (isLoading) {
             return (
                 <div>
                     <Table className="whole-table"
@@ -370,7 +381,7 @@ class EditableTable extends React.Component{
                     />
                 </div>
             )
-        }else{
+        } else {
             console.log(this.state);
             return (
                 <div>
@@ -380,18 +391,18 @@ class EditableTable extends React.Component{
                         dataSource={this.state.data}
                         columns={columns}
                         rowClassName='editable-row'
-                        pagination={{pageSize:30}}/>
+                        pagination={{pageSize: 30}}/>
                 </div>
             )
         }
     }
 }
 
-export class InventoryPage extends Component{
+export class InventoryPage extends Component {
     // go to app.js and switch to PAGES[index of this page in the array] to
     // make inventory initial page. Navbar inventory button works tho so up to u gl
-    render(){
-        return(
+    render() {
+        return (
             <div className="body-wrapper">
                 <Header/>
                 <div className='table-style'>

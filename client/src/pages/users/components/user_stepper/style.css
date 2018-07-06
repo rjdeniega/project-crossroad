@@ -3,6 +3,7 @@
     border: 1px dashed #e9e9e9;
     border-radius: 6px;
     background-color: #fafafa;
+    height: 450px!important;
     min-height: 200px;
     text-align: center;
     display: flex;
@@ -16,10 +17,14 @@
     height: 40% !important;
     }
 .user-dragger * {
-    font-size: 11px! important;
+    font-size: 14px! important;
     }
 
 .user-error-msg{
     margin-top: 10px;
     color: #d04a43;
+    }
+.user-input{
+    margin-top:10px!important;
+    width: 70% !important;
     }
