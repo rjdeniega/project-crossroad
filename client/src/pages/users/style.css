@@ -19,6 +19,7 @@
     flex-direction: column;
     height: 80%;
     width: 30%;
+    justify-content: center;
     align-items: center;
     min-width:300px;
     /*border-radius: 5px;*/
@@ -78,8 +79,8 @@
     margin-top: 10px;
     display: inline-flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     height: 77%;
     width: 68%;
     min-width: 500px;
@@ -98,5 +99,10 @@
     font-family: Montserrat, sans serif;
     size: 14px;
     font-weight: 700;
+    }
+.user-spinner{
+    color: var(--darkgreen)!important;
+    position: absolute! important;
+    top: 35%!important;
     }
 

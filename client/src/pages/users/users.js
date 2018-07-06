@@ -7,9 +7,9 @@ import '../../utilities/colorsFonts.css'
 import {List, Avatar} from 'antd'
 import './style.css'
 import emptyStateImage from '../../images/empty state record.png'
-import {Spin} from 'antd';
+import {Spin,Icon} from 'antd';
 
-
+const antIcon = <Icon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)'}} spin />;
 export const data = [
     {
         title: 'Ant Design Title 1',
@@ -38,28 +38,28 @@ export const data = [
 ];
 export class UsersPage extends Component {
     state = {
-        drivers: null
+        users: null
     };
-
     componentDidMount() {
-        return fetch('/members/drivers').then(response => response.json()).then(data => {
-            this.setState({
-                drivers: data["drivers"]
-            });
-        });
+        // return fetch('/users').then(response => response.json()).then(data => {
+        //     console.log(data);
+        //     this.setState({
+        //         users: JSON.stringify(data["users"])
+        //     });
+        // });
     }
 
     renderList = () => (
         <List
             className="user-list"
             itemLayout="horizontal"
-            dataSource={this.state.drivers}
+            dataSource={this.state.users}
             renderItem={item => (
                 <List.Item className="list-item">
                     <List.Item.Meta
                         avatar={<Avatar className="list-avatar" size="large"
                                         src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                        title={<a className="list-title" href="https://ant.design">{item.name}</a>}
+                        title={<a className="list-title" href="https://ant.design">{item.username}</a>}
                         description={<p className="list-description"> operations manager</p>}
                     />
                 </List.Item>
@@ -68,16 +68,16 @@ export class UsersPage extends Component {
     );
 
     render() {
-        const {drivers} = this.state;
-        const isLoading = drivers === null;
+        const {users} = this.state;
+        const isLoading = users === null;
         return (
             <div className="body-wrapper">
                 <Header/>
                 <div className="page-body">
                     <div className="user-list-wrapper">
-                        {drivers && this.renderList()}
+                        {users && this.renderList()}
                         {isLoading &&
-                        <Spin size="large"/>
+                        <Spin className="user-spinner" indicator={antIcon} size="large"/>
                         }
                     </div>
                     <div className="item-details-wrapper">
