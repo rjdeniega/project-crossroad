@@ -28,28 +28,7 @@ import {BeepPane} from '../../tabs/beep/beep'
 import {OverviewPane} from '../../tabs/overview/overview'
 import {ShiftManagementPane} from '../../tabs/shift_management/shift_management'
 const TabPane = Tabs.TabPane;
-const OM_TABS = [
-    {
-        "tab_name": "Overview",
-        "key" : 1,
-        "component" : <OverviewPane/>
-    },
-    {
-        "tab_name": "Ticketing",
-        "key" : 2,
-        "component" : <TicketingPane/>
-    },
-    {
-        "tab_name": "Ticketing",
-        "key" : 3,
-        "component" : <BeepPane/>
-    },
-    {
-        "tab_name": "Shift Management",
-        "key" : 4,
-        "component" : <ShiftManagementPane/>
-    },
-];
+
 export class OMRemittancePage extends Component {
     state = {
         currentTab: <ShiftManagementPane/>,
@@ -59,13 +38,16 @@ export class OMRemittancePage extends Component {
         currentTab: newPage,
     });
     callback = (key) => {
-        const newPage = OM_TABS.key == key;
-        this.invokeChangeTab(newPage.component);
+        if (key == "1") {
+            this.invokeChangeTab(<ShiftManagementPane/>)
+        } else if (key == "2") {
+            this.invokeChangeTab(<OverviewPane/>)
+        } else if (key == "3")  {
+            this.invokeChangeTab(<TicketingPane/>)
+        }else {
+            this.invokeChangeTab(<BeepPane/>)
+        }
     };
-
-    renderTabs = () => OM_TABS.map(tab =>
-            <TabPane className="tab-item" tab={tab.name} key={tab.key}></TabPane>
-    );
 
     render() {
         return (
@@ -79,8 +61,11 @@ export class OMRemittancePage extends Component {
                     <UserAvatar/>
                     <div className="header-bottom">
                         <div className="user-tabs-wrapper">
-                            <Tabs className="user-tabs" defaultActiveKey="2" onChange={this.callback}>
-                                {this.renderTabs}
+                            <Tabs className="user-tabs" defaultActiveKey="1" onChange={this.callback}>
+                                <TabPane className="tab-item" tab="Create Shift" key="1"></TabPane>
+                                <TabPane className="tab-item" tab="Overview" key="2"></TabPane>
+                                <TabPane className="tab-item" tab="Ticketing™" key="3"></TabPane>
+                                <TabPane className="tab-item" tab="Beep™" key="4"></TabPane>
                             </Tabs>
                         </div>
                     </div>
