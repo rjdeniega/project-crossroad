@@ -67,19 +67,31 @@ class CreateUserView(APIView):
             return Response(data={
                 "error": "Missing username or password"
             }, status=400)
+        print(request.data)
+        return Response(data={
+            "user":'reached this point',
+        }, status=200)
+
+class UserHandler(APIView):
+    @staticmethod
+    def post(request):
+        # check if username is taken
+        if "username" not in request.data or "password" not in request.data:
+            return Response(data={
+                "error": "Missing username or password"
+            }, status=400)
         username = request.data["username"]
-        password = request.data["password"]
         existing_usernames = [user.username for user in User.objects.all()]
+
         if username in existing_usernames:
             print(existing_usernames)
             return Response(data={
                 "error": "Username already exists"
             }, status=400)
-        user = User(username=username, password=password)
-        user.save()
-        return Response(data={
-            "user": model_to_dict(user),
-        }, status=200)
+        else:
+            return Response(data={
+                "unique": True
+            }, status=400)
 
 
 

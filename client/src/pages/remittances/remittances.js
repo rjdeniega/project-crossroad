@@ -28,7 +28,7 @@ const REMITTANCE_PAGES = [
 ];
 export class RemittancePage extends Component {
     state = {
-        currentPage: REMITTANCE_PAGES[3]
+        currentPage: REMITTANCE_PAGES[1]
     };
     // change pages on navbar item click
     invokeChangePage = newPage => this.setState({

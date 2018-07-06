@@ -51,9 +51,9 @@ export default class App extends Component {
         // this uses a shortcut from general.js from network_requests
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
-            .then(data => {
-                localStorage.user = JSON.stringify(data["user"]);
-                localStorage.token = data["token"];
+            .then(({user, token}) => {
+                localStorage.user = JSON.stringify(user);
+                localStorage.token = JSON.stringify(token);
                 this.setState({
                     user: localStorage.user,
                 });
