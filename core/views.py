@@ -100,3 +100,14 @@ class UserHandler(APIView):
             return Response(data={
                 "unique": True
             }, status=400)
+
+
+class UserView(APIView):
+    @staticmethod
+    def get(request):
+        users = UserSerializer(User.objects.all(), many=True)
+
+        return Response(data={
+            "users": users.data
+        }, status=status.HTTP_200_OK)
+    
