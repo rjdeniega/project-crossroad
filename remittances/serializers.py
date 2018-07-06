@@ -9,7 +9,6 @@ class DriversAssignedSerializer(ModelSerializer):
         exclude = ('shift', )
 
 
-# TODO validate if added shift has a start_date < expire_date of latest added shift
 class ShiftSerializer(ModelSerializer, serializers.Serializer):
     drivers_assigned = DriversAssignedSerializer(many=True, write_only=True)
 
@@ -32,7 +31,15 @@ class ShiftSerializer(ModelSerializer, serializers.Serializer):
         return data
 
 
+class VoidTicketSerializer(ModelSerializer):
+    class Meta:
+        model = VoidTicket
+        exclude = ('assigned_ticket', )
+
+
 class AssignedTicketSerializer(ModelSerializer):
+    void_ticket = VoidTicketSerializer(many=True, write_only=True)
+
     class Meta:
         model = AssignedTicket
         exclude = ('deployment', )
@@ -48,15 +55,14 @@ class DeploymentSerializer(ModelSerializer):
     def create(self, validated_data):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
         deployment = Deployment.objects.create(**validated_data)
+
         for assigned_ticket_data in assigned_tickets_data:
-            AssignedTicket.objects.create(deployment=deployment, **assigned_ticket_data)
+            void_tickets_data = assigned_ticket_data.pop('void_ticket')
+            assigned_ticket = AssignedTicket.objects.create(deployment=deployment, **assigned_ticket_data)
+
+            for void_ticket_data in void_tickets_data:
+                VoidTicket.objects.create(assigned_ticket=assigned_ticket, **void_ticket_data)
         return deployment
-
-
-class VoidTicketSerializer(ModelSerializer):
-    class Meta:
-        model = VoidTicket
-        fields = '__all__'
 
 
 class RemittanceFormSerializer(ModelSerializer):
