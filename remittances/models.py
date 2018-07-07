@@ -35,7 +35,7 @@ FORM_STATUS = [
 
 class Schedule(SoftDeletionModel):
     start_date = DateField()
-    end_date = DateField()
+    end_date = DateField(null=True)
 
 
 class Shift(SoftDeletionModel):
