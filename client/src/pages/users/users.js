@@ -41,12 +41,12 @@ export class UsersPage extends Component {
         users: null
     };
     componentDidMount() {
-        // return fetch('/users').then(response => response.json()).then(data => {
-        //     console.log(data);
-        //     this.setState({
-        //         users: JSON.stringify(data["users"])
-        //     });
-        // });
+        return fetch('/users/all').then(response => response.json()).then(data => {
+            console.log(data);
+            this.setState({
+                users: data["users"]
+            });
+        });
     }
 
     renderList = () => (

@@ -31,11 +31,12 @@ class Person(SoftDeletionModel):
     address = CharField(max_length=256)
     birth_date = DateField()
     sex = CharField(max_length=1, choices=SEX)
+    photo = FileField()
+
 
 
 class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
-    # photo = FileField(default='media/temp.jpg')
     application_date = DateField()
 
 

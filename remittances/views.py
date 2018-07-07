@@ -24,6 +24,7 @@ class ShiftView(APIView):
         data = json.loads(request.body)
         shift_serializer = ShiftSerializer(data=data)
         if shift_serializer.is_valid():
+            #TODO add end shift
             shift = shift_serializer.create(validated_data=shift_serializer.validated_data)
             return Response(data={
                 'shift_start': shift.start_date,

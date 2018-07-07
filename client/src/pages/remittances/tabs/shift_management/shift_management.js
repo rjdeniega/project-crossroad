@@ -12,11 +12,12 @@ import moment from 'moment';
 import {Table, Avatar} from 'antd';
 
 const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
+//this defines the struvcture of the table and how its rendered, in this case I just have one column
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
-    render: text => <div><Avatar style={{backgroundColor: '#4d9dd0', marginRight: '20px'}} icon="user"/>
-        {text}</div>,
+    render: name => <div> <Avatar style={{backgroundColor: '#4d9dd0', marginRight: '20px'}} icon="user"/>
+        {name}</div>,
 }];
 
 export class ShiftManagementPane extends Component {
@@ -35,15 +36,15 @@ export class ShiftManagementPane extends Component {
         }
         return fetch('/members/drivers').then(response => response.json()).then(data => {
             if (!data["error"]) {
-                //for each entry in drivers data, which is in the form of an array with key and value
-                //
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
                 const tableData = [];
                 data["drivers"].forEach(item => tableData.push({
                     "key": item.id,
                     "name": item.name
                 }));
                 this.setState({drivers:tableData});
-                // Object.entries(data["drivers"]).forEach((key,value) => console.log(value));
             } else {
                 console.log(data["error"]);
             }
@@ -78,6 +79,10 @@ export class ShiftManagementPane extends Component {
             onClose: this.close,
         });
     };
+
+    renderShiftTables = () => {
+
+    }
     handleDateChange = (date, dateString) => {
         const endDateString = moment(date).add(15, 'days').format('MM-DD-YYYY');
         const endDateObject = moment(date).add(15, 'days');
@@ -124,6 +129,9 @@ export class ShiftManagementPane extends Component {
                                 format="MM-DD-YYYY"
                                 value={this.state.endDateObject}
                             />
+                        </div>
+                        <div className="create-shift-button" >
+                        <Button type="primary">Create this shift</Button>
                         </div>
                     </div>
                     <div className="driver-selection">

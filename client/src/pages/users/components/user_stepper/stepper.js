@@ -6,13 +6,13 @@ import '../../../../utilities/colorsFonts.css'
 import {Steps} from 'antd'
 import {Upload, Icon, Input, Button, message, Select} from 'antd'
 import './style.css'
-import {postData, getData} from '../../../../network_requests/general'
+import {postData, getData, postFormData} from '../../../../network_requests/general'
 import moment from 'moment';
 import {DatePicker} from 'antd';
 
 
 const {MonthPicker, RangePicker} = DatePicker;
-const dateFormat = "MM/DD/YYYY";
+const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 const Step = Steps.Step;
 const Dragger = Upload.Dragger;
@@ -107,11 +107,11 @@ export class SecondContent extends Component {
     state = {
         name: "",
         email: "",
-        sex: "Male",
-        birthDateObject: moment('2015/01/01', dateFormat),
+        sex: "M",
+        birth_date_object: moment('2015/01/01', dateFormat),
         address: "",
-        contactNumber: "",
-        birthDate: "",
+        contact_no: "",
+        birth_date: "",
         image: null,
     };
     //shortcut to instantiating one by one handleEmail, handleName, etc...
@@ -139,40 +139,39 @@ export class SecondContent extends Component {
         return this.handleSelectChange(fieldName)(event.target.value);
         //this is asynchronous, it does not execute in order
         //if console.log is not in callback, it might execute before state is updated
-
     };
 
     handleDateFormChange = (date, dateString) => this.setState({
-        birthDateObject: date,
-        birthDate: dateString
+        birth_date_object: date,
+        birth_date: dateString
     });
 
     handleSelectChange = fieldName => value => {
-        //this function is to handle dropdowns
+        // this function is to handle drop-downs
         const state = {...this.state};
         state[fieldName] = value;
         this.setState({
             ...state
-        }, () => console.log(this.state.birthDate));
+        });
     };
 
     getDataFromState = () => {
         const form = {...this.state};
-        delete form.birthDateObject;
+        delete form.birth_date_object;
         console.log("Form", form);
         return form;
     };
-    handleFileChange = (info) => {
-        this.setState({image: info.file});
-    };
+
+    handleFileChange = ({file: image}) => this.setState({image});
 
     render() {
         return (
             <div>
-                <Dragger className="user-dragger"
-                         name='file'
-                         multiple='false'
-                         onChange={this.handleFileChange}
+                <Dragger
+                    className="user-dragger"
+                    name='file'
+                    multiple='false'
+                    onChange={this.handleFileChange}
                 >
                     <p className="ant-upload-drag-icon">
                         <Icon type="inbox"/>
@@ -185,8 +184,8 @@ export class SecondContent extends Component {
                        type="text"
                        placeholder="enter name"/>
                 <Select onChange={this.handleSelectChange("sex")} className="user-input" defaultValue="Male">
-                    <Option value="Male">Male</Option>
-                    <Option value="Female">Female</Option>
+                    <Option value="M">Male</Option>
+                    <Option value="F">Female</Option>
                 </Select>
                 <DatePicker onChange={this.handleDateFormChange} format={dateFormat}/>
                 <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
@@ -195,7 +194,7 @@ export class SecondContent extends Component {
                 <Input onChange={this.handleFormChange("email")} value={this.state.email} className="user-input"
                        addonAfter=".com"
                        placeholder="Enter email address"/>
-                <Input onChange={this.handleFormChange("contactNumber")} value={this.state.contactNumber}
+                <Input onChange={this.handleFormChange("contact_no")} value={this.state.contact_no}
                        className="user-input" addonBefore="+639"
                        placeholder="Enter contact number"/>
                 <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
@@ -228,25 +227,25 @@ export class Stepper extends Component {
         const data = {...this.state, ...form};
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+
         // for (const pair of formData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
         // }
-        // postData('/users', data)
-        //     .then(data => {
-        //         if (data.error) {
-        //             console.log("theres an error");
-        //             this.setState({
-        //                 error: data["error"]
-        //             });
-        //             console.log(this.state.error);
-        //         } else {
-        //             console.log(data);
-        //         }
-        //     })
-        //     .catch(error => message.warning(error.message));
+        postFormData('/users', data)
+            .then(data => {
+                if (data.error) {
+                    console.log("theres an error");
+                    this.setState({
+                        error: data["error"]
+                    });
+                    console.log(this.state.error);
+                } else {
+                    console.log(data);
+                }
+            })
+            .catch(error => message.warning(error.message));
 
     };
-
 
     prev() {
         const current = this.state.current - 1;

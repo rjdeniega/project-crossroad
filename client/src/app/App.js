@@ -26,11 +26,13 @@ export default class App extends Component {
             user: localStorage.user,
         }
     }
+
     componentWillMount() {
-         this.setState({
+        this.setState({
             user: localStorage.user
         });
     }
+
     // componentDidMount is a part of react component lifecycle it is immediately called after render()
     componentDidMount() {
         this.handleChange();
@@ -51,13 +53,16 @@ export default class App extends Component {
         // this uses a shortcut from general.js from network_requests
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
-            .then(({user, token}) => {
-                localStorage.user = JSON.stringify(user);
-                localStorage.token = JSON.stringify(token);
-                this.setState({
-                    user: localStorage.user,
-                });
-
+            .then(({user, token, error}) => {
+                if (error) {
+                    message.error(error)
+                } else {
+                    localStorage.user = JSON.stringify(user);
+                    localStorage.token = JSON.stringify(token);
+                    this.setState({
+                        user: localStorage.user,
+                    });
+                }
             })
             .catch(error => message(error));
     };
@@ -85,8 +90,6 @@ export default class App extends Component {
         }
 
         if (this.state.user && userIsSigningIn) {
-            console.log(localStorage.user);
-            console.log(this.state.user);
             history.replace('/remittances');
             return;
         }
