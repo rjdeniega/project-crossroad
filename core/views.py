@@ -110,4 +110,3 @@ class UserView(APIView):
         return Response(data={
             "users": users.data
         }, status=status.HTTP_200_OK)
-    

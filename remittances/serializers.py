@@ -3,6 +3,20 @@ from rest_framework import serializers
 from .models import *
 
 
+class ScheduleSerializer(ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = '__all__'
+
+    def validate(self, data):
+        schedules = Schedule.objects.all()
+        for schedule in schedules:
+            if data['start_date'] <= schedule.end_date:
+                raise serializers.ValidationError("start date of schedule is conflicting with other existing schedule")
+        return data
+
+
+
 class DriversAssignedSerializer(ModelSerializer):
     class Meta:
         model = DriversAssigned
@@ -22,13 +36,6 @@ class ShiftSerializer(ModelSerializer, serializers.Serializer):
         for driver_data in drivers_data:
             DriversAssigned.objects.create(shift=shift, **driver_data)
         return shift
-
-    def validate(self, data):
-        shifts = Shift.objects.filter(type=data['type']) # there could be 3 shifts in a date span
-        for shift in shifts:
-            if data['start_date'] <= shift.end_date:
-                raise serializers.ValidationError("start date of shift is conflicting with other existing shifts")
-        return data
 
 
 class VoidTicketSerializer(ModelSerializer):

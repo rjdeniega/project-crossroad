@@ -9,6 +9,14 @@ from remittances.serializers import *
 from .models import *
 import json
 
+class ScheduleView(APIView):
+    @staticmethod
+    def get(request):
+        schedules = ScheduleSerializer(Schedule.objects.all(), many=True)
+        return Response(data={
+            "schedules": schedules.data
+        }, status=status.HTTP_200_OK)
+
 
 class ShiftView(APIView):
     @staticmethod

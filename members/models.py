@@ -39,6 +39,9 @@ class Driver(Person):
     application_date = DateField()
 
 
+class Supervisor(Person):
+    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+
 class Member(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     tin_number = PositiveIntegerField()
