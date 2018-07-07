@@ -17,6 +17,12 @@ class DriverSerializer(ModelSerializer):
     #     # fields and creates an object
 
 
+class SupervisorSerializer(ModelSerializer):
+    class Meta:
+        model = Supervisor
+        fields = '__all__'
+
+
 class PersonSerializer(ModelSerializer):
     class Meta:
         model = Person

@@ -10,6 +10,24 @@ from .models import *
 import json
 
 
+class SupervisorView(APIView):
+    @staticmethod
+    def get(request):
+        supervisors = SupervisorSerializer(Supervisor.objects.all(), many=True)
+        return Response(data={
+            "supervisors": supervisors.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        supervisor_serializer = SupervisorSerializer(data=data)
+        if supervisor_serializer.is_valid():
+            supervisor = supervisor_serializer.create(validated_data=supervisor_serializer.validated_data)
+            return Response(data={
+                "supervisor name": supervisor.name
+            }, status=status.HTTP_200_OK)
+
 class DriverView(APIView):
     @staticmethod
     def get(request):

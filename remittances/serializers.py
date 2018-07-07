@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
+from datetime import datetime, timedelta
 from .models import *
 
 
@@ -23,11 +24,32 @@ class ShiftSerializer(ModelSerializer, serializers.Serializer):
             DriversAssigned.objects.create(shift=shift, **driver_data)
         return shift
 
+
+class ScheduleSerializer(ModelSerializer):
+    shifts = ShiftSerializer(many=True)
+
+    class Meta:
+        model = Schedule
+        exclude = ('end_date', )
+
+    def create(self, validated_data):
+        shifts_data = validated_data.pop('shifts')
+        schedule = Schedule.objects.create(**validated_data)
+        schedule.end_date = schedule.start_date + timedelta(days=15)
+        schedule.save()
+        for shift_data in shifts_data:
+            drivers_data = shift_data.pop('drivers_assigned')
+            shift = Shift.objects.create(schedule=schedule, **shift_data)
+            for driver_data in drivers_data:
+                DriversAssigned.objects.create(shift=shift, **driver_data)
+        return schedule
+
+
     def validate(self, data):
-        shifts = Shift.objects.filter(type=data['type']) # there could be 3 shifts in a date span
-        for shift in shifts:
-            if data['start_date'] <= shift.end_date:
-                raise serializers.ValidationError("start date of shift is conflicting with other existing shifts")
+        schedules = Schedule.objects.all()
+        for schedule in schedules:
+            if data['start_date'] <= schedule.end_date:
+                raise serializers.ValidationError("start date of schedule is conflicting with other existing schedule")
         return data
 
 

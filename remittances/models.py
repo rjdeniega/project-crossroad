@@ -32,10 +32,15 @@ FORM_STATUS = [
     ('C', 'Completed')
 ]
 
+
+class Schedule(SoftDeletionModel):
+    start_date = DateField()
+    end_date = DateField(null=True)
+
+
 class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
-    start_date = DateField()
-    end_date = DateField()
+    supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
 
 
 class DriversAssigned(SoftDeletionModel):
@@ -43,10 +48,15 @@ class DriversAssigned(SoftDeletionModel):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 
+class ShiftIteration(SoftDeletionModel):
+    shift = ForeignKey(Shift, on_delete=models.CASCADE)
+    date = DateField(auto_now_add=True)
+
+
 class Deployment(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     route = CharField(max_length=1, choices=ROUTE)
-    shift = ForeignKey(Shift, on_delete=models.CASCADE)
+    shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS)
 
 
