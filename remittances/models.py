@@ -41,6 +41,7 @@ class Schedule(SoftDeletionModel):
 class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
     supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
+    schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
 
 
 class DriversAssigned(SoftDeletionModel):

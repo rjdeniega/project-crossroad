@@ -42,6 +42,8 @@ class Driver(Person):
 
 class Supervisor(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    application_date = DateField()
+
 
 class Member(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)

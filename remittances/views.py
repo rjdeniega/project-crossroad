@@ -27,6 +27,10 @@ class ScheduleView(APIView):
                 "start_date": schedule.start_date,
                 "end_date": schedule.end_date
             }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": schedule_serializer.errors
+            })
 
 
 class ShiftView(APIView):
