@@ -21,7 +21,10 @@ class ShiftSerializer(ModelSerializer, serializers.Serializer):
         drivers_data = validated_data.pop('drivers_assigned')
         shift = Shift.objects.create(**validated_data)
         for driver_data in drivers_data:
-            DriversAssigned.objects.create(shift=shift, **driver_data)
+            data = {
+                "driver": driver_data
+            }
+            DriversAssigned.objects.create(shift=shift, **data)
         return shift
 
 

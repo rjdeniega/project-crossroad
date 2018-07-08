@@ -47,6 +47,7 @@ export class ShiftManagementPane extends Component {
         this.fetchSupervisors();
 
     }
+
     fetchDrivers() {
         return fetch('/members/drivers').then(response => response.json()).then(data => {
             if (!data["error"]) {
@@ -65,18 +66,19 @@ export class ShiftManagementPane extends Component {
             }
         });
     }
+
     fetchSupervisors() {
         console.log("entered here");
         return fetch('/members/supervisors').then(response => response.json()).then(data => {
             if (!data["error"]) {
                 //Were not appending it to a table so no necessary adjustments needed
                 this.setState({supervisors: data["supervisors"]},
-                    ()=>console.log(this.state.supervisors));
+                    () => console.log(this.state.supervisors));
 
             } else {
                 console.log(data["error"]);
             }
-        },console.log(this.state.supervisors));
+        }, console.log(this.state.supervisors));
     }
 
     // rowSelection object indicates the need for row selection
@@ -187,31 +189,33 @@ export class ShiftManagementPane extends Component {
             "type": "M",
             "drivers": this.state.mn_shift_drivers
         };
-        const data = {
+        const formData = {
             "start_date": this.state.startDate,
             "end_date": this.state.endDate,
-            "shifts":[am_shift,pm_shift,mn_shift],
+            "shifts": [am_shift, pm_shift, mn_shift],
         };
-        return data;
+        return formDdata;
     };
     handleShiftCreate = () => {
-        data = this.createForm();
-        postData('remittances/schedules',data).then(data =>{
-            if(!data["error"]){
-                console.log(data);
-            }else{
-                console.log(error);
-            }
-        });
+        const data = this.createForm();
+        postData('remittances/schedules', data)
+            .then(({data, error}) => {
+                if (error) {
+                    message.error(error)
+                } else {
+                    console.log(data)
+                }
+            })
+            .catch(error => message(error));
     };
 
     renderSupervisors = () => this.state.supervisors.map(supervisor =>
-          <Menu.Item key={supervisor.id}>{supervisor.name}</Menu.Item>
+        <Menu.Item key={supervisor.id}>{supervisor.name}</Menu.Item>
     );
     supervisors = (type) => (
         <Menu onClick={this.handleSupervisorSelect(type)}>
             {/*append only when its fetched*/}
-            {this.state.supervisors&&this.renderSupervisors()}
+            {this.state.supervisors && this.renderSupervisors()}
         </Menu>
     );
 //JSX rendering functions
