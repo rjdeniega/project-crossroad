@@ -8,7 +8,7 @@ from rest_framework import status
 from remittances.serializers import *
 from .models import *
 import json
-from datetime import datetime
+from datetime import datetime, time
 
 class ScheduleView(APIView):
     @staticmethod
@@ -38,7 +38,7 @@ class ScheduleView(APIView):
                 "errors": schedule_serializer.errors
             })
 
-
+# Ignore this class for now
 class ShiftView(APIView):
     @staticmethod
     def get(request):
@@ -72,6 +72,31 @@ class ShiftView(APIView):
     @staticmethod
     def put(request):
         pass
+
+class ShiftIterationView(APIView):
+    @staticmethod
+    def get(request):
+        shift_iterations = ShiftIterationSerializer(ShiftIteration.objects.all(), many=True)
+        return Response(data={
+            "shift_iterations": shift_iterations.data
+        }, status=status.HTTP_200_OK)
+
+    # TODO discuss if shift_iteration needs some input
+    # currently returns new shift_iteration without the need for input
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        shift_iteration_serializer = ShiftIterationSerializer(data=data)
+        if shift_iteration_serializer.is_valid():
+            shift_iteration = shift_iteration_serializer.create(validated_data=shift_iteration_serializer.validated_data)
+            return Response(data={
+                'shift_id': shift_iteration.shift.id,
+                'date': shift_iteration.date
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                'errors': shift_iteration_serializer.errors
+            })
 
 
 class DeploymentView(APIView):

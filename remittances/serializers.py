@@ -56,6 +56,23 @@ class ScheduleSerializer(ModelSerializer):
         return data
 
 
+class ShiftIterationSerializer(ModelSerializer, serializers.Serializer):
+    supervisor = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = ShiftIteration
+        fields = '__all__'
+        depth = 2
+
+    def create(self, validated_data):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, **validated_data)
+        shift_iteration = ShiftIteration.objects.create(shift=current_shift)
+        return shift_iteration
+
+
+
+
 class VoidTicketSerializer(ModelSerializer):
     class Meta:
         model = VoidTicket
