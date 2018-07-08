@@ -32,6 +32,7 @@ class ScheduleSerializer(ModelSerializer):
         model = Schedule
         exclude = ('end_date', )
 
+
     def create(self, validated_data):
         shifts_data = validated_data.pop('shifts')
         schedule = Schedule.objects.create(**validated_data)

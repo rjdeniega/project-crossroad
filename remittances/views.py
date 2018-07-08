@@ -8,13 +8,19 @@ from rest_framework import status
 from remittances.serializers import *
 from .models import *
 import json
+from datetime import datetime
 
 class ScheduleView(APIView):
     @staticmethod
     def get(request):
         schedules = ScheduleSerializer(Schedule.objects.all(), many=True)
+        temp_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        active_sched = ScheduleSerializer(temp_sched)
+        days_left = temp_sched.end_date - datetime.now().date()
         return Response(data={
-            "schedules": schedules.data
+            "days_left": days_left.days,
+            "active_sched": active_sched.data,
+            "schedules": schedules.data,
         }, status=status.HTTP_200_OK)
 
     @staticmethod
