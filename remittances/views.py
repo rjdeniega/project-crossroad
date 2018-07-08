@@ -8,13 +8,19 @@ from rest_framework import status
 from remittances.serializers import *
 from .models import *
 import json
+from datetime import datetime
 
 class ScheduleView(APIView):
     @staticmethod
     def get(request):
         schedules = ScheduleSerializer(Schedule.objects.all(), many=True)
+        temp_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        active_sched = ScheduleSerializer(temp_sched)
+        days_left = temp_sched.end_date - datetime.now().date()
         return Response(data={
-            "schedules": schedules.data
+            "days_left": days_left.days,
+            "active_sched": active_sched.data,
+            "schedules": schedules.data,
         }, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -27,8 +33,12 @@ class ScheduleView(APIView):
                 "start_date": schedule.start_date,
                 "end_date": schedule.end_date
             }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": schedule_serializer.errors
+            })
 
-
+# Ignore this class for now
 class ShiftView(APIView):
     @staticmethod
     def get(request):
@@ -39,22 +49,6 @@ class ShiftView(APIView):
         }, status=status.HTTP_200_OK)
 
     @staticmethod
-    def post(request):
-        data = json.loads(request.body)
-        shift_serializer = ShiftSerializer(data=data)
-        if shift_serializer.is_valid():
-            #TODO add end shift
-            shift = shift_serializer.create(validated_data=shift_serializer.validated_data)
-            return Response(data={
-                'shift_start': shift.start_date,
-                'shift_end': shift.end_date
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response(data={
-                "errors": shift_serializer.errors
-            })
-
-    @staticmethod
     def delete(request, pk):
         Shift.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -62,6 +56,30 @@ class ShiftView(APIView):
     @staticmethod
     def put(request):
         pass
+
+class ShiftIterationView(APIView):
+    @staticmethod
+    def get(request):
+        shift_iterations = ShiftIterationSerializer(ShiftIteration.objects.all(), many=True)
+        return Response(data={
+            "shift_iterations": shift_iterations.data
+        }, status=status.HTTP_200_OK)
+
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        shift_iteration_serializer = ShiftIterationSerializer(data=data)
+        if shift_iteration_serializer.is_valid():
+            shift_iteration = shift_iteration_serializer.create(validated_data=shift_iteration_serializer.validated_data)
+            return Response(data={
+                'shift_id': shift_iteration.shift.id,
+                'date': shift_iteration.date
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                'errors': shift_iteration_serializer.errors
+            })
 
 
 class DeploymentView(APIView):

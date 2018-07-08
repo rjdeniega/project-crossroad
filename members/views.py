@@ -27,6 +27,10 @@ class SupervisorView(APIView):
             return Response(data={
                 "supervisor name": supervisor.name
             }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": supervisor_serializer.errors
+            })
 
 class DriverView(APIView):
     @staticmethod
