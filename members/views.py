@@ -32,6 +32,7 @@ class SupervisorView(APIView):
                 "errors": supervisor_serializer.errors
             })
 
+
 class DriverView(APIView):
     @staticmethod
     def get(request):

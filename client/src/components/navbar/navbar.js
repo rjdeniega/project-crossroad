@@ -14,7 +14,7 @@ import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 import {RemittancePage} from '../../pages/remittances/remittances'
 import {InventoryPage} from '../../pages/inventory/inventory'
 import {money} from 'react-icons-kit/fa/money'
-import {BrowserRouter, Link, Redirect, Route, Switch, withRouter} from "react-router-dom";
+import {Link, withRouter} from "react-router-dom";
 
 
 //define tabs
@@ -63,10 +63,10 @@ export class NavBar extends Component {
     // you can pass props like a function <NavBarItems name(parameter) = prop>, parameters are defined in
     // NavBarItem Class(see below line 68)
     renderNavbarItems = () => TABS.map(tab =>
-            <Link className="tab-link" to={tab.path} component={tab.component}>
-                <NavBarItems key ={tab.key} name={tab.name}
-                             icon={tab.image}/>
-            </Link>
+        <Link className="tab-link" to={tab.path} component={tab.component}>
+            <NavBarItems key={tab.key} name={tab.name}
+                         icon={tab.image}/>
+        </Link>
     );
 
     render() {

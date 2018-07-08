@@ -25,6 +25,7 @@ from remittances.urls import *
 
 urlpatterns = [
     path('sign-in', SignInView.as_view()),
+    path('raw-user', CreateDefaultUserView.as_view()),
     path('users', CreateUserView.as_view()),
     path('users/is_unique', UserHandler().as_view()),
     path('users/all', UserView.as_view()),

@@ -34,7 +34,7 @@ export class ShiftManagementPane extends Component {
         mn_shift_drivers: null,
         am_shift_supervisor: "select AM supervisor",
         pm_shift_supervisor: "select PM supervisor",
-        mn_shift_supervisor: "select midnight supervisor",
+        mn_shift_supervisor: "select Midnight supervisor",
         supervisors: null
     };
 
@@ -42,6 +42,11 @@ export class ShiftManagementPane extends Component {
         if (this.state.activeShift === null) {
             this.openNotification()
         }
+        this.fetchDrivers();
+        this.fetchSupervisors();
+
+    }
+    fetchDrivers() {
         return fetch('/members/drivers').then(response => response.json()).then(data => {
             if (!data["error"]) {
                 //for each entry in drivers data, append data as a dictionary in tableData
@@ -58,6 +63,19 @@ export class ShiftManagementPane extends Component {
                 console.log(data["error"]);
             }
         });
+    }
+    fetchSupervisors() {
+        console.log("entered here");
+        return fetch('/members/supervisors').then(response => response.json()).then(data => {
+            if (!data["error"]) {
+                //Were not appending it to a table so no necessary adjustments needed
+                this.setState({supervisors: data["supervisors"]},
+                    ()=>console.log(this.state.supervisors));
+
+            } else {
+                console.log(data["error"]);
+            }
+        },console.log(this.state.supervisors));
     }
 
     // rowSelection object indicates the need for row selection
@@ -138,27 +156,54 @@ export class ShiftManagementPane extends Component {
     };
     handleSupervisorSelect = type => event => {
         console.log(event.item.props.children);
-        if(type==="AM"){
-             this.setState({
-                 am_shift_supervisor: event.item.props.children
-             },()=>console.log("am" + this.state.am_shift_supervisor))
-        }else if(type==="PM"){
-             this.setState({
-                 pm_shift_supervisor:  event.item.props.children
-             },()=>console.log("pm" + this.state.pm_shift_supervisor))
-        }else{
+        if (type === "AM") {
             this.setState({
-                 am_shift_supervisor:  event.item.props.children
-             },()=>console.log("midnight" + this.state.mn_shift_supervisor))
+                am_shift_supervisor: event.item.props.children
+            }, () => console.log("am" + this.state.am_shift_supervisor))
+        } else if (type === "PM") {
+            this.setState({
+                pm_shift_supervisor: event.item.props.children
+            }, () => console.log("pm" + this.state.pm_shift_supervisor))
+        } else {
+            this.setState({
+                mn_shift_supervisor: event.item.props.children
+            }, () => console.log("midnight" + this.state.mn_shift_supervisor))
         }
     };
+    createForm = () => {
+        const am_shift = {
+            "supervisor": this.state.am_shift_supervisor,
+            "type": "A",
+            "drivers": this.state.am_shift_drivers
+        };
+        const pm_shift = {
+            "supervisor": this.state.pm_shift_supervisor,
+            "type": "P",
+            "drivers": this.state.pm_shift_drivers
+        };
+        const mn_shift = {
+            "supervisor": this.state.mn_shift_supervisor,
+            "type": "M",
+            "drivers": this.state.mn_shift_drivers
+        };
+        const data = {
+            "start_date": this.state.startDate,
+            "end_date": this.state.endDate,
+            "shifts":[am_shift,pm_shift,mn_shift],
+        };
+        return data;
+    };
+    handleShiftCreate = () => {
+        console.log(this.createForm())
+    };
 
-
+    renderSupervisors = () => this.state.supervisors.map(supervisor =>
+          <Menu.Item key={supervisor.id}>{supervisor.name}</Menu.Item>
+    );
     supervisors = (type) => (
         <Menu onClick={this.handleSupervisorSelect(type)}>
-            <Menu.Item key="1">1st menu item</Menu.Item>
-            <Menu.Item key="2">2nd menu item</Menu.Item>
-            <Menu.Item key="3">3rd item</Menu.Item>
+            {/*append only when its fetched*/}
+            {this.state.supervisors&&this.renderSupervisors()}
         </Menu>
     );
 //JSX rendering functions
@@ -236,7 +281,7 @@ export class ShiftManagementPane extends Component {
                             />
                         </div>
                         <div className="create-shift-button">
-                            <Button type="primary">Create this shift</Button>
+                            <Button type="primary" onClick={this.handleShiftCreate}>Create this shift</Button>
                         </div>
                     </div>
                     <div className="driver-selection">

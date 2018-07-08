@@ -18,7 +18,7 @@ from django.forms.models import model_to_dict
 
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
-from members.models import Person
+from members.models import Person, Driver, Supervisor
 
 
 class SignInView(APIView):
@@ -46,10 +46,23 @@ class SignInView(APIView):
         # except:
         #     user_type = 'Not Set'
 
+        user_type = SignInView.get_user_type(user)
         return Response(data={
             "token": token.key,
             "user": model_to_dict(user),
+            "user_type" : user_type
         }, status=200)
+
+    @staticmethod
+    def get_user_type(user):
+        if user in [driver.user for driver in Driver.objects.all()]:
+            return "driver"
+        if user in [supervisor.user for supervisor in Supervisor.objects.all()]:
+            return "supervisor"
+        # if user in [clerkuser for clerk in Clerk.objects.all()]:
+        #     return "supervisor"
+
+
 
 
 class CreateUserView(APIView):
@@ -70,6 +83,7 @@ class CreateUserView(APIView):
             return Response(data={
                 "error": "Missing username or password"
             }, status=400, content_type="application/json")
+        data = "something"
         return Response(data=data, status=200, content_type="application/json")
         # user = User()
         # user.username = request.data.get('username')
@@ -84,6 +98,30 @@ class CreateUserView(APIView):
         #     return Response(data={
         #         "errors": person_serializer.errors
         #     })
+
+
+class CreateDefaultUserView(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        # transform JSON into python object
+        # please read serializers.py Person and Driver serializer
+        user_serializer = UserSerializer(data=data)
+
+        if user_serializer.is_valid():
+            # Serializer class has a built in function that creates
+            #  an object attributed to it
+            # I pass the validated data and it creates the object
+            user = user_serializer.create(validated_data=
+                                          user_serializer.validated_data)
+            return Response(data={
+                'user_name': user.username,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": user_serializer.errors
+            })
 
 
 class UserHandler(APIView):
