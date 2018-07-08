@@ -194,7 +194,7 @@ export class ShiftManagementPane extends Component {
             "end_date": this.state.endDate,
             "shifts": [am_shift, pm_shift, mn_shift],
         };
-        return formDdata;
+        return formData;
     };
     handleShiftCreate = () => {
         const data = this.createForm();
