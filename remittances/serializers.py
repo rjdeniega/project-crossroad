@@ -71,8 +71,6 @@ class ShiftIterationSerializer(ModelSerializer, serializers.Serializer):
         return shift_iteration
 
 
-
-
 class VoidTicketSerializer(ModelSerializer):
     class Meta:
         model = VoidTicket
