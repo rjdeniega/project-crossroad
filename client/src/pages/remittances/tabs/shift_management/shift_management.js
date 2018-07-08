@@ -11,6 +11,7 @@ import {DatePicker} from 'antd';
 import moment from 'moment';
 import {Table, Avatar, Dropdown, Menu, message} from 'antd';
 import {Icon as AntIcon} from 'antd';
+import {postData} from "../../../../network_requests/general";
 
 
 const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
@@ -194,7 +195,14 @@ export class ShiftManagementPane extends Component {
         return data;
     };
     handleShiftCreate = () => {
-        console.log(this.createForm())
+        data = this.createForm();
+        postData('remittances/schedules',data).then(data =>{
+            if(!data["error"]){
+                console.log(data);
+            }else{
+                console.log(error);
+            }
+        });
     };
 
     renderSupervisors = () => this.state.supervisors.map(supervisor =>
