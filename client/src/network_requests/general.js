@@ -20,17 +20,18 @@ export const getData = (url, data) =>
     fetch(url, makeFetchArgs(data, "GET", true))
         .then(response => response.json());
 
-export const postFormData = (url, formData) => new Promise((resolve, reject) => {
-    const xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            // Typical action to be performed when the document is ready:
-            resolve(xhttp.responseText);
-        }
-    };
-    xhttp.open("POST", url, true);
-    xhttp.send(formData);
-});
+export const postDataWithImage = (url, data) => {
+    return fetch(url, {
+        body: data, // must match 'Content-Type' header
+        credentials: 'same-origin', //pass cookies, for authentication
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
+        },
+    })
+        .then(response => response.json()); // parses response to JSON
+};
 
 
 export const postData = (url, data) =>

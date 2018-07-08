@@ -28,7 +28,6 @@ class SignInView(APIView):
             return Response(data={
                 "error": "Missing username or password"
             }, status=400)
-
         username = request.data["username"]
         password = request.data["password"]
         user = authenticate(username=username, password=password)
@@ -65,26 +64,26 @@ class CreateUserView(APIView):
 
     @staticmethod
     def post(request):
-        print(json.loads(request.body))
+        print(request.body.get('image'))
+        print(request.FILES)
         if "username" not in request.data or "password" not in request.data:
             return Response(data={
                 "error": "Missing username or password"
-            }, status=400)
-        user = User()
-        user.username = request.data.get('username')
-        user.password = request.data.get('password')
-        data = json.loads(request.body)
-        person_serializer = PersonSerializer(data=data)
-        if person_serializer.is_valid():
-            # TODO add end shift
-            person = person_serializer.create(validated_data=person_serializer.validated_data)
-            return Response(data={
-                'person': model_to_dict(person)
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response(data={
-                "errors": person_serializer.errors
-            })
+            }, status=400, content_type="application/json")
+        return Response(data=data, status=200, content_type="application/json")
+        # user = User()
+        # user.username = request.data.get('username')
+        # user.password = request.data.get('password')
+        # person_serializer = PersonSerializer(data=data)
+        # if person_serializer.is_valid():
+        #     person = person_serializer.create(validated_data=person_serializer.validated_data)
+        #     return Response(data={
+        #         'person': model_to_dict(person)
+        #     }, status=status.HTTP_200_OK)
+        # else:
+        #     return Response(data={
+        #         "errors": person_serializer.errors
+        #     })
 
 
 class UserHandler(APIView):
@@ -103,7 +102,7 @@ class UserHandler(APIView):
         if username in existing_usernames:
             print(existing_usernames)
             return Response(data={
-                "error": "Username already exists"
+                "error": "Username already taken"
             }, status=400)
         else:
             return Response(data={

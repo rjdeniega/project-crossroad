@@ -9,14 +9,16 @@ import {clockO} from 'react-icons-kit/fa/clockO'
 import {Icon} from 'react-icons-kit'
 import {DatePicker} from 'antd';
 import moment from 'moment';
-import {Table, Avatar} from 'antd';
+import {Table, Avatar, Dropdown, Menu, message} from 'antd';
+import {Icon as AntIcon} from 'antd';
+
 
 const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
 //this defines the struvcture of the table and how its rendered, in this case I just have one column
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
-    render: name => <div> <Avatar style={{backgroundColor: '#4d9dd0', marginRight: '20px'}} icon="user"/>
+    render: name => <div><Avatar style={{backgroundColor: '#4d9dd0', marginRight: '20px'}} icon="user"/>
         {name}</div>,
 }];
 
@@ -27,7 +29,13 @@ export class ShiftManagementPane extends Component {
         startDate: null,
         endDate: null,
         endDateObject: null,
-        drivers: null
+        am_shift_drivers: null,
+        pm_shift_drivers: null,
+        mn_shift_drivers: null,
+        am_shift_supervisor: "select AM supervisor",
+        pm_shift_supervisor: "select PM supervisor",
+        mn_shift_supervisor: "select midnight supervisor",
+        supervisors: null
     };
 
     componentDidMount() {
@@ -40,11 +48,12 @@ export class ShiftManagementPane extends Component {
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
                 const tableData = [];
+                //append drivers with their ids as key
                 data["drivers"].forEach(item => tableData.push({
                     "key": item.id,
                     "name": item.name
                 }));
-                this.setState({drivers:tableData});
+                this.setState({drivers: tableData});
             } else {
                 console.log(data["error"]);
             }
@@ -52,15 +61,47 @@ export class ShiftManagementPane extends Component {
     }
 
     // rowSelection object indicates the need for row selection
-    rowSelection = {
+    amRowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            this.setState({
+                am_shift_drivers: selectedRowKeys
+            }, () => {
+                console.log(this.state.am_shift_drivers);
+            })
         },
         getCheckboxProps: record => ({
             disabled: record.name === 'Disabled User', // Column configuration not to be checked
             name: record.name,
         }),
     };
+    pmRowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            this.setState({
+                pm_shift_drivers: selectedRowKeys
+            }, () => {
+                console.log(this.state.pm_shift_drivers);
+            })
+        },
+        getCheckboxProps: record => ({
+            disabled: record.name === 'Disabled User', // Column configuration not to be checked
+            name: record.name,
+        }),
+    };
+    mnRowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            this.setState({
+                mn_shift_drivers: selectedRowKeys
+            }, () => {
+                console.log(this.state.mn_shift_drivers);
+            })
+        },
+        getCheckboxProps: record => ({
+            disabled: record.name === 'Disabled User', // Column configuration not to be checked
+            name: record.name,
+        }),
+    };
+
+    //normal action handlers
     close = () => {
         console.log('Notification was closed. Either the close button was clicked or duration time elapsed.');
     };
@@ -79,10 +120,7 @@ export class ShiftManagementPane extends Component {
             onClose: this.close,
         });
     };
-
-    renderShiftTables = () => {
-
-    }
+    //component change handlers
     handleDateChange = (date, dateString) => {
         const endDateString = moment(date).add(15, 'days').format('MM-DD-YYYY');
         const endDateObject = moment(date).add(15, 'days');
@@ -98,6 +136,73 @@ export class ShiftManagementPane extends Component {
         });
 
     };
+    handleSupervisorSelect = type => event => {
+        console.log(event.item.props.children);
+        if(type==="AM"){
+             this.setState({
+                 am_shift_supervisor: event.item.props.children
+             },()=>console.log("am" + this.state.am_shift_supervisor))
+        }else if(type==="PM"){
+             this.setState({
+                 pm_shift_supervisor:  event.item.props.children
+             },()=>console.log("pm" + this.state.pm_shift_supervisor))
+        }else{
+            this.setState({
+                 am_shift_supervisor:  event.item.props.children
+             },()=>console.log("midnight" + this.state.mn_shift_supervisor))
+        }
+    };
+
+
+    supervisors = (type) => (
+        <Menu onClick={this.handleSupervisorSelect(type)}>
+            <Menu.Item key="1">1st menu item</Menu.Item>
+            <Menu.Item key="2">2nd menu item</Menu.Item>
+            <Menu.Item key="3">3rd item</Menu.Item>
+        </Menu>
+    );
+//JSX rendering functions
+    renderShiftTables = () => (
+        <div className="tables-wrapper">
+            <div className="am-shift-pane">
+                <div className="shifts-label-div">
+                    <div className="tab-label">AM</div>
+                    <Dropdown overlay={this.supervisors("AM")}>
+                        <Button className="supervisor-select" style={{marginLeft: 8}}>
+                            {this.state.am_shift_supervisor} <AntIcon type="down"/>
+                        </Button>
+                    </Dropdown>
+                </div>
+                <Table rowSelection={this.amRowSelection} pagination={false} columns={columns}
+                       dataSource={this.state.drivers}/>,
+            </div>
+            <div className="pm-shift-pane">
+                <div className="shifts-label-div">
+                    <div className="tab-label">PM</div>
+                    <Dropdown overlay={this.supervisors("PM")}>
+                        <Button className="supervisor-select" style={{marginLeft: 8}}>
+                            {this.state.pm_shift_supervisor}<AntIcon type="down"/>
+                        </Button>
+                    </Dropdown>
+                </div>
+                <Table rowSelection={this.pmRowSelection} pagination={false} columns={columns}
+                       dataSource={this.state.drivers}/>,
+
+            </div>
+            <div className="mn-shift-pane">
+                <div className="shifts-label-div">
+                    <div className="tab-label">Midnight</div>
+                    <Dropdown overlay={this.supervisors("MN")}>
+                        <Button className="supervisor-select" style={{marginLeft: 8}}>
+                            {this.state.mn_shift_supervisor}<AntIcon type="down"/>
+                        </Button>
+                    </Dropdown>
+                </div>
+                <Table rowSelection={this.mnRowSelection} pagination={false} columns={columns}
+                       dataSource={this.state.drivers}/>,
+            </div>
+        </div>
+    );
 
     render() {
         return (
@@ -130,8 +235,8 @@ export class ShiftManagementPane extends Component {
                                 value={this.state.endDateObject}
                             />
                         </div>
-                        <div className="create-shift-button" >
-                        <Button type="primary">Create this shift</Button>
+                        <div className="create-shift-button">
+                            <Button type="primary">Create this shift</Button>
                         </div>
                     </div>
                     <div className="driver-selection">
@@ -143,30 +248,7 @@ export class ShiftManagementPane extends Component {
                         {/*Select N drivers for each shift*/}
                         {/*</div>*/}
                         {/*</div>*/}
-                        <div className="tables-wrapper">
-                            <div className="am-shift-pane">
-                                <div className="label-div">
-                                    <div className="tab-label">AM</div>
-                                </div>
-                                <Table rowSelection={this.rowSelection} pagination={false} columns={columns}
-                                       dataSource={this.state.drivers}/>,
-                            </div>
-                            <div className="pm-shift-pane">
-                                <div className="label-div">
-                                    <div className="tab-label">PM</div>
-                                </div>
-                                <Table rowSelection={this.rowSelection} pagination={false} columns={columns}
-                                       dataSource={this.state.drivers}/>,
-
-                            </div>
-                            <div className="mn-shift-pane">
-                                <div className="label-div">
-                                    <div className="tab-label">Midnight</div>
-                                </div>
-                                <Table rowSelection={this.rowSelection} pagination={false} columns={columns}
-                                       dataSource={this.state.drivers}/>,
-                            </div>
-                        </div>
+                        {this.renderShiftTables()}
                     </div>
                 </div>
             </div>

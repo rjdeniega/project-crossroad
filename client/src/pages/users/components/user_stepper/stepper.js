@@ -6,7 +6,7 @@ import '../../../../utilities/colorsFonts.css'
 import {Steps} from 'antd'
 import {Upload, Icon, Input, Button, message, Select} from 'antd'
 import './style.css'
-import {postData, getData, postFormData} from '../../../../network_requests/general'
+import {postData, getData, postDataWithImage} from '../../../../network_requests/general'
 import moment from 'moment';
 import {DatePicker} from 'antd';
 
@@ -231,7 +231,7 @@ export class Stepper extends Component {
         // for (const pair of formData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
         // }
-        postFormData('/users', data)
+        postDataWithImage('/users', data)
             .then(data => {
                 if (data.error) {
                     console.log("theres an error");
@@ -240,11 +240,10 @@ export class Stepper extends Component {
                     });
                     console.log(this.state.error);
                 } else {
-                    console.log(data);
+                    console.log(data["data"]);
                 }
             })
             .catch(error => message.warning(error.message));
-
     };
 
     prev() {
