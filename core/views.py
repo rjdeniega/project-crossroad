@@ -18,7 +18,7 @@ from django.forms.models import model_to_dict
 
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
-from members.models import Person, Driver, Supervisor
+from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
 
 
 class SignInView(APIView):
@@ -47,21 +47,41 @@ class SignInView(APIView):
         #     user_type = 'Not Set'
 
         user_type = SignInView.get_user_type(user)
-        user_staff = SignInView.get_user_staff(user_type,user)
+        user_staff = SignInView.get_user_staff(user_type, user)
         return Response(data={
             "token": token.key,
             "user": model_to_dict(user),
-            "user_type": user_type
+            "user_type": user_type,
+            "user_staff": user_staff,
         }, status=200)
 
     @staticmethod
     def get_user_type(user):
+        if user.is_superuser:
+            return "system_admin"
         if user in [driver.user for driver in Driver.objects.all()]:
             return "driver"
         if user in [supervisor.user for supervisor in Supervisor.objects.all()]:
             return "supervisor"
+        if user in [operations_manager.user for operations_manager in OperationsManager.objects.all()]:
+            return "operations_manager"
+        if user in [clerk.user for clerk in Clerk.objects.all()]:
+            return "clerk"
             # if user in [clerkuser for clerk in Clerk.objects.all()]:
             #     return "supervisor"
+
+    @staticmethod
+    def get_user_staff(user_type, user):
+        if user_type == "system_admin":
+            return "this user has no staff object"
+        if user_type == "driver":
+            return Driver.objects.get(user=user)[0]
+        if user_type == "supervisor":
+            return Supervisor.objects.get(user=user)[0]
+        if user_type == "operations_manager":
+            return OperationsManager.objects.get(user=user)[0]
+        if user_type == "clerk":
+            return Clerk.objects.get(user=user)[0]
 
     @staticmethod
     def get_user_type(user):

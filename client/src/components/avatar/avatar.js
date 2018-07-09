@@ -15,7 +15,6 @@ export class UserAvatar extends Component {
         // Don't call this.setState() here!
         //set user for any children page of App (which is everything)
     }
-
     signOut = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
