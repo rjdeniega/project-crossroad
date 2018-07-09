@@ -34,8 +34,11 @@ export class ShiftManagementPane extends Component {
         pm_shift_drivers: null,
         mn_shift_drivers: null,
         am_shift_supervisor: "select AM supervisor",
+        am_shift_supervisor_key: null,
         pm_shift_supervisor: "select PM supervisor",
+        pm_shift_supervisor_key: null,
         mn_shift_supervisor: "select Midnight supervisor",
+        mn_shift_supervisor_key: null,
         supervisors: null
     };
 
@@ -47,7 +50,6 @@ export class ShiftManagementPane extends Component {
         this.fetchSupervisors();
 
     }
-
     fetchDrivers() {
         return fetch('/members/drivers').then(response => response.json()).then(data => {
             if (!data["error"]) {
@@ -66,7 +68,6 @@ export class ShiftManagementPane extends Component {
             }
         });
     }
-
     fetchSupervisors() {
         console.log("entered here");
         return fetch('/members/supervisors').then(response => response.json()).then(data => {
@@ -143,9 +144,9 @@ export class ShiftManagementPane extends Component {
     };
     //component change handlers
     handleDateChange = (date, dateString) => {
-        const endDateString = moment(date).add(15, 'days').format('MM-DD-YYYY');
+        const endDateString = moment(date).add(15, 'days').format('YYYY-MM-DD');
         const endDateObject = moment(date).add(15, 'days');
-        const startDateString = moment(date).format('MM-DD-YYYY');
+        const startDateString = moment(date).format('YYYY-MM-DD');
 
         this.setState({
             startDate: startDateString,
@@ -158,18 +159,23 @@ export class ShiftManagementPane extends Component {
 
     };
     handleSupervisorSelect = type => event => {
-        console.log(event.item.props.children);
+        //.children gives name
+        //.eventKey gives PK
+        console.log(event.item.props.eventKey);
         if (type === "AM") {
             this.setState({
-                am_shift_supervisor: event.item.props.children
+                am_shift_supervisor: event.item.props.children,
+                am_shift_supervisor_key: event.item.props.eventKey
             }, () => console.log("am" + this.state.am_shift_supervisor))
         } else if (type === "PM") {
             this.setState({
-                pm_shift_supervisor: event.item.props.children
+                pm_shift_supervisor: event.item.props.children,
+                pm_shift_supervisor_key: event.item.props.eventKey
             }, () => console.log("pm" + this.state.pm_shift_supervisor))
         } else {
             this.setState({
-                mn_shift_supervisor: event.item.props.children
+                mn_shift_supervisor: event.item.props.children,
+                mn_shift_supervisor_key: event.item.props.eventKey
             }, () => console.log("midnight" + this.state.mn_shift_supervisor))
         }
     };
@@ -184,19 +190,19 @@ export class ShiftManagementPane extends Component {
     };
     createForm = () => {
         const am_shift = {
-            "supervisor": this.state.am_shift_supervisor,
+            "supervisor": this.state.am_shift_supervisor_key,
             "type": "A",
-            "drivers": this.transformToDict(this.state.am_shift_drivers)
+            "drivers_assigned": this.transformToDict(this.state.am_shift_drivers)
         };
         const pm_shift = {
-            "supervisor": this.state.pm_shift_supervisor,
+            "supervisor": this.state.pm_shift_supervisor_key,
             "type": "P",
-            "drivers": this.transformToDict(this.state.pm_shift_drivers)
+            "drivers_assigned": this.transformToDict(this.state.pm_shift_drivers)
         };
         const mn_shift = {
-            "supervisor": this.state.mn_shift_supervisor,
+            "supervisor": this.state.mn_shift_supervisor_key,
             "type": "M",
-            "drivers": this.transformToDict(this.state.mn_shift_drivers)
+            "drivers_assigned": this.transformToDict(this.state.mn_shift_drivers)
         };
         return {
             "start_date": this.state.startDate,
@@ -206,11 +212,12 @@ export class ShiftManagementPane extends Component {
     };
     handleShiftCreate = () => {
         const data = this.createForm();
-        console.log(data);
+        console.log(JSON.stringify(data));
         postData('remittances/schedules/', data)
             .then((data) => {
-                if (data['error']) {
-                    message.error(data['error'])
+                console.log(data["error"]);
+                if (data['errors']) {
+                    message.error(data['errors']['non_field_errors'])
                 } else {
                     console.log(data['start_date']);
                     message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);
@@ -289,7 +296,7 @@ export class ShiftManagementPane extends Component {
                         <div className="date-grid">
                             <DatePicker
                                 className="date-picker"
-                                format="MM-DD-YYYY"
+                                format="YYYY-MM-DD"
                                 value={this.state.startDateObject}
                                 placeholder="Start Date"
                                 onChange={() => this.handleDateChange()}
@@ -298,7 +305,7 @@ export class ShiftManagementPane extends Component {
                                 className="date-picker"
                                 disabled
                                 placeholder="End Date"
-                                format="MM-DD-YYYY"
+                                format="YYYY-MM-DD"
                                 value={this.state.endDateObject}
                             />
                         </div>
