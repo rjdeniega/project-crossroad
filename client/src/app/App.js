@@ -58,6 +58,7 @@ export default class App extends Component {
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
             .then(({user, token, error, user_type, user_staff}) => {
+                console.log(user,error,user_type,user_staff);
                 if (error) {
                     message.error(error)
                 } else {

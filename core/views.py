@@ -19,6 +19,7 @@ from django.forms.models import model_to_dict
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
+from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer
 
 
 class SignInView(APIView):
@@ -31,7 +32,6 @@ class SignInView(APIView):
         username = request.data["username"]
         password = request.data["password"]
         user = authenticate(username=username, password=password)
-        print(user is None)
         if user is None:
             return Response(data={
                 "error": "Invalid credentials"
@@ -52,11 +52,12 @@ class SignInView(APIView):
             "token": token.key,
             "user": model_to_dict(user),
             "user_type": user_type,
-            "user_staff": user_staff,
+            "user_staff": user_staff
         }, status=200)
 
     @staticmethod
     def get_user_type(user):
+        print("enters here")
         if user.is_superuser:
             return "system_admin"
         if user in [driver.user for driver in Driver.objects.all()]:
@@ -73,24 +74,15 @@ class SignInView(APIView):
     @staticmethod
     def get_user_staff(user_type, user):
         if user_type == "system_admin":
-            return "this user has no staff object"
+            return model_to_dict(user)
         if user_type == "driver":
-            return Driver.objects.get(user=user)[0]
+            return DriverSerializer(Driver.objects.get(user=user)).data
         if user_type == "supervisor":
-            return Supervisor.objects.get(user=user)[0]
+            return SupervisorSerializer(Supervisor.objects.get(user=user)).data
         if user_type == "operations_manager":
-            return OperationsManager.objects.get(user=user)[0]
+            return OperationsManagerSerializer(OperationsManager.objects.get(user=user)).data
         if user_type == "clerk":
-            return Clerk.objects.get(user=user)[0]
-
-    @staticmethod
-    def get_user_type(user):
-        if user in [driver.user for driver in Driver.objects.all()]:
-            return "driver"
-        if user in [supervisor.user for supervisor in Supervisor.objects.all()]:
-            return "supervisor"
-            # if user in [clerkuser for clerk in Clerk.objects.all()]:
-            #     return "supervisor"
+            return ClerkSerializer(Clerk.objects.get(user=user)).data
 
 
 class CreateUserView(APIView):

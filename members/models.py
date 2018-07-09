@@ -31,8 +31,7 @@ class Person(SoftDeletionModel):
     address = CharField(max_length=256)
     birth_date = DateField()
     sex = CharField(max_length=1, choices=SEX)
-    photo = FileField(null=True)
-
+    photo = FileField(default='client/src/images/users.png', null=True)
 
 
 class Driver(Person):
@@ -44,10 +43,10 @@ class Clerk(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
 
+
 class OperationsManager(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
-
 
 
 class Supervisor(Person):
@@ -93,4 +92,4 @@ class ShareCertificate(SoftDeletionModel):
     serial_number = CharField(max_length=64)
     quantity = PositiveIntegerField()
     date_created = DateField()
-    date_issued = DateField() #date when it was actually given to the member; NOT SURE IF THIS IS NEEDED
+    date_issued = DateField()  # date when it was actually given to the member; NOT SURE IF THIS IS NEEDED
