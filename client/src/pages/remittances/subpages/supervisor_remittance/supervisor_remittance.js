@@ -13,7 +13,7 @@ import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
 import {driversLicenseO} from 'react-icons-kit/fa/driversLicenseO'
 import {cube} from 'react-icons-kit/fa/cube'
 import {UserAvatar} from "../../../../components/avatar/avatar"
-import {Avatar, List, Radio, Tabs, Steps, Button, InputNumber,Divider, Input, Modal, message} from 'antd'
+import {Avatar, List, Radio, Tabs, Steps, Button, InputNumber, Divider, Input, Modal, message} from 'antd'
 import {DatePicker} from 'antd';
 import {money} from 'react-icons-kit/fa/money'
 import './style.css'
@@ -41,22 +41,9 @@ export class SupervisorFirstContent extends Component {
             <div className="rem-first-content">
                 <div className="content-label">
                     <Icon icon={clockO} size={30}/>
-                    <p> Create Shift </p>
+                    <p> Start Shift </p>
                 </div>
-                <div>
-                    <DatePicker
-                        format="YYYY-MM-DD"
-                        placeholder="Date Today"
-                        disabled
-                    />
-                    <br />
-                </div>
-                <p> Select Shift Type </p>
-                <Radio.Group>
-                    <Radio.Button className="shift-type" value="large">AM</Radio.Button>
-                    <Radio.Button className="shift-type" value="default">PM</Radio.Button>
-                    <Radio.Button className="shift-type" value="small">Midnight</Radio.Button>
-                </Radio.Group>
+                <Button type="primary" onClick={() => this.props.next()}>Simulan ang Shift</Button>
             </div>
         );
     }
@@ -128,6 +115,7 @@ export class SupervisorSecondContent extends Component {
                         )}
                     />
                 </div>
+                <Button type="primary" onClick={() => this.props.next()}>Sunod</Button>
             </div>
         );
     }
@@ -144,17 +132,6 @@ export class SupervisorLastContent extends Component {
 }
 
 
-const remSteps = [{
-    title: 'Start Shift',
-    content: <SupervisorFirstContent/>,
-}, {
-    title: 'Deploy Drivers',
-    content: <SupervisorSecondContent/>,
-}, {
-    title: 'Confirm',
-    content: <SupervisorLastContent/>,
-}];
-
 const confirm = Modal.confirm;
 export class SupervisorRemittancePage extends Component {
     constructor(props) {
@@ -165,20 +142,17 @@ export class SupervisorRemittancePage extends Component {
         this.showConfirm.bind(this);
     }
 
-    shift_create_next() {
+    next = () => {
+        console.log("enters current");
         const current = this.state.current + 1;
         this.setState({current});
-    }
-
-    next() {
-        const current = this.state.current + 1;
-        this.setState({current});
-    }
+    };
 
     prev() {
         const current = this.state.current - 1;
         this.setState({current});
     }
+
     showConfirm = () => {
         confirm({
             title: 'Finalize Shift Creation?',
@@ -194,8 +168,19 @@ export class SupervisorRemittancePage extends Component {
             },
         });
     };
+
     render() {
         const {current} = this.state;
+        const remSteps = [{
+            title: 'Start Shift',
+            content: <SupervisorFirstContent next={this.next}/>,
+        }, {
+            title: 'Deploy Drivers',
+            content: <SupervisorSecondContent next={this.next}/>,
+        }, {
+            title: 'Confirm',
+            content: <SupervisorLastContent/>,
+        }];
         return (
             <div className="remittance-page-body">
                 <div className="supervisor-remittance-header">
@@ -217,18 +202,6 @@ export class SupervisorRemittancePage extends Component {
                     <div className="sv-transactions">
                         <div className="sv-steps-content">{remSteps[this.state.current].content}</div>
                         <div className="steps-action">
-                            {
-                                this.state.current < remSteps.length - 1
-                                &&
-                                <Button type="primary" onClick={() => this.next()}>Next</Button>
-                            }
-                            {
-                                this.state.current === remSteps.length - 1
-                                &&
-                                <Button type="primary" onClick={() => {
-                                    this.showConfirm();
-                                }}>End Shift</Button>
-                            }
                             {/*{*/}
                             {/*this.state.current > 0*/}
                             {/*&&*/}

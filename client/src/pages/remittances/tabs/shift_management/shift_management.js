@@ -173,37 +173,47 @@ export class ShiftManagementPane extends Component {
             }, () => console.log("midnight" + this.state.mn_shift_supervisor))
         }
     };
+    transformToDict = array => {
+        const array_dict = [];
+        array.map(item => {
+            array_dict.push({
+                "driver":item
+            })
+        });
+        return array_dict
+    };
     createForm = () => {
         const am_shift = {
             "supervisor": this.state.am_shift_supervisor,
             "type": "A",
-            "drivers": this.state.am_shift_drivers
+            "drivers": this.transformToDict(this.state.am_shift_drivers)
         };
         const pm_shift = {
             "supervisor": this.state.pm_shift_supervisor,
             "type": "P",
-            "drivers": this.state.pm_shift_drivers
+            "drivers": this.transformToDict(this.state.pm_shift_drivers)
         };
         const mn_shift = {
             "supervisor": this.state.mn_shift_supervisor,
             "type": "M",
-            "drivers": this.state.mn_shift_drivers
+            "drivers": this.transformToDict(this.state.mn_shift_drivers)
         };
-        const formData = {
+        return {
             "start_date": this.state.startDate,
             "end_date": this.state.endDate,
             "shifts": [am_shift, pm_shift, mn_shift],
         };
-        return formData;
     };
     handleShiftCreate = () => {
         const data = this.createForm();
-        postData('remittances/schedules', data)
-            .then(({data, error}) => {
-                if (error) {
-                    message.error(error)
+        console.log(data);
+        postData('remittances/schedules/', data)
+            .then((data) => {
+                if (data['error']) {
+                    message.error(data['error'])
                 } else {
-                    console.log(data)
+                    console.log(data['start_date']);
+                    message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);
                 }
             })
             .catch(error => message(error));

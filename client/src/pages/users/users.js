@@ -45,7 +45,7 @@ export class UsersPage extends Component {
             console.log(data);
             this.setState({
                 users: data["users"]
-            });
+            },()=>console.log(this.state.users));
         });
     }
 

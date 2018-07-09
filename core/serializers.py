@@ -7,7 +7,7 @@ from members.models import Person
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = "username,password,user_type"
+        fields = "__all__"
 
 
 class PersonSerializer(ModelSerializer):

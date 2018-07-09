@@ -7,7 +7,7 @@ from .models import *
 class DriversAssignedSerializer(ModelSerializer):
     class Meta:
         model = DriversAssigned
-        exclude = ('shift', )
+        exclude = ('shift',)
 
 
 class ShiftSerializer(ModelSerializer, serializers.Serializer):
@@ -15,16 +15,13 @@ class ShiftSerializer(ModelSerializer, serializers.Serializer):
 
     class Meta:
         model = Shift
-        exclude = ('schedule', )
+        exclude = ('schedule',)
 
     def create(self, validated_data):
         drivers_data = validated_data.pop('drivers_assigned')
         shift = Shift.objects.create(**validated_data)
         for driver_data in drivers_data:
-            data = {
-                "driver": driver_data
-            }
-            DriversAssigned.objects.create(shift=shift, **data)
+            DriversAssigned.objects.create(shift=shift, **validated_data)
         return shift
 
 
@@ -33,22 +30,20 @@ class ScheduleSerializer(ModelSerializer):
 
     class Meta:
         model = Schedule
-        exclude = ('end_date', )
-
+        exclude = ('end_date',)
 
     def create(self, validated_data):
         shifts_data = validated_data.pop('shifts')
         schedule = Schedule.objects.create(**validated_data)
-        schedule.end_date = schedule.start_date + timedelta(days=14) # start_date + 14 days = 15 days
+        schedule.end_date = schedule.start_date + timedelta(days=14)  # start_date + 14 days = 15 days
         schedule.save()
-        new_sched = Schedule.objects.get(id=schedule.id) # gets django object to be used
+        new_sched = Schedule.objects.get(id=schedule.id)  # gets django object to be used
         for shift_data in shifts_data:
             drivers_data = shift_data.pop('drivers_assigned')
             shift = Shift.objects.create(schedule=new_sched, **shift_data)
             for driver_data in drivers_data:
                 DriversAssigned.objects.create(shift=shift, **driver_data)
         return schedule
-
 
     # TODO validate that there are am shifts, pm shifts, and mn shifts in the schedule
     def validate(self, data):
@@ -77,7 +72,7 @@ class ShiftIterationSerializer(ModelSerializer, serializers.Serializer):
 class VoidTicketSerializer(ModelSerializer):
     class Meta:
         model = VoidTicket
-        exclude = ('assigned_ticket', )
+        exclude = ('assigned_ticket',)
 
 
 class AssignedTicketSerializer(ModelSerializer):
@@ -85,8 +80,7 @@ class AssignedTicketSerializer(ModelSerializer):
 
     class Meta:
         model = AssignedTicket
-        exclude = ('deployment', )
-
+        exclude = ('deployment',)
 
 
 class DeploymentSerializer(ModelSerializer):
@@ -95,7 +89,6 @@ class DeploymentSerializer(ModelSerializer):
     class Meta:
         model = Deployment
         fields = '__all__'
-
 
     def create(self, validated_data):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
@@ -113,7 +106,8 @@ class DeploymentSerializer(ModelSerializer):
 class ConsumedTicketSerializer(ModelSerializer):
     class Meta:
         model = ConsumedTicket
-        exclude = ('remittance_form', )
+        exclude = ('remittance_form',)
+
 
 # TODO validation that consumed_ticket.end_ticket is within range of assigned_ticket
 class RemittanceFormSerializer(ModelSerializer):
@@ -146,11 +140,3 @@ class RemittanceFormSerializer(ModelSerializer):
         remittance_form.total -= remittance_form.fuel_cost + remittance_form.other_cost
         remittance_form.save()
         return remittance_form
-
-
-
-
-
-
-
-

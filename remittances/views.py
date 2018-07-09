@@ -10,6 +10,7 @@ from .models import *
 import json
 from datetime import datetime
 
+
 class ScheduleView(APIView):
     @staticmethod
     def get(request):
@@ -26,8 +27,10 @@ class ScheduleView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
+        print(data)
         schedule_serializer = ScheduleSerializer(data=data)
         if schedule_serializer.is_valid():
+            print('enters here')
             schedule = schedule_serializer.create(validated_data=schedule_serializer.validated_data)
             return Response(data={
                 "start_date": schedule.start_date,
@@ -37,6 +40,7 @@ class ScheduleView(APIView):
             return Response(data={
                 "errors": schedule_serializer.errors
             })
+
 
 # Ignore this class for now
 class ShiftView(APIView):
@@ -57,6 +61,7 @@ class ShiftView(APIView):
     def put(request):
         pass
 
+
 class ShiftIterationView(APIView):
     @staticmethod
     def get(request):
@@ -65,13 +70,13 @@ class ShiftIterationView(APIView):
             "shift_iterations": shift_iterations.data
         }, status=status.HTTP_200_OK)
 
-
     @staticmethod
     def post(request):
         data = json.loads(request.body)
         shift_iteration_serializer = ShiftIterationSerializer(data=data)
         if shift_iteration_serializer.is_valid():
-            shift_iteration = shift_iteration_serializer.create(validated_data=shift_iteration_serializer.validated_data)
+            shift_iteration = shift_iteration_serializer.create(
+                validated_data=shift_iteration_serializer.validated_data)
             return Response(data={
                 'shift_id': shift_iteration.shift.id,
                 'date': shift_iteration.date
