@@ -201,14 +201,14 @@ class EditableTable extends React.Component {
                 title: 'Unit Price',
                 dataIndex: 'unit_price',
                 key: 'vendor',
-                width: 150,
+                width: 100,
                 editable: true,
             }, {
                 title: 'Quantity',
                 dataIndex: 'quantity',
                 key: 'quantity',
                 align: 'center',
-                width: 150,
+                width: 100,
                 editable: false,
                 filters: [{
                     text: 'Understocked',
@@ -268,7 +268,7 @@ class EditableTable extends React.Component {
     componentDidMount() {
         this.setState({isLoading: true});
 
-        fetch('http://localhost:9000/inventory/items/')
+        fetch('inventory/items/')
              .then(response => {
                  console.log("response", response);
                  return response;
