@@ -17,7 +17,6 @@ import {DriverRemittancePage} from './subpages/driver_remittance/driver_remittan
 import {OMRemittancePage} from './subpages/om_remittance/om_remittance'
 
 
-
 const TabPane = Tabs.TabPane;
 
 const REMITTANCE_PAGES = [
@@ -27,19 +26,27 @@ const REMITTANCE_PAGES = [
     <OMRemittancePage/>
 ];
 export class RemittancePage extends Component {
-    state = {
-        currentPage: REMITTANCE_PAGES[3]
+    renderPage = () => {
+        const user_type = JSON.parse(localStorage.user_type);
+        if (user_type === "driver") {
+            return <DriverRemittancePage/>
+        }
+        if (user_type === "supervisor") {
+            return <SupervisorRemittancePage/>
+        }
+        if (user_type === "clerk") {
+            return <ClerkRemittancePage/>
+        }
+        if (user_type === "operations_manager" || user_type === "system_admin") {
+            return <OMRemittancePage/>
+        }
     };
-    // change pages on navbar item click
-    invokeChangePage = newPage => this.setState({
-        currentTab: newPage,
-    });
 
     render() {
         return (
             <div className="body-wrapper">
                 <div className="remittance-page-wrapper">
-                    {this.state.currentPage}
+                    {this.renderPage()}
                 </div>
             </div>
         );

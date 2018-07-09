@@ -14,9 +14,8 @@
     }
 
 .logo {
-    position: absolute;
     display: inline-block;
-    top: 40px;
+    margin-top: 40px;
     /*height: 55px;*/
     /*width: 45px;*/
     height: 46px;
@@ -29,9 +28,9 @@
     height: 100%;
     display: inline-flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
     min-height: 400px;
+    margin-top: 100px;
     }
 
 .navbar-item {

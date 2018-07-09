@@ -55,6 +55,61 @@ const TABS = [
         image: cube
     },
 ];
+const SUPERVISOR_TABS = [
+    {
+        name: "Remittances",
+        key: "remittances",
+        path: '/remittances',
+        component: RemittancePage,
+        image: money
+    },
+    {
+        name: "Inventory",
+        key: "inventory",
+        path: '/inventory',
+        component: InventoryPage,
+        image: cube
+    },
+];
+const DRIVER_TABS = [
+    {
+        name: "Remittances",
+        key: "remittances",
+        path: '/remittances',
+        component: RemittancePage,
+        image: money
+    },
+];
+const CLERK_OM_TABS = [
+    {
+        name: "Drivers",
+        key: "drivers",
+        path: '/drivers',
+        component: RemittancePage,
+        image: u1F46E
+    },
+    {
+        name: "Remittances",
+        key: "remittances",
+        path: '/remittances',
+        component: RemittancePage,
+        image: money
+    },
+    {
+        name: "Members",
+        key: "members",
+        path: '/members',
+        component: RemittancePage,
+        image: driversLicenseO
+    },
+    {
+        name: "Inventory",
+        key: "inventory",
+        path: '/inventory',
+        component: InventoryPage,
+        image: cube
+    },
+];
 export class NavBar extends Component {
     // function to append all NavBar items
     // get every item in tab array and transform it to a component
@@ -62,7 +117,41 @@ export class NavBar extends Component {
     //props came from TABS array
     // you can pass props like a function <NavBarItems name(parameter) = prop>, parameters are defined in
     // NavBarItem Class(see below line 68)
-    renderNavbarItems = () => TABS.map(tab =>
+
+    renderNavItems = () => {
+        const user_type = JSON.parse(localStorage.user_type);
+        if(user_type === "system_admin"){
+            return this.renderAdminNav()
+        }
+        if(user_type === "driver"){
+            return this.renderDriverNav()
+        }
+        if(user_type ==="operations_manager" || user_type === "clerk"){
+            return this.renderOMClerkNav()
+        }
+        if(user_type === "supervisor"){
+            return this.renderSupervisorNav()
+        }
+    };
+    renderAdminNav = () => TABS.map(tab =>
+        <Link key={tab.key} className="tab-link" to={tab.path} component={tab.component}>
+            <NavBarItems name={tab.name}
+                         icon={tab.image}/>
+        </Link>
+    );
+    renderDriverNav = () => DRIVER_TABS.map(tab =>
+        <Link className="tab-link" to={tab.path} component={tab.component}>
+            <NavBarItems key={tab.key} name={tab.name}
+                         icon={tab.image}/>
+        </Link>
+    );
+    renderSupervisorNav = () => SUPERVISOR_TABS.map(tab =>
+        <Link className="tab-link" to={tab.path} component={tab.component}>
+            <NavBarItems key={tab.key} name={tab.name}
+                         icon={tab.image}/>
+        </Link>
+    );
+    renderOMClerkNav = () => CLERK_OM_TABS.map(tab =>
         <Link className="tab-link" to={tab.path} component={tab.component}>
             <NavBarItems key={tab.key} name={tab.name}
                          icon={tab.image}/>
@@ -70,12 +159,13 @@ export class NavBar extends Component {
     );
 
     render() {
+        const {user, user_type} = localStorage;
         return (
             //render logo and all items
             <div className="nav-container">
                 <img className='logo' src={logo}/>
                 <div className="nav-item-container">
-                    {this.renderNavbarItems()}
+                    {this.renderNavItems()}
                 </div>
             </div>
 

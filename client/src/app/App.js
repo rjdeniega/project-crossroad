@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import './App.css';
 import {UsersPage} from '../pages/users/users.js'
 import {SignInPage} from '../pages/sign_in/sign_in'
@@ -58,7 +58,7 @@ export default class App extends Component {
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
             .then(({user, token, error, user_type, user_staff}) => {
-                console.log(user,error,user_type,user_staff);
+                console.log(user, error, user_type, user_staff);
                 if (error) {
                     message.error(error)
                 } else {
@@ -73,7 +73,7 @@ export default class App extends Component {
                     });
                 }
             })
-            .catch(error => message(error));
+            .catch(error => message(error)), () => console.log(localStorage.user_type);
     };
 
     // change pages on navbar item click
@@ -102,7 +102,6 @@ export default class App extends Component {
             history.replace('/remittances');
             return;
         }
-        console.log(currentPath === undefined);
         if (this.state.user && currentPath === undefined || this.state.user && currentPath === '/') {
             //if there is a user and hes trying to go to localhost:3000 or localhost:3000/
             history.replace('/remittances');
@@ -112,9 +111,48 @@ export default class App extends Component {
         // We want to ensure the next conditions have a non-null user
     };
 
+    // renderRoutes = () => (
+    //     <Fragment>
+    //         {this.state.user_type === "system_admin" &&
+    //         <Fragment>
+    //             <Route path="/inventory" render={() => <InventoryPage/>}/>
+    //             <Route path="/remittances" render={() => <RemittancePage/>}/>
+    //             <Route path="/members" render={() => <RemittancePage/>}/>
+    //             <Route path="/users" render={() => <UsersPage/>}/>
+    //         </Fragment>
+    //         }
+    //         {this.state.user_type === "driver" &&
+    //         <Fragment>
+    //             <Route path="/remittances" render={() => <RemittancePage/>}/>
+    //         </Fragment>
+    //         }
+    //         {this.state.user_type === "operations_manager" &&
+    //         <Fragment>
+    //             <Route path="/inventory" render={() => <InventoryPage/>}/>
+    //             <Route path="/remittances" render={() => <RemittancePage/>}/>
+    //             <Route path="/members" render={() => <RemittancePage/>}/>
+    //         </Fragment>
+    //         }
+    //         {this.state.user_type === "supervisor" &&
+    //         <Fragment>
+    //             <Route path="/inventory" render={() => <InventoryPage/>}/>
+    //             <Route path="/remittances" render={() => <RemittancePage/>}/>
+    //         </Fragment>
+    //         }
+    //         {this.state.user_type === "clerk" &&
+    //         <Fragment>
+    //             <Route path="/inventory" render={() => <InventoryPage/>}/>
+    //             <Route path="/remittances" render={() => <RemittancePage/>}/>
+    //             <Route path="/members" render={() => <RemittancePage/>}/>
+    //         </Fragment>
+    //         }
+    //     </Fragment>
+    // );
+
     render() {
         //this is our initial page
-        const user = localStorage.user;
+        //same as user = localStorage.user and user_type = localStorage.user_type
+        const {user, user_type} = localStorage;
         const {match, history} = this.props;
         const currentPath = match.params.currentPage;
         return (
@@ -122,11 +160,11 @@ export default class App extends Component {
                 {/*define routes*/}
                 {/*routes are the pages, we no longer change states to change the page*/}
                 <Switch>
-                    {/*note: important to pass functions as lambdas */}
+                    {/*note: important to pass functions as lambdas if its render*/}
                     <Route path="/sign-in" render={() => <SignInPage attemptSignIn={this.attemptSignIn}/>}/>
                     <Route path="/inventory" render={() => <InventoryPage/>}/>
                     <Route path="/remittances" render={() => <RemittancePage/>}/>
-                    <Route path="/inventory" render={() => <RemittancePage/>}/>
+                    <Route path="/members" render={() => <RemittancePage/>}/>
                     <Route path="/users" render={() => <UsersPage/>}/>
                 </Switch>
                 {/*render navbar if there is a user and path is not sign-in*/}
