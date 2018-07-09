@@ -19,6 +19,8 @@ export class UserAvatar extends Component {
     signOut = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        localStorage.removeItem("user_type");
+        localStorage.removeItem("user_staff");
         history.replace('/sign-in');
     };
 

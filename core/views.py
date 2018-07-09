@@ -47,10 +47,11 @@ class SignInView(APIView):
         #     user_type = 'Not Set'
 
         user_type = SignInView.get_user_type(user)
+        user_staff = SignInView.get_user_staff(user_type,user)
         return Response(data={
             "token": token.key,
             "user": model_to_dict(user),
-            "user_type" : user_type
+            "user_type": user_type
         }, status=200)
 
     @staticmethod
@@ -59,10 +60,17 @@ class SignInView(APIView):
             return "driver"
         if user in [supervisor.user for supervisor in Supervisor.objects.all()]:
             return "supervisor"
-        # if user in [clerkuser for clerk in Clerk.objects.all()]:
-        #     return "supervisor"
+            # if user in [clerkuser for clerk in Clerk.objects.all()]:
+            #     return "supervisor"
 
-
+    @staticmethod
+    def get_user_type(user):
+        if user in [driver.user for driver in Driver.objects.all()]:
+            return "driver"
+        if user in [supervisor.user for supervisor in Supervisor.objects.all()]:
+            return "supervisor"
+            # if user in [clerkuser for clerk in Clerk.objects.all()]:
+            #     return "supervisor"
 
 
 class CreateUserView(APIView):

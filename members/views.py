@@ -25,11 +25,58 @@ class SupervisorView(APIView):
         if supervisor_serializer.is_valid():
             supervisor = supervisor_serializer.create(validated_data=supervisor_serializer.validated_data)
             return Response(data={
-                "supervisor name": supervisor.name
+                "supervisor": supervisor.name
             }, status=status.HTTP_200_OK)
         else:
             return Response(data={
                 "errors": supervisor_serializer.errors
+            })
+
+
+class ClerkView(APIView):
+    @staticmethod
+    def get(request):
+        clerks = ClerkSerializer(Clerk.objects.all(), many=True)
+        return Response(data={
+            "clerks": clerks.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        clerk_serializer = SupervisorSerializer(data=data)
+        if clerk_serializer.is_valid():
+            clerk = clerk_serializer.create(validated_data=clerk_serializer.validated_data)
+            return Response(data={
+                "clerk": clerk.name
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": clerk_serializer.errors
+            })
+
+
+class OperationsManagerView(APIView):
+    @staticmethod
+    def get(request):
+        operations_manager = OperationsManagerSerializer(OperationsManager.objects.all(), many=True)
+        return Response(data={
+            "operations_managers": operations_manager.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        operations_manager_serializer = SupervisorSerializer(data=data)
+        if operations_manager_serializer.is_valid():
+            operations_manager = operations_manager_serializer.create(
+                validated_data=operations_manager_serializer.validated_data)
+            return Response(data={
+                "operations_manager": operations_manager.name
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": operations_manager_serializer.errors
             })
 
 
@@ -62,7 +109,7 @@ class DriverView(APIView):
             driver = driver_serializer.create(validated_data=
                                               driver_serializer.validated_data)
             return Response(data={
-                'driver_name': driver.name
+                'driver': driver.name
             }, status=status.HTTP_200_OK)
         else:
             return Response(data={
@@ -98,7 +145,7 @@ class MemberView(APIView):
             member = member_serializer.create(validated_data=member_serializer.validated_data)
 
             return Response(data={
-                'member_name': member.name
+                'member': member.name
             }, status=status.HTTP_200_OK)
         else:
             return Response(data={

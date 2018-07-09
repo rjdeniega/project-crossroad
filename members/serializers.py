@@ -11,15 +11,27 @@ class DriverSerializer(ModelSerializer):
         model = Driver
         fields = "__all__"
 
-    # def create(self, validated_data):
-    #     # this overrides the parent class' create function
-    #     # by default, it takes in the model's (in this case Driver) --
-    #     # fields and creates an object
+        # def create(self, validated_data):
+        #     # this overrides the parent class' create function
+        #     # by default, it takes in the model's (in this case Driver) --
+        #     # fields and creates an object
 
 
 class SupervisorSerializer(ModelSerializer):
     class Meta:
         model = Supervisor
+        fields = '__all__'
+
+
+class ClerkSerializer(ModelSerializer):
+    class Meta:
+        model = Clerk
+        fields = '__all__'
+
+
+class OperationsManagerSerializer(ModelSerializer):
+    class Meta:
+        model = Clerk
         fields = '__all__'
 
 

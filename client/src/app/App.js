@@ -24,12 +24,16 @@ export default class App extends Component {
         //set user for any children page of App (which is everything)
         this.state = {
             user: localStorage.user,
+            user_type: localStorage.user_type,
+            user_staff: localStorage.user_staff,
         }
     }
 
     componentWillMount() {
         this.setState({
-            user: localStorage.user
+            user: localStorage.user,
+            user_type: localStorage.user_type,
+            user_staff: localStorage.user_staff,
         });
     }
 
@@ -53,14 +57,18 @@ export default class App extends Component {
         // this uses a shortcut from general.js from network_requests
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
-            .then(({user, token, error}) => {
+            .then(({user, token, error, user_type, user_staff}) => {
                 if (error) {
                     message.error(error)
                 } else {
                     localStorage.user = JSON.stringify(user);
                     localStorage.token = JSON.stringify(token);
+                    localStorage.user_type = JSON.stringify(user_type);
+                    localStorage.user_staff = JSON.stringify(user_staff);
                     this.setState({
                         user: localStorage.user,
+                        user_type: localStorage.user_type,
+                        user_staff: localStorage.user_staff,
                     });
                 }
             })
