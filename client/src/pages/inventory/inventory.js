@@ -268,13 +268,13 @@ class EditableTable extends React.Component {
     componentDidMount() {
         this.setState({isLoading: true});
 
-        // fetch('inventory/items/')
-        //     .then(response => {
-        //         console.log("response", response);
-        //         return response;
-        //     })
-        //     .then(response => response.json())
-        //     .then(data => this.setState({data: data.items, isLoading: false}));
+        fetch('http://localhost:9000/inventory/items/')
+             .then(response => {
+                 console.log("response", response);
+                 return response;
+             })
+            .then(response => response.json())
+             .then(data => this.setState({data: data.items, isLoading: false}));
     }
 
     onInputChange = (e) => {
