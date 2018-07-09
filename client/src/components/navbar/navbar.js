@@ -13,8 +13,10 @@ import {cube} from 'react-icons-kit/fa/cube'
 import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 import {RemittancePage} from '../../pages/remittances/remittances'
 import {InventoryPage} from '../../pages/inventory/inventory'
+import {MaintenancePage} from '../../pages/maintenance/maintenance'
 import {money} from 'react-icons-kit/fa/money'
 import {Link, withRouter} from "react-router-dom";
+import {wrench} from 'react-icons-kit/fa/wrench'
 
 
 //define tabs
@@ -54,6 +56,13 @@ const TABS = [
         component: InventoryPage,
         image: cube
     },
+    {
+        name: "Maintenance",
+        key: "maintenance",
+        path: '/maintenance',
+        component: MaintenancePage,
+        image: wrench
+    },
 ];
 const SUPERVISOR_TABS = [
     {
@@ -69,6 +78,13 @@ const SUPERVISOR_TABS = [
         path: '/inventory',
         component: InventoryPage,
         image: cube
+    },
+    {
+        name: "Maintenance",
+        key: "maintenance",
+        path: '/maintenance',
+        component: MaintenancePage,
+        image: wrench
     },
 ];
 const DRIVER_TABS = [
@@ -108,6 +124,13 @@ const CLERK_OM_TABS = [
         path: '/inventory',
         component: InventoryPage,
         image: cube
+    },
+    {
+        name: "Maintenance",
+        key: "maintenance",
+        path: '/maintenance',
+        component: MaintenancePage,
+        image: wrench
     },
 ];
 export class NavBar extends Component {

@@ -19,12 +19,6 @@ import {OMRemittancePage} from './subpages/om_remittance/om_remittance'
 
 const TabPane = Tabs.TabPane;
 
-const REMITTANCE_PAGES = [
-    <ClerkRemittancePage/>,
-    <SupervisorRemittancePage/>,
-    <DriverRemittancePage/>,
-    <OMRemittancePage/>
-];
 export class RemittancePage extends Component {
     renderPage = () => {
         const user_type = JSON.parse(localStorage.user_type);

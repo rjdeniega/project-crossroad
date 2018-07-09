@@ -67,7 +67,7 @@ class OperationsManagerView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        operations_manager_serializer = SupervisorSerializer(data=data)
+        operations_manager_serializer = OperationsManagerSerializer(data=data)
         if operations_manager_serializer.is_valid():
             operations_manager = operations_manager_serializer.create(
                 validated_data=operations_manager_serializer.validated_data)
@@ -78,8 +78,6 @@ class OperationsManagerView(APIView):
             return Response(data={
                 "errors": operations_manager_serializer.errors
             })
-
-
 class DriverView(APIView):
     @staticmethod
     def get(request):

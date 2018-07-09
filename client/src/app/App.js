@@ -5,6 +5,7 @@ import {SignInPage} from '../pages/sign_in/sign_in'
 import {RemittancePage} from '../pages/remittances/remittances'
 import {NavBar} from "../components/navbar/navbar"
 import {InventoryPage} from '../pages/inventory/inventory'
+import {MaintenancePage} from '../pages/maintenance/maintenance'
 import {BrowserRouter, Redirect, Route, Router, Switch, withRouter} from "react-router-dom";
 import 'antd/dist/antd.css';
 import '../utilities/colorsFonts.css'
@@ -166,6 +167,7 @@ export default class App extends Component {
                     <Route path="/remittances" render={() => <RemittancePage/>}/>
                     <Route path="/members" render={() => <RemittancePage/>}/>
                     <Route path="/users" render={() => <UsersPage/>}/>
+                    <Route path="/maintenance" render={() => <MaintenancePage/>}/>
                 </Switch>
                 {/*render navbar if there is a user and path is not sign-in*/}
                 {user && currentPath !== "sign-in" &&
