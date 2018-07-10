@@ -67,7 +67,6 @@ export class SignInPage extends Component {
                             suffix={suffix}
                             value={username}
                             onChange={this.onChangeUserName}
-                            ref={node => this.userNameInput = node}
                         />
                         <Input
                             className="password"
@@ -78,7 +77,6 @@ export class SignInPage extends Component {
                             suffix={suffix}
                             value={password}
                             onChange={this.onChangePassword}
-                            ref={node => this.userNameInput = node}
                         />
                         {/*note : important to pass lambdas if it has paramters*/}
                         {/*actual sign in is performed in app.js*/}

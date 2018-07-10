@@ -4,9 +4,10 @@
   "private": true,
   "dependencies": {
     "antd": "latest",
+    "moment": "latest",
     "rc-form": "latest",
-    "react": "^16.3.2",
-    "react-dom": "^16.3.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
     "react-icons-kit": "latest",
     "react-native": "latest",
     "react-router-dom": "^4.3.1",

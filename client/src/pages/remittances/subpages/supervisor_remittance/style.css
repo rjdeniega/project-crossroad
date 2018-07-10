@@ -43,6 +43,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
     grid-column: 2/3;
     grid-row: 1/2;
     height: 98%;
@@ -173,17 +174,40 @@
     }
 
 .driver-deploy-modal p {
-    font-size: 11px;
+    font-size: 12px;
     margin-right: 20px;
     }
 
 .driver-deploy-input {
     margin-top: 10px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     width: 100%;
+    }
+.ticket-range-div{
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 50% 50%;
+    height: 100px;
+    width: 100%
+    }
+.first-range-from{
+    grid-column: 1/2;
+    grid-row: 1/2;
+    }
+.first-range-to{
+    grid-column: 2/3;
+    grid-row: 1/2;
+    }
+.second-range-from{
+    grid-column: 1/2;
+    grid-row: 2/3;
+    }
+.second-range-to{
+    grid-column: 2/3;
+    grid-row: 2/3;
     }
 
 .driver-deploy-input .ant-input-number-lg {
@@ -195,15 +219,38 @@
     }
 
 .driver-deploy-input .ant-input-number-lg {
-    width: 300px !important;
     padding-left: 5px !important;
+    font-size: 12px!important;
     }
 
 .empty-image {
     height: 150px;
     width: 200px;
     }
-
+.deployed-list{
+    height: 200px!important;
+    width: 100%!important;
+    padding: 0 10px!important;
+    overflow: scroll!important;
+    }
+.deployed-list * {
+    font-family: Montserrat,sans-serif;
+    }
+.deployed-drivers-list-title{
+    color: var(--darkgreen);
+    font-weight: 500;
+    }
+.deploy-list-item{
+    margin-left: 10px!important;
+    border: none!important;
+    }
+.undeploy-button{
+    font-size: 11px!important;
+    border: 1px solid #ff4b69!important;
+    color: #ff4b69!important;
+    font-weight: 500!important;
+    border-radius: 30px!important;
+    }
 /*change step active color*/
 /*.rem-step .ant-steps-item-process .ant-steps-item-icon{*/
     /*background: var(--orange);*/
