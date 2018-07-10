@@ -183,32 +183,39 @@ class EditableTable extends React.Component {
                 title: 'Brand',
                 dataIndex: 'brand',
                 key: 'brand',
-                width: 300,
+                width: 200,
                 sorter: (a, b) => {
-                    return a.name.localeCompare(b.name)
+                    return a.brand.localeCompare(b.brand)
                 },
                 editable: true,
             }, {
                 title: 'Vendor',
                 dataIndex: 'vendor',
                 key: 'vendor',
-                width: 300,
+                width: 200,
                 sorter: (a, b) => {
-                    return a.name.localeCompare(b.name)
+                    return a.vendor.localeCompare(b.vendor)
                 },
                 editable: true,
             }, {
                 title: 'Unit Price',
                 dataIndex: 'unit_price',
-                key: 'vendor',
-                width: 100,
+                key: 'unit_price',
+                width: 150,
+                align: 'right',
+                sorter: (a, b) => a.unit_price - b.unit_price,
                 editable: true,
+                render: text =>(
+                    <span>
+                        P{text.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+                    </span>
+                )
             }, {
                 title: 'Quantity',
                 dataIndex: 'quantity',
                 key: 'quantity',
                 align: 'center',
-                width: 100,
+                width: 150,
                 editable: false,
                 filters: [{
                     text: 'Understocked',
@@ -225,6 +232,7 @@ class EditableTable extends React.Component {
                 title: '',
                 key: 'action',
                 align: 'center',
+                width: 100,
                 render: record => {
                     const editable = this.isEditing(record);
                     return (
