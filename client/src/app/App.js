@@ -1,3 +1,4 @@
+//noinspection JSUnresolvedVariable
 import React, {Component, Fragment} from 'react';
 import './App.css';
 import {UsersPage} from '../pages/users/users.js'
@@ -10,11 +11,9 @@ import {BrowserRouter, Redirect, Route, Router, Switch, withRouter} from "react-
 import 'antd/dist/antd.css';
 import '../utilities/colorsFonts.css'
 import {getPageFromPath, SIGN_IN_PAGE, REMITTANCE_PAGE} from "./paths";
-import {message} from 'antd'
+import {message,TimePicker} from 'antd'
 import {postData} from "../network_requests/general";
-import {PAGES} from "./paths"
 import history from '../utilities/history'
-// const PAGES = [<UsersPage />, <RemittancePage />, <InventoryPage/>];
 
 
 // Get the current location.

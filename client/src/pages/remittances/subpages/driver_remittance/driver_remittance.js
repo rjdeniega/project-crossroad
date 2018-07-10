@@ -17,6 +17,7 @@ import {Avatar, List, Radio, Tabs, Steps, Button, InputNumber, Divider, Input, M
 import {DatePicker} from 'antd';
 import {money} from 'react-icons-kit/fa/money'
 import './style.css'
+import {RemittanceForm} from "../../components/remittance_form/remittance_form"
 import {clockO} from 'react-icons-kit/fa/clockO'
 import {data} from '../../../users/users'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
@@ -32,7 +33,6 @@ export class DriverRemittancePage extends Component {
             current: 0,
         };
     }
-
     render() {
         return (
             <div className="remittance-page-body">
@@ -46,18 +46,19 @@ export class DriverRemittancePage extends Component {
                 </div>
                 <div className="driver-rem-content">
                     <div className="dv-transactions">
-                        <Divider orientation="left">Create Remittance Form</Divider>
+                        {/*<Divider orientation="left">Create Remittance Form</Divider>*/}
+                       <RemittanceForm/>
                     </div>
-                    <div className="dv-pending-requests">
-                        <Divider orientation="left">Pending Requests</Divider>
-                        <img className="empty-image" src={emptyStateImage}/>
-                        <p>Under Construction</p>
-                    </div>
-                    <div className="dv-history">
-                        <Divider orientation="left">My Remittances</Divider>
-                        <img className="empty-image" src={emptyStateImage}/>
-                        <p>Under Construction</p>
-                    </div>
+                    {/*<div className="dv-pending-requests">*/}
+                    {/*<Divider orientation="left">Pending Requests</Divider>*/}
+                    {/*<img className="empty-image" src={emptyStateImage}/>*/}
+                    {/*<p>Under Construction</p>*/}
+                    {/*</div>*/}
+                    {/*<div className="dv-history">*/}
+                    {/*<Divider orientation="left">My Remittances</Divider>*/}
+                    {/*<img className="empty-image" src={emptyStateImage}/>*/}
+                    {/*<p>Under Construction</p>*/}
+                    {/*</div>*/}
                 </div>
             </div>
         );

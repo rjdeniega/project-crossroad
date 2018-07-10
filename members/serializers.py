@@ -41,7 +41,7 @@ class ClerkSerializer(ModelSerializer):
 
 class OperationsManagerSerializer(ModelSerializer):
     class Meta:
-        model = Clerk
+        model = OperationsManager
         fields = '__all__'
 
 
