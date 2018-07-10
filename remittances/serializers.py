@@ -84,15 +84,20 @@ class AssignedTicketSerializer(ModelSerializer):
 
 
 class DeploymentSerializer(ModelSerializer):
-    assigned_tickets = serializers.StringRelatedField(many=True)
+    assigned_tickets = serializers.StringRelatedField(many=True, read_only=True) #for reading
+    assigned_ticket = AssignedTicketSerializer(many=True, write_only=True) #for writing
 
     class Meta:
         model = Deployment
-        fields = '__all__'
+        exclude = ('shift_iteration', )
 
-    def create(self, validated_data):
+    def create(self, validated_data, user_id):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
-        deployment = Deployment.objects.create(**validated_data)
+
+        #get shift_iteration_id
+        supervisor_id = Supervisor.objects.get(user_id=user_id)
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).get_latest_by('date')
+        deployment = Deployment.objects.create(shift_iteration=current_shift_iteration , **validated_data)
 
         for assigned_ticket_data in assigned_tickets_data:
             void_tickets_data = assigned_ticket_data.pop('void_ticket')
@@ -127,11 +132,11 @@ class RemittanceFormSerializer(ModelSerializer):
             assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket.assigned_ticket.id)
 
             if assigned_ticket.type == 'A':
-                consumed_ticket.total = 9 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+                consumed_ticket.total = 10 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
             elif assigned_ticket.type == 'B':
-                consumed_ticket.total = 11 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+                consumed_ticket.total = 12 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
             else:
-                consumed_ticket.total = 14 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+                consumed_ticket.total = 15 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
 
             consumed_ticket.save()
             remittance_form.total += consumed_ticket.total

@@ -90,16 +90,10 @@ class DeploymentView(APIView):
     @staticmethod
     def get(request):
         deployments = DeploymentSerializer(Deployment.objects.all(), many=True)
-        am_deployments = DeploymentSerializer(Deployment.objects.filter(shift__type='A'), many=True)
-        pm_deployments = DeploymentSerializer(Deployment.objects.filter(shift__type='P'), many=True)
-        mn_deployments = DeploymentSerializer(Deployment.objects.filter(shift__type='M'), many=True)
 
         # edit later
         return Response(data={
             "deployments": deployments.data,
-            "am_deployments": am_deployments.data,
-            "pm_deployments": pm_deployments.data,
-            "mn_deployments": mn_deployments.data
         }, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -107,8 +101,11 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
-            deployment = deployment_serializer.create(validated_data=deployment_serializer.validated_data)
-
+            user = request.user
+            deployment = deployment_serializer.create(
+                validated_data=deployment_serializer.validated_data,
+                user_id=user.id
+            )
             return Response(data={
                 'deployment': deployment.status
             }, status=status.HTTP_200_OK)
