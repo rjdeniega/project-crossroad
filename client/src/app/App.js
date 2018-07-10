@@ -1,18 +1,18 @@
 //noinspection JSUnresolvedVariable
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import './App.css';
-import {UsersPage} from '../pages/users/users.js'
-import {SignInPage} from '../pages/sign_in/sign_in'
-import {RemittancePage} from '../pages/remittances/remittances'
-import {NavBar} from "../components/navbar/navbar"
-import {InventoryPage} from '../pages/inventory/inventory'
-import {MaintenancePage} from '../pages/maintenance/maintenance'
-import {BrowserRouter, Redirect, Route, Router, Switch, withRouter} from "react-router-dom";
+import { UsersPage } from '../pages/users/users.js'
+import { SignInPage } from '../pages/sign_in/sign_in'
+import { RemittancePage } from '../pages/remittances/remittances'
+import { NavBar } from "../components/navbar/navbar"
+import { InventoryPage } from '../pages/inventory/inventory'
+import { MaintenancePage } from '../pages/maintenance/maintenance'
+import { BrowserRouter, Redirect, Route, Router, Switch, withRouter } from "react-router-dom";
 import 'antd/dist/antd.css';
 import '../utilities/colorsFonts.css'
-import {getPageFromPath, SIGN_IN_PAGE, REMITTANCE_PAGE} from "./paths";
-import {message,TimePicker} from 'antd'
-import {postData} from "../network_requests/general";
+import { getPageFromPath, SIGN_IN_PAGE, REMITTANCE_PAGE } from "./paths";
+import { message, TimePicker } from 'antd'
+import { postData } from "../network_requests/general";
 import history from '../utilities/history'
 
 
@@ -57,11 +57,12 @@ export default class App extends Component {
         // this uses a shortcut from general.js from network_requests
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
-            .then(({user, token, error, user_type, user_staff}) => {
+            .then(({ user, token, error, user_type, user_staff }) => {
                 console.log(user, error, user_type, user_staff);
                 if (error) {
                     message.error(error)
-                } else {
+                }
+                else {
                     localStorage.user = JSON.stringify(user);
                     localStorage.token = JSON.stringify(token);
                     localStorage.user_type = JSON.stringify(user_type);
@@ -73,14 +74,14 @@ export default class App extends Component {
                     });
                 }
             })
-            .catch(error => message(error)), () => console.log(localStorage.user_type);
+            .catch(error => message(error))
     };
 
     // change pages on navbar item click
 
     handleChange = () => {
         //always update user state
-        const {match} = this.props;
+        const { match } = this.props;
         const currentPath = match.params.currentPage;
         //be careful not to use .setState here it will cause an infinite loop
         this.state.user = localStorage.user;
@@ -152,8 +153,8 @@ export default class App extends Component {
     render() {
         //this is our initial page
         //same as user = localStorage.user and user_type = localStorage.user_type
-        const {user, user_type} = localStorage;
-        const {match, history} = this.props;
+        const { user, user_type } = localStorage;
+        const { match, history } = this.props;
         const currentPath = match.params.currentPage;
         return (
             <div className="page-container">
