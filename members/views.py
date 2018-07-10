@@ -78,6 +78,8 @@ class OperationsManagerView(APIView):
             return Response(data={
                 "errors": operations_manager_serializer.errors
             })
+
+
 class DriverView(APIView):
     @staticmethod
     def get(request):

@@ -5,9 +5,9 @@ from members.models import *
 
 # Create your models here.
 TICKET_TYPE = [
-    ('A', '9 Pesos'),
-    ('B', '11 Pesos'),
-    ('C', '14 Pesos')
+    ('A', '10 Pesos'),
+    ('B', '12 Pesos'),
+    ('C', '15 Pesos')
 ]
 
 ROUTE = [
@@ -58,7 +58,7 @@ class Deployment(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     route = CharField(max_length=1, choices=ROUTE)
     shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
-    status = CharField(max_length=1, choices=DEPLOYMENT_STATUS)
+    status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
 
 
 class AssignedTicket(SoftDeletionModel):
