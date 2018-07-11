@@ -120,6 +120,16 @@ class DeploymentView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class DeployedDrivers(APIView):
+    @staticmethod
+    def get(request):
+        current_shift_iteration = ShiftIteration.objects.order_by("-date").first()
+        deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id)
+        deployments_serializer = DeploymentSerializer(deployments, many=True)
+        return Response(data={
+            "deployed_drivers": deployments_serializer.data
+        }, status=status.HTTP_200_OK)
+
 class RemittanceFormView(APIView):
     @staticmethod
     def get(request):

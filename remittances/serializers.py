@@ -90,6 +90,7 @@ class DeploymentSerializer(ModelSerializer):
     class Meta:
         model = Deployment
         exclude = ('shift_iteration', )
+        depth = 2
 
     def create(self, validated_data, supervisor_id):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
