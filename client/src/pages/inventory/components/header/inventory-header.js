@@ -5,11 +5,11 @@
 import React, {Component} from 'react';
 import './style.css'
 import {UserAvatar} from '../../../../components/avatar/avatar'
-import {Modal, Button, Input, Tabs, message, Row} from 'antd'
+import {Modal, Button, Input, Tabs, message, Row, Form} from 'antd'
 import {Icon} from 'react-icons-kit'
 import {search} from 'react-icons-kit/fa/search'
 import {dropbox} from 'react-icons-kit/typicons/dropbox'
-import {Stepper} from '../item_stepper/stepper'
+import {ItemForm} from '../item_stepper/item_form'
 import '../../../../utilities/colorsFonts.css'
 
 
@@ -36,7 +36,6 @@ export class Header extends Component {
         });
     };
     handleOk = () => {
-        message.success('Item successfully added!');
         this.setState({
             visible: false,
         });
@@ -47,7 +46,6 @@ export class Header extends Component {
             visible: false,
         });
     };
-
 
     render() {
         return (
@@ -66,7 +64,7 @@ export class Header extends Component {
                         onOk={this.handleOk}
                         onCancel={this.handleCancel}
                         footer={null}>
-                        <Stepper handleOk={this.handleOk}/>
+                        <ItemForm handleOk={this.handleOk}/>
                     </Modal>
                 </div>
                 <UserAvatar/>

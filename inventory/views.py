@@ -35,7 +35,8 @@ class ItemView(APIView):
             # Serializer class has a built in function that creates an object attributed to it
             # I pass the validated data and it creates the object
             item = item_serializer.create(validated_data=item_serializer.validated_data)
-
+            item_movement = ItemMovement(item=item, type='B', quantity=item.quantity)
+            item_movement.save()
             return Response(data={
                 'item_name': item.name
             }, status=status.HTTP_200_OK)
@@ -47,10 +48,19 @@ class ItemView(APIView):
     @staticmethod
     def delete(request, pk):
         # audit trail add info on who deleted the item
-        Item.objects.get(id=pk).delete(user=request.user.username)
+        Item.objects.get(id=pk).hard_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
-    def put(request):
+    def put(request, pk):
         # write edit functionality
-        pass
+        item = Item.objects.get(id=pk)
+        item_serializer = ItemSerializer(item, data=request.data, partial=True)
+        if item_serializer.is_valid():
+            item_serializer.save()
+            return Response(data={
+                'message': item.name
+            })
+        return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

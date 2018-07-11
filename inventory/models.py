@@ -9,7 +9,8 @@ from core.models import SoftDeletionModel
 
 MOVEMENT_TYPE = [
     ('G', 'Get'),
-    ('R', 'Return')
+    ('R', 'Return'),
+    ('B', 'Bought')
 ]
 
 
@@ -67,7 +68,7 @@ class ItemMovement(SoftDeletionModel):
     item = ForeignKey(Item, on_delete=models.PROTECT)
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
-    repair = ForeignKey(Repair, on_delete=models.PROTECT)
+    repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
 
 # TODO - fill these up
 

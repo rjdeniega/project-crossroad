@@ -7,46 +7,15 @@ import {Icon} from 'react-icons-kit'
 import {warning} from 'react-icons-kit/typicons/warning'
 import {arrowSortedDown} from 'react-icons-kit/typicons/arrowSortedDown'
 import {zoom} from 'react-icons-kit/typicons/zoom'
-import {Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm} from 'antd'
+import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm} from 'antd'
 import '../../utilities/colorsFonts.css'
 import './style.css'
-import {Items} from '../../network_requests/items'
 
-/*let databoi = [];
- const item = fetch('inventory/items/').then(response => response.json()).then((responseJSON) => {
- // do stuff with responseJSON here...
- databoi = responseJSON;
- console.log(responseJSON);
- });
- console.log(databoi);*/
 
-/*const items = Items;
- console.log(items.toString());
- /!* Dummy data to fill the table *!/
- const data = [{
- key: '0',
- name: 'Shuttle Light bulb',
- quantity: '16',
- brand: 'Fujitsu',
- vendor: 'Ace Hardware'
- },
- {
- key: '1',
- name: 'Philips Screws',
- quantity: '32',
- brand: 'Generic',
- vendor: 'Budjolex Repairs'
- },
- {
- key: '2',
- name: 'Tire Caps',
- quantity: '1',
- brand: 'Global Electronics',
- vendor: 'Home Depot'
- }];*/
-
-const Search = Input.Search;
 const data = [];
+
+
+
 /**
  *  Function that checks whether the item is less than 3 items to comply with the business rule
  * @return {null}
@@ -112,7 +81,61 @@ class EditableCell extends React.Component {
         )
     }
 }
+class RestockModal extends React.Component{
+    state = {
+        visible: false,
+        item: this.props.item,
+        inputValue: '',
+    };
 
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+
+    handleOk = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+        console.log(this.state.item);
+        console.log(this.state.inputValue)
+    };
+
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
+    render(){
+        return(
+            <div>
+                <a onClick={this.showModal}>Restock</a>
+                <Modal title={"Restock " + this.state.item.name}
+                       visible={this.state.visible}
+                       onOk={this.handleOk}
+                       onCancel={this.handleCancel}>
+                    <Form onSubmit={this.handleOk}>
+                        <FormItem className='quantity-label' label='Initial Quantity'>
+                                <InputNumber className='quantity' type="text" placeholder="Initial Quantity"
+                                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        onChange={evt => this.updateInputValue(evt)}/>
+                        </FormItem>
+                    </Form>
+                </Modal>
+            </div>
+        )
+    }
+
+    updateInputValue(evt){
+        this.setState({
+            inputValue: evt.value
+        })
+    }
+}
 /*
  * The content of the dropdown menu
  *
@@ -120,17 +143,17 @@ class EditableCell extends React.Component {
  */
 const ItemActions = (props, table) => (
     <Menu>
-        <Menu.Item key="0">
-            <a href="#">Restock</a>
+        <Menu.Item key={props.id}>
+            <RestockModal item={props}/>
         </Menu.Item>
         <Menu.Divider />
-        <Menu.Item key="0">
-            <a onClick={() => table.edit(props.key)}>Edit</a>
+        <Menu.Item key={props.id}>
+            <a onClick={() => table.edit(props.id)}>Edit</a>
         </Menu.Item>
-        <Menu.Item key="0">
+        <Menu.Item key={props.id}>
             <Popconfirm
                 title="Are you sure you want to delete this item?"
-                onConfirm={() => table.onDelete(props.key)}>
+                onConfirm={() => table.onDelete(props)}>
                 <a>Delete</a>
             </Popconfirm>
         </Menu.Item>
@@ -150,6 +173,7 @@ class EditableTable extends React.Component {
             searchText: '',
             filtered: false,
             isLoading: false,
+            rowKey: 'id'
         };
 
         this.columns = [
@@ -162,22 +186,6 @@ class EditableTable extends React.Component {
                 defaultSortOrder: 'ascend',
                 sorter: (a, b) => {
                     return a.name.localeCompare(b.name)
-                },
-                filterDropdown: (
-                    <div className='custom-filter-dropdown'>
-                        <Search placeholder="Input search text"
-                                ref={ele => this.searchInput = ele}
-                                value={this.state.searchText}
-                                onChange={this.onInputChange}
-                                onKeyDown={this.onSearch()}/>
-                    </div>
-                ),
-                filterIcon: <Icon icon={zoom} style={{color: this.state.filtered ? '#108ee9' : '#aaa'}}/>,
-                filterDropdownVisible: this.state.filterDropdownVisible,
-                onFilterDropdownVisibleChange: (visible) => {
-                    this.setState({
-                        filterDropdownVisible: visible,
-                    }, () => this.searchInput && this.searchInput.focus());
                 },
             }, {
                 title: 'Brand',
@@ -207,7 +215,7 @@ class EditableTable extends React.Component {
                 editable: true,
                 render: text =>(
                     <span>
-                        P{text.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
+                        ₱{parseInt(text).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
                     </span>
                 )
             }, {
@@ -225,7 +233,7 @@ class EditableTable extends React.Component {
                 render: text => (
                     <span>
                         <CheckItem quantity={text}/>
-                        <p className='quantity-text'>{text}</p>
+                        <p className='quantity-text'>{`${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</p>
                     </span>
                 ),
             }, {
@@ -243,7 +251,7 @@ class EditableTable extends React.Component {
                                     {form => (
                                         <a
                                             href="javascript:"
-                                            onClick={() => this.save(form, record.key)}
+                                            onClick={() => this.save(form, record.id)}
                                             style={{marginRight: 8}}>
                                             Save
                                         </a>
@@ -251,7 +259,7 @@ class EditableTable extends React.Component {
                                 </EditableContext.Consumer>
                                 <Popconfirm
                                     title="Cancel without saving?"
-                                    onConfirm={() => this.cancel(record.key)}>
+                                    onConfirm={() => this.cancel(record.id)}>
                                     <a>Cancel</a>
                                 </Popconfirm>
                             </span>
@@ -275,52 +283,33 @@ class EditableTable extends React.Component {
 
     componentDidMount() {
         this.setState({isLoading: true});
+        this.fetchItems()
+    }
 
+    componentDidUpdate(){
+        this.fetchItems()
+    }
+
+    fetchItems(){
         fetch('inventory/items/')
              .then(response => {
-                 console.log("response", response);
                  return response;
              })
             .then(response => response.json())
-             .then(data => this.setState({data: data.items, isLoading: false}));
+            .then(data => this.setState({data: data.items, isLoading: false}));
     }
 
-    onInputChange = (e) => {
-        this.setState({searchText: e.target.value});
-    };
-
-    onSearch = () => {
-        const {searchText} = this.state;
-        const reg = new RegExp(searchText, 'gi');
-        this.setState({
-            filtered: !!searchText,
-            data: data.map((record) => {
-                const match = record.name.match(reg);
-                if (!match) {
-                    return null;
-                }
-                return {
-                    ...record,
-                    name: (
-                        <span>
-                           {record.name.split(new RegExp(`(?:${searchText})|(?=${searchText})`, 'i')).map((text, i) => (
-                               text.toLowerCase() === searchText.toLowerCase()
-                                   ? <span key={i} className="highlight">{text}</span> : text
-                           ))}
-                        </span>
-                    ),
-                };
-            }).filter(record => !!record),
-        })
-    };
-
     isEditing = (record) => {
-        return record.key === this.state.editingKey;
+        return record.id === this.state.editingKey;
     };
 
     onDelete = (key) => {
         const data = [...this.state.data];
-        this.setState({data: data.filter(item => item.key !== key)});
+        message.success(key.name + " has been deleted");
+        fetch('inventory/items/' + key.id,{
+            method: "DELETE"
+        })
+            .then(response=>response);
     };
 
     edit(key) {
@@ -332,19 +321,16 @@ class EditableTable extends React.Component {
             if (error) {
                 return;
             }
-            const newData = [...this.state.data];
-            const index = newData.findIndex(item => key === item.key);
-            if (index > -1) {
-                const item = newData[index];
-                newData.splice(index, 1, {
-                    ...item,
-                    ...row,
-                });
-                this.setState({data: newData, editingKey: ''});
-            } else {
-                newData.push(data);
-                this.setState({data: newData, editingKey: ''});
-            }
+            console.log(form.getFieldsValue());
+            fetch('inventory/items/' + key,{
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(form.getFieldsValue()),
+                }).then(data => data).then(() => {message.success('Item was edited')});
+            this.setState({editingKey: ''});
         })
     }
 
@@ -386,11 +372,11 @@ class EditableTable extends React.Component {
                            components={components}
                            rowClassName='editable-row'
                            pagination={{pageSize: 30}}
+                           rowKey='id'
                     />
                 </div>
             )
         } else {
-            console.log(this.state);
             return (
                 <div>
                     <Table
@@ -399,6 +385,7 @@ class EditableTable extends React.Component {
                         dataSource={this.state.data}
                         columns={columns}
                         rowClassName='editable-row'
+                        rowKey='id'
                         pagination={{pageSize: 30}}/>
                 </div>
             )

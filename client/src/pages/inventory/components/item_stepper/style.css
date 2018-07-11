@@ -1,25 +1,15 @@
-.inventory-steps-content {
-    margin-top: 16px;
-    border: 1px dashed #e9e9e9;
-    border-radius: 6px;
-    background-color: #fafafa;
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    }
-
-.name-label, .quantity-label, .brand-label, .vendor-label{
-    margin-bottom: 5px;
-    margin-top: 15px;
+.ant-form-item{
+    margin-bottom: 0 !important;
 }
 
 .item-form{
-    padding: 0 15px 15px 15px;
+    padding: 0 20px 20px 20px;
     text-align: left;
+    background-color: #fafafa;
+    border: 1px solid #e9e9e9;
+    border-radius: 6px;
 }
 
-.steps-action {
-    margin-top: 24px;
-    }
+.unit_price, .quantity{
+    width: 100% !important;
+}
