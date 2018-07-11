@@ -15,6 +15,7 @@ import json
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.forms.models import model_to_dict
+from PIL import Image
 
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
@@ -93,27 +94,42 @@ class CreateUserView(APIView):
 
     @staticmethod
     def post(request):
-        print(request.body.get('image'))
-        print(request.FILES)
+        print(request.data)
         if "username" not in request.data or "password" not in request.data:
             return Response(data={
-                "error": "Missing username or password"
+                "error": "Missing username,password, or user type"
             }, status=400, content_type="application/json")
-        data = "something"
-        return Response(data=data, status=200, content_type="application/json")
-        # user = User()
-        # user.username = request.data.get('username')
-        # user.password = request.data.get('password')
-        # person_serializer = PersonSerializer(data=data)
-        # if person_serializer.is_valid():
-        #     person = person_serializer.create(validated_data=person_serializer.validated_data)
-        #     return Response(data={
-        #         'person': model_to_dict(person)
-        #     }, status=status.HTTP_200_OK)
-        # else:
-        #     return Response(data={
-        #         "errors": person_serializer.errors
-        #     })
+        user = User()
+        user.username = request.POST.get('username')
+        user.set_password(request.POST.get('password'))
+        user.save()
+        user_type = request.POST.get('user_type')
+        print("entered this shit")
+        print(request.POST.get('application_date'))
+        print(request.POST.get('birth_date'))
+        data = {
+            "email": request.POST.get('password'),
+            "user": user,
+            "sex": request.POST.get('sex'),
+            "address": request.POST.get('address'),
+            "contact_no": request.POST.get('contact_no'),
+            "birth_date": request.POST.get('birth_date'),
+            "application_date": request.POST.get('application_date'),
+            "photo": request.FILES.get('image')
+        }
+        user_staff = CreateUserView.create_user_type(user_type, data)
+        # user_staff.photo = Image.open(photo)
+        # user_staff.save()
+        driver = DriverSerializer(user_staff)
+        return Response(data={
+            "user_staff": driver.data,
+            "user": model_to_dict(user)
+        }, status=200, content_type="application/json")
+
+    @staticmethod
+    def create_user_type(user_type, data):
+        if user_type == "Driver":
+            return Driver.objects.create(**data)
 
 
 class CreateDefaultUserView(APIView):
@@ -146,9 +162,13 @@ class UserHandler(APIView):
         # check if username is taken
         print("enters here")
         print(request.data)
+        if request.data["user_type"] == "Please select user type":
+            return Response(data={
+                "error": "No selected user type"
+            }, status=400)
         if "username" not in request.data or "password" not in request.data:
             return Response(data={
-                "error": "Missing username or password"
+                "error": "Missing username, password, or user type"
             }, status=400)
         username = request.data["username"]
         existing_usernames = [user.username for user in User.objects.all()]

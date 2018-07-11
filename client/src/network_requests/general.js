@@ -27,7 +27,6 @@ export const postDataWithImage = (url, data) => {
         method: 'POST',
         headers: {
             'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8'
         },
     })
         .then(response => response.json()); // parses response to JSON

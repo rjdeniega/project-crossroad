@@ -9,6 +9,7 @@ import {Icon} from 'react-icons-kit'
 import {bell} from 'react-icons-kit/fa/bell'
 import {withRouter} from "react-router-dom";
 import history from '../../utilities/history'
+
 export class UserAvatar extends Component {
     constructor(props) {
         super(props);

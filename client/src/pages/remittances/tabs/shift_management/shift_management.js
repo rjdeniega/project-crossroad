@@ -79,7 +79,6 @@ export class ShiftManagementPane extends Component {
                 //Were not appending it to a table so no necessary adjustments needed
                 this.setState({ supervisors: data["supervisors"] },
                     () => console.log(this.state.supervisors));
-
             }
             else {
                 console.log(data["error"]);

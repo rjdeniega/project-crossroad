@@ -1,17 +1,17 @@
 /**
  * Created by JasonDeniega on 28/06/2018.
  */
-import React, {Component} from "react"
+import React, { Component } from "react"
 import '../../../../utilities/colorsFonts.css'
-import {Steps} from 'antd'
-import {Upload, Icon, Input, Button, message, Select} from 'antd'
+import { Steps } from 'antd'
+import { Upload, Icon, Input, Button, message, Select, Menu, Dropdown } from 'antd'
 import './style.css'
-import {postData, getData, postDataWithImage} from '../../../../network_requests/general'
+import { postData, getData, postDataWithImage } from '../../../../network_requests/general'
 import moment from 'moment';
-import {DatePicker} from 'antd';
+import { DatePicker } from 'antd';
 
 
-const {MonthPicker, RangePicker} = DatePicker;
+const { MonthPicker, RangePicker } = DatePicker;
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 const Step = Steps.Step;
@@ -26,7 +26,8 @@ const props = {
         }
         if (status === 'done') {
             message.success(`${info.file.name} file uploaded successfully.`);
-        } else if (status === 'error') {
+        }
+        else if (status === 'error') {
             message.error(`${info.file.name} file upload failed.`);
         }
     },
@@ -36,26 +37,28 @@ export class FirstContent extends Component {
         "username": "",
         "password": "",
         "error": "",
+        "user_type": "Please select user type"
     };
 
     onChangeUserName = (e) => {
         e.preventDefault();
-        this.setState({username: e.target.value});
+        this.setState({ username: e.target.value });
     };
     onChangePassword = (e) => {
         e.preventDefault();
-        this.setState({password: e.target.value});
+        this.setState({ password: e.target.value });
     };
     onChangeConfirmPW = (a) => {
         a.preventDefault();
-        this.setState({confirm_password: a.target.value});
+        this.setState({ confirm_password: a.target.value });
         console.log(this.state.password);
         console.log(this.state.confirm_password);
         if (this.state.password != this.state.confirm_password) {
             this.setState({
                 error: "Passwords do not match"
             });
-        } else {
+        }
+        else {
             this.setState({
                 error: ""
             });
@@ -66,6 +69,7 @@ export class FirstContent extends Component {
         const data = {
             "username": this.state.username,
             "password": this.state.password,
+            "user_type": this.state.user_type
         };
         // you only have to do then once
         postData('/users/is_unique', data)
@@ -76,20 +80,36 @@ export class FirstContent extends Component {
                         error: data["error"]
                     });
                     console.log(this.state.error);
-                } else {
-                    const {username, password} = this.state;
-                    this.props.next(username, password)
+                }
+                else {
+                    const { username, password, user_type } = this.state;
+                    this.props.next(username, password, user_type)
                 }
             })
-            .catch(error => message(error));
-
-
+            .catch(error => console.log("error"));
     };
+    handleUserTypeSelect = (item) => {
+        this.setState({
+            user_type: item.key
+        })
+    };
+    userTypes = (
+        <Menu onClick={this.handleUserTypeSelect}>
+            <Menu.Item key="Driver">Driver</Menu.Item>
+            <Menu.Item key="OM">Operations Manager</Menu.Item>
+            <Menu.Item key="Clerk">Clerk</Menu.Item>
+            <Menu.Item key="Supervisor">Supervisor</Menu.Item>
+        </Menu>
+    );
 
     render() {
-        const {username, password, confirm_password} = this.state;
+        const { username, password, confirm_password } = this.state;
         return (
             <div>
+                <p className="username-label">Please select user type</p>
+                <Dropdown.Button overlay={this.userTypes}>
+                    {this.state.user_type}
+                </Dropdown.Button>
                 <p className="username-label">Please enter username</p>
                 <Input className="username" onChange={this.onChangeUserName} value={username} type="text"
                        placeholder="username"/>
@@ -113,6 +133,8 @@ export class SecondContent extends Component {
         contact_no: "",
         birth_date: "",
         image: null,
+        application_date_object: moment('2015/01/01', dateFormat),
+        application_date: ""
     };
     //shortcut to instantiating one by one handleEmail, handleName, etc...
     // no need to understand just use haha
@@ -148,38 +170,36 @@ export class SecondContent extends Component {
 
     handleSelectChange = fieldName => value => {
         // this function is to handle drop-downs
-        const state = {...this.state};
+        const state = { ...this.state };
         state[fieldName] = value;
         this.setState({
             ...state
         });
     };
+    handleApplicationDateChange = (date, dateString) => this.setState({
+        application_date_object: date,
+        application_date: dateString
+    });
+
 
     getDataFromState = () => {
-        const form = {...this.state};
+        const form = { ...this.state };
         delete form.birth_date_object;
+        delete form.application_date_object;
         console.log("Form", form);
         return form;
     };
 
-    handleFileChange = ({file: image}) => this.setState({image});
+    handleFileChange = (e) => {
+        this.setState({
+            image: e.target.files[0]
+        })
+    };
 
     render() {
         return (
             <div>
-                <Dragger
-                    className="user-dragger"
-                    name='file'
-                    multiple='false'
-                    onChange={this.handleFileChange}
-                >
-                    <p className="ant-upload-drag-icon">
-                        <Icon type="inbox"/>
-                    </p>
-                    <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                    <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading
-                        company data or other band files</p>
-                </Dragger>
+                <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
                 <Input onChange={this.handleFormChange("name")} value={this.state.name} className="user-input"
                        type="text"
                        placeholder="enter name"/>
@@ -197,6 +217,7 @@ export class SecondContent extends Component {
                 <Input onChange={this.handleFormChange("contact_no")} value={this.state.contact_no}
                        className="user-input" addonBefore="+639"
                        placeholder="Enter contact number"/>
+                <DatePicker onChange={this.handleApplicationDateChange} format={dateFormat}/>
                 <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
             </div>
         )
@@ -209,29 +230,32 @@ export class Stepper extends Component {
         current: 0,
         username: "",
         password: "",
+        user_type: ""
     };
 
-    next = (username, password) => {
+    next = (username, password, user_type) => {
         const current = this.state.current + 1;
         //add the fields from first content to this class
         this.setState({
             current,
             username,
             password,
+            user_type
         });
         // console.log(this.state.userType);
     };
     onSubmit = form => {
         //append all items of this classes' states (username and password)
         // + personal info received from SecondContent (form)
-        const data = {...this.state, ...form};
+        const data = { ...this.state, ...form };
         const formData = new FormData();
         Object.entries(data).forEach(([key, value]) => formData.append(key, value));
+        console.log(formData);
 
         // for (const pair of formData.entries()) {
         //     console.log(pair[0] + ', ' + pair[1]);
         // }
-        postDataWithImage('/users', data)
+        postDataWithImage('/users', formData)
             .then(data => {
                 if (data.error) {
                     console.log("theres an error");
@@ -239,7 +263,8 @@ export class Stepper extends Component {
                         error: data["error"]
                     });
                     console.log(this.state.error);
-                } else {
+                }
+                else {
                     console.log(data["data"]);
                 }
             })
@@ -248,11 +273,11 @@ export class Stepper extends Component {
 
     prev() {
         const current = this.state.current - 1;
-        this.setState({current});
+        this.setState({ current });
     }
 
     render() {
-        const {current} = this.state;
+        const { current } = this.state;
         const steps = [{
             title: 'Set Username',
             content: <FirstContent
