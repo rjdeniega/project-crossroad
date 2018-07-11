@@ -122,8 +122,10 @@ class DeploymentView(APIView):
 
 class DeployedDrivers(APIView):
     @staticmethod
-    def get(request):
-        current_shift_iteration = ShiftIteration.objects.order_by("-date").first()
+    def post(request):
+        data = json.loads(request.body)
+        supervisor_id = data['supervisor_id']
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-date").first()
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id)
         deployments_serializer = DeploymentSerializer(deployments, many=True)
         return Response(data={
@@ -163,3 +165,17 @@ class RemittanceFormView(APIView):
     def delete(request, pk):
         RemittanceForm.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class ConfirmRemittanceForm(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        remittance_form_id = data['remittance_form_id']
+        remittance_form = RemittanceForm.objects.get(id=remittance_form_id)
+        remittance_form.confirm_remittance()
+        remittance_form = RemittanceFormSerializer(remittance_form)
+        return Response(data={
+            "remittance_form": remittance_form.data
+        }, status=status.HTTP_200_OK)
+
+

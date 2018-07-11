@@ -153,4 +153,10 @@ class RemittanceFormSerializer(ModelSerializer):
 
         remittance_form.total -= remittance_form.fuel_cost + remittance_form.other_cost
         remittance_form.save()
+
+        # update deployment data to finished
+        deployment = Deployment.objects.get(id=remittance_form.deployment_id)
+        deployment.status = 'F'
+        deployment.save()
+
         return remittance_form

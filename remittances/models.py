@@ -83,6 +83,10 @@ class RemittanceForm(SoftDeletionModel):
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
     total = DecimalField(default=0, max_digits=19, decimal_places=10) # income - costs
 
+    def confirm_remittance(self):
+        self.status = 'C' # set status to confirmed
+        self.save()
+
 
 class ConsumedTicket(SoftDeletionModel):
     remittance_form = ForeignKey(RemittanceForm, on_delete=models.CASCADE)
