@@ -20,6 +20,7 @@ const TabPane = Tabs.TabPane;
 
 export class RemittancePage extends Component {
     renderPage = () => {
+        const {photo} = JSON.parse(localStorage.user_staff);
         const user_type = JSON.parse(localStorage.user_type);
         if (user_type === "driver") {
             return <DriverRemittancePage/>

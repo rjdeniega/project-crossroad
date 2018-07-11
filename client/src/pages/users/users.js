@@ -41,10 +41,16 @@ export class UsersPage extends Component {
         users: null
     };
     componentDidMount() {
+        this.fetchUsers()
+    }
+    componentDidUpdate() {
+        this.fetchUsers()
+    }
+    fetchUsers(){
         return fetch('/users/all').then(response => response.json()).then(data => {
             console.log(data);
             this.setState({
-                users: data["users"]
+                users: data["users"].reverse()
             },()=>console.log(this.state.users));
         });
     }

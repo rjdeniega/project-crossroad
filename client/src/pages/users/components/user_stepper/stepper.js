@@ -266,6 +266,7 @@ export class Stepper extends Component {
                 }
                 else {
                     console.log(data["data"]);
+                    this.props.handleOk()
                 }
             })
             .catch(error => message.warning(error.message));
