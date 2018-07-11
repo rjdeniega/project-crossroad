@@ -15,7 +15,6 @@ import json
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.forms.models import model_to_dict
-from PIL import Image
 
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
