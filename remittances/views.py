@@ -99,12 +99,12 @@ class DeploymentView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
+        supervisor_id = data.pop('supervisor')
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
-            user = request.user
             deployment = deployment_serializer.create(
                 validated_data=deployment_serializer.validated_data,
-                user_id=user.id
+                supervisor_id=supervisor_id
             )
             return Response(data={
                 'deployment': deployment.status

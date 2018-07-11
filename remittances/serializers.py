@@ -91,12 +91,11 @@ class DeploymentSerializer(ModelSerializer):
         model = Deployment
         exclude = ('shift_iteration', )
 
-    def create(self, validated_data, user_id):
+    def create(self, validated_data, supervisor_id):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
 
         #get shift_iteration_id
-        supervisor_id = Supervisor.objects.get(user_id=user_id)
-        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).get_latest_by('date')
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by('-date').first()
         deployment = Deployment.objects.create(shift_iteration=current_shift_iteration , **validated_data)
 
         for assigned_ticket_data in assigned_tickets_data:
