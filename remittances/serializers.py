@@ -8,7 +8,6 @@ class DriversAssignedSerializer(ModelSerializer):
     class Meta:
         model = DriversAssigned
         exclude = ('shift',)
-        depth = 2
 
 
 class ShiftSerializer(ModelSerializer, serializers.Serializer):
@@ -22,7 +21,7 @@ class ShiftSerializer(ModelSerializer, serializers.Serializer):
         drivers_data = validated_data.pop('drivers_assigned')
         shift = Shift.objects.create(**validated_data)
         for driver_data in drivers_data:
-            DriversAssigned.objects.create(shift=shift, **validated_data)
+            DriversAssigned.objects.create(shift=shift, driver_id=driver_data['id'])
         return shift
 
 
@@ -39,10 +38,14 @@ class ScheduleSerializer(ModelSerializer):
         schedule.end_date = schedule.start_date + timedelta(days=14)  # start_date + 14 days = 15 days
         schedule.save()
         new_sched = Schedule.objects.get(id=schedule.id)  # gets django object to be used
+        print(shifts_data)
         for shift_data in shifts_data:
+            print(shift_data)
             drivers_data = shift_data.pop('drivers_assigned')
+            print(drivers_data)
             shift = Shift.objects.create(schedule=new_sched, **shift_data)
             for driver_data in drivers_data:
+                print(driver_data)
                 DriversAssigned.objects.create(shift=shift, **driver_data)
         return schedule
 
