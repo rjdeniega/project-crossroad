@@ -5,14 +5,14 @@
  * Created by JasonDeniega on 27/06/2018.
  */
 
-import React, {Component,Fragment} from 'react';
-import {Icon} from 'react-icons-kit'
-import {groupOutline} from 'react-icons-kit/typicons/groupOutline'
-import {users} from 'react-icons-kit/feather/'
-import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
-import {driversLicenseO} from 'react-icons-kit/fa/driversLicenseO'
-import {cube} from 'react-icons-kit/fa/cube'
-import {UserAvatar} from "../../../../components/avatar/avatar"
+import React, { Component, Fragment } from 'react';
+import { Icon } from 'react-icons-kit'
+import { groupOutline } from 'react-icons-kit/typicons/groupOutline'
+import { users } from 'react-icons-kit/feather/'
+import { u1F46E } from 'react-icons-kit/noto_emoji_regular/u1F46E'
+import { driversLicenseO } from 'react-icons-kit/fa/driversLicenseO'
+import { cube } from 'react-icons-kit/fa/cube'
+import { UserAvatar } from "../../../../components/avatar/avatar"
 import {
     Avatar,
     List,
@@ -29,19 +29,20 @@ import {
     Form,
     Icon as AntIcon
 } from 'antd'
-import {DatePicker} from 'antd';
-import {money} from 'react-icons-kit/fa/money'
+import { DatePicker } from 'antd';
+import { money } from 'react-icons-kit/fa/money'
 import './style.css'
-import {clockO} from 'react-icons-kit/fa/clockO'
-import {data} from '../../../users/users'
-import {getDrivers} from '../../../../network_requests/drivers'
+import { clockO } from 'react-icons-kit/fa/clockO'
+import { data } from '../../../users/users'
+import { getDrivers } from '../../../../network_requests/drivers'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
+import { postData } from "../../../../network_requests/general";
 
 const TabPane = Tabs.TabPane;
 const Step = Steps.Step;
 const ButtonGroup = Button.Group;
 const FormItem = Form.Item;
-const antIcon = <AntIcon type="loading" style={{fontSize: 70, color: 'var(--darkgreen)'}} icon="spin"/>;
+const antIcon = <AntIcon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)' }} icon="spin"/>;
 
 
 function onChange(value, dateString) {
@@ -54,6 +55,26 @@ function onOk(value) {
 }
 
 export class SupervisorFirstContent extends Component {
+    createShiftIteration = () => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        const data = {
+            "supervisor": id
+        };
+        postData('remittances/shift_iteration/', data)
+            .then((data) => {
+                console.log(data);
+                console.log(data["error"]);
+                if (data['errors']) {
+                    message.error(data['error'])
+                }
+                else {
+                    message.success(data["shift_type"] + "shift  " + data["date"]);
+                    this.props.next()
+                }
+            })
+            .catch(error => message.error(data["errors"]));
+    };
+
     render() {
         return (
             <div className="rem-first-content">
@@ -61,7 +82,7 @@ export class SupervisorFirstContent extends Component {
                     <Icon icon={clockO} size={30}/>
                     <p> Start Shift </p>
                 </div>
-                <Button type="primary" onClick={() => this.props.next()}>Simulan ang Shift</Button>
+                <Button type="primary" onClick={() => this.createShiftIteration()}>Simulan ang Shift</Button>
             </div>
         );
     }
@@ -82,8 +103,9 @@ export class SupervisorSecondContent extends Component {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
-                this.setState({drivers: data["drivers"]});
-            } else {
+                this.setState({ drivers: data["drivers"] });
+            }
+            else {
                 console.log(data["error"]);
             }
         });
@@ -125,7 +147,7 @@ export class SupervisorSecondContent extends Component {
     />);
 
     render() {
-        const {drivers} = this.state;
+        const { drivers } = this.state;
         const isLoading = drivers === null;
         return (
             <div className="rem-second-content">
@@ -136,31 +158,33 @@ export class SupervisorSecondContent extends Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                 >
-                    <div className="driver-deploy-input">
-                        <p><b>9 Peso Tickets</b></p>
-                        <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
-                        <InputNumber className="second-range-from"size="large" placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to"size="large" placeholder="dulo ng ticket"/>
+                    <div className="ticket-div">
+                        <div className="driver-deploy-input">
+                            <p><b>9 Peso Tickets</b><Button size="small">Add Void</Button></p>
+                            <div className="ticket-range-div">
+                                <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
+                                <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
+                                <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
+                                <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
+                            </div>
                         </div>
-                    </div>
-                    <div className="driver-deploy-input">
-                        <p><b>11 Peso Tickets</b></p>
-                        <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
-                        <InputNumber className="second-range-from"size="large" placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to"size="large" placeholder="dulo ng ticket"/>
+                        <div className="driver-deploy-input">
+                            <p><b>11 Peso Tickets</b></p>
+                            <div className="ticket-range-div">
+                                <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
+                                <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
+                                <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
+                                <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
+                            </div>
                         </div>
-                    </div>
-                    <div className="driver-deploy-input">
-                        <p><b>14 Peso Tickets</b></p>
-                        <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
-                        <InputNumber className="second-range-from"size="large" placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to"size="large" placeholder="dulo ng ticket"/>
+                        <div className="driver-deploy-input">
+                            <p><b>14 Peso Tickets</b></p>
+                            <div className="ticket-range-div">
+                                <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
+                                <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
+                                <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
+                                <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
+                            </div>
                         </div>
                     </div>
                 </Modal>
@@ -197,12 +221,12 @@ export class SupervisorRemittancePage extends Component {
 
     next = () => {
         const current = this.state.current + 1;
-        this.setState({current});
+        this.setState({ current });
     };
 
     prev() {
         const current = this.state.current - 1;
-        this.setState({current});
+        this.setState({ current });
     }
 
     showConfirm = () => {
@@ -222,7 +246,7 @@ export class SupervisorRemittancePage extends Component {
     };
 
     render() {
-        const {current} = this.state;
+        const { current } = this.state;
         const remSteps = [{
             title: 'Start Shift',
             content: <SupervisorFirstContent next={this.next}/>,

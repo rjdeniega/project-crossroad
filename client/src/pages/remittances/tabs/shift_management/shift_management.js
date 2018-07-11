@@ -1,25 +1,25 @@
 /**
  * Created by JasonDeniega on 05/07/2018.
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import {Button, notification} from 'antd';
-import {clockO} from 'react-icons-kit/fa/clockO'
-import {Icon} from 'react-icons-kit'
-import {DatePicker} from 'antd';
+import { Button, notification } from 'antd';
+import { clockO } from 'react-icons-kit/fa/clockO'
+import { Icon } from 'react-icons-kit'
+import { DatePicker } from 'antd';
 import moment from 'moment';
-import {Table, Avatar, Dropdown, Menu, message} from 'antd';
-import {Icon as AntIcon} from 'antd';
-import {postData} from "../../../../network_requests/general";
+import { Table, Avatar, Dropdown, Menu, message } from 'antd';
+import { Icon as AntIcon } from 'antd';
+import { getData, postData } from "../../../../network_requests/general";
 
 
-const {MonthPicker, RangePicker, WeekPicker} = DatePicker;
+const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 //this defines the struvcture of the table and how its rendered, in this case I just have one column
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
-    render: name => <div><Avatar style={{backgroundColor: '#4d9dd0', marginRight: '20px'}} icon="user"/>
+    render: name => <div><Avatar style={{ backgroundColor: '#4d9dd0', marginRight: '20px' }} icon="user"/>
         {name}</div>,
 }];
 
@@ -50,33 +50,38 @@ export class ShiftManagementPane extends Component {
         this.fetchSupervisors();
 
     }
+
     fetchDrivers() {
-        return fetch('/members/drivers').then(response => response.json()).then(data => {
+        return getData('/members/drivers').then(data => {
             if (!data["error"]) {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
                 const tableData = [];
                 //append drivers with their ids as key
+                console.log(data);
                 data["drivers"].forEach(item => tableData.push({
                     "key": item.id,
                     "name": item.name
                 }));
-                this.setState({drivers: tableData});
-            } else {
+                this.setState({ drivers: tableData });
+            }
+            else {
                 console.log(data["error"]);
             }
         });
     }
+
     fetchSupervisors() {
         console.log("entered here");
         return fetch('/members/supervisors').then(response => response.json()).then(data => {
             if (!data["error"]) {
                 //Were not appending it to a table so no necessary adjustments needed
-                this.setState({supervisors: data["supervisors"]},
+                this.setState({ supervisors: data["supervisors"] },
                     () => console.log(this.state.supervisors));
 
-            } else {
+            }
+            else {
                 console.log(data["error"]);
             }
         }, console.log(this.state.supervisors));
@@ -167,12 +172,14 @@ export class ShiftManagementPane extends Component {
                 am_shift_supervisor: event.item.props.children,
                 am_shift_supervisor_key: event.item.props.eventKey
             }, () => console.log("am" + this.state.am_shift_supervisor))
-        } else if (type === "PM") {
+        }
+        else if (type === "PM") {
             this.setState({
                 pm_shift_supervisor: event.item.props.children,
                 pm_shift_supervisor_key: event.item.props.eventKey
             }, () => console.log("pm" + this.state.pm_shift_supervisor))
-        } else {
+        }
+        else {
             this.setState({
                 mn_shift_supervisor: event.item.props.children,
                 mn_shift_supervisor_key: event.item.props.eventKey
@@ -183,7 +190,7 @@ export class ShiftManagementPane extends Component {
         const array_dict = [];
         array.map(item => {
             array_dict.push({
-                "driver":item
+                "driver": item
             })
         });
         return array_dict
@@ -217,13 +224,15 @@ export class ShiftManagementPane extends Component {
             .then((data) => {
                 console.log(data["error"]);
                 if (data['errors']) {
+                    console.log(data);
                     message.error(data['errors']['non_field_errors'])
-                } else {
+                }
+                else {
                     console.log(data['start_date']);
                     message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);
                 }
             })
-            .catch(error => message(error));
+            .catch(error => console.log(error));
     };
 
     renderSupervisors = () => this.state.supervisors.map(supervisor =>
@@ -242,7 +251,7 @@ export class ShiftManagementPane extends Component {
                 <div className="shifts-label-div">
                     <div className="tab-label">AM</div>
                     <Dropdown overlay={this.supervisors("AM")}>
-                        <Button className="supervisor-select" style={{marginLeft: 8}}>
+                        <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.am_shift_supervisor} <AntIcon type="down"/>
                         </Button>
                     </Dropdown>
@@ -254,7 +263,7 @@ export class ShiftManagementPane extends Component {
                 <div className="shifts-label-div">
                     <div className="tab-label">PM</div>
                     <Dropdown overlay={this.supervisors("PM")}>
-                        <Button className="supervisor-select" style={{marginLeft: 8}}>
+                        <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.pm_shift_supervisor}<AntIcon type="down"/>
                         </Button>
                     </Dropdown>
@@ -267,7 +276,7 @@ export class ShiftManagementPane extends Component {
                 <div className="shifts-label-div">
                     <div className="tab-label">Midnight</div>
                     <Dropdown overlay={this.supervisors("MN")}>
-                        <Button className="supervisor-select" style={{marginLeft: 8}}>
+                        <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.mn_shift_supervisor}<AntIcon type="down"/>
                         </Button>
                     </Dropdown>
@@ -284,8 +293,8 @@ export class ShiftManagementPane extends Component {
                 <div className="content-body">
                     <div className="shift-creation-body">
                         <div className="label-div">
-                            <div style={{color: 'var(--darkgreen)'}}>
-                                <Icon icon={clockO} size={30} style={{marginRight: '10px', marginTop: '5px'}}/>
+                            <div style={{ color: 'var(--darkgreen)' }}>
+                                <Icon icon={clockO} size={30} style={{ marginRight: '10px', marginTop: '5px' }}/>
                             </div>
                             <div className="tab-label">
                                 Create Shift

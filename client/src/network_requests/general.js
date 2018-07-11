@@ -7,7 +7,7 @@ const makeFetchArgs = (data, method, stringifyData) => ({
     credentials: 'same-origin', // include, same-origin, *omit
     headers: {
         'user-agent': 'Mozilla/4.0 MDN Example',
-        'content-type': 'application/json'
+        'content-type': 'application/json',
     },
     method: method, // *GET, POST, PUT, DELETE, etc.
     mode: 'cors', // no-cors, cors, *same-origin

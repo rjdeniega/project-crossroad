@@ -26,11 +26,13 @@ export default class App extends Component {
             user: localStorage.user,
             user_type: localStorage.user_type,
             user_staff: localStorage.user_staff,
+            token: localStorage.token,
         }
     }
 
     componentWillMount() {
         this.setState({
+            token: localStorage.token,
             user: localStorage.user,
             user_type: localStorage.user_type,
             user_staff: localStorage.user_staff,
@@ -58,7 +60,7 @@ export default class App extends Component {
         //.then = onSuccess .catch= onError
         postData('sign-in', data)
             .then(({ user, token, error, user_type, user_staff }) => {
-                console.log(user, error, user_type, user_staff);
+                console.log(user, token, user_type, user_staff);
                 if (error) {
                     message.error(error)
                 }
@@ -69,6 +71,7 @@ export default class App extends Component {
                     localStorage.user_staff = JSON.stringify(user_staff);
                     this.setState({
                         user: localStorage.user,
+                        token: localStorage.token,
                         user_type: localStorage.user_type,
                         user_staff: localStorage.user_staff,
                     });

@@ -167,6 +167,17 @@
 
 .driver-deploy-modal {
     height: 500px !important;
+    width: 800px! important;
+    top: 10px!important;
+    }
+.driver-deploy-modal .ant-modal-body{
+    display: grid!important;
+    grid-template-columns: 65% 35%;
+    }
+.ticket-div{
+    grid-column: 1/2;
+    height: 100%;
+    width: 100%;
     }
 
 .driver-deploy-modal * {

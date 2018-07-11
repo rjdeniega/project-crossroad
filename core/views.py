@@ -41,13 +41,9 @@ class SignInView(APIView):
             token = Token.objects.get(user=user)
         else:
             token = Token.objects.create(user=user)
-        # try:
-        #     user_type = user.groups.all()[0].name
-        # except:
-        #     user_type = 'Not Set'
-
         user_type = SignInView.get_user_type(user)
         user_staff = SignInView.get_user_staff(user_type, user)
+        request.user = user
         return Response(data={
             "token": token.key,
             "user": model_to_dict(user),
