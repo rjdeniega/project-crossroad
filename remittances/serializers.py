@@ -131,11 +131,11 @@ class RemittanceFormSerializer(ModelSerializer):
             assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket.assigned_ticket.id)
 
             if assigned_ticket.type == 'A':
-                consumed_ticket.total = 10 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+                consumed_ticket.total = 10 * (consumed_ticket.end_ticket - assigned_ticket.range_from + 1)
             elif assigned_ticket.type == 'B':
-                consumed_ticket.total = 12 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+                consumed_ticket.total = 12 * (consumed_ticket.end_ticket - assigned_ticket.range_from + 1)
             else:
-                consumed_ticket.total = 15 * (consumed_ticket.end_ticket - assigned_ticket.range_from)
+                consumed_ticket.total = 15 * (consumed_ticket.end_ticket - assigned_ticket.range_from + 1)
 
             consumed_ticket.save()
             remittance_form.total += consumed_ticket.total

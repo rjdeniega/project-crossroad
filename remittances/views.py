@@ -124,9 +124,9 @@ class RemittanceFormView(APIView):
     @staticmethod
     def get(request):
         remittance_forms = RemittanceFormSerializer(RemittanceForm.objects.all(), many=True)
-        am_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift__type='A'), many=True)
-        pm_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift__type='P'), many=True)
-        mn_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift__type='M'), many=True)
+        am_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='A'), many=True)
+        pm_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='P'), many=True)
+        mn_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='M'), many=True)
 
         return Response(data={
             "remittance_forms": remittance_forms.data,
