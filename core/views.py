@@ -120,9 +120,9 @@ class CreateUserView(APIView):
         user_staff = CreateUserView.create_user_type(user_type, data)
         # user_staff.photo = Image.open(photo)
         # user_staff.save()
-        driver = DriverSerializer(user_staff)
+        instance = CreateUserView.get_serialized_data(user_type, user_staff)
         return Response(data={
-            "user_staff": driver.data,
+            "user_staff": instance.data,
             "user": model_to_dict(user)
         }, status=200, content_type="application/json")
 
@@ -130,6 +130,23 @@ class CreateUserView(APIView):
     def create_user_type(user_type, data):
         if user_type == "Driver":
             return Driver.objects.create(**data)
+        if user_type == "Clerk":
+            return Clerk.objects.create(**data)
+        if user_type == "OM":
+            return OperationsManager.objects.create(**data)
+        if user_type == "Supervisor":
+            return Supervisor.objects.create(**data)
+
+    @staticmethod
+    def get_serialized_data(user_type, user_staff):
+        if user_type == "Driver":
+            return DriverSerializer(user_staff)
+        if user_type == "Clerk":
+            return ClerkSerializer(user_staff)
+        if user_type == "OM":
+            return OperationsManagerSerializer(user_staff)
+        if user_type == "Supervisor":
+            return SupervisorSerializer(user_staff)
 
 
 class CreateDefaultUserView(APIView):
