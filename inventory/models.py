@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 from django.db.models import ForeignKey
@@ -27,12 +28,19 @@ class Shuttle(SoftDeletionModel):
 
 
 class Item(SoftDeletionModel):
-
     name = CharField(max_length=64)
     quantity = PositiveIntegerField()
     brand = CharField(max_length=64)
     vendor = CharField(max_length=64)
     unit_price = PositiveIntegerField()
+    created = models.DateTimeField(editable=False)
+    modified = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Item, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name}"
@@ -72,6 +80,14 @@ class ItemMovement(SoftDeletionModel):
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
+    created = models.DateTimeField(editable=False)
+    modified = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(ItemMovement, self).save(*args, **kwargs)
 
 # TODO - fill these up
 
