@@ -10,6 +10,13 @@ class DriversAssignedSerializer(ModelSerializer):
         exclude = ('shift',)
 
 
+class PlannedDriversSerializer(ModelSerializer):
+    class Meta:
+        model = DriversAssigned
+        fields = '__all__'
+        depth = 2
+
+
 class ShiftSerializer(ModelSerializer, serializers.Serializer):
     drivers_assigned = DriversAssignedSerializer(many=True, write_only=True)
 

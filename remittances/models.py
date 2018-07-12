@@ -45,7 +45,7 @@ class Shift(SoftDeletionModel):
 
 
 class DriversAssigned(SoftDeletionModel):
-    driver = ForeignKey(Driver, on_delete=models.CASCADE)
+    driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 

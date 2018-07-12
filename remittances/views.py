@@ -92,7 +92,7 @@ class PlannedDrivers(APIView):
         supervisor_id = data['supervisor_id']
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
-        drivers_assigned = DriversAssignedSerializer(DriversAssigned.objects.filter(shift=current_shift.id), many=True)
+        drivers_assigned = PlannedDriversSerializer(DriversAssigned.objects.filter(shift=current_shift.id), many=True)
         return Response(data={
             "drivers_assigned": drivers_assigned.data
         }, status=status.HTTP_200_OK)

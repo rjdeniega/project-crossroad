@@ -38,6 +38,9 @@ class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
 
+    def __str__(self):
+        return self.name
+
 
 class Clerk(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
