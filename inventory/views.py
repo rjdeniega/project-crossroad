@@ -64,3 +64,15 @@ class ItemView(APIView):
         return Response(item_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class QuantityRestock(APIView):
+    @staticmethod
+    def put(request, pk):
+        quants = json.loads(request.body)
+        item = Item.objects.get(id=pk)
+        item.quantity = quants['new_quantity']
+        item_movement = ItemMovement(item=Item.objects.get(id=item.id), type='B', quantity=quants['added_quantity'])
+        item.save()
+        item_movement.save()
+        return Response(data={
+            'message': item.name
+        }, status=status.HTTP_200_OK)

@@ -6,6 +6,7 @@ from django.db.models import CharField, PositiveIntegerField, DateField, Integer
 from django.db.models import ManyToManyField
 
 from core.models import SoftDeletionModel
+import json
 
 MOVEMENT_TYPE = [
     ('G', 'Get'),
@@ -15,6 +16,7 @@ MOVEMENT_TYPE = [
 
 
 class Shuttle(SoftDeletionModel):
+
     plate_number = CharField(max_length=6, unique=True)
     make = CharField(max_length=64)
     model = CharField(max_length=64)
@@ -25,6 +27,7 @@ class Shuttle(SoftDeletionModel):
 
 
 class Item(SoftDeletionModel):
+
     name = CharField(max_length=64)
     quantity = PositiveIntegerField()
     brand = CharField(max_length=64)

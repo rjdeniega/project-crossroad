@@ -14,7 +14,9 @@ import './style.css'
 
 const data = [];
 
-
+function hasErrors(fieldsError){
+    return Object.keys(fieldsError).some(field => fieldsError[field]);
+}
 
 /**
  *  Function that checks whether the item is less than 3 items to comply with the business rule
@@ -81,12 +83,105 @@ class EditableCell extends React.Component {
         )
     }
 }
-class RestockModal extends React.Component{
-    state = {
-        visible: false,
-        item: this.props.item,
+
+class RestockForm extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+        item: props.item,
         inputValue: '',
-    };
+        };
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+
+    componentDidMount(){
+        this.props.form.validateFields();
+    }
+
+    handleSubmit(e){
+        e.preventDefault();
+        this.props.onSubmit();
+        const new_quantity = this.props.quantity.value + this.props.item.quantity;
+        console.log(this.props.quantity.value);
+        console.log(this.props.item.quantity);
+        let quants = {
+            added_quantity: this.props.quantity.value,
+            new_quantity: new_quantity
+        };
+        fetch('inventory/items/restock/' + this.props.item.id,{
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(quants),
+        }).then(data => data).then(data => {message.success('Quantity has been added')});
+        console.log(new_quantity)
+
+    }
+
+    render(){
+
+        const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
+        const quantityError = isFieldTouched('quantity') && getFieldError('quantity');
+
+        return(
+            <Form onSubmit={this.handleSubmit}>
+                        <FormItem className='quantity-label' label='Quantity'
+                                  validateStatus={quantityError ? 'error' : ''}
+                                  help={quantityError || ''}>
+                                  {getFieldDecorator('quantity',{
+                                      rules: [{
+                                          required: true,
+                                          message: 'Please input quantity',
+                                      }]
+                                  })(
+                                      <InputNumber className='quantity' type="text" placeholder="Quantity"
+                                                   formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
+                                )}
+                            </FormItem>
+                            <FormItem>
+                              <Button
+                                type="primary"
+                                htmlType="submit"
+                                disabled={hasErrors(getFieldsError())}
+                              >
+                                Submit
+                              </Button>
+                            </FormItem>
+                    </Form>
+        )
+    }
+}
+
+const RestockFormInit = Form.create({
+    onFieldsChange(props, changedFields){
+        props.onChange(changedFields);
+    },
+    mapPropsToFields(props){
+        return{
+            quantity: Form.createFormField({
+                ...props.quantity,
+                value: props.quantity.value,
+            }),
+        }
+    },
+})(RestockForm);
+
+class RestockModal extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            visible: false,
+            item: props.item,
+            fields: {
+                quantity: {
+                    value: ''
+                }
+            }
+        };
+    }
 
     showModal = () => {
         this.setState({
@@ -95,46 +190,38 @@ class RestockModal extends React.Component{
     };
 
     handleOk = (e) => {
-        console.log(e);
         this.setState({
             visible: false,
         });
-        console.log(this.state.item);
-        console.log(this.state.inputValue)
     };
 
     handleCancel = (e) => {
-        console.log(e);
         this.setState({
             visible: false,
         });
     };
 
+    handleFormChange = (changedFields) => {
+        this.setState(({fields}) => ({
+            fields: {...fields, ...changedFields}
+        }));
+    };
+
     render(){
+        const fields = this.state.fields;
         return(
             <div>
                 <a onClick={this.showModal}>Restock</a>
                 <Modal title={"Restock " + this.state.item.name}
                        visible={this.state.visible}
-                       onOk={this.handleOk}
-                       onCancel={this.handleCancel}>
-                    <Form onSubmit={this.handleOk}>
-                        <FormItem className='quantity-label' label='Initial Quantity'>
-                                <InputNumber className='quantity' type="text" placeholder="Initial Quantity"
-                                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                        onChange={evt => this.updateInputValue(evt)}/>
-                        </FormItem>
-                    </Form>
+                       onCancel={this.handleCancel} footer='false'>
+                    <RestockFormInit {...fields} onChange={this.handleFormChange}
+                                     onSubmit={this.handleOk} item={this.state.item}/>
                 </Modal>
             </div>
         )
     }
 
-    updateInputValue(evt){
-        this.setState({
-            inputValue: evt.value
-        })
-    }
 }
 /*
  * The content of the dropdown menu
