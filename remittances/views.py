@@ -88,9 +88,8 @@ class ShiftIterationView(APIView):
 
 class PlannedDrivers(APIView):
     @staticmethod
-    def get(request):
-        data = json.loads(request.body)
-        supervisor_id = data['supervisor_id']
+    def get(request,supervisor_id):
+        print(supervisor_id)
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
         drivers_assigned = PlannedDriversSerializer(DriversAssigned.objects.filter(shift=current_shift.id), many=True)

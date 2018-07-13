@@ -36,7 +36,7 @@ import { clockO } from 'react-icons-kit/fa/clockO'
 import { data } from '../../../users/users'
 import { getDrivers } from '../../../../network_requests/drivers'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { postData } from "../../../../network_requests/general";
+import { postData, getData } from "../../../../network_requests/general";
 
 const TabPane = Tabs.TabPane;
 const Step = Steps.Step;
@@ -98,15 +98,20 @@ export class SupervisorSecondContent extends Component {
     }
 
     fetchDrivers() {
-        return fetch('/members/drivers').then(response => response.json()).then(data => {
-            if (!data["error"]) {
+        const {id} = JSON.parse(localStorage.user_staff);
+        return getData('/remittances/shifts/assigned_drivers/'+id).then(data => {
+            if (!data.error) {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
-                this.setState({ drivers: data["drivers"] });
+                const drivers = data.drivers_assigned.map(tuple =>
+                    tuple.driver
+                );
+                console.log(drivers);
+                this.setState({ drivers: drivers });
             }
             else {
-                console.log(data["error"]);
+                console.log(data.error);
             }
         });
     }
