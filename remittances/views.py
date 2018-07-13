@@ -85,9 +85,10 @@ class ShiftIterationView(APIView):
                 'errors': shift_iteration_serializer.errors
             })
 
+
 class PlannedDrivers(APIView):
     @staticmethod
-    def post(request):
+    def get(request):
         data = json.loads(request.body)
         supervisor_id = data['supervisor_id']
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
@@ -137,20 +138,25 @@ class DeployedDrivers(APIView):
     def post(request):
         data = json.loads(request.body)
         supervisor_id = data['supervisor_id']
-        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-date").first()
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
+            "-date").first()
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id)
         deployments_serializer = DeploymentSerializer(deployments, many=True)
         return Response(data={
             "deployed_drivers": deployments_serializer.data
         }, status=status.HTTP_200_OK)
 
+
 class RemittanceFormView(APIView):
     @staticmethod
     def get(request):
         remittance_forms = RemittanceFormSerializer(RemittanceForm.objects.all(), many=True)
-        am_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='A'), many=True)
-        pm_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='P'), many=True)
-        mn_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='M'), many=True)
+        am_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='A'),
+                                            many=True)
+        pm_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='P'),
+                                            many=True)
+        mn_forms = RemittanceFormSerializer(RemittanceForm.objects.filter(deployment__shift_iteration__shift__type='M'),
+                                            many=True)
 
         return Response(data={
             "remittance_forms": remittance_forms.data,
@@ -178,6 +184,7 @@ class RemittanceFormView(APIView):
         RemittanceForm.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class ConfirmRemittanceForm(APIView):
     @staticmethod
     def post(request):
@@ -189,5 +196,3 @@ class ConfirmRemittanceForm(APIView):
         return Response(data={
             "remittance_form": remittance_form.data
         }, status=status.HTTP_200_OK)
-
-

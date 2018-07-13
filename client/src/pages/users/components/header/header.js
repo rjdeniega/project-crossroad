@@ -24,11 +24,12 @@ export class Header extends Component {
             visible: true,
         });
     };
-    handleOk = () => {
+    handleOk = (newUser) => {
         message.success('User successfully added!');
         this.setState({
             visible: false,
         });
+        this.props.onNewUserCreate(newUser)
     };
     handleCancel = (e) => {
         console.log(e);
@@ -55,7 +56,7 @@ export class Header extends Component {
                         onCancel={this.handleCancel}
                         footer={null}
                     >
-                        <Stepper handleOk={this.handleOk}/>
+                        <Stepper handleOk={user => this.handleOk(user)}/>
                     </Modal>
                 </div>
                 {/*to transfer these components*/}

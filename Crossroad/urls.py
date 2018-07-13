@@ -22,11 +22,14 @@ from core.views import *
 from members.urls import *
 from inventory.urls import *
 from remittances.urls import *
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('sign-in', SignInView.as_view()),
     path('raw-user', CreateDefaultUserView.as_view()),
     path('users', CreateUserView.as_view()),
+    path('staff_accounts', PersonView.as_view()),
     path('users/is_unique', UserHandler().as_view()),
     path('users/all', UserView.as_view()),
     path('admin/', admin.site.urls),
@@ -34,3 +37,7 @@ urlpatterns = [
     path('inventory/', include(inventory_urls)),
     path('remittances/', include(remittance_urls))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

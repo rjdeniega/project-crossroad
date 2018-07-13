@@ -1,15 +1,15 @@
 /**
  * Created by JasonDeniega on 24/05/2018.
  */
-import React, {Component} from "react"
-import {Header} from "./components/header/header"
+import React, { Component } from "react"
+import { Header } from "./components/header/header"
 import '../../utilities/colorsFonts.css'
-import {List, Avatar} from 'antd'
+import { List, Avatar } from 'antd'
 import './style.css'
 import emptyStateImage from '../../images/empty state record.png'
-import {Spin,Icon} from 'antd';
+import { Spin, Icon } from 'antd';
 
-const antIcon = <Icon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)'}} spin />;
+const antIcon = <Icon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)' }} spin/>;
 export const data = [
     {
         title: 'Ant Design Title 1',
@@ -40,32 +40,48 @@ export class UsersPage extends Component {
     state = {
         users: null
     };
+
     componentDidMount() {
         this.fetchUsers()
     }
+
     componentDidUpdate() {
-        this.fetchUsers()
+
     }
-    fetchUsers(){
-        return fetch('/users/all').then(response => response.json()).then(data => {
-            console.log(data);
+
+    onNewUserCreate = (user) => {
+        this.setState({
+            users: [user, ...this.state.users]
+        })
+    };
+
+    fetchUsers() {
+        return fetch('/staff_accounts').then(response => response.json()).then(data => {
             this.setState({
-                users: data["users"].reverse()
-            },()=>console.log(this.state.users));
+                users: data["people"].reverse()
+            }, () => console.log(this.state.users));
         });
     }
+
+    renderListItemPhoto = photoSrc => {
+        console.log("Photo src", photoSrc);
+        return  <Avatar className="list-avatar" size="large"
+                src={photoSrc ? photoSrc : "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>;
+    };
 
     renderList = () => (
         <List
             className="user-list"
             itemLayout="horizontal"
-            dataSource={this.state.users}
+            dataSource={(() => {
+                console.log(this.state.users);
+                return this.state.users;
+            })()}
             renderItem={item => (
                 <List.Item className="list-item">
                     <List.Item.Meta
-                        avatar={<Avatar className="list-avatar" size="large"
-                                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                        title={<a className="list-title" href="https://ant.design">{item.username}</a>}
+                        avatar={this.renderListItemPhoto(item.photo)}
+                        title={<a className="list-title" href="https://ant.design">{item.name}</a>}
                         description={<p className="list-description"> operations manager</p>}
                     />
                 </List.Item>
@@ -74,11 +90,11 @@ export class UsersPage extends Component {
     );
 
     render() {
-        const {users} = this.state;
+        const { users } = this.state;
         const isLoading = users === null;
         return (
             <div className="body-wrapper">
-                <Header/>
+                <Header onNewUserCreate={this.onNewUserCreate}/>
                 <div className="page-body">
                     <div className="user-list-wrapper">
                         {users && this.renderList()}

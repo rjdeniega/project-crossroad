@@ -265,11 +265,12 @@ export class Stepper extends Component {
                     console.log(this.state.error);
                 }
                 else {
-                    console.log(data["data"]);
-                    this.props.handleOk()
+                    console.log(data);
+                    console.log(data.user_staff);
+                    this.props.handleOk(data.user_staff);
                 }
             })
-            .catch(error => message.warning(error.message));
+            .catch(error => console.log(error));
     };
 
     prev() {

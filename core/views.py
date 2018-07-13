@@ -107,8 +107,9 @@ class CreateUserView(APIView):
         print(request.POST.get('application_date'))
         print(request.POST.get('birth_date'))
         data = {
-            "email": request.POST.get('password'),
             "user": user,
+            "name": request.POST.get('name'),
+            "email": request.POST.get('email'),
             "sex": request.POST.get('sex'),
             "address": request.POST.get('address'),
             "contact_no": request.POST.get('contact_no'),
@@ -116,25 +117,27 @@ class CreateUserView(APIView):
             "application_date": request.POST.get('application_date'),
             "photo": request.FILES.get('image')
         }
-        user_staff = CreateUserView.create_user_type(user_type, data)
+        user_staff = CreateUserView.create_user_type(user, user_type, data)
+        print(model_to_dict(user_staff))
         # user_staff.photo = Image.open(photo)
         # user_staff.save()
+        new_user = UserSerializer(user)
         instance = CreateUserView.get_serialized_data(user_type, user_staff)
         return Response(data={
             "user_staff": instance.data,
-            "user": model_to_dict(user)
+            "user": new_user.data,
         }, status=200, content_type="application/json")
 
     @staticmethod
-    def create_user_type(user_type, data):
+    def create_user_type(user, user_type, data):
         if user_type == "Driver":
-            return Driver.objects.create(**data)
+            return Driver.objects.create(user=user, **data)
         if user_type == "Clerk":
-            return Clerk.objects.create(**data)
+            return Clerk.objects.create(user=user, **data)
         if user_type == "OM":
-            return OperationsManager.objects.create(**data)
+            return OperationsManager.objects.create(user=user, **data)
         if user_type == "Supervisor":
-            return Supervisor.objects.create(**data)
+            return Supervisor.objects.create(user=user, **data)
 
     @staticmethod
     def get_serialized_data(user_type, user_staff):
@@ -207,4 +210,30 @@ class UserView(APIView):
 
         return Response(data={
             "users": users.data
+        }, status=status.HTTP_200_OK)
+
+
+class PersonView(APIView):
+    @staticmethod
+    def get(request):
+        people = PersonSerializer(Person.objects.all(), many=True)
+
+        return Response(data={
+            "people": people.data
+        }, status=status.HTTP_200_OK)
+
+
+class StaffView(APIView):
+    @staticmethod
+    def get(request):
+        drivers = DriverSerializer(Driver.objects.all(), many=True)
+        managers = OperationsManagerSerializer(OperationsManager.objects.all(), many=True)
+        clerks = ClerkSerializer(Clerk.objects.all(), many=True)
+        supervisors = SupervisorSerializer(Supervisor.objects.all(), many=True)
+
+        return Response(data={
+            "drivers": drivers.data,
+            "managers": managers.data,
+            "clerks": clerks.data,
+            "supervisors": supervisors.data
         }, status=status.HTTP_200_OK)

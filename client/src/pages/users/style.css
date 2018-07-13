@@ -123,4 +123,7 @@
   cursor: not-allowed;
   opacity: 0.5;
 }
+.list-avatar img{
+    object-fit: cover!important;
+    }
 
