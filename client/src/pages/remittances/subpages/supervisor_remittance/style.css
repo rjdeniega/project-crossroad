@@ -312,7 +312,17 @@
     font-weight: 500 !important;
     border-radius: 30px !important;
     }
-
+.view-button {
+    border: 1px solid var(--darkgreen) !important;
+    color: var(--darkgreen) !important;
+    height: 25px!important;
+    font-size: 11px !important;
+    font-weight: 500 !important;
+    border-radius: 30px !important;
+    }
+.add-void-input{
+    width: 100%!important;
+    }
 /*change step active color*/
 /*.rem-step .ant-steps-item-process .ant-steps-item-icon{*/
 /*background: var(--orange);*/
