@@ -88,7 +88,7 @@ class ShiftIterationView(APIView):
 
 class PlannedDrivers(APIView):
     @staticmethod
-    def get(request,supervisor_id):
+    def get(request, supervisor_id):
         print(supervisor_id)
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
@@ -98,12 +98,24 @@ class PlannedDrivers(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class SubDrivers(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
+        drivers_assigned = PlannedDriversSerializer(
+            DriversAssigned.objects.filter(shift__schedule=active_sched.id).exclude(shift=current_shift.id),
+            many=True)
+        return Response(data={
+            "sub_drivers": drivers_assigned.data
+        }, status=status.HTTP_200_OK)
+
+
 class DeploymentView(APIView):
     @staticmethod
     def get(request):
         deployments = DeploymentSerializer(Deployment.objects.all(), many=True)
 
-        # edit later
         return Response(data={
             "deployments": deployments.data,
         }, status=status.HTTP_200_OK)
