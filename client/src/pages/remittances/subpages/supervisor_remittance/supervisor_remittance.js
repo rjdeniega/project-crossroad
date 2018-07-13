@@ -215,44 +215,19 @@ export class SupervisorSecondContent extends Component {
         const { drivers } = this.state;
         const isLoading = drivers === null;
         return (
-            <div className="second-content-container">
-                    <div className="rem-second-content">
-                        {this.renderDeploymentModal()}
-                        <div className="content-label">
-                            <Icon icon={clockO} size={30}/>
-                            <p> Mag-Deploy ng Drivers </p>
-                        </div>
-                        <div className="driver-list-wrapper">
-                            {drivers && this.renderDriversList()}
-                            {isLoading &&
-                            <Spin className="user-spinner" indicator={antIcon} size="large"/>
-                            }
-                        </div>
-                        <Button type="primary" onClick={() => this.props.next()}>Sunod</Button>
-                    </div>
-                <div className="sv-deployed-drivers">
-                    <Divider orientation="left">Deployed Drivers</Divider>
-                    <List
-                        className="deployed-list"
-                        itemLayout="horizontal"
-                        dataSource={data}
-                        renderItem={item => (
-                            <List.Item key={item.key} className="deploy-list-item">
-                                <List.Item.Meta
-                                    avatar={<Avatar
-                                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                                    title={<p className="deployed-drivers-list-title">{item.title}</p>}
-                                />
-                                <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>
-                            </List.Item>
-                        )}
-                    />
+            <div className="rem-second-content">
+                {this.renderDeploymentModal()}
+                <div className="content-label">
+                    <Icon icon={clockO} size={30}/>
+                    <p> Mag-Deploy ng Drivers </p>
                 </div>
-                <div className="sv-history">
-                    <Divider orientation="left">My Past Transactions</Divider>
-                    <img className="empty-image" src={emptyStateImage}/>
-                    <p>Under Construction</p>
+                <div className="driver-list-wrapper">
+                    {drivers && this.renderDriversList()}
+                    {isLoading &&
+                    <Spin className="user-spinner" indicator={antIcon} size="large"/>
+                    }
                 </div>
+                <Button type="primary" onClick={() => this.props.next()}>Sunod</Button>
             </div>
         );
     }
@@ -284,7 +259,6 @@ export class SupervisorLastContent extends Component {
             }
         });
     }
-
     renderDriversList = () => ( <List
         className="driver-list"
         itemLayout="horizontal"
@@ -387,18 +361,42 @@ export class SupervisorRemittancePage extends Component {
                     <UserAvatar/>
                 </div>
                 <div className="supervisor-rem-content">
-
-                    <div className="sv-steps-content">
-                        {remSteps[this.state.current].content}
+                    <div className="sv-transactions">
+                        <div className="sv-steps-content">
+                            {remSteps[this.state.current].content}
+                        </div>
+                        <div className="steps-action">
+                            {/*{*/}
+                            {/*this.state.current > 0*/}
+                            {/*&&*/}
+                            {/*<Button style={{marginLeft: 8}} onClick={() => this.prev()}>*/}
+                            {/*Previous*/}
+                            {/*</Button>*/}
+                            {/*}*/}
+                        </div>
                     </div>
-                    <div className="steps-action">
-                        {/*{*/}
-                        {/*this.state.current > 0*/}
-                        {/*&&*/}
-                        {/*<Button style={{marginLeft: 8}} onClick={() => this.prev()}>*/}
-                        {/*Previous*/}
-                        {/*</Button>*/}
-                        {/*}*/}
+                    <div className="sv-deployed-drivers">
+                        <Divider orientation="left">Deployed Drivers</Divider>
+                        <List
+                            className="deployed-list"
+                            itemLayout="horizontal"
+                            dataSource={data}
+                            renderItem={item => (
+                                <List.Item key={item.key} className="deploy-list-item">
+                                    <List.Item.Meta
+                                        avatar={<Avatar
+                                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                                        title={<p className="deployed-drivers-list-title">{item.title}</p>}
+                                    />
+                                    <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>
+                                </List.Item>
+                            )}
+                        />
+                    </div>
+                    <div className="sv-history">
+                        <Divider orientation="left">My Past Transactions</Divider>
+                        <img className="empty-image" src={emptyStateImage}/>
+                        <p>Under Construction</p>
                     </div>
                 </div>
             </div>
