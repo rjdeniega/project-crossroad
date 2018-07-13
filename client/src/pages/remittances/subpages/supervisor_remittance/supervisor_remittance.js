@@ -91,6 +91,7 @@ export class SupervisorSecondContent extends Component {
     state = {
         visible: false,
         drivers: null,
+        void_tickets: null,
     };
 
     componentDidMount() {
@@ -98,8 +99,8 @@ export class SupervisorSecondContent extends Component {
     }
 
     fetchDrivers() {
-        const {id} = JSON.parse(localStorage.user_staff);
-        return getData('/remittances/shifts/assigned_drivers/'+id).then(data => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        return getData('/remittances/shifts/assigned_drivers/' + id).then(data => {
             if (!data.error) {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
@@ -132,7 +133,7 @@ export class SupervisorSecondContent extends Component {
             visible: false,
         });
     };
-    renderList = () => ( <List
+    renderDriversList = () => ( <List
         className="driver-list"
         itemLayout="horizontal"
         dataSource={this.state.drivers}
@@ -151,69 +152,175 @@ export class SupervisorSecondContent extends Component {
         )}
     />);
 
+    renderDeploymentModal = () => (
+        <Modal
+            className="driver-deploy-modal"
+            title="Deploy Driver"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+        >
+            <div className="ticket-div">
+                <div className="driver-deploy-input">
+                    <p><b>10 Peso Tickets</b><Button size="small">Add Void</Button></p>
+                    <div className="ticket-range-div">
+                        <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
+                        <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
+                        <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
+                        <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
+                    </div>
+                </div>
+                <div className="driver-deploy-input">
+                    <p><b>12 Peso Tickets</b></p>
+                    <div className="ticket-range-div">
+                        <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
+                        <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
+                        <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
+                        <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
+                    </div>
+                </div>
+                <div className="driver-deploy-input">
+                    <p><b>15 Peso Tickets</b></p>
+                    <div className="ticket-range-div">
+                        <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
+                        <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
+                        <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
+                        <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
+                    </div>
+                </div>
+            </div>
+            <div className="void-tickets">
+                <p><b>Void tickets</b></p>
+                {this.state.void_tickets && <List
+                    className="void-list"
+                    itemLayout="horizontal"
+                    dataSource={this.state.void_tickets}
+                    renderItem={item => (
+                        <List.Item className="void-item">
+                            <List.Item.Meta title="29129212121"/>
+                        </List.Item>
+                    )}
+                />}
+                {!this.state.void_tickets &&
+                <div className="void-empty-state">
+                    <img className="void-empty-img" src={emptyStateImage}/>
+                    <p className="empty-label"> walang void tickets</p>
+                </div>
+                }
+            </div>
+        </Modal>
+    );
+
     render() {
         const { drivers } = this.state;
         const isLoading = drivers === null;
         return (
-            <div className="rem-second-content">
-                <Modal
-                    className="driver-deploy-modal"
-                    title="Deploy Driver"
-                    visible={this.state.visible}
-                    onOk={this.handleOk}
-                    onCancel={this.handleCancel}
-                >
-                    <div className="ticket-div">
-                        <div className="driver-deploy-input">
-                            <p><b>9 Peso Tickets</b><Button size="small">Add Void</Button></p>
-                            <div className="ticket-range-div">
-                                <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
-                                <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
-                                <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
-                                <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
-                            </div>
+            <div className="second-content-container">
+                    <div className="rem-second-content">
+                        {this.renderDeploymentModal()}
+                        <div className="content-label">
+                            <Icon icon={clockO} size={30}/>
+                            <p> Mag-Deploy ng Drivers </p>
                         </div>
-                        <div className="driver-deploy-input">
-                            <p><b>11 Peso Tickets</b></p>
-                            <div className="ticket-range-div">
-                                <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
-                                <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
-                                <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
-                                <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
-                            </div>
+                        <div className="driver-list-wrapper">
+                            {drivers && this.renderDriversList()}
+                            {isLoading &&
+                            <Spin className="user-spinner" indicator={antIcon} size="large"/>
+                            }
                         </div>
-                        <div className="driver-deploy-input">
-                            <p><b>14 Peso Tickets</b></p>
-                            <div className="ticket-range-div">
-                                <InputNumber className="first-range-from" size="large" placeholder="simula ng ticket"/>
-                                <InputNumber className="first-range-to" size="large" placeholder="dulo ng ticket"/>
-                                <InputNumber className="second-range-from" size="large" placeholder="simula ng ticket"/>
-                                <InputNumber className="second-range-to" size="large" placeholder="dulo ng ticket"/>
-                            </div>
-                        </div>
+                        <Button type="primary" onClick={() => this.props.next()}>Sunod</Button>
                     </div>
-                </Modal>
-                <div className="content-label">
-                    <Icon icon={clockO} size={30}/>
-                    <p> Mag-Deploy ng Drivers </p>
+                <div className="sv-deployed-drivers">
+                    <Divider orientation="left">Deployed Drivers</Divider>
+                    <List
+                        className="deployed-list"
+                        itemLayout="horizontal"
+                        dataSource={data}
+                        renderItem={item => (
+                            <List.Item key={item.key} className="deploy-list-item">
+                                <List.Item.Meta
+                                    avatar={<Avatar
+                                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                                    title={<p className="deployed-drivers-list-title">{item.title}</p>}
+                                />
+                                <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>
+                            </List.Item>
+                        )}
+                    />
                 </div>
-                <div className="driver-list-wrapper">
-                    {drivers && this.renderList()}
-                    {isLoading &&
-                    <Spin className="user-spinner" indicator={antIcon} size="large"/>
-                    }
+                <div className="sv-history">
+                    <Divider orientation="left">My Past Transactions</Divider>
+                    <img className="empty-image" src={emptyStateImage}/>
+                    <p>Under Construction</p>
                 </div>
-                <Button type="primary" onClick={() => this.props.next()}>Sunod</Button>
             </div>
         );
     }
 }
 export class SupervisorLastContent extends Component {
+    state = {
+        drivers: null,
+    };
+
+    componentDidMount() {
+        this.fetchDrivers()
+    }
+
+    fetchDrivers() {
+        const { id } = JSON.parse(localStorage.user_staff);
+        return getData('/remittances/shifts/assigned_drivers/' + id).then(data => {
+            if (!data.error) {
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
+                const drivers = data.drivers_assigned.map(tuple =>
+                    tuple.driver
+                );
+                console.log(drivers);
+                this.setState({ drivers: drivers });
+            }
+            else {
+                console.log(data.error);
+            }
+        });
+    }
+
+    renderDriversList = () => ( <List
+        className="driver-list"
+        itemLayout="horizontal"
+        dataSource={this.state.drivers}
+        renderItem={driver => (
+            <List.Item className="driver-item">
+                <List.Item.Meta
+                    avatar={<Avatar
+                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                    title={<a href="https://ant.design">{driver.name}</a>}
+                />
+                <div>
+                    <Button className="deploy-button" type="ghost"
+                            onClick={this.showModal}>Deploy</Button>
+                </div>
+            </List.Item>
+        )}
+    />);
+
 
     render() {
+        const { drivers } = this.state;
+        const isLoading = drivers === null;
         return (
-            <div>
-                <p> User's temporary password is <b>imabelairboy</b></p>
+            <div className="rem-second-content">
+                <div className="content-label">
+                    <Icon icon={clockO} size={30}/>
+                    <p> I-confirm ang mga remittances </p>
+                </div>
+                <div className="driver-list-wrapper">
+                    {drivers && this.renderDriversList()}
+                    {isLoading &&
+                    <Spin className="user-spinner" indicator={antIcon} size="large"/>
+                    }
+                </div>
+                <Button type="primary" onClick={() => this.props.next()}>Sunod</Button>
             </div>
         );
     }
@@ -236,10 +343,10 @@ export class SupervisorRemittancePage extends Component {
 
     showConfirm = () => {
         confirm({
-            title: 'Finalize Shift Creation?',
-            content: 'this shift will be added to your history',
+            title: 'Tapusin ang shift?',
+            content: 'i-kumpirma ang pagtatapos ng shift',
             onOk: () => {
-                message.success('Shift creation successful');
+                message.success('Success');
                 this.setState({
                     current: 0
                 })
@@ -280,42 +387,18 @@ export class SupervisorRemittancePage extends Component {
                     <UserAvatar/>
                 </div>
                 <div className="supervisor-rem-content">
-                    <div className="sv-transactions">
-                        <div className="sv-steps-content">
-                            {remSteps[this.state.current].content}
-                        </div>
-                        <div className="steps-action">
-                            {/*{*/}
-                            {/*this.state.current > 0*/}
-                            {/*&&*/}
-                            {/*<Button style={{marginLeft: 8}} onClick={() => this.prev()}>*/}
-                            {/*Previous*/}
-                            {/*</Button>*/}
-                            {/*}*/}
-                        </div>
+
+                    <div className="sv-steps-content">
+                        {remSteps[this.state.current].content}
                     </div>
-                    <div className="sv-deployed-drivers">
-                        <Divider orientation="left">Deployed Drivers</Divider>
-                        <List
-                            className="deployed-list"
-                            itemLayout="horizontal"
-                            dataSource={data}
-                            renderItem={item => (
-                                <List.Item key={item.key} className="deploy-list-item">
-                                    <List.Item.Meta
-                                        avatar={<Avatar
-                                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                                        title={<p className="deployed-drivers-list-title">{item.title}</p>}
-                                    />
-                                    <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>
-                                </List.Item>
-                            )}
-                        />
-                    </div>
-                    <div className="sv-history">
-                        <Divider orientation="left">My Past Transactions</Divider>
-                        <img className="empty-image" src={emptyStateImage}/>
-                        <p>Under Construction</p>
+                    <div className="steps-action">
+                        {/*{*/}
+                        {/*this.state.current > 0*/}
+                        {/*&&*/}
+                        {/*<Button style={{marginLeft: 8}} onClick={() => this.prev()}>*/}
+                        {/*Previous*/}
+                        {/*</Button>*/}
+                        {/*}*/}
                     </div>
                 </div>
             </div>

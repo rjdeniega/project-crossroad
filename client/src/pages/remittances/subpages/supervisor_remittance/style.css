@@ -15,27 +15,25 @@
     }
 
 .supervisor-rem-content {
-    display: inline-grid;
+    display: flex;
     padding: 10px;
     height: 83%;
     width: 100%;
-    grid-template-columns: 60% 40%;
-    grid-template-rows: 50% 50%;
-    }
-
-.sv-transactions {
-    position: relative;
-    grid-column: 1/2;
-    grid-row: 1/4;
-    height: 99%;
-    width: 99%;
-    display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    /*grid-template-columns: 60% 40%;*/
+    /*grid-template-rows: 50% 50%;*/
+    }
+
+.second-content-container {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: 60% 40%;
+    grid-template-rows: 50% 50%;
     border-radius: 5px;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);
+    /*background: rgba(255, 255, 255, 1);*/
     }
 
 .sv-deployed-drivers {
@@ -91,12 +89,11 @@
     }
 
 .sv-steps-content {
-    margin-top: 16px;
     /*border: 1px dashed #e9e9e9;*/
     border-radius: 6px;
     min-height: 200px;
-    height: 400px;
-    width: 95%;
+    height: 100%;
+    width: 100%;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -124,9 +121,17 @@
 
 .rem-second-content {
     display: flex;
+    width: 99%;
+    height: 99%;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    grid-column: 1/2;
+    grid-row: 1/3;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);
+
     }
 
 .driver-list-wrapper {
@@ -167,17 +172,61 @@
 
 .driver-deploy-modal {
     height: 500px !important;
-    width: 800px! important;
-    top: 10px!important;
+    width: 800px ! important;
+    top: 10px !important;
     }
-.driver-deploy-modal .ant-modal-body{
-    display: grid!important;
+
+.driver-deploy-modal .ant-modal-body {
+    display: grid !important;
     grid-template-columns: 65% 35%;
     }
-.ticket-div{
+
+.ticket-div {
     grid-column: 1/2;
     height: 100%;
     width: 100%;
+    }
+
+.void-tickets {
+    grid-column: 2/3;
+    height: 100%;
+    width: 100%;
+    margin-left: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    }
+
+.void-list {
+    overflow: scroll !important;
+    }
+
+.void-item * {
+    color: var(--warningred) !important;
+    }
+
+.void-item {
+    border-bottom: none !important;
+
+    }
+
+.void-empty-img {
+    height: 50px;
+    width: 70px;
+    margin-top: 10px;
+    }
+
+.void-empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 5px;
+    border: 1px dashed var(--divider);
+    }
+
+.empty-label {
+    margin-left: 10px;
     }
 
 .driver-deploy-modal * {
@@ -197,26 +246,31 @@
     align-items: center;
     width: 100%;
     }
-.ticket-range-div{
+
+.ticket-range-div {
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 50% 50%;
     height: 100px;
     width: 100%
     }
-.first-range-from{
+
+.first-range-from {
     grid-column: 1/2;
     grid-row: 1/2;
     }
-.first-range-to{
+
+.first-range-to {
     grid-column: 2/3;
     grid-row: 1/2;
     }
-.second-range-from{
+
+.second-range-from {
     grid-column: 1/2;
     grid-row: 2/3;
     }
-.second-range-to{
+
+.second-range-to {
     grid-column: 2/3;
     grid-row: 2/3;
     }
@@ -231,39 +285,45 @@
 
 .driver-deploy-input .ant-input-number-lg {
     padding-left: 5px !important;
-    font-size: 12px!important;
+    font-size: 12px !important;
     }
 
 .empty-image {
     height: 150px;
     width: 200px;
     }
-.deployed-list{
-    height: 200px!important;
-    width: 100%!important;
-    padding: 0 10px!important;
-    overflow: scroll!important;
+
+.deployed-list {
+    height: 200px !important;
+    width: 100% !important;
+    padding: 0 10px !important;
+    overflow: scroll !important;
     }
+
 .deployed-list * {
-    font-family: Montserrat,sans-serif;
+    font-family: Montserrat, sans-serif;
     }
-.deployed-drivers-list-title{
+
+.deployed-drivers-list-title {
     color: var(--darkgreen);
     font-weight: 500;
     }
-.deploy-list-item{
-    margin-left: 10px!important;
-    border: none!important;
+
+.deploy-list-item {
+    margin-left: 10px !important;
+    border: none !important;
     }
-.undeploy-button{
-    font-size: 11px!important;
-    border: 1px solid #ff4b69!important;
-    color: #ff4b69!important;
-    font-weight: 500!important;
-    border-radius: 30px!important;
+
+.undeploy-button {
+    font-size: 11px !important;
+    border: 1px solid #ff4b69 !important;
+    color: #ff4b69 !important;
+    font-weight: 500 !important;
+    border-radius: 30px !important;
     }
+
 /*change step active color*/
 /*.rem-step .ant-steps-item-process .ant-steps-item-icon{*/
-    /*background: var(--orange);*/
-    /*border-color: var(--orange)*/
-    /*}*/
+/*background: var(--orange);*/
+/*border-color: var(--orange)*/
+/*}*/
