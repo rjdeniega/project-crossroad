@@ -138,11 +138,9 @@
     grid-column: 1/2;
     /*grid-row: 2/3;*/
     height: 100%;
-    overflow: scroll;
     }
 
 .pm-shift-pane {
-    overflow: scroll;
     grid-column: 2/3;
     /*grid-row: 2/3;*/
     height: 100%;
@@ -152,7 +150,6 @@
     grid-column: 3/4;
     /*grid-row: 2/3;*/
     height: 100%;
-    overflow: scroll;
     }
 
 .create-shift-button{

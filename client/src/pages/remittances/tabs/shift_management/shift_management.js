@@ -19,8 +19,8 @@ const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
-    render: name => <div><Avatar style={{ backgroundColor: '#4d9dd0', marginRight: '20px' }} icon="user"/>
-        {name}</div>,
+    render: (name,photo) => <div><Avatar style={{ backgroundColor: '#4d9dd0', marginRight: '20px' }} src={photo}/>
+        {name}</div>
 }];
 
 export class ShiftManagementPane extends Component {
@@ -62,7 +62,8 @@ export class ShiftManagementPane extends Component {
                 console.log(data);
                 data["drivers"].forEach(item => tableData.push({
                     "key": item.id,
-                    "name": item.name
+                    "name": item.name,
+                    "photo": item.photo
                 }));
                 this.setState({ drivers: tableData });
             }

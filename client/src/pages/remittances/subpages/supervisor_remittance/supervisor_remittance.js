@@ -108,9 +108,10 @@ export class SupervisorSecondContent extends Component {
         twelve_from_second: null,
         twelve_to_second: null,
         fifteen_from_first: null,
-        fifteen_to_first:null,
+        fifteen_to_first: null,
         fifteen_from_second: null,
-        fifteen_to_second:null
+        fifteen_to_second: null,
+        driver_selected: null
     };
 
     componentDidMount() {
@@ -162,6 +163,9 @@ export class SupervisorSecondContent extends Component {
             add_void_label: "Magdagdag ng 15 peso tickets"
         });
     };
+    createDeploymentForm = () => {
+
+    };
     handleDeploy = (e) => {
         this.setState({
             visible: false,
@@ -172,6 +176,11 @@ export class SupervisorSecondContent extends Component {
         this.setState({
             visible: false,
         });
+    };
+    handleDriverSelect = (key) => {
+        this.setState({
+            driver_selected: key
+        })
     };
     handleVoidAdd = (e) => {
         if (this.state.add_void_type == "10") {
@@ -234,7 +243,7 @@ export class SupervisorSecondContent extends Component {
         itemLayout="horizontal"
         dataSource={this.state.drivers}
         renderItem={driver => (
-            <List.Item className="driver-item">
+            <List.Item key={driver.id} onClick={() => this.handleDriverSelect(driver.id)} className="driver-item">
                 <List.Item.Meta
                     avatar={<Avatar
                         src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
@@ -261,35 +270,58 @@ export class SupervisorSecondContent extends Component {
                 onOk={this.handleVoidAdd}
                 onCancel={this.handleVoidCancel}
             >
-                <InputNumber className="add-void-input" placeholder="Ilagay ang ticket number" value={this.state.add_void_value}
+                <InputNumber className="add-void-input" placeholder="Ilagay ang ticket number"
+                             value={this.state.add_void_value}
                              onChange={this.handleAddVoidChange}/>
             </Modal>
             <div className="ticket-div">
                 <div className="driver-deploy-input">
                     <p><b>10 Peso Tickets</b><Button size="small" onClick={this.showAddVoid10}>Add Void</Button></p>
                     <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large" onChange={this.handleRangeChanges("ten_from_first")} placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large" onChange={this.handleRangeChanges("ten_to_first")} placeholder="dulo ng ticket"/>
-                        <InputNumber className="second-range-from" size="large" onChange={this.handleRangeChanges("ten_from_second")} placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to" size="large" onChange={this.handleRangeChanges("ten_to_second")} placeholder="dulo ng ticket"/>
+                        <InputNumber className="first-range-from" size="large"
+                                     onChange={this.handleRangeChanges("ten_from_first")}
+                                     placeholder="simula ng ticket"/>
+                        <InputNumber className="first-range-to" size="large"
+                                     onChange={this.handleRangeChanges("ten_to_first")} placeholder="dulo ng ticket"/>
+                        <InputNumber className="second-range-from" size="large"
+                                     onChange={this.handleRangeChanges("ten_from_second")}
+                                     placeholder="simula ng ticket"/>
+                        <InputNumber className="second-range-to" size="large"
+                                     onChange={this.handleRangeChanges("ten_to_second")} placeholder="dulo ng ticket"/>
                     </div>
                 </div>
                 <div className="driver-deploy-input">
                     <p><b>12 Peso Tickets</b><Button size="small" onClick={this.showAddVoid12}>Add Void</Button></p>
                     <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large" onChange={this.handleRangeChanges("twelve_from_first")} placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large" onChange={this.handleRangeChanges("twelve_to_first")} placeholder="dulo ng ticket"/>
-                        <InputNumber className="second-range-from" size="large" onChange={this.handleRangeChanges("twelve_from_second")} placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to" size="large" onChange={this.handleRangeChanges("twelve_to_second")} placeholder="dulo ng ticket"/>
+                        <InputNumber className="first-range-from" size="large"
+                                     onChange={this.handleRangeChanges("twelve_from_first")}
+                                     placeholder="simula ng ticket"/>
+                        <InputNumber className="first-range-to" size="large"
+                                     onChange={this.handleRangeChanges("twelve_to_first")}
+                                     placeholder="dulo ng ticket"/>
+                        <InputNumber className="second-range-from" size="large"
+                                     onChange={this.handleRangeChanges("twelve_from_second")}
+                                     placeholder="simula ng ticket"/>
+                        <InputNumber className="second-range-to" size="large"
+                                     onChange={this.handleRangeChanges("twelve_to_second")}
+                                     placeholder="dulo ng ticket"/>
                     </div>
                 </div>
                 <div className="driver-deploy-input">
                     <p><b>15 Peso Tickets</b><Button size="small" onClick={this.showAddVoid15}>Add Void</Button></p>
                     <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large" onChange={this.handleRangeChanges("fifteen_from_first")} placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large" onChange={this.handleRangeChanges("fifteen_to_first")} placeholder="dulo ng ticket"/>
-                        <InputNumber className="second-range-from" size="large" onChange={this.handleRangeChanges("fifteen_from_second")} placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to" size="large" onChange={this.handleRangeChanges("fifteen_to_second")} placeholder="dulo ng ticket"/>
+                        <InputNumber className="first-range-from" size="large"
+                                     onChange={this.handleRangeChanges("fifteen_from_first")}
+                                     placeholder="simula ng ticket"/>
+                        <InputNumber className="first-range-to" size="large"
+                                     onChange={this.handleRangeChanges("fifteen_to_first")}
+                                     placeholder="dulo ng ticket"/>
+                        <InputNumber className="second-range-from" size="large"
+                                     onChange={this.handleRangeChanges("fifteen_from_second")}
+                                     placeholder="simula ng ticket"/>
+                        <InputNumber className="second-range-to" size="large"
+                                     onChange={this.handleRangeChanges("fifteen_to_second")}
+                                     placeholder="dulo ng ticket"/>
                     </div>
                 </div>
             </div>
@@ -409,6 +441,7 @@ const confirm = Modal.confirm;
 export class SupervisorRemittancePage extends Component {
     state = {
         current: 0,
+        deployed_drivers: [],
     };
 
     next = () => {
@@ -489,7 +522,7 @@ export class SupervisorRemittancePage extends Component {
                         <List
                             className="deployed-list"
                             itemLayout="horizontal"
-                            dataSource={data}
+                            dataSource={this.state.deployed_drivers}
                             renderItem={item => (
                                 <List.Item key={item.key} className="deploy-list-item">
                                     <List.Item.Meta

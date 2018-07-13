@@ -131,13 +131,13 @@ class CreateUserView(APIView):
     @staticmethod
     def create_user_type(user, user_type, data):
         if user_type == "Driver":
-            return Driver.objects.create(user=user, **data)
+            return Driver.objects.create(**data)
         if user_type == "Clerk":
-            return Clerk.objects.create(user=user, **data)
+            return Clerk.objects.create(**data)
         if user_type == "OM":
-            return OperationsManager.objects.create(user=user, **data)
+            return OperationsManager.objects.create(**data)
         if user_type == "Supervisor":
-            return Supervisor.objects.create(user=user, **data)
+            return Supervisor.objects.create(**data)
 
     @staticmethod
     def get_serialized_data(user_type, user_staff):

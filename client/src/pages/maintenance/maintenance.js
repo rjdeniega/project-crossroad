@@ -6,7 +6,6 @@ export class MaintenancePage extends Component {
     render() {
         return (
             <div className="body-wrapper">
-                fuck u
             </div>
         );
     }
