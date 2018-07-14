@@ -14,8 +14,8 @@
     }
 
 .logo {
-    display: inline-block;
-    margin-top: 40px;
+    position: absolute;
+    top: 40px;
     /*height: 55px;*/
     /*width: 45px;*/
     height: 46px;
@@ -37,6 +37,7 @@
     position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     flex-direction: column;
     height: auto;
     width: 80px;
@@ -44,7 +45,8 @@
     padding-bottom: 5px;
     color: var(--inactive)
     }
-.navbar-item:hover{
+
+.navbar-item:hover {
     background: rgb(56, 61, 64);
 
     }
