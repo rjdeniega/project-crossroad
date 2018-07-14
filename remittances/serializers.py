@@ -79,6 +79,19 @@ class ShiftIterationSerializer(ModelSerializer, serializers.Serializer):
         shift_iteration = ShiftIteration.objects.create(shift=current_shift)
         return shift_iteration
 
+    def validate(self, data):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=data['supervisor'])
+        shift_iterations = ShiftIteration.objects.filter(shift=current_shift.id, date=datetime.now().date())
+        for shift_iteration in shift_iterations:
+            if shift_iteration.shift.type == 'A':
+                raise serializers.ValidationError("an AM shift was already started today")
+            elif shift_iteration.shift.type == 'P':
+                raise serializers.ValidationError("a PM shift was already started today")
+            else:
+                raise serializers.ValidationError("an MN shift was already started today")
+        return data
+
 
 class VoidTicketSerializer(ModelSerializer):
     class Meta:
