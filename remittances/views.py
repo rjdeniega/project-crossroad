@@ -184,6 +184,19 @@ class DeployedDrivers(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class DriverDeploymentDetails(APIView):
+    # to get deployment data of the driver for today
+    # this expects that a driver could only be deployed once a day
+    # change the algorithm if the driver could be deployed more than once
+    @staticmethod
+    def get(request, driver_id):
+        deployment_query = Deployment.objects.get(driver=driver_id, shift_iteration__date=datetime.now().date())
+        deployment = DeploymentSerializer(deployment_query)
+        return Response(data={
+            'deployment_details': deployment.data
+        }, status=status.HTTP_200_OK)
+
+
 class RemittanceFormView(APIView):
     @staticmethod
     def get(request):
@@ -223,6 +236,18 @@ class RemittanceFormView(APIView):
 
 
 class ConfirmRemittanceForm(APIView):
+    # this get function returns all the unconfirmed remittances that the supervisor needs to approve
+    @staticmethod
+    def get(request, supervisor_id):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
+        current_iteration = ShiftIteration.objects.get(shift=current_shift.id, date=datetime.now().date())
+        query = RemittanceForm.objects.filter(status='P', deployment__shift_iteration=current_iteration.id)
+        unconfirmed_remittances = RemittanceFormSerializer(query, many=True)
+        return Response(data={
+            "unconfirmed_remittances": unconfirmed_remittances.data
+        }, status=status.HTTP_200_OK)
+
     @staticmethod
     def post(request):
         data = json.loads(request.body)
