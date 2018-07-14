@@ -92,9 +92,35 @@ class PlannedDrivers(APIView):
         print(supervisor_id)
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
-        drivers_assigned = PlannedDriversSerializer(DriversAssigned.objects.filter(shift=current_shift.id), many=True)
+        drivers_assigned = PlannedDriversSerializer(
+            DriversAssigned.objects.filter(shift=current_shift.id),
+            many=True)
         return Response(data={
             "drivers_assigned": drivers_assigned.data
+        }, status=status.HTTP_200_OK)
+
+
+class NonDeployedDrivers(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
+        shift_iteration = ShiftIteration.objects.get(shift=current_shift.id, date=datetime.now().date())
+        deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
+
+        drivers = []
+        for deployed_driver in deployed_drivers:
+            drivers.append(deployed_driver)
+
+        query = DriversAssigned.objects.filter(shift=current_shift.id)
+
+        for driver in drivers:
+            query = query.exclude(driver=driver.driver.id)
+
+        non_deployed_drivers = PlannedDriversSerializer(query, many=True)
+
+        return Response(data={
+            "non_deployed_drivers": non_deployed_drivers.data
         }, status=status.HTTP_200_OK)
 
 
@@ -114,7 +140,7 @@ class SubDrivers(APIView):
 class DeploymentView(APIView):
     @staticmethod
     def get(request):
-        deployments = DeploymentSerializer(Deployment.objects.all(), many=True)
+        deployments = GetDeploymentSerializer(Deployment.objects.all(), many=True)
 
         return Response(data={
             "deployments": deployments.data,
