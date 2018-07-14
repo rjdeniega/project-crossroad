@@ -14,6 +14,7 @@ import { driversLicenseO } from 'react-icons-kit/fa/driversLicenseO'
 import { cube } from 'react-icons-kit/fa/cube'
 import { UserAvatar } from "../../../../components/avatar/avatar"
 import {
+    Select,
     Avatar,
     List,
     Radio,
@@ -38,6 +39,7 @@ import { getDrivers } from '../../../../network_requests/drivers'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import { postData, getData } from "../../../../network_requests/general";
 
+const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const Step = Steps.Step;
 const ButtonGroup = Button.Group;
@@ -65,7 +67,7 @@ export class SupervisorFirstContent extends Component {
                 console.log(data);
                 console.log(data["error"]);
                 if (data['errors']) {
-                    message.error(data['error'])
+                    message.error(data.errors.non_field_errors)
                 }
                 else {
                     message.success(data["shift_type"] + "shift  " + data["date"]);
@@ -94,9 +96,12 @@ export class SupervisorSecondContent extends Component {
         add_void_type: null,
         void_visible: false,
         void_tickets: [],
-        void_tickets_10: [],
-        void_tickets_12: [],
-        void_tickets_15: [],
+        void_tickets_10_first: [],
+        void_tickets_10_second: [],
+        void_tickets_12_first: [],
+        void_tickets_12_second: [],
+        void_tickets_15_first: [],
+        void_tickets_15_second: [],
         add_void_label: null,
         add_void_value: null,
         ten_from_first: null,
@@ -111,7 +116,8 @@ export class SupervisorSecondContent extends Component {
         fifteen_to_first: null,
         fifteen_from_second: null,
         fifteen_to_second: null,
-        driver_selected: null
+        driver_selected: null,
+        route: null,
     };
 
     componentDidMount() {
@@ -142,31 +148,70 @@ export class SupervisorSecondContent extends Component {
             visible: true,
         });
     };
-    showAddVoid10 = () => {
+    showAddVoid10_first = () => {
         this.setState({
             void_visible: true,
-            add_void_type: "10",
-            add_void_label: "Magdagdag ng 10 peso tickets"
+            add_void_type: "10_first",
+            add_void_label: "Magdagdag ng void 10 peso tickets sa unang range"
         });
     };
-    showAddVoid12 = () => {
+    showAddVoid10_second = () => {
         this.setState({
             void_visible: true,
-            add_void_type: "12",
-            add_void_label: "Magdagdag ng 12 peso tickets"
+            add_void_type: "10_second",
+            add_void_label: "Magdagdag ng void 10 peso tickets sa ikalawang range"
         });
     };
-    showAddVoid15 = () => {
+    showAddVoid12_first = () => {
         this.setState({
             void_visible: true,
-            add_void_type: "15",
-            add_void_label: "Magdagdag ng 15 peso tickets"
+            add_void_type: "12_first",
+            add_void_label: "Magdagdag ng void 12 peso tickets sa unang range"
+        });
+    };
+    showAddVoid12_second = () => {
+        this.setState({
+            void_visible: true,
+            add_void_type: "12_second",
+            add_void_label: "Magdagdag ng void 12 peso tickets sa ikalawang rnge"
+        });
+    };
+    showAddVoid15_first = () => {
+        this.setState({
+            void_visible: true,
+            add_void_type: "15_first",
+            add_void_label: "Magdagdag ng void 15 peso tickets sa unang range"
+        });
+    };
+    showAddVoid15_second = () => {
+        this.setState({
+            void_visible: true,
+            add_void_type: "15_second",
+            add_void_label: "Magdagdag ng void 15 peso tickets sa ikalawang range"
         });
     };
     createDeploymentForm = () => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        console.log(id);
+        const data = {
+            "supervisor": id,
+            "driver": this.state.driver_selected,
+            "route": this.state.route,
+            "assigned_ticket": [
+                {
+                    "range_from": this.state.ten_from_first,
+                    "range_to": this.state.ten_to_first,
+                    "type": "A",
+
+
+                }
+            ]
+        }
+
 
     };
     handleDeploy = (e) => {
+        this.createDeploymentForm();
         this.setState({
             visible: false,
         });
@@ -181,22 +226,37 @@ export class SupervisorSecondContent extends Component {
         this.setState({
             driver_selected: key
         })
-    };
+    };_first
     handleVoidAdd = (e) => {
-        if (this.state.add_void_type == "10") {
+        if (this.state.add_void_type == "10_first") {
             this.setState({
-                void_tickets_10: [...this.state.void_tickets_10, this.state.add_void_value]
-            }, () => console.log(this.state.void_tickets_10));
+                void_tickets_10_first: [...this.state.void_tickets_10_first, this.state.add_void_value]
+            }, () => console.log(this.state.void_tickets_10_first));
         }
-        if (this.state.add_void_type == "12") {
+        if (this.state.add_void_type == "10_second") {
             this.setState({
-                void_tickets_12: [...this.state.void_tickets_12, this.state.add_void_value]
-            }, () => console.log(this.state.void_tickets_12))
+                void_tickets_10_second: [...this.state.void_tickets_10_second, this.state.add_void_value]
+            }, () => console.log(this.state.void_tickets_10_second));
         }
-        if (this.state.add_void_type == "15") {
+        if (this.state.add_void_type == "12_first") {
             this.setState({
-                void_tickets_15: [...this.state.void_tickets_15, this.state.add_void_value]
-            }, () => console.log(this.state.void_tickets_15))
+                void_tickets_12_first: [...this.state.void_tickets_12_first, this.state.add_void_value]
+            }, () => console.log(this.state.void_tickets_12_first))
+        }
+        if (this.state.add_void_type == "12_second") {
+            this.setState({
+                void_tickets_12_second: [...this.state.void_tickets_12_second, this.state.add_void_value]
+            }, () => console.log(this.state.void_tickets_12_second))
+        }
+        if (this.state.add_void_type == "15_first") {
+            this.setState({
+                void_tickets_15_first: [...this.state.void_tickets_15_first, this.state.add_void_value]
+            }, () => console.log(this.state.void_tickets_15_first))
+        }
+        if (this.state.add_void_type == "15_second") {
+            this.setState({
+                void_tickets_15_second: [...this.state.void_tickets_15_second, this.state.add_void_value]
+            }, () => console.log(this.state.void_tickets_15_second))
         }
         this.setState({
             add_void_value: null,
@@ -224,7 +284,7 @@ export class SupervisorSecondContent extends Component {
             }, () => console.log(this.state.add_void_value))
         }
     };
-    handleRangeChanges = fieldName => event => {
+    handleFormUpdatesListener = fieldName => event => {
         return this.handleFormChange(fieldName)(event);
         //this is asynchronous, it does not execute in order
         //if console.log is not in callback, it might execute before state is updated
@@ -233,11 +293,11 @@ export class SupervisorSecondContent extends Component {
         // this function is to handle drop-downs
         const state = { ...this.state };
         state[fieldName] = value;
+        console.log(state[fieldName]);
         this.setState({
             ...state
         });
     };
-
     renderDriversList = () => ( <List
         className="driver-list"
         itemLayout="horizontal"
@@ -276,52 +336,79 @@ export class SupervisorSecondContent extends Component {
             </Modal>
             <div className="ticket-div">
                 <div className="driver-deploy-input">
-                    <p><b>10 Peso Tickets</b><Button size="small" onClick={this.showAddVoid10}>Add Void</Button></p>
+                    <div className="route-div">
+                        <p><b>Route: </b></p>
+                        <Select onChange={this.handleFormUpdatesListener("route")} className="route-input"
+                                defaultValue="Pumili ng ruta">
+                            <Option value="M">Main Road</Option>
+                            <Option value="R">Kanan</Option>
+                            <Option value="L">Kaliwa</Option>
+                        </Select>
+                    </div>
+                    <p><b>10 Peso Tickets</b></p>
                     <div className="ticket-range-div">
                         <InputNumber className="first-range-from" size="large"
-                                     onChange={this.handleRangeChanges("ten_from_first")}
-                                     placeholder="simula ng ticket"/>
+                                     onChange={this.handleFormUpdatesListener("ten_from_first")}
+                                     placeholder="simula ng ticket una"/>
                         <InputNumber className="first-range-to" size="large"
-                                     onChange={this.handleRangeChanges("ten_to_first")} placeholder="dulo ng ticket"/>
+                                     onChange={this.handleFormUpdatesListener("ten_to_first")}
+                                     placeholder="dulo ng ticket una"/>
+                        <Button size="small" className="first-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/>Add
+                            Void</Button>
+
                         <InputNumber className="second-range-from" size="large"
-                                     onChange={this.handleRangeChanges("ten_from_second")}
+                                     onChange={this.handleFormUpdatesListener("ten_from_second")}
                                      placeholder="simula ng ticket"/>
                         <InputNumber className="second-range-to" size="large"
-                                     onChange={this.handleRangeChanges("ten_to_second")} placeholder="dulo ng ticket"/>
+                                     onChange={this.handleFormUpdatesListener("ten_to_second")}
+                                     placeholder="dulo ng ticket"/>
+                        <Button size="small" className="second-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/>Add
+                            Void</Button>
+
                     </div>
                 </div>
                 <div className="driver-deploy-input">
-                    <p><b>12 Peso Tickets</b><Button size="small" onClick={this.showAddVoid12}>Add Void</Button></p>
+                    <p><b>12 Peso Tickets</b></p>
                     <div className="ticket-range-div">
                         <InputNumber className="first-range-from" size="large"
-                                     onChange={this.handleRangeChanges("twelve_from_first")}
+                                     onChange={this.handleFormUpdatesListener("twelve_from_first")}
                                      placeholder="simula ng ticket"/>
                         <InputNumber className="first-range-to" size="large"
-                                     onChange={this.handleRangeChanges("twelve_to_first")}
+                                     onChange={this.handleFormUpdatesListener("twelve_to_first")}
                                      placeholder="dulo ng ticket"/>
+                        <Button size="small" className="first-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                            Void</Button>
                         <InputNumber className="second-range-from" size="large"
-                                     onChange={this.handleRangeChanges("twelve_from_second")}
+                                     onChange={this.handleFormUpdatesListener("twelve_from_second")}
                                      placeholder="simula ng ticket"/>
                         <InputNumber className="second-range-to" size="large"
-                                     onChange={this.handleRangeChanges("twelve_to_second")}
+                                     onChange={this.handleFormUpdatesListener("twelve_to_second")}
                                      placeholder="dulo ng ticket"/>
+                        <Button size="small" className="second-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                            Void</Button>
+
                     </div>
                 </div>
                 <div className="driver-deploy-input">
-                    <p><b>15 Peso Tickets</b><Button size="small" onClick={this.showAddVoid15}>Add Void</Button></p>
+                    <p><b>15 Peso Tickets</b></p>
                     <div className="ticket-range-div">
                         <InputNumber className="first-range-from" size="large"
-                                     onChange={this.handleRangeChanges("fifteen_from_first")}
+                                     onChange={this.handleFormUpdatesListener("fifteen_from_first")}
                                      placeholder="simula ng ticket"/>
                         <InputNumber className="first-range-to" size="large"
-                                     onChange={this.handleRangeChanges("fifteen_to_first")}
+                                     onChange={this.handleFormUpdatesListener("fifteen_to_first")}
                                      placeholder="dulo ng ticket"/>
+                        <Button size="small" className="first-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                            Void</Button>
                         <InputNumber className="second-range-from" size="large"
-                                     onChange={this.handleRangeChanges("fifteen_from_second")}
+                                     onChange={this.handleFormUpdatesListener("fifteen_from_second")}
                                      placeholder="simula ng ticket"/>
                         <InputNumber className="second-range-to" size="large"
-                                     onChange={this.handleRangeChanges("fifteen_to_second")}
+                                     onChange={this.handleFormUpdatesListener("fifteen_to_second")}
                                      placeholder="dulo ng ticket"/>
+                        <Button size="small" className="second-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                            Void</Button>
+
                     </div>
                 </div>
             </div>
@@ -339,7 +426,7 @@ export class SupervisorSecondContent extends Component {
                 />}
                 {this.state.void_tickets < 1 &&
                 <div className="void-empty-state">
-                    <img className="void-empty-img" src={emptyStateImage}/>
+                    {/*<img className="void-empty-img" src={emptyStateImage}/>*/}
                     <p className="empty-label"> walang void tickets</p>
                 </div>
                 }
@@ -444,11 +531,25 @@ export class SupervisorRemittancePage extends Component {
         deployed_drivers: [],
     };
 
+    componentDidMount() {
+        if (localStorage.remittance_page) {
+            this.setState({
+                current: parseInt(localStorage.remittance_page)
+            })
+        }
+    }
+
     next = () => {
+        // makes the page persist on refresh
         const current = this.state.current + 1;
+        console.log(localStorage.remittance_page);
+        !localStorage.remittance_page ? localStorage.remittance_page = 1 :
+            localStorage.remittance_page = parseInt(localStorage.remittance_page) + 1;
+        console.log(localStorage.remittance_page);
         this.setState({ current });
     };
     endShift = () => {
+        localStorage.remittance_page = 0;
         this.setState({ current: 0 });
     };
 

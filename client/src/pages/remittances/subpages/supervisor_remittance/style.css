@@ -167,7 +167,7 @@
 
 .driver-deploy-modal {
     height: 500px !important;
-    width: 800px ! important;
+    width: 880px ! important;
     top: 10px !important;
     }
 
@@ -195,6 +195,7 @@
 .void-list {
     overflow: scroll !important;
     }
+
 .void-item * {
     color: var(--warningred) !important;
     }
@@ -203,12 +204,14 @@
     border-bottom: none !important;
 
     }
-.void-empty-img{
+
+.void-empty-img {
     height: 50px;
     width: 70px;
     margin-top: 10px;
     }
-.void-empty-state{
+
+.void-empty-state {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -216,7 +219,8 @@
     padding: 5px;
     border: 1px dashed var(--divider);
     }
-.empty-label{
+
+.empty-label {
     margin-left: 10px;
     }
 
@@ -240,7 +244,7 @@
 
 .ticket-range-div {
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 45% 45% 10%;
     grid-template-rows: 50% 50%;
     height: 100px;
     width: 100%
@@ -266,6 +270,34 @@
     grid-row: 2/3;
     }
 
+.first-range-from, .first-range-to, .second-range-from, .second-range-to{
+    background-color: var(--bgcolor);
+    }
+.first-add-void-button {
+    grid-column: 3/4;
+    grid-row: 1/2;
+    }
+
+.second-add-void-button {
+    grid-column: 3/4;
+    grid-row: 2/3;
+    }
+
+.first-add-void-button, .second-add-void-button {
+    height: 40px !important;
+    /*width: 70px!important;*/
+    /*margin-top: 8px;*/
+    /*margin-left: 5px;*/
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    color: var(--darkgreen) !important;
+    border: none !important
+    }
+
+.first-add-void-button, .second-add-void-button {
+
+    }
+
 .driver-deploy-input .ant-input-number-lg {
     display: flex;
     flex-direction: row;
@@ -277,6 +309,9 @@
 .driver-deploy-input .ant-input-number-lg {
     padding-left: 5px !important;
     font-size: 12px !important;
+    /*border-top: none!important;*/
+    /*border-left: none!important;*/
+    /*border-right: none!important;*/
     }
 
 .empty-image {
@@ -312,17 +347,37 @@
     font-weight: 500 !important;
     border-radius: 30px !important;
     }
+
 .view-button {
     border: 1px solid var(--darkgreen) !important;
     color: var(--darkgreen) !important;
-    height: 25px!important;
+    height: 25px !important;
     font-size: 11px !important;
     font-weight: 500 !important;
     border-radius: 30px !important;
     }
-.add-void-input{
-    width: 100%!important;
+
+.add-void-input {
+    width: 100% !important;
     }
+
+.route-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    }
+
+.route-input {
+    border: none !important;
+    margin-bottom: 10px !important;
+    }
+
+.plus-icon{
+    font-size: 14px!important;
+    margin-top: 5px;
+    }
+
 /*change step active color*/
 /*.rem-step .ant-steps-item-process .ant-steps-item-icon{*/
 /*background: var(--orange);*/

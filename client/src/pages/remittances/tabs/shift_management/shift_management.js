@@ -19,8 +19,8 @@ const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
-    render: (name,photo) => <div><Avatar style={{ backgroundColor: '#4d9dd0', marginRight: '20px' }} src={photo}/>
-        {name}</div>
+    render: (text,record) => <div><Avatar className="driver-icon" style={{ backgroundColor: '#4d9dd0', marginRight: '20px' }} src={record.photo? record.photo:"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>
+        {record.name}</div>
 }];
 
 export class ShiftManagementPane extends Component {

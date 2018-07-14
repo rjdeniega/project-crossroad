@@ -224,7 +224,6 @@ export class SecondContent extends Component {
             ;
     }
 }
-
 export class Stepper extends Component {
     state = {
         current: 0,

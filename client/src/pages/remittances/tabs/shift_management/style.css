@@ -166,3 +166,6 @@
 
     }
 
+.driver-icon img{
+    object-fit: cover!important;
+    }
