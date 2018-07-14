@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import *
+from django.utils import timezone
 from core.models import SoftDeletionModel
 from members.models import *
 
@@ -36,12 +37,28 @@ FORM_STATUS = [
 class Schedule(SoftDeletionModel):
     start_date = DateField()
     end_date = DateField(null=True)
+    created = models.DateTimeField(editable=False)
+    modified = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Schedule, self).save(*args, **kwargs)
 
 
 class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
     supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
     schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
+    created = models.DateTimeField(editable=False)
+    modified = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Shift, self).save(*args, **kwargs)
 
 
 class DriversAssigned(SoftDeletionModel):
@@ -59,6 +76,14 @@ class Deployment(SoftDeletionModel):
     route = CharField(max_length=1, choices=ROUTE)
     shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
+    created = models.DateTimeField(editable=False)
+    modified = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Deployment, self).save(*args, **kwargs)
 
 
 class AssignedTicket(SoftDeletionModel):
@@ -82,6 +107,14 @@ class RemittanceForm(SoftDeletionModel):
     other_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
     total = DecimalField(default=0, max_digits=19, decimal_places=10) # income - costs
+    created = models.DateTimeField(editable=False)
+    modified = models.DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(RemittanceForm, self).save(*args, **kwargs)
 
     def confirm_remittance(self):
         self.status = 'C' # set status to confirmed
