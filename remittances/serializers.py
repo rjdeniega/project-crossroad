@@ -114,7 +114,6 @@ class DeploymentSerializer(ModelSerializer):
     class Meta:
         model = Deployment
         exclude = ('shift_iteration', )
-        depth = 2
 
     def create(self, validated_data, supervisor_id):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
@@ -130,6 +129,15 @@ class DeploymentSerializer(ModelSerializer):
             for void_ticket_data in void_tickets_data:
                 VoidTicket.objects.create(assigned_ticket=assigned_ticket, **void_ticket_data)
         return deployment
+
+
+class GetDeploymentSerializer(ModelSerializer):
+    assigned_tickets = serializers.StringRelatedField(many=True, read_only=True) #for reading
+
+    class Meta:
+        model = Deployment
+        fields = '__all__'
+        depth = 2
 
 
 class ConsumedTicketSerializer(ModelSerializer):
