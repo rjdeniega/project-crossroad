@@ -20,10 +20,10 @@
 
 .summary-table {
     width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    background: var(--bgcolor);
+    height: 98%;
     margin-top: 20px;
+    border-left: 1px solid var(--divider);
+    padding: 20px;
     }
 
 .time-data {

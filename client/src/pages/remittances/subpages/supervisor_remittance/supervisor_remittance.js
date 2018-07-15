@@ -74,7 +74,7 @@ export class SupervisorFirstContent extends Component {
                     this.props.next()
                 }
             })
-            .catch(error => message.error("Server overloaded"));
+            .catch(error => message.error(error.message));
     };
 
     render() {

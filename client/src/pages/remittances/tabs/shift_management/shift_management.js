@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { Button, notification } from 'antd';
+import { Button, notification, Divider} from 'antd';
 import { clockO } from 'react-icons-kit/fa/clockO'
 import { Icon } from 'react-icons-kit'
 import { DatePicker } from 'antd';
@@ -19,7 +19,9 @@ const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
-    render: (text,record) => <div><Avatar className="driver-icon" style={{ backgroundColor: '#4d9dd0', marginRight: '20px' }} src={record.photo? record.photo:"https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>
+    render: (text, record) => <div><Avatar className="driver-icon"
+                                           style={{ backgroundColor: 'var(--darkgreen)', marginRight: '20px' }}
+                                           src={record.photo ? record.photo : "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>
         {record.name}</div>
 }];
 
@@ -249,39 +251,40 @@ export class ShiftManagementPane extends Component {
         <div className="tables-wrapper">
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label">AM</div>
+                    <div className="tab-label-type">AM</div>
                     <Dropdown overlay={this.supervisors("AM")}>
                         <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.am_shift_supervisor} <AntIcon type="down"/>
                         </Button>
                     </Dropdown>
                 </div>
-                <Table rowSelection={this.amRowSelection} pagination={false} columns={columns}
+                <Table showHeader={false} rowSelection={this.amRowSelection} pagination={false} columns={columns}
                        dataSource={this.state.drivers}/>,
             </div>
             <div className="pm-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label">PM</div>
+                    <div className="tab-label-type">PM</div>
                     <Dropdown overlay={this.supervisors("PM")}>
                         <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.pm_shift_supervisor}<AntIcon type="down"/>
                         </Button>
                     </Dropdown>
+                     {/*<Divider orientation="left">Select Drivers</Divider>*/}
                 </div>
-                <Table rowSelection={this.pmRowSelection} pagination={false} columns={columns}
+                <Table showHeader={false} rowSelection={this.pmRowSelection} pagination={false} columns={columns}
                        dataSource={this.state.drivers}/>,
 
             </div>
             <div className="mn-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label">Midnight</div>
+                    <div className="tab-label-type">Midnight</div>
                     <Dropdown overlay={this.supervisors("MN")}>
                         <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.mn_shift_supervisor}<AntIcon type="down"/>
                         </Button>
                     </Dropdown>
                 </div>
-                <Table rowSelection={this.mnRowSelection} pagination={false} columns={columns}
+                <Table showHeader={false} rowSelection={this.mnRowSelection} pagination={false} columns={columns}
                        dataSource={this.state.drivers}/>,
             </div>
         </div>
@@ -293,7 +296,8 @@ export class ShiftManagementPane extends Component {
                 <div className="content-body">
                     <div className="shift-creation-body">
                         <div className="label-div">
-                            <div style={{ color: 'var(--darkgreen)' }}>
+                            {/*<div style={{ color: 'var(--darkgreen)' }}>*/}
+                            <div>
                                 <Icon icon={clockO} size={30} style={{ marginRight: '10px', marginTop: '5px' }}/>
                             </div>
                             <div className="tab-label">

@@ -5,21 +5,22 @@
  * Created by JasonDeniega on 27/06/2018.
  */
 
-import React, {Component} from 'react';
-import {Icon} from 'react-icons-kit'
-import {groupOutline} from 'react-icons-kit/typicons/groupOutline'
-import {users} from 'react-icons-kit/feather/'
-import {u1F46E} from 'react-icons-kit/noto_emoji_regular/u1F46E'
-import {driversLicenseO} from 'react-icons-kit/fa/driversLicenseO'
-import {cube} from 'react-icons-kit/fa/cube'
-import {UserAvatar} from "../../../../components/avatar/avatar"
-import {Avatar, List, Radio, Tabs, Steps, Button, InputNumber, Divider, Input, Modal, message} from 'antd'
-import {DatePicker} from 'antd';
-import {money} from 'react-icons-kit/fa/money'
+import React, { Component } from 'react';
+import { Icon } from 'react-icons-kit'
+import { groupOutline } from 'react-icons-kit/typicons/groupOutline'
+import { users } from 'react-icons-kit/feather/'
+import { u1F46E } from 'react-icons-kit/noto_emoji_regular/u1F46E'
+import { driversLicenseO } from 'react-icons-kit/fa/driversLicenseO'
+import { cube } from 'react-icons-kit/fa/cube'
+import { UserAvatar } from "../../../../components/avatar/avatar"
+import { Avatar, List, Radio, Tabs, Steps, Button, InputNumber, Divider, Input, Modal, message } from 'antd'
+import { DatePicker } from 'antd';
+import { money } from 'react-icons-kit/fa/money'
 import './style.css'
-import {RemittanceForm} from "../../components/remittance_form/remittance_form"
-import {clockO} from 'react-icons-kit/fa/clockO'
-import {data} from '../../../users/users'
+import { RemittanceForm } from "../../components/remittance_form/remittance_form"
+import {getData} from "../../../../network_requests/general"
+import { clockO } from 'react-icons-kit/fa/clockO'
+import { data } from '../../../users/users'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 
 const TabPane = Tabs.TabPane;
@@ -33,6 +34,23 @@ export class DriverRemittancePage extends Component {
             current: 0,
         };
     }
+
+    componentDidMount() {
+        this.fetchRemittanceData()
+    }
+
+    fetchRemittanceData = () => {
+        const {id} = JSON.parse(localStorage.user_staff);
+        getData('/remittances/remittance_form/driver/'+id).then(data => {
+            if (!data.error) {
+                console.log(data);
+            }
+            else {
+                console.log(data);
+            }
+        }).catch(error => console.log(error))
+    };
+
     render() {
         return (
             <div className="remittance-page-body">
@@ -47,7 +65,7 @@ export class DriverRemittancePage extends Component {
                 <div className="driver-rem-content">
                     <div className="dv-transactions">
                         {/*<Divider orientation="left">Create Remittance Form</Divider>*/}
-                       <RemittanceForm/>
+                        <RemittanceForm/>
                     </div>
                     {/*<div className="dv-pending-requests">*/}
                     {/*<Divider orientation="left">Pending Requests</Divider>*/}
