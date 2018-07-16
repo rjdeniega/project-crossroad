@@ -74,7 +74,7 @@ export class SupervisorFirstContent extends Component {
                     this.props.next()
                 }
             })
-            .catch(error => message.error(error.message));
+            .catch(error => console.log(error));
     };
 
     render() {
@@ -173,7 +173,7 @@ export class SupervisorSecondContent extends Component {
         this.setState({
             void_visible: true,
             add_void_type: "12_second",
-            add_void_label: "Magdagdag ng void 12 peso tickets sa ikalawang rnge"
+            add_void_label: "Magdagdag ng void 12 peso tickets sa ikalawang range"
         });
     };
     showAddVoid15_first = () => {
@@ -190,9 +190,16 @@ export class SupervisorSecondContent extends Component {
             add_void_label: "Magdagdag ng void 15 peso tickets sa ikalawang range"
         });
     };
+    transformToTicketDict = (tickets) => {
+        const array = [];
+        tickets.map(item => array.push({
+            "ticket_number": item
+        }));
+        return array
+    };
     createDeploymentForm = () => {
         const { id } = JSON.parse(localStorage.user_staff);
-        console.log(id);
+
         const data = {
             "supervisor": id,
             "driver": this.state.driver_selected,
@@ -202,16 +209,56 @@ export class SupervisorSecondContent extends Component {
                     "range_from": this.state.ten_from_first,
                     "range_to": this.state.ten_to_first,
                     "type": "A",
-
-
-                }
+                    "void_ticket": this.transformToTicketDict(this.state.void_tickets_10_first)
+                },
+                {
+                    "range_from": this.state.ten_from_second,
+                    "range_to": this.state.ten_to_second,
+                    "type": "A",
+                    "void_ticket": this.transformToTicketDict(this.state.void_tickets_10_second)
+                },
+                {
+                    "range_from": this.state.twelve_from_first,
+                    "range_to": this.state.twelve_to_first,
+                    "type": "B",
+                    "void_ticket": this.transformToTicketDict(this.state.void_tickets_12_first)
+                },
+                {
+                    "range_from": this.state.twelve_from_second,
+                    "range_to": this.state.twelve_to_second,
+                    "type": "B",
+                    "void_ticket": this.transformToTicketDict(this.state.void_tickets_12_second)
+                },
+                {
+                    "range_from": this.state.fifteen_from_first,
+                    "range_to": this.state.fifteen_to_first,
+                    "type": "C",
+                    "void_ticket": this.transformToTicketDict(this.state.void_tickets_15_first)
+                },
+                {
+                    "range_from": this.state.fifteen_from_second,
+                    "range_to": this.state.fifteen_to_second,
+                    "type": "C",
+                    "void_ticket": this.transformToTicketDict(this.state.void_tickets_15_second)
+                },
             ]
-        }
-
-
+        };
+        console.log(data);
+        return data;
     };
     handleDeploy = (e) => {
-        this.createDeploymentForm();
+        const data = this.createDeploymentForm();
+        postData('/remittances/deployments/', data).then(data => {
+            if (!data.error) {
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
+                console.log(data);
+            }
+            else {
+                console.log(data.error);
+            }
+        });
         this.setState({
             visible: false,
         });
@@ -226,7 +273,7 @@ export class SupervisorSecondContent extends Component {
         this.setState({
             driver_selected: key
         })
-    };_first
+    };
     handleVoidAdd = (e) => {
         if (this.state.add_void_type == "10_first") {
             this.setState({
@@ -353,7 +400,9 @@ export class SupervisorSecondContent extends Component {
                         <InputNumber className="first-range-to" size="large"
                                      onChange={this.handleFormUpdatesListener("ten_to_first")}
                                      placeholder="dulo ng ticket una"/>
-                        <Button size="small" className="first-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/>Add
+                        <Button size="small" className="first-add-void-button"
+                                onClick={this.showAddVoid10_first}><AntIcon
+                            className="plus-icon" type="plus-circle-o"/>Add
                             Void</Button>
 
                         <InputNumber className="second-range-from" size="large"
@@ -362,7 +411,9 @@ export class SupervisorSecondContent extends Component {
                         <InputNumber className="second-range-to" size="large"
                                      onChange={this.handleFormUpdatesListener("ten_to_second")}
                                      placeholder="dulo ng ticket"/>
-                        <Button size="small" className="second-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/>Add
+                        <Button size="small" className="second-add-void-button"
+                                onClick={this.showAddVoid10_second}><AntIcon
+                            className="plus-icon" type="plus-circle-o"/>Add
                             Void</Button>
 
                     </div>
@@ -376,7 +427,9 @@ export class SupervisorSecondContent extends Component {
                         <InputNumber className="first-range-to" size="large"
                                      onChange={this.handleFormUpdatesListener("twelve_to_first")}
                                      placeholder="dulo ng ticket"/>
-                        <Button size="small" className="first-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                        <Button size="small" className="first-add-void-button"
+                                onClick={this.showAddVoid12_first}><AntIcon
+                            className="plus-icon" type="plus-circle-o"/> Add
                             Void</Button>
                         <InputNumber className="second-range-from" size="large"
                                      onChange={this.handleFormUpdatesListener("twelve_from_second")}
@@ -384,7 +437,9 @@ export class SupervisorSecondContent extends Component {
                         <InputNumber className="second-range-to" size="large"
                                      onChange={this.handleFormUpdatesListener("twelve_to_second")}
                                      placeholder="dulo ng ticket"/>
-                        <Button size="small" className="second-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                        <Button size="small" className="second-add-void-button"
+                                onClick={this.showAddVoid12_second}><AntIcon
+                            className="plus-icon" type="plus-circle-o"/> Add
                             Void</Button>
 
                     </div>
@@ -398,7 +453,9 @@ export class SupervisorSecondContent extends Component {
                         <InputNumber className="first-range-to" size="large"
                                      onChange={this.handleFormUpdatesListener("fifteen_to_first")}
                                      placeholder="dulo ng ticket"/>
-                        <Button size="small" className="first-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                        <Button size="small" className="first-add-void-button"
+                                onClick={this.showAddVoid15_first}><AntIcon
+                            className="plus-icon" type="plus-circle-o"/> Add
                             Void</Button>
                         <InputNumber className="second-range-from" size="large"
                                      onChange={this.handleFormUpdatesListener("fifteen_from_second")}
@@ -406,7 +463,9 @@ export class SupervisorSecondContent extends Component {
                         <InputNumber className="second-range-to" size="large"
                                      onChange={this.handleFormUpdatesListener("fifteen_to_second")}
                                      placeholder="dulo ng ticket"/>
-                        <Button size="small" className="second-add-void-button" onClick={this.showAddVoid10}><AntIcon className="plus-icon" type="plus-circle-o"/> Add
+                        <Button size="small" className="second-add-void-button"
+                                onClick={this.showAddVoid15_second}><AntIcon
+                            className="plus-icon" type="plus-circle-o"/> Add
                             Void</Button>
 
                     </div>

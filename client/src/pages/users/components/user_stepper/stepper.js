@@ -259,11 +259,14 @@ export class Stepper extends Component {
                 if (data.error) {
                     console.log("theres an error");
                     this.setState({
-                        error: data["error"]
+                        error: data["error"],
                     });
                     console.log(this.state.error);
                 }
                 else {
+                    this.setState({
+                        current: 0,
+                    });
                     console.log(data);
                     console.log(data.user_staff);
                     this.props.handleOk(data.user_staff);

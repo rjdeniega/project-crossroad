@@ -97,10 +97,14 @@
 
     }
 
-.om-tab-body .ant-checkbox-inner {
+.om-tab-body .ant-checkbox-inner{
+    border-radius: 3px!important;
     /*background: rgba(196, 196, 196, 0.61) !important;*/
     border: 1px solid var(--divider)!important;
     }
+/*.om-tab-body .ant-checkbox-checked{*/
+    /*background: var(--lightgreen);*/
+    /*}*/
 
 .driver-selection * {
     font-family: Montserrat, sans-serif;

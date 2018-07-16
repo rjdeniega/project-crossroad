@@ -38,9 +38,15 @@ class Schedule(SoftDeletionModel):
     start_date = DateField()
     end_date = DateField(null=True)
     created = models.DateTimeField(editable=False)
-    modified = models.DateTimeField()
+    modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Schedule, self).save(*args, **kwargs)
+
+    def create(self, *args, **kwargs):
         if not self.id:
             self.created = timezone.now()
         self.modified = timezone.now()
@@ -52,7 +58,7 @@ class Shift(SoftDeletionModel):
     supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
     schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
     created = models.DateTimeField(editable=False)
-    modified = models.DateTimeField()
+    modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -77,7 +83,7 @@ class Deployment(SoftDeletionModel):
     shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
     created = models.DateTimeField(editable=False)
-    modified = models.DateTimeField()
+    modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -108,7 +114,7 @@ class RemittanceForm(SoftDeletionModel):
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
     total = DecimalField(default=0, max_digits=19, decimal_places=10) # income - costs
     created = models.DateTimeField(editable=False)
-    modified = models.DateTimeField()
+    modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
