@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from inventory.serializers import ItemSerializer
+from inventory.serializers import *
 from .models import *
 import json
 
@@ -65,6 +65,16 @@ class ItemView(APIView):
 
 
 class QuantityRestock(APIView):
+    @staticmethod
+    def get(request, pk):
+        item = Item.objects.get(id=pk)
+        item_movements = MovementSerializer(ItemMovement.objects.all()
+                                            .filter(item=item)
+                                            .order_by('created'), many=True)
+        return Response(data={
+            'movements': item_movements.data
+        }, status=status.HTTP_200_OK)
+
     @staticmethod
     def put(request, pk):
         quants = json.loads(request.body)

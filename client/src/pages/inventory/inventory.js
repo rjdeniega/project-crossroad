@@ -214,7 +214,7 @@ class RestockModal extends React.Component{
                 <a onClick={this.showModal}>Restock</a>
                 <Modal title={"Restock " + this.state.item.name}
                        visible={this.state.visible}
-                       onCancel={this.handleCancel} footer='false'>
+                       onCancel={this.handleCancel} footer={null}>
                     <RestockFormInit {...fields} onChange={this.handleFormChange}
                                      onSubmit={this.handleOk} item={this.state.item}/>
                 </Modal>
@@ -223,6 +223,49 @@ class RestockModal extends React.Component{
     }
 
 }
+
+class ItemMovementModal extends React.Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            visible: false,
+            item: props.item,
+            data
+        }
+    }
+
+    handleCancel = (e) => {
+        this.setState({
+            visible: false,
+        });
+    };
+
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+
+    componentDidMount(){
+        console.log('boi');
+        fetch('inventory/items/restock/' + this.state.item.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => this.setState({data: data.item_movements})).then(() => console.log(this.state.data));
+    }
+
+    render(){
+        return(
+            <div>
+                <a onClick={this.showModal}>Item Movement</a>
+                <Modal visible={this.state.visible} footer={null} onCancel={this.handleCancel}/>
+            </div>
+        )
+    }
+}
+
 /*
  * The content of the dropdown menu
  *
@@ -232,6 +275,9 @@ const ItemActions = (props, table) => (
     <Menu>
         <Menu.Item key={props.id}>
             <RestockModal item={props}/>
+        </Menu.Item>
+        <Menu.Item key={props.id}>
+            <ItemMovementModal item={props}/>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key={props.id}>
