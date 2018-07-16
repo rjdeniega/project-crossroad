@@ -591,11 +591,26 @@ export class SupervisorRemittancePage extends Component {
     };
 
     componentDidMount() {
+        //persist the page
         if (localStorage.remittance_page) {
             this.setState({
                 current: parseInt(localStorage.remittance_page)
             })
         }
+        const {id} = JSON.parse(localStorage.user_staff);
+        const data ={
+            "supervisor_id": id
+        };
+        postData('remittances/deployments/deployed_drivers',data).then(data=> {
+            if(!data.error){
+                console.log(data);
+                this.setState({
+                    deployed_drivers: data.deployed_drivers
+                })
+            }else{
+                console.log(data)
+            }
+        }).catch(error => console.log(error))
     }
 
     next = () => {
@@ -688,7 +703,7 @@ export class SupervisorRemittancePage extends Component {
                                     <List.Item.Meta
                                         avatar={<Avatar
                                             src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                                        title={<p className="deployed-drivers-list-title">{item.title}</p>}
+                                        title={<p className="deployed-drivers-list-title">{item.driver_name}</p>}
                                     />
                                     <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>
                                 </List.Item>

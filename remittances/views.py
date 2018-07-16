@@ -179,6 +179,10 @@ class DeployedDrivers(APIView):
             "-date").first()
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id)
         deployments_serializer = DeploymentSerializer(deployments, many=True)
+        print(deployments_serializer.data[0].get('driver'))
+        for item in deployments_serializer.data:
+            driver = Driver.objects.get(id=item.get('driver'))
+            item["driver_name"] = driver.name
         return Response(data={
             "deployed_drivers": deployments_serializer.data
         }, status=status.HTTP_200_OK)
@@ -190,10 +194,27 @@ class DriverDeploymentDetails(APIView):
     # change the algorithm if the driver could be deployed more than once
     @staticmethod
     def get(request, driver_id):
-        deployment_query = Deployment.objects.get(driver=driver_id, shift_iteration__date=datetime.now().date())
+        deployment_query = Deployment.objects.get(driver=Driver.objects.get(pk=driver_id))
         deployment = DeploymentSerializer(deployment_query)
+        array = AssignedTicket.objects.filter(deployment=deployment_query)
+        assigned_tickets = {
+            "10_peso_start_first": array[0].range_from,
+            "10_peso_end_first": array[0].range_to,
+            "10_peso_start_second": array[1].range_from,
+            "10_peso_end_second": array[1].range_to,
+            "12_peso_start_first": array[2].range_from,
+            "12_peso_end_first": array[2].range_to,
+            "12_peso_start_second": array[3].range_from,
+            "12_peso_end_second": array[3].range_to,
+            "15_peso_start_first": array[4].range_from,
+            "15_peso_end_first": array[4].range_to,
+            "15_peso_start_second": array[5].range_from,
+            "15_peso_end_second": array[5].range_to,
+        }
+
         return Response(data={
-            'deployment_details': deployment.data
+            'deployment_details': deployment.data,
+            'assigned_tickets': assigned_tickets
         }, status=status.HTTP_200_OK)
 
 

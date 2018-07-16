@@ -32,6 +32,9 @@ export class DriverRemittancePage extends Component {
         super(props);
         this.state = {
             current: 0,
+            ten_peso_first_start: 0,
+            twelve_peso_first_start: 0,
+            fifteen_peso_first_start: 0,
         };
     }
 
@@ -43,7 +46,10 @@ export class DriverRemittancePage extends Component {
         const {id} = JSON.parse(localStorage.user_staff);
         getData('/remittances/remittance_form/driver/'+id).then(data => {
             if (!data.error) {
-                console.log(data);
+                console.log(data.deployment_details.assigned_tickets[0]);
+                // this.setState({
+                //     ten_peso_first_start: data.assigned_tickets
+                // },()=> console.log(this.state.ten_peso_first_start))
             }
             else {
                 console.log(data);
