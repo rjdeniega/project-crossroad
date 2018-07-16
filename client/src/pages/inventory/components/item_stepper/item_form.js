@@ -5,6 +5,7 @@ import React, {Component} from "react"
 import '../../../../utilities/colorsFonts.css'
 import {Form, Input, Button, message, InputNumber} from 'antd'
 import './style.css'
+import { postData } from "../../../../network_requests/general";
 
 const FormItem = Form.Item;
 
@@ -33,14 +34,21 @@ class ExtendedForm extends React.Component{
             quantity: this.props.quantity.value,
             };
         console.log(item);
-        fetch('inventory/items/',{
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(item),
-        }).then(data => data.json()).then(response => message.success(response.item_name + " was added"));
+        // fetch('inventory/items/',{
+        //     method: 'POST',
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(item),
+        // }).then(data => data.json()).then(response => );
+        postData('inventory/items/',item).then(response => {
+            if(!response.error) {
+                message.success(response.item_name + " was added");
+            }else{
+                console.log(response.error);
+            }
+        });
         this.props.handleOk();
     }
 

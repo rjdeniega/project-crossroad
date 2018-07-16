@@ -34,7 +34,7 @@ class Item(SoftDeletionModel):
     vendor = CharField(max_length=64)
     unit_price = PositiveIntegerField()
     created = models.DateTimeField(editable=False)
-    modified = models.DateTimeField()
+    modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -81,7 +81,7 @@ class ItemMovement(SoftDeletionModel):
     quantity = PositiveIntegerField()
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
     created = models.DateTimeField(editable=False)
-    modified = models.DateTimeField()
+    modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:

@@ -26,15 +26,18 @@ class ItemView(APIView):
     def post(request):
         # extracts the body from the request
         data = json.loads(request.body)
+        print(request.body)
 
         # transforms JSON into python object
         # please read serializers.py Items serializer
         item_serializer = ItemSerializer(data=data)
+        print(item_serializer.is_valid())
 
         if item_serializer.is_valid():
             # Serializer class has a built in function that creates an object attributed to it
             # I pass the validated data and it creates the object
             item = item_serializer.create(validated_data=item_serializer.validated_data)
+            print(item)
             item_movement = ItemMovement(item=item, type='B', quantity=item.quantity)
             item_movement.save()
             return Response(data={
