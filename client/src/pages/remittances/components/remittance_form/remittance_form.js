@@ -8,7 +8,7 @@ import moment from 'moment';
 
 export class RemittanceForm extends Component {
     onChange(time, timeString) {
-        console.log(time, timeString);
+
     }
 
     render() {
@@ -31,19 +31,22 @@ export class RemittanceForm extends Component {
                         <p>Tickets sold</p>
                         <div className="range-div">
                             <p> 10 peso tickets sold </p>
-                            <InputNumber disabled defaultValue="12345" className="input" type="text"/>
+                            <InputNumber disabled value={this.props.ten_peso_start_first} className="input"
+                                         type="text"/>
                             <p> to</p>
                             <InputNumber className="input" type="text"/>
                         </div>
                         <div className="range-div">
                             <p> 12 peso tickets sold </p>
-                            <InputNumber disabled defaultValue="12345" className="input" type="text"/>
+                            <InputNumber disabled value={this.props.twelve_peso_start_first} className="input"
+                                         type="text"/>
                             <p> to</p>
                             <InputNumber className="input" type="text"/>
                         </div>
                         <div className="range-div">
                             <p> 15 peso tickets sold </p>
-                            <InputNumber disabled defaultValue="12345" className="input" type="text"/>
+                            <InputNumber disabled value={this.props.fifteen_peso_start_first} className="input"
+                                         type="text"/>
                             <p> to</p>
                             <InputNumber className="input" type="text"/>
                         </div>

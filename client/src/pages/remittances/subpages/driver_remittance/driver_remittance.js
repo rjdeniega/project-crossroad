@@ -32,24 +32,26 @@ export class DriverRemittancePage extends Component {
         super(props);
         this.state = {
             current: 0,
-            ten_peso_first_start: 0,
-            twelve_peso_first_start: 0,
-            fifteen_peso_first_start: 0,
+            ten_peso_start_first: 0,
+            twelve_peso_start_first: 0,
+            fifteen_peso_start_first: 0,
         };
     }
 
     componentDidMount() {
-        this.fetchRemittanceData()
+        this.fetchRemittanceData();
     }
 
     fetchRemittanceData = () => {
         const {id} = JSON.parse(localStorage.user_staff);
         getData('/remittances/remittance_form/driver/'+id).then(data => {
             if (!data.error) {
-                console.log(data.deployment_details.assigned_tickets[0]);
-                // this.setState({
-                //     ten_peso_first_start: data.assigned_tickets
-                // },()=> console.log(this.state.ten_peso_first_start))
+                console.log(data);
+                this.setState({
+                    ten_peso_start_first: data.assigned_tickets["10_peso_start_first"],
+                    twelve_peso_start_first: data.assigned_tickets["12_peso_start_first"],
+                    fifteen_peso_start_first: data.assigned_tickets["15_peso_start_first"],
+                },()=>console.log(this.state.ten_peso_start_first))
             }
             else {
                 console.log(data);
@@ -71,7 +73,7 @@ export class DriverRemittancePage extends Component {
                 <div className="driver-rem-content">
                     <div className="dv-transactions">
                         {/*<Divider orientation="left">Create Remittance Form</Divider>*/}
-                        <RemittanceForm/>
+                        <RemittanceForm {...this.state}/>
                     </div>
                     {/*<div className="dv-pending-requests">*/}
                     {/*<Divider orientation="left">Pending Requests</Divider>*/}
