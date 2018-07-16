@@ -10,7 +10,7 @@ remittance_urls = [
     path('deployments/deployed_drivers', DeployedDrivers.as_view()),
     path('shifts/', ShiftView.as_view()),
     path('shifts/assigned_drivers/<int:supervisor_id>', PlannedDrivers.as_view()),
-    path('shifts/sub_drivers/<int:supervisor_id>', SubDrivers.as_view() ),
+    path('shifts/sub_drivers/<int:supervisor_id>', SubDrivers.as_view()),
     path('shifts/pending_drivers/<int:supervisor_id>', NonDeployedDrivers.as_view()),
     path('remittance_form/driver/<int:driver_id>', DriverDeploymentDetails.as_view()),
     path('remittance_form/', RemittanceFormView.as_view()),

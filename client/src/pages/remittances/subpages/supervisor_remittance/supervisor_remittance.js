@@ -126,12 +126,13 @@ export class SupervisorSecondContent extends Component {
 
     fetchDrivers() {
         const { id } = JSON.parse(localStorage.user_staff);
-        return getData('/remittances/shifts/assigned_drivers/' + id).then(data => {
+        return getData('remittances/shifts/pending_drivers/' + id).then(data => {
             if (!data.error) {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
-                const drivers = data.drivers_assigned.map(tuple =>
+                console.log(data);
+                const drivers = data.non_deployed_drivers.map(tuple =>
                     tuple.driver
                 );
                 console.log(drivers);
@@ -254,6 +255,8 @@ export class SupervisorSecondContent extends Component {
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
                 console.log(data);
+                this.fetchDrivers();
+                this.props.updateDrivers();
             }
             else {
                 console.log(data.error);
@@ -597,21 +600,30 @@ export class SupervisorRemittancePage extends Component {
                 current: parseInt(localStorage.remittance_page)
             })
         }
-        const {id} = JSON.parse(localStorage.user_staff);
-        const data ={
+        this.getDeployedDrivers()
+    }
+
+
+    getDeployedDrivers = () => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        const data = {
             "supervisor_id": id
         };
-        postData('remittances/deployments/deployed_drivers',data).then(data=> {
-            if(!data.error){
+        postData('remittances/deployments/deployed_drivers', data).then(data => {
+            if (!data.error) {
                 console.log(data);
                 this.setState({
                     deployed_drivers: data.deployed_drivers
                 })
-            }else{
+            }
+            else {
                 console.log(data)
             }
         }).catch(error => console.log(error))
-    }
+    };
+    updateDeployedDrivers = () => {
+        this.getDeployedDrivers()
+    };
 
     next = () => {
         // makes the page persist on refresh
@@ -655,10 +667,10 @@ export class SupervisorRemittancePage extends Component {
             content: <SupervisorFirstContent next={this.next}/>,
         }, {
             title: 'Deploy Drivers',
-            content: <SupervisorSecondContent next={this.next}/>,
+            content: <SupervisorSecondContent next={this.next} updateDrivers={this.updateDeployedDrivers}/>,
         }, {
             title: 'Confirm',
-            content: <SupervisorLastContent endShift={this.endShift}/>,
+            content: <SupervisorLastContent endShift={this.endShift} />,
         }];
         return (
             <div className="remittance-page-body">

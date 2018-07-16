@@ -105,7 +105,7 @@ class NonDeployedDrivers(APIView):
     def get(request, supervisor_id):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
-        shift_iteration = ShiftIteration.objects.get(shift=current_shift.id, date=datetime.now().date())
+        shift_iteration = ShiftIteration.objects.get(shift=current_shift.id)
         deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
 
         drivers = []
@@ -179,7 +179,6 @@ class DeployedDrivers(APIView):
             "-date").first()
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id)
         deployments_serializer = DeploymentSerializer(deployments, many=True)
-        print(deployments_serializer.data[0].get('driver'))
         for item in deployments_serializer.data:
             driver = Driver.objects.get(id=item.get('driver'))
             item["driver_name"] = driver.name
