@@ -164,6 +164,7 @@ class RemittanceFormSerializer(ModelSerializer):
         consumed_tickets_data = validated_data.pop('consumed_ticket')
         remittance_form = RemittanceForm.objects.create(**validated_data)
 
+
         for consumed_ticket_data in consumed_tickets_data:
             consumed_ticket = ConsumedTicket.objects.create(remittance_form=remittance_form, **consumed_ticket_data)
             assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket.assigned_ticket.id)
@@ -197,3 +198,13 @@ class RemittanceFormSerializer(ModelSerializer):
         deployment.save()
 
         return remittance_form
+
+    def validate(self, data):
+        for ticket in data.consumed_ticket:
+            assigned_ticket_id = ticket.assigned_ticket
+            end_ticket = ticket.end_ticket
+
+            assigned_ticket = AssignedTicket.objects.get(id=assigned_ticket_id)
+            if end_ticket > assigned_ticket.range_to or end_ticket < assigned_ticket.range_from:
+                raise serializers.ValidationError("End Ticket is not in range")
+        return data
