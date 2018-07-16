@@ -106,6 +106,11 @@ class AssignedTicketSerializer(ModelSerializer):
         model = AssignedTicket
         exclude = ('deployment',)
 
+    def validate(self, data):
+        if data['range_from'] >= data['range_to']:
+            raise serializers.ValidationError("starting ticket should be lower than the ending ticket")
+        return data
+
 
 class DeploymentSerializer(ModelSerializer):
     assigned_tickets = serializers.StringRelatedField(many=True, read_only=True) #for reading
