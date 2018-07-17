@@ -89,3 +89,12 @@ class QuantityRestock(APIView):
         return Response(data={
             'message': item.name
         }, status=status.HTTP_200_OK)
+
+
+class ShuttlesView(APIView):
+    @staticmethod
+    def get(request):
+        shuttles = ShuttlesSerializer(Shuttle.objects.all(), many=True)
+        return Response(data={
+            "shuttles": shuttles.data
+        }, status=status.HTTP_200_OK)
