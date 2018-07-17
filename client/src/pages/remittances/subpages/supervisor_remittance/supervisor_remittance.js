@@ -528,13 +528,11 @@ export class SupervisorLastContent extends Component {
 
     fetchDrivers() {
         const { id } = JSON.parse(localStorage.user_staff);
-        return getData('/remittances/shifts/assigned_drivers/' + id).then(data => {
+        return getData('remittances/remittance_form/pending/' + id).then(data => {
             if (!data.error) {
-                //for each entry in drivers data, append data as a dictionary in tableData
-                //ant tables accept values {"key": value, "column_name" : "value" } format
-                //I cant just pass the raw array since its a collection of objects
-                const drivers = data.drivers_assigned.map(tuple =>
-                    tuple.driver
+                console.log(data);
+                const drivers = data.deployed_drivers.map(item =>
+                    item
                 );
                 console.log(drivers);
                 this.setState({ drivers: drivers });
