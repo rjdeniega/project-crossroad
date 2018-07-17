@@ -11,6 +11,7 @@ import {search} from 'react-icons-kit/fa/search'
 import {dropbox} from 'react-icons-kit/typicons/dropbox'
 import {ItemForm} from '../item_stepper/item_form'
 import '../../../../utilities/colorsFonts.css'
+import {cube} from 'react-icons-kit/fa/cube'
 
 
 const TabPane = Tabs.TabPane;
@@ -53,7 +54,7 @@ export class Header extends Component {
             <div className="inventory-header">
                 <div className='upper-header'>
                     <div className="header-text">
-                    <Icon className="page-icon" icon={dropbox} size={42}/>
+                    <Icon className="page-icon" icon={cube} size={42}/>
                     <div className="page-title">Inventory</div>
                     <div className="current-date"> Manage item stocks</div>
                     <Button className="add-item" onClick={this.showModal}>Add Item</Button>

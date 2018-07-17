@@ -99,6 +99,7 @@ export class FirstContent extends Component {
             <Menu.Item key="OM">Operations Manager</Menu.Item>
             <Menu.Item key="Clerk">Clerk</Menu.Item>
             <Menu.Item key="Supervisor">Supervisor</Menu.Item>
+            <Menu.Item key="Member">Member</Menu.Item>
         </Menu>
     );
 
@@ -121,6 +122,15 @@ export class FirstContent extends Component {
                 <Button onClick={this.handleUserCreate}>Next</Button>
             </div>
         );
+    }
+}
+export class SecondContentMember extends Component {
+    render() {
+        return (
+            <div>
+                something
+            </div>
+        )
     }
 }
 export class SecondContent extends Component {
@@ -195,33 +205,43 @@ export class SecondContent extends Component {
             image: e.target.files[0]
         })
     };
+    renderStaffInfo = () => (
+        <div>
+            <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
+            <Input onChange={this.handleFormChange("name")} value={this.state.name} className="user-input"
+                   type="text"
+                   placeholder="enter name"/>
+            <Select onChange={this.handleSelectChange("sex")} className="user-input" defaultValue="Male">
+                <Option value="M">Male</Option>
+                <Option value="F">Female</Option>
+            </Select>
+            <DatePicker onChange={this.handleDateFormChange} format={dateFormat}/>
+            <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
+                   type="text"
+                   placeholder="Enter address"/>
+            <Input onChange={this.handleFormChange("email")} value={this.state.email} className="user-input"
+                   addonAfter=".com"
+                   placeholder="Enter email address"/>
+            <Input onChange={this.handleFormChange("contact_no")} value={this.state.contact_no}
+                   className="user-input" addonBefore="+639"
+                   placeholder="Enter contact number"/>
+            <DatePicker onChange={this.handleApplicationDateChange} format={dateFormat}/>
+            <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
+        </div>
+    );
+    renderMemberContent = () => (
+        <div>
+            something
+        </div>
+    )
 
     render() {
         return (
             <div>
-                <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
-                <Input onChange={this.handleFormChange("name")} value={this.state.name} className="user-input"
-                       type="text"
-                       placeholder="enter name"/>
-                <Select onChange={this.handleSelectChange("sex")} className="user-input" defaultValue="Male">
-                    <Option value="M">Male</Option>
-                    <Option value="F">Female</Option>
-                </Select>
-                <DatePicker onChange={this.handleDateFormChange} format={dateFormat}/>
-                <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
-                       type="text"
-                       placeholder="Enter address"/>
-                <Input onChange={this.handleFormChange("email")} value={this.state.email} className="user-input"
-                       addonAfter=".com"
-                       placeholder="Enter email address"/>
-                <Input onChange={this.handleFormChange("contact_no")} value={this.state.contact_no}
-                       className="user-input" addonBefore="+639"
-                       placeholder="Enter contact number"/>
-                <DatePicker onChange={this.handleApplicationDateChange} format={dateFormat}/>
-                <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
+                {this.props.user_type !== "Member" && this.renderStaffInfo()}
+                {this.props.user_type == "Member" && this.renderMemberContent()}
             </div>
         )
-            ;
     }
 }
 export class Stepper extends Component {
@@ -234,6 +254,7 @@ export class Stepper extends Component {
 
     next = (username, password, user_type) => {
         const current = this.state.current + 1;
+        console.log(user_type);
         //add the fields from first content to this class
         this.setState({
             current,
@@ -289,7 +310,7 @@ export class Stepper extends Component {
             />,
         }, {
             title: 'Personal Information',
-            content: <SecondContent handleSubmit={this.onSubmit}/>,
+            content: <SecondContent handleSubmit={this.onSubmit} user_type={this.state.user_type}/>,
         }];
         return (
             <div>
