@@ -113,6 +113,8 @@ class RemittanceForm(SoftDeletionModel):
     other_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
     total = DecimalField(default=0, max_digits=19, decimal_places=10) # income - costs
+    km_from = DecimalField(default=0, max_digits=19, decimal_places=10)
+    km_to = DecimalField(default=0, max_digits=19, decimal_places=10)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
 
