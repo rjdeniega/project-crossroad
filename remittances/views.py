@@ -225,10 +225,24 @@ class DeploymentDetails(APIView):
         deployment_query = Deployment.objects.get(shift_iteration=shift_iteration)
         deployment = DeploymentSerializer(deployment_query)
         assigned_tickets_query = AssignedTicket.objects.filter(deployment=deployment_query.id)
+
         assigned_tickets = AssignedTicketSerializer(assigned_tickets_query, many=True)
         data = list()
         data.append({'deployment': deployment.data})
         data.append({'assigned_tickets': assigned_tickets.data})
+
+        key = 'void_ticket_'
+        val = 1
+
+        # add void ticket to data
+        # note that the returned void_tickets is arranged by the returned assigned_tickets
+        for assigned_ticket in assigned_tickets_query:
+            void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
+            serialized = VoidTicketSerializer(void_tickets, many=True)
+            key += str(val)
+            data.append({key: serialized.data})
+            val += 1
+            key = 'void_ticket_'
 
         return Response(data={
             'deployment_details': data
