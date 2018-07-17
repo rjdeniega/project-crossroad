@@ -187,7 +187,7 @@ class DeployedDrivers(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class ScheduleUtilities():
+class RemittanceUtilities():
     @staticmethod
     def get_active_schedule():
         active_schedule = Schedule.objects.get(
@@ -195,11 +195,23 @@ class ScheduleUtilities():
             end_date__gte=datetime.now().date())
         return active_schedule
 
-    # this function returns the current latest shift_iteration for the supervisor_id
+    # this function returns the current latest shift_iteration for the shift
     @staticmethod
-    def get_shift_iteration(supervisor_id):
-        shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-created").first()
+    def get_shift_iteration(shift_id):
+        shift_iteration = ShiftIteration.objects.filter(shift=shift_id).order_by("-date").first()
         return shift_iteration
+
+    # this function expects that the driver could only be assigned to one shift
+    @staticmethod
+    def get_shift_of_driver(driver_id):
+        active_sched = RemittanceUtilities.get_active_schedule()
+        shifts = Shift.objects.filter(schedule=active_sched.id)
+        for shift in shifts:
+            drivers_assigned = DriversAssigned.objects.filter(shift=shift.id)
+            for driver_assigned in drivers_assigned:
+                if driver_assigned.driver_id == driver_id:
+                    return shift
+        return None
 
 
 class DeploymentDetails(APIView):
@@ -207,8 +219,10 @@ class DeploymentDetails(APIView):
     # this expects that a driver could only be deployed once a day
     # change the algorithm if the driver could be deployed more than once
     @staticmethod
-    def get(request, deployment_id):
-        deployment_query = Deployment.objects.get(id=deployment_id)
+    def get(request, driver_id):
+        shift = RemittanceUtilities.get_shift_of_driver(driver_id)
+        shift_iteration = RemittanceUtilities.get_shift_iteration(shift.id)
+        deployment_query = Deployment.objects.get(shift_iteration=shift_iteration)
         deployment = DeploymentSerializer(deployment_query)
         assigned_tickets_query = AssignedTicket.objects.filter(deployment=deployment_query.id)
         assigned_tickets = AssignedTicketSerializer(assigned_tickets_query, many=True)
