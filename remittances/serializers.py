@@ -113,7 +113,6 @@ class AssignedTicketSerializer(ModelSerializer):
 
 
 class DeploymentSerializer(ModelSerializer):
-    assigned_tickets = serializers.StringRelatedField(many=True, read_only=True) #for reading
     assigned_ticket = AssignedTicketSerializer(many=True, write_only=True) #for writing
 
     class Meta:

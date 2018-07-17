@@ -187,33 +187,37 @@ class DeployedDrivers(APIView):
         }, status=status.HTTP_200_OK)
 
 
-class DriverDeploymentDetails(APIView):
+class ScheduleUtilities():
+    @staticmethod
+    def get_active_schedule():
+        active_schedule = Schedule.objects.get(
+            start_date__lte=datetime.now().date(),
+            end_date__gte=datetime.now().date())
+        return active_schedule
+
+    # this function returns the current latest shift_iteration for the supervisor_id
+    @staticmethod
+    def get_shift_iteration(supervisor_id):
+        shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-created").first()
+        return shift_iteration
+
+
+class DeploymentDetails(APIView):
     # to get deployment data of the driver for today
     # this expects that a driver could only be deployed once a day
     # change the algorithm if the driver could be deployed more than once
     @staticmethod
-    def get(request, driver_id):
-        deployment_query = Deployment.objects.get(driver=Driver.objects.get(pk=driver_id))
+    def get(request, deployment_id):
+        deployment_query = Deployment.objects.get(id=deployment_id)
         deployment = DeploymentSerializer(deployment_query)
-        array = AssignedTicket.objects.filter(deployment=deployment_query)
-        assigned_tickets = {
-            "10_peso_start_first": array[0].range_from,
-            "10_peso_end_first": array[0].range_to,
-            "10_peso_start_second": array[1].range_from,
-            "10_peso_end_second": array[1].range_to,
-            "12_peso_start_first": array[2].range_from,
-            "12_peso_end_first": array[2].range_to,
-            "12_peso_start_second": array[3].range_from,
-            "12_peso_end_second": array[3].range_to,
-            "15_peso_start_first": array[4].range_from,
-            "15_peso_end_first": array[4].range_to,
-            "15_peso_start_second": array[5].range_from,
-            "15_peso_end_second": array[5].range_to,
-        }
+        assigned_tickets_query = AssignedTicket.objects.filter(deployment=deployment_query.id)
+        assigned_tickets = AssignedTicketSerializer(assigned_tickets_query, many=True)
+        data = list()
+        data.append({'deployment': deployment.data})
+        data.append({'assigned_tickets': assigned_tickets.data})
 
         return Response(data={
-            'deployment_details': deployment.data,
-            'assigned_tickets': assigned_tickets
+            'deployment_details': data
         }, status=status.HTTP_200_OK)
 
 
