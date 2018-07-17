@@ -6,6 +6,7 @@ import { InventoryPage } from "../pages/inventory/inventory";
 import { SignInPage } from "../pages/sign_in/sign_in";
 import { RemittancePage } from "../pages/remittances/remittances";
 import { NotFoundPage } from "../pages/not_found/not_found";
+import {MaintenancePage} from "../pages/maintenance/maintenance";
 
 
 export const SIGN_IN_PAGE = {
@@ -42,6 +43,13 @@ export const NOT_FOUND_PAGE= {
     path: "404",
     component: NotFoundPage,
     name: "Inventory",
+};
+
+export const MAINTENANCE_PAGE= {
+    identifier: "MAINTENANCE_PAGE",
+    path: "maintenance",
+    component: MaintenancePage,
+    name: "Maintenance",
 };
 
 export const GENERAL_PAGES = [

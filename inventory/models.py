@@ -23,6 +23,13 @@ class Shuttle(SoftDeletionModel):
     model = CharField(max_length=64)
     date_acquired = DateField()
 
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+            self.modified = timezone.now()
+        self.modified = timezone.now()
+        return super(Shuttle, self).save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.id} - {self.make} - {self.model}"
 
@@ -32,7 +39,7 @@ class Item(SoftDeletionModel):
     quantity = PositiveIntegerField()
     brand = CharField(max_length=64)
     vendor = CharField(max_length=64)
-    unit_price = PositiveIntegerField()
+    unit_price = DecimalField(max_digits=10, decimal_places=2)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
 
@@ -77,7 +84,7 @@ class Repair(SoftDeletionModel):
 
 # TODO @Paolo I don't know the fields for this
 class ItemMovement(SoftDeletionModel):
-    item = ForeignKey(Item, on_delete=models.PROTECT)
+    item = ForeignKey(Item, on_delete=models.CASCADE)
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
