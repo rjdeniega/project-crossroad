@@ -12,3 +12,9 @@ class MovementSerializer(ModelSerializer):
     class Meta:
         model = ItemMovement
         fields = "__all__"
+
+
+class ShuttlesSerializer(ModelSerializer):
+    class Meta:
+        model = Shuttle
+        fields = "__all__"
