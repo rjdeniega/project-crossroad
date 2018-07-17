@@ -250,7 +250,8 @@ class ItemMovementModal extends React.Component{
         return(
             <div>
                 <a onClick={this.showModal}>Item Movement</a>
-                <Modal visible={this.state.visible} footer={null} onCancel={this.handleCancel}>
+                <Modal visible={this.state.visible} footer={null} onCancel={this.handleCancel}
+                        title={this.state.item.name + " item movement"}>
                     <ItemMovementTable item={this.state.item}/>
                 </Modal>
             </div>
@@ -507,7 +508,7 @@ class EditableTable extends React.Component {
                     <Table
                         className="whole-table"
                         components={components}
-                        dataSource={this.state.data}
+                        dataSource={data}
                         columns={columns}
                         rowClassName='editable-row'
                         rowKey='id'
