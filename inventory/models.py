@@ -39,6 +39,7 @@ class Item(SoftDeletionModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.created = timezone.now()
+            self.modified = timezone.now()
         self.modified = timezone.now()
         return super(Item, self).save(*args, **kwargs)
 
@@ -86,6 +87,7 @@ class ItemMovement(SoftDeletionModel):
     def save(self, *args, **kwargs):
         if not self.id:
             self.created = timezone.now()
+            self.modified = timezone.now()
         self.modified = timezone.now()
         return super(ItemMovement, self).save(*args, **kwargs)
 

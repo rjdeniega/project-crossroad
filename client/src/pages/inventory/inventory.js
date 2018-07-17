@@ -8,6 +8,7 @@ import {warning} from 'react-icons-kit/typicons/warning'
 import {arrowSortedDown} from 'react-icons-kit/typicons/arrowSortedDown'
 import {zoom} from 'react-icons-kit/typicons/zoom'
 import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm} from 'antd'
+import {ItemMovementTable} from "./components/item_movement/item_movement_display";
 import '../../utilities/colorsFonts.css'
 import './style.css'
 
@@ -127,7 +128,7 @@ class RestockForm extends React.Component{
         const quantityError = isFieldTouched('quantity') && getFieldError('quantity');
 
         return(
-            <Form onSubmit={this.handleSubmit}>
+            <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
                         <FormItem className='quantity-label' label='Quantity'
                                   validateStatus={quantityError ? 'error' : ''}
                                   help={quantityError || ''}>
@@ -229,8 +230,7 @@ class ItemMovementModal extends React.Component{
         super(props);
         this.state = {
             visible: false,
-            item: props.item,
-            data
+            item: props.item
         }
     }
 
@@ -246,21 +246,13 @@ class ItemMovementModal extends React.Component{
         });
     };
 
-    componentDidMount(){
-        console.log('boi');
-        fetch('inventory/items/restock/' + this.state.item.id)
-            .then(response => {
-                return response;
-            })
-            .then(response => response.json())
-            .then(data => this.setState({data: data.item_movements})).then(() => console.log(this.state.data));
-    }
-
     render(){
         return(
             <div>
                 <a onClick={this.showModal}>Item Movement</a>
-                <Modal visible={this.state.visible} footer={null} onCancel={this.handleCancel}/>
+                <Modal visible={this.state.visible} footer={null} onCancel={this.handleCancel}>
+                    <ItemMovementTable item={this.state.item}/>
+                </Modal>
             </div>
         )
     }
@@ -274,10 +266,10 @@ class ItemMovementModal extends React.Component{
 const ItemActions = (props, table) => (
     <Menu>
         <Menu.Item key={props.id}>
-            <RestockModal item={props}/>
+            <ItemMovementModal item={props}/>
         </Menu.Item>
         <Menu.Item key={props.id}>
-            <ItemMovementModal item={props}/>
+            <RestockModal item={props}/>
         </Menu.Item>
         <Menu.Divider />
         <Menu.Item key={props.id}>
