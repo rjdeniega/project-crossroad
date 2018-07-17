@@ -321,9 +321,15 @@ class ShiftIterationReport(APIView):
         for remittance in remittances:
             total += remittance.total
 
-        serialized = RemittanceFormSerializer(remittances, many=True)
+        serialized = ReadRemittanceSerializer(remittances, many=True)
+
+        # get shift details
+        shift_iteration = ShiftIteration.objects.get(id=shift_iteration_id)
+
         return Response(data={
             'remittances': serialized.data,
-            'total': total
+            'total': total,
+            'shift_type': shift_iteration.shift.type,
+            'date_of_iteration': shift_iteration.date
         }, status=status.HTTP_200_OK)
 

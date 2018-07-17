@@ -207,3 +207,10 @@ class RemittanceFormSerializer(ModelSerializer):
             if end_ticket > assigned_ticket.range_to or end_ticket < assigned_ticket.range_from:
                 raise serializers.ValidationError("End Ticket is not in range")
         return data
+
+
+class ReadRemittanceSerializer(ModelSerializer):
+    class Meta:
+        model = RemittanceForm
+        fields = '__all__'
+        depth = 3
