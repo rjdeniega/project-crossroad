@@ -310,3 +310,20 @@ class ConfirmRemittanceForm(APIView):
         return Response(data={
             "remittance_form": remittance_form.data
         }, status=status.HTTP_200_OK)
+
+
+class ShiftIterationReport(APIView):
+    @staticmethod
+    def get(request, shift_iteration_id):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift_iteration_id)
+
+        total = 0
+        for remittance in remittances:
+            total += remittance.total
+
+        serialized = RemittanceFormSerializer(remittances, many=True)
+        return Response(data={
+            'remittances': serialized.data,
+            'total': total
+        }, status=status.HTTP_200_OK)
+
