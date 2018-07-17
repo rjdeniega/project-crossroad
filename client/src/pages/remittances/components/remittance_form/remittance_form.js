@@ -3,13 +3,15 @@
  */
 import React, { Component } from 'react'
 import './style.css'
-import { Input, InputNumber, TimePicker } from 'antd'
+import { Input, InputNumber, TimePicker, Button } from 'antd'
 import moment from 'moment';
 
 export class RemittanceForm extends Component {
     onChange(time, timeString) {
-
     }
+    handleSubmit = () => {
+        console.log("submitted")
+    };
 
     render() {
         return (
@@ -30,62 +32,83 @@ export class RemittanceForm extends Component {
                     <div className="tickets-sold">
                         <p>Tickets sold</p>
                         <div className="range-div">
-                            <p> 10 peso tickets sold </p>
+                            <p> 10 peso tickets sold (1)</p>
                             <InputNumber disabled value={this.props.ten_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
                             <InputNumber className="input" type="text"/>
                         </div>
                         <div className="range-div">
-                            <p> 12 peso tickets sold </p>
+                            <p> 10 peso tickets sold (2)</p>
+                            <InputNumber disabled value={this.props.ten_peso_start_second} className="input"
+                                         type="text"/>
+                            <p> to</p>
+                            <InputNumber className="input" type="text"/>
+                        </div>
+                        <div className="range-div">
+                            <p> 12 peso tickets sold (1)</p>
                             <InputNumber disabled value={this.props.twelve_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
                             <InputNumber className="input" type="text"/>
                         </div>
                         <div className="range-div">
-                            <p> 15 peso tickets sold </p>
+                            <p> 12 peso tickets sold (2)</p>
+                            <InputNumber disabled value={this.props.twelve_peso_start_second} className="input"
+                                         type="text"/>
+                            <p> to</p>
+                            <InputNumber className="input" type="text"/>
+                        </div>
+                        <div className="range-div">
+                            <p> 15 peso tickets sold (1)</p>
                             <InputNumber disabled value={this.props.fifteen_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
                             <InputNumber className="input" type="text"/>
                         </div>
-                    </div>
-                    <div className="bottom-panel">
-                        <div className="total-tickets-sold">
-                            <p>Total Tickets sold</p>
-                            <div className="range-div">
-                                <p> LBA3 </p>
-                                <InputNumber className="input" type="text"/>
-                                <p> x 15</p>
-                            </div>
-                            <div className="range-div">
-                                <p> Regular </p>
-                                <InputNumber className="input" type="text"/>
-                                <p> x 12</p>
-                            </div>
-                            <div className="range-div">
-                                <p> Senior/Student </p>
-                                <InputNumber className="input" type="text"/>
-                                <p> x 10</p>
-                            </div>
+                        <div className="range-div">
+                            <p> 15 peso tickets sold (2)</p>
+                            <InputNumber disabled value={this.props.fifteen_peso_start_second} className="input"
+                                         type="text"/>
+                            <p> to</p>
+                            <InputNumber className="input" type="text"/>
                         </div>
+                    </div>
+                    {/*<div className="bottom-panel">*/}
+                        {/*<div className="total-tickets-sold">*/}
+                            {/*<p>Total Tickets sold</p>*/}
+                            {/*<div className="range-div">*/}
+                            {/*<p> LBA3 </p>*/}
+                            {/*<InputNumber className="input" type="text"/>*/}
+                            {/*<p> x 15</p>*/}
+                            {/*</div>*/}
+                            {/*<div className="range-div">*/}
+                                {/*<p> Regular </p>*/}
+                                {/*<InputNumber className="input" type="text"/>*/}
+                                {/*<p> x 12</p>*/}
+                            {/*</div>*/}
+                            {/*<div className="range-div">*/}
+                                {/*<p> Senior/Student </p>*/}
+                                {/*<InputNumber className="input" type="text"/>*/}
+                                {/*<p> x 10</p>*/}
+                            {/*</div>*/}
+                        {/*</div>*/}
                         <div className="less-items">
-                            <p>Less: </p>
-                            <div className="range-div">
+                            <div className="less-range-div">
                                 <p> Fuel </p>
                                 <InputNumber className="input" type="text"/>
                             </div>
-                            <div className="range-div">
+                            <div className="less-range-div">
                                 <p> Others </p>
                                 <InputNumber className="input" type="text"/>
                             </div>
                         </div>
-                    </div>
+                    {/*</div>*/}
                 </div>
                 <div className="computed-div">
                     <div className="summary-table">
                         <p> summary </p>
+                        <Button onClick={this.handleSubmit}>Submit</Button>
                     </div>
                 </div>
             </div>

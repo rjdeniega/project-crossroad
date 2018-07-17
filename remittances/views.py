@@ -233,6 +233,21 @@ class DeploymentDetails(APIView):
 
         key = 'void_ticket_'
         val = 1
+        array = AssignedTicket.objects.filter(deployment=deployment_query)
+        assigned_tickets = {
+            "10_peso_start_first": array[0].range_from,
+            "10_peso_end_first": array[0].range_to,
+            "10_peso_start_second": array[1].range_from,
+            "10_peso_end_second": array[1].range_to,
+            "12_peso_start_first": array[2].range_from,
+            "12_peso_end_first": array[2].range_to,
+            "12_peso_start_second": array[3].range_from,
+            "12_peso_end_second": array[3].range_to,
+            "15_peso_start_first": array[4].range_from,
+            "15_peso_end_first": array[4].range_to,
+            "15_peso_start_second": array[5].range_from,
+            "15_peso_end_second": array[5].range_to,
+        }
 
         # add void ticket to data
         # note that the returned void_tickets is arranged by the returned assigned_tickets
@@ -244,8 +259,10 @@ class DeploymentDetails(APIView):
             val += 1
             key = 'void_ticket_'
 
+
         return Response(data={
-            'deployment_details': data
+            'deployment_details': data,
+            'assigned_tickets': assigned_tickets,
         }, status=status.HTTP_200_OK)
 
 

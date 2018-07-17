@@ -35,6 +35,9 @@ export class DriverRemittancePage extends Component {
             ten_peso_start_first: 0,
             twelve_peso_start_first: 0,
             fifteen_peso_start_first: 0,
+            ten_peso_start_second: 0,
+            twelve_peso_start_second: 0,
+            fifteen_peso_start_second: 0,
         };
     }
 
@@ -49,8 +52,11 @@ export class DriverRemittancePage extends Component {
                 console.log(data);
                 this.setState({
                     ten_peso_start_first: data.assigned_tickets["10_peso_start_first"],
+                    ten_peso_start_second: data.assigned_tickets["10_peso_start_second"],
                     twelve_peso_start_first: data.assigned_tickets["12_peso_start_first"],
+                    twelve_peso_start_second: data.assigned_tickets["12_peso_start_second"],
                     fifteen_peso_start_first: data.assigned_tickets["15_peso_start_first"],
+                    fifteen_peso_start_second: data.assigned_tickets["15_peso_start_second"],
                 },()=>console.log(this.state.ten_peso_start_first))
             }
             else {
