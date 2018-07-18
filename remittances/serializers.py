@@ -215,4 +215,3 @@ class ReadRemittanceSerializer(ModelSerializer):
     class Meta:
         model = RemittanceForm
         fields = '__all__'
-        depth = 3

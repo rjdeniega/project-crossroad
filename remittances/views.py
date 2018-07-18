@@ -224,6 +224,37 @@ class TicketUtilities():
 
         return void
 
+    # this function returns a deployment based from the remittance_id
+    @staticmethod
+    def get_deployment(remittance_id):
+        remittance = RemittanceForm.objects.get(id=remittance_id)
+        deployment = Deployment.objects.get(id=remittance.deployment.id)
+        return deployment
+
+    # this function returns a list of assigned tickets w/ their void tickets
+    @staticmethod
+    def get_tickets_with_void(deployment_id):
+        tickets = AssignedTicket.objects.filter(deployment=deployment_id)
+
+        final = list()
+
+        for ticket in tickets:
+            void_tickets = VoidTicket.objects.filter(assigned_ticket=ticket)
+            void = list()
+
+            for void_ticket in void_tickets:
+                void.append({
+                    'ticket_number': void_ticket.ticket_number
+                })
+
+            assigned = AssignedTicketSerializer(ticket)
+            final.append({
+                'assigned_ticket_details': assigned.data,
+                'void_tickets': void
+            })
+
+        return final
+
 
 class DeploymentDetails(APIView):
     # to get deployment data of the driver for today
@@ -355,9 +386,24 @@ class ConfirmRemittanceForm(APIView):
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
         current_iteration = ShiftIteration.objects.get(shift=current_shift.id, date=datetime.now().date())
         query = RemittanceForm.objects.filter(status='P', deployment__shift_iteration=current_iteration.id)
-        unconfirmed_remittances = ReadRemittanceSerializer(query, many=True)
+
+        unconfirmed_remittances = list()
+
+        for remittance in query:
+            deployment = TicketUtilities.get_deployment(remittance.id)
+
+            form = ReadRemittanceSerializer(remittance)
+            tickets = TicketUtilities.get_tickets_with_void(deployment.id)
+
+            unconfirmed_remittances.append({
+                'driver_name': deployment.driver.name,
+                'shift_type': deployment.shift_iteration.shift.type,
+                'remittance_details': form.data,
+                'assigned_tickets': tickets
+            })
+
         return Response(data={
-            "unconfirmed_remittances": unconfirmed_remittances.data
+            "unconfirmed_remittances": unconfirmed_remittances
         }, status=status.HTTP_200_OK)
 
     @staticmethod
