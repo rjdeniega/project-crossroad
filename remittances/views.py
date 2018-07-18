@@ -242,14 +242,17 @@ class TicketUtilities():
             void_tickets = VoidTicket.objects.filter(assigned_ticket=ticket)
             void = list()
 
+            total_void = 0
             for void_ticket in void_tickets:
                 void.append({
                     'ticket_number': void_ticket.ticket_number
                 })
+                total_void += 1
 
             assigned = AssignedTicketSerializer(ticket)
             final.append({
                 'assigned_ticket_details': assigned.data,
+                'void_quantity': total_void,
                 'void_tickets': void
             })
 
