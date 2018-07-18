@@ -214,6 +214,18 @@ class RemittanceUtilities():
         return None
 
 
+class TicketUtilities():
+    @staticmethod
+    def get_num_of_void(assigned_ticket_id):
+        void = 0
+        void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket_id)
+
+        for void_ticket in void_tickets:
+            void += 1
+
+        return void
+
+
 class DeploymentDetails(APIView):
     # to get deployment data of the driver for today
     # this expects that a driver could only be deployed once a day
@@ -229,36 +241,64 @@ class DeploymentDetails(APIView):
         assigned_tickets = AssignedTicketSerializer(assigned_tickets_query, many=True)
         data = list()
         data.append({'deployment': deployment.data})
-        data.append({'assigned_tickets': assigned_tickets.data})
 
-        key = 'void_ticket_'
-        val = 1
         array = AssignedTicket.objects.filter(deployment=deployment_query)
-        assigned_tickets = {
-            "10_peso_start_first": array[0].range_from,
-            "10_peso_end_first": array[0].range_to,
-            "10_peso_start_second": array[1].range_from,
-            "10_peso_end_second": array[1].range_to,
-            "12_peso_start_first": array[2].range_from,
-            "12_peso_end_first": array[2].range_to,
-            "12_peso_start_second": array[3].range_from,
-            "12_peso_end_second": array[3].range_to,
-            "15_peso_start_first": array[4].range_from,
-            "15_peso_end_first": array[4].range_to,
-            "15_peso_start_second": array[5].range_from,
-            "15_peso_end_second": array[5].range_to,
-        }
 
-        # add void ticket to data
-        # note that the returned void_tickets is arranged by the returned assigned_tickets
-        for assigned_ticket in assigned_tickets_query:
-            void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
-            serialized = VoidTicketSerializer(void_tickets, many=True)
-            key += str(val)
-            data.append({key: serialized.data})
-            val += 1
-            key = 'void_ticket_'
+        assigned_tickets = list()
 
+        a = 'first'
+        b = 'first'
+        c = 'first'
+        a_key_start = '10_peso_start_'
+        a_key_end = '10_peso_end_'
+        b_key_start = '12_peso_start_'
+        b_key_end = '12_peso_end_'
+        c_key_start = '15_peso_start_'
+        c_key_end = '15_peso_end_'
+
+        for ticket in array:
+            void = TicketUtilities.get_num_of_void(ticket.id)
+            if ticket.type == 'A':
+                a_key_start += a
+                a_key_end += a
+
+                assigned_tickets.append({
+                    a_key_start:ticket.range_from,
+                    a_key_end: ticket.range_to,
+                    'number_of_void': void
+                })
+
+                a_key_start = '10_peso_start_'
+                a_key_end = '10_peso_end_'
+                a = 'second'
+
+            elif ticket.type == 'B':
+                b_key_start += b
+                b_key_end += b
+
+                assigned_tickets.append({
+                    b_key_start:ticket.range_from,
+                    b_key_end: ticket.range_to,
+                    'number_of_void': void
+                })
+
+                b_key_start = '12_peso_start_'
+                b_key_end = '12_peso_end_'
+                b = 'second'
+
+            else:
+                c_key_start += c
+                c_key_end += c
+
+                assigned_tickets.append({
+                    c_key_start:ticket.range_from,
+                    c_key_end: ticket.range_to,
+                    'number_of_void': void
+                })
+
+                c_key_start = '15_peso_start_'
+                c_key_end = '15_peso_end_'
+                c = 'second'
 
         return Response(data={
             'deployment_details': data,
@@ -313,7 +353,7 @@ class ConfirmRemittanceForm(APIView):
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
         current_iteration = ShiftIteration.objects.get(shift=current_shift.id, date=datetime.now().date())
         query = RemittanceForm.objects.filter(status='P', deployment__shift_iteration=current_iteration.id)
-        unconfirmed_remittances = RemittanceFormSerializer(query, many=True)
+        unconfirmed_remittances = ReadRemittanceSerializer(query, many=True)
         return Response(data={
             "unconfirmed_remittances": unconfirmed_remittances.data
         }, status=status.HTTP_200_OK)
