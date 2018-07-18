@@ -238,23 +238,66 @@ class TicketUtilities():
 
         final = list()
 
+        a = 'first'
+        b = 'first'
+        c = 'first'
+        a_key_start = '10_peso_start_'
+        a_key_end = '10_peso_end_'
+        b_key_start = '12_peso_start_'
+        b_key_end = '12_peso_end_'
+        c_key_start = '15_peso_start_'
+        c_key_end = '15_peso_end_'
+
         for ticket in tickets:
+            num_of_void = TicketUtilities.get_num_of_void(ticket.id)
             void_tickets = VoidTicket.objects.filter(assigned_ticket=ticket)
             void = list()
 
-            total_void = 0
             for void_ticket in void_tickets:
                 void.append({
                     'ticket_number': void_ticket.ticket_number
                 })
-                total_void += 1
 
-            assigned = AssignedTicketSerializer(ticket)
-            final.append({
-                'assigned_ticket_details': assigned.data,
-                'void_quantity': total_void,
-                'void_tickets': void
-            })
+            if ticket.type == 'A':
+                a_key_start += a
+                a_key_end += a
+
+                final.append({
+                    a_key_start:ticket.range_from,
+                    a_key_end: ticket.range_to,
+                    'number_of_void': num_of_void,
+                    'void_tickets': void
+                })
+
+                a_key_start = '10_peso_start_'
+                a_key_end = '10_peso_end_'
+                a = 'second'
+
+            elif ticket.type == 'B':
+                b_key_start += b
+                b_key_end += b
+
+                final.append({
+                    b_key_start:ticket.range_from,
+                    b_key_end: ticket.range_to,
+                    'number_of_void': num_of_void,
+                    'void_tickets': void
+                })
+
+                b_key_start = '12_peso_start_'
+                b_key_end = '12_peso_end_'
+                b = 'second'
+
+            else:
+                c_key_start += c
+                c_key_end += c
+
+                final.append({
+                    c_key_start:ticket.range_from,
+                    c_key_end: ticket.range_to,
+                    'number_of_void': num_of_void,
+                    'void_tickets': void
+                })
 
         return final
 
@@ -269,75 +312,10 @@ class DeploymentDetails(APIView):
         shift_iteration = RemittanceUtilities.get_shift_iteration(shift.id)
         deployment_query = Deployment.objects.get(shift_iteration=shift_iteration)
         deployment = DeploymentSerializer(deployment_query)
-        assigned_tickets_query = AssignedTicket.objects.filter(deployment=deployment_query.id)
-
-        assigned_tickets = AssignedTicketSerializer(assigned_tickets_query, many=True)
-        data = list()
-        data.append({'deployment': deployment.data})
-
-        array = AssignedTicket.objects.filter(deployment=deployment_query)
-
-        assigned_tickets = list()
-
-        a = 'first'
-        b = 'first'
-        c = 'first'
-        a_key_start = '10_peso_start_'
-        a_key_end = '10_peso_end_'
-        b_key_start = '12_peso_start_'
-        b_key_end = '12_peso_end_'
-        c_key_start = '15_peso_start_'
-        c_key_end = '15_peso_end_'
-
-        for ticket in array:
-            void = TicketUtilities.get_num_of_void(ticket.id)
-            if ticket.type == 'A':
-                a_key_start += a
-                a_key_end += a
-
-                assigned_tickets.append({
-                    a_key_start:ticket.range_from,
-                    a_key_end: ticket.range_to,
-                    'number_of_void': void,
-                    'ticket_id': ticket.id
-                })
-
-                a_key_start = '10_peso_start_'
-                a_key_end = '10_peso_end_'
-                a = 'second'
-
-            elif ticket.type == 'B':
-                b_key_start += b
-                b_key_end += b
-
-                assigned_tickets.append({
-                    b_key_start:ticket.range_from,
-                    b_key_end: ticket.range_to,
-                    'number_of_void': void,
-                    'ticket_id': ticket.id
-                })
-
-                b_key_start = '12_peso_start_'
-                b_key_end = '12_peso_end_'
-                b = 'second'
-
-            else:
-                c_key_start += c
-                c_key_end += c
-
-                assigned_tickets.append({
-                    c_key_start:ticket.range_from,
-                    c_key_end: ticket.range_to,
-                    'number_of_void': void,
-                    'ticket_id': ticket.id
-                })
-
-                c_key_start = '15_peso_start_'
-                c_key_end = '15_peso_end_'
-                c = 'second'
+        assigned_tickets = TicketUtilities.get_tickets_with_void(deployment_query.id)
 
         return Response(data={
-            'deployment_details': data,
+            'deployment_details': deployment.data,
             'assigned_tickets': assigned_tickets,
         }, status=status.HTTP_200_OK)
 
