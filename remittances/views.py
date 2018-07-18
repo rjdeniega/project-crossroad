@@ -350,7 +350,6 @@ class ConfirmRemittanceForm(APIView):
     # this get function returns all the unconfirmed remittances that the supervisor needs to approve
     @staticmethod
     def get(request, supervisor_id):
-        print("enters here")
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
         current_iteration = ShiftIteration.objects.get(shift=current_shift.id, date=datetime.now().date())

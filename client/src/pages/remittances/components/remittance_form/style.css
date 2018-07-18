@@ -5,21 +5,29 @@
     grid-template-columns: 80% 30%;
     background: rgba(255, 255, 255, 1);
     border-radius: 5px;
+    grid-column-gap: 10px;
     }
 
 .input-div {
     display: grid;
     grid-column: 1/2;
-    grid-template-rows: 10% 10% 50% 30%;
+    grid-template-rows: 10% 60% 30%;
     }
-.time-data{
+
+.km-range{
     grid-row: 1/2;
     }
-.km-range{
+.tickets-sold{
     grid-row: 2/3;
     }
-.tickets-sold{
+.less-items {
     grid-row: 3/4;
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     }
 /*.bottom-panel{*/
     /*grid-row: 4/5;*/
@@ -112,12 +120,3 @@
     align-items: center;
     }
 
-.less-items {
-    grid-row: 4/5;
-    width: 100%;
-    height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    }

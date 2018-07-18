@@ -3,18 +3,25 @@
  */
 import React, { Component } from 'react'
 import './style.css'
-import { Input, InputNumber, TimePicker, Button } from 'antd'
+import { Input, InputNumber, TimePicker, Button, Modal } from 'antd'
 import moment from 'moment';
 import { postData } from "../../../../network_requests/general";
 
 export class RemittanceForm extends Component {
     state = {
-        ten_peso_first: 0,
-        ten_peso_second: 0,
-        twelve_peso_first: 0,
-        twelve_peso_second: 0,
-        fifteen_peso_first: 0,
-        fifteen_peso_second: 0,
+        ten_peso_start_first: null,
+        ten_peso_start_second: null,
+        twelve_peso_start_first: null,
+        twelve_peso_start_second: null,
+        fifteen_peso_start_first: null,
+        fifteen_peso_start_second: null,
+        ten_peso_end_first: null,
+        ten_peso_end_second: null,
+        twelve_peso_end_first: null,
+        twelve_peso_end_second: null,
+        fifteen_peso_end_first: null,
+        fifteen_peso_end_second: null,
+        ticket_visible: false,
         km_start: 0,
         km_end: 0,
         fuel: 0,
@@ -22,6 +29,18 @@ export class RemittanceForm extends Component {
     };
 
     onChange(time, timeString) {
+    }
+
+    componentDidMount() {
+        const state = { ...this.state };
+        Object.keys(this.props).forEach(key => {
+            console.log(key);
+            console.log(this.props[key]);
+            state[key] = this.props[key];
+        });
+        this.setState({
+            ...state
+        });
     }
 
     createForm = () => {
@@ -34,30 +53,30 @@ export class RemittanceForm extends Component {
             "consumed_ticket": [
                 {
                     "assigned_ticket": this.props.ten_peso_first_id,
-                    "end_ticket": this.state.ten_peso_first
+                    "end_ticket": this.state.ten_peso_end_first
                 },
                 {
                     "assigned_ticket": this.props.ten_peso_second_id,
-                    "end_ticket": this.state.ten_peso_second
+                    "end_ticket": this.state.ten_peso_end_second
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_first_id,
-                    "end_ticket": this.state.twelve_peso_first
+                    "end_ticket": this.state.twelve_peso_end_first
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_second_id,
-                    "end_ticket": this.state.twelve_peso_second
+                    "end_ticket": this.state.twelve_peso_end_second
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_first_id,
-                    "end_ticket": this.state.fifteen_peso_first
+                    "end_ticket": this.state.fifteen_peso_end_first
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_second_id,
-                    "end_ticket": this.state.fifteen_peso_second
+                    "end_ticket": this.state.fifteen_peso_end_second
                 },
             ]
-        }
+        };
         console.log(data);
         return data;
     };
@@ -89,17 +108,56 @@ export class RemittanceForm extends Component {
             ...state
         });
     };
+    showModal = () => {
+        this.setState({
+            ticket_visible: true,
+        });
+    };
+    handleOk = (e) => {
+        console.log(e);
+        this.setState({
+            ticket_visible: false,
+        });
+    };
+
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            ticket_visible: false,
+        });
+    };
 
     render() {
         return (
             <div className="form-content">
+                <Modal
+                    title="Mga naka-assign at void tickets"
+                    visible={this.state.ticket_visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    <div><p>10 peso range (1): <b
+                        style={{ color: 'var(--darkgreen)' }}>{this.props.ten_peso_start_first}
+                        - {this.props.ten_peso_end_first}</b></p></div>
+                    <div><p>10 peso range (2): <b
+                        style={{ color: 'var(--darkgreen)' }}>{this.props.ten_peso_start_second}
+                        - {this.props.ten_peso_end_second}</b></p></div>
+                    <div><p>12 peso range (1): <b
+                        style={{ color: 'var(--darkgreen)' }}>{this.props.twelve_peso_start_first}
+                        - {this.props.twelve_peso_end_first}</b></p></div>
+                    <div><p>12 peso range (2): <b
+                        style={{ color: 'var(--darkgreen)' }}>{this.props.twelve_peso_start_second}
+                        - {this.props.twelve_peso_end_second}</b></p></div>
+                    <div><p>15 peso range (1): <b
+                        style={{ color: 'var(--darkgreen)' }}>{this.props.fifteen_peso_start_first}
+                        - {this.props.fifteen_peso_end_first}</b></p></div>
+                    <div><p>15 peso range (2): <b
+                        style={{ color: 'var(--darkgreen)' }}>{this.props.fifteen_peso_start_second}
+                        - {this.props.fifteen_peso_end_second}</b></p></div>
+
+
+                </Modal>
                 <div className="input-div">
-                    <div className="time-data">
-                        <p>Time Start</p>
-                        <TimePicker/>
-                        <p>Time End</p>
-                        <TimePicker/>
-                    </div>
                     <div className="km-range">
                         <p>Km range from</p>
                         <InputNumber onChange={this.formListener("km_start")} className="input" type="text"/>
@@ -113,21 +171,24 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.ten_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("ten_peso_first")} className="input" type="text"/>
+                            <InputNumber onChange={this.formListener("ten_peso_end_first")}
+                                         value={this.state.ten_peso_end_first} className="input" type="text"/>
                         </div>
                         <div className="range-div">
                             <p> 10 peso tickets sold (2)</p>
                             <InputNumber disabled value={this.props.ten_peso_start_second} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("ten_peso_second")} className="input" type="text"/>
+                            <InputNumber onChange={this.formListener("ten_peso_end_second")}
+                                         value={this.state.ten_peso_end_second} className="input" type="text"/>
                         </div>
                         <div className="range-div">
                             <p> 12 peso tickets sold (1)</p>
                             <InputNumber disabled value={this.props.twelve_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("twelve_peso_first")} className="input"
+                            <InputNumber onChange={this.formListener("twelve_peso_end_first")}
+                                         value={this.state.twelve_peso_end_first} className="input"
                                          type="text"/>
                         </div>
                         <div className="range-div">
@@ -135,7 +196,8 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.twelve_peso_start_second} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("twelve_peso_second")} className="input"
+                            <InputNumber onChange={this.formListener("twelve_peso_end_second")}
+                                         value={this.state.twelve_peso_end_second} className="input"
                                          type="text"/>
                         </div>
                         <div className="range-div">
@@ -143,7 +205,8 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.fifteen_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("fifteen_peso_first")} className="input"
+                            <InputNumber onChange={this.formListener("fifteen_peso_end_first")}
+                                         value={this.state.fifteen_peso_end_first} className="input"
                                          type="text"/>
                         </div>
                         <div className="range-div">
@@ -151,7 +214,8 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.fifteen_peso_start_second} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("fifteen_peso_second")} className="input"
+                            <InputNumber onChange={this.formListener("fifteen_peso_end_second")}
+                                         value={this.state.fifteen_peso_end_second} className="input"
                                          type="text"/>
                         </div>
                     </div>
@@ -190,6 +254,7 @@ export class RemittanceForm extends Component {
                     <div className="summary-table">
                         <p> summary </p>
                         <Button onClick={this.handleSubmit}>Submit</Button>
+                        <Button onClick={this.showModal}>Assigned Tickets</Button>
                     </div>
                 </div>
             </div>
