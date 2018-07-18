@@ -38,7 +38,7 @@ import { data } from '../../../users/users'
 import { getDrivers } from '../../../../network_requests/drivers'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import { postData, getData } from "../../../../network_requests/general";
-import {RemittanceForm} from '../../components/remittance_form/remittance_form'
+import { RemittanceForm } from '../../components/remittance_form/remittance_form'
 
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
@@ -558,8 +558,25 @@ export class SupervisorLastContent extends Component {
 
     showModal = item => event => {
         console.log(item);
+
         this.setState({
             visible: true,
+            ten_peso_start_first: item.assigned_tickets[0]["10_peso_start_first"],
+            ten_peso_start_second: item.assigned_tickets[1]["10_peso_start_second"],
+            twelve_peso_start_first: item.assigned_tickets[2]["12_peso_start_first"],
+            twelve_peso_start_second: item.assigned_tickets[3]["12_peso_start_second"],
+            fifteen_peso_start_first: item.assigned_tickets[4]["15_peso_start_first"],
+            fifteen_peso_start_second: item.assigned_tickets[5]["15_peso_start_firstfirst"],
+            ten_peso_end_first: item.assigned_tickets[0]["10_peso_end_first"],
+            ten_peso_end_second: item.assigned_tickets[1]["10_peso_end_second"],
+            twelve_peso_end_first: item.assigned_tickets[2]["12_peso_end_first"],
+            twelve_peso_end_second: item.assigned_tickets[3]["12_peso_end_second"],
+            fifteen_peso_end_first: item.assigned_tickets[4]["15_peso_end_first"],
+            fifteen_peso_end_second: item.assigned_tickets[5]["15_peso_end_firstfirst"],
+            km_start: parseInt(item.remittance_details.km_from),
+            km_end: parseInt(item.remittance_details.km_to),
+            fuel: parseInt(item.remittance_details.fuel_cost),
+            others: parseInt(item.remittance_details.other_cost)
         });
     };
 
@@ -586,7 +603,7 @@ export class SupervisorLastContent extends Component {
                 <List.Item.Meta
                     avatar={<Avatar
                         src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                    title={<a href="https://ant.design">{item.deployment.driver.name}</a>}
+                    title={<a href="https://ant.design">{item.driver_name}</a>}
                 />
                 <div>
                     <Button className="view-button" type="ghost" icon="eye">

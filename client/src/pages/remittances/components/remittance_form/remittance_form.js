@@ -160,9 +160,9 @@ export class RemittanceForm extends Component {
                 <div className="input-div">
                     <div className="km-range">
                         <p>Km range from</p>
-                        <InputNumber onChange={this.formListener("km_start")} className="input" type="text"/>
+                        <InputNumber onChange={this.formListener("km_start")} value={this.state.km_start} className="input" type="text"/>
                         <p>to</p>
-                        <InputNumber onChange={this.formListener("km_end")} className="input" type="text"/>
+                        <InputNumber onChange={this.formListener("km_end")} value={this.state.km_end} className="input" type="text"/>
                     </div>
                     <div className="tickets-sold">
                         <p>Tickets sold</p>
@@ -241,11 +241,11 @@ export class RemittanceForm extends Component {
                     <div className="less-items">
                         <div className="less-range-div">
                             <p> Fuel </p>
-                            <InputNumber onChange={this.formListener("fuel")} className="input" type="text"/>
+                            <InputNumber onChange={this.formListener("fuel")} value={this.state.fuel} className="input" type="text"/>
                         </div>
                         <div className="less-range-div">
                             <p> Others </p>
-                            <InputNumber onChange={this.formListener("others")} className="input" type="text"/>
+                            <InputNumber onChange={this.formListener("others")} value={this.state.others} className="input" type="text"/>
                         </div>
                     </div>
                     {/*</div>*/}

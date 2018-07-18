@@ -1,36 +1,51 @@
 /**
  * Created by JasonDeniega on 02/07/2018.
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import {RemittanceList} from '../../components/remittance_list/remittance_list'
-import {List, Table, Divider, Button, Avatar, Icon} from 'antd'
-import {eye} from 'react-icons-kit/fa/eye'
+import { RemittanceList } from '../../components/remittance_list/remittance_list'
+import { List, Table, Divider, Button, Avatar, Icon } from 'antd'
+import { eye } from 'react-icons-kit/fa/eye'
 
 const ButtonGroup = Button.Group;
+// {
+//     title: 'Supervisor',
+//     dataIndex: 'name',
+//     key: 'name',
+//     render: (text, record) => (
+//         <div>
+//             <Avatar size="large" className="table-avatar"
+//                     src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
+//             <b className="name">{text}</b>
+//         </div>
+//     ),
+// },
 const columns = [{
-    title: 'Supervisor',
-    dataIndex: 'name',
-    key: 'name',
-    render: (text, record) => (
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
+    render: (text) => (
         <div>
-            <Avatar size="large" className="table-avatar"
-                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
-            <b className="name">{text}</b>
+            <p>{text}</p>
         </div>
-    ),
+    )
 }, {
-    title: 'Deployed Drivers',
-    dataIndex: 'age',
-    key: 'age',
-}, {
-    title: 'Status',
-    dataIndex: 'address',
-    key: 'address',
+    title: 'Shift Type',
+    dataIndex: 'shift_type',
+    key: 'shift_type',
     render: (text) => (
         <div className="rem-status">
             <Icon type="check-circle" className="status-icon"/>{text}
+        </div>
+    ),
+}, {
+    title: 'Total Remittances',
+    dataIndex: 'total_remittance',
+    key: 'total_remittance',
+    render: (text) => (
+        <div className="rem-status">
+            <p><b>Php 1000</b></p>
         </div>
     ),
 }, {
@@ -44,8 +59,8 @@ const columns = [{
 }];
 
 const data = [{
-    key: '1',
-    name: 'John Brown',
+    date: '2013/11/10',
+    shift_type: 'AM',
     age: 32,
     address: 'Completed',
 }, {

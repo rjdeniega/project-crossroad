@@ -29,13 +29,6 @@ const TABS = [
         image: userCircleO
     },
     {
-        name: "Drivers",
-        key: "drivers",
-        path: '/drivers',
-        component: RemittancePage,
-        image: u1F46E
-    },
-    {
         name: "Remittances",
         key: "remittances",
         path: '/remittances',

@@ -364,7 +364,8 @@ class ConfirmRemittanceForm(APIView):
     def get(request, supervisor_id):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
-        current_iteration = ShiftIteration.objects.get(shift=current_shift.id, date=datetime.now().date())
+        current_iteration = ShiftIteration.objects.get(shift=current_shift.id)
+        # , date = datetime.now().date()
         query = RemittanceForm.objects.filter(status='P', deployment__shift_iteration=current_iteration.id)
 
         unconfirmed_remittances = list()
