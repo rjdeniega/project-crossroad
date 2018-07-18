@@ -57,21 +57,20 @@ export class DriverRemittancePage extends Component {
         getData('/remittances/remittance_form/driver/' + id).then(data => {
             if (!data.error) {
                 console.log(data);
-                console.log(data.deployment_details[1].assigned_tickets[0].id);
                 console.log(data.deployment_details[0].deployment.id);
                 this.setState({
-                    ten_peso_start_first: data.assigned_tickets["10_peso_start_first"],
-                    ten_peso_start_second: data.assigned_tickets["10_peso_start_second"],
-                    twelve_peso_start_first: data.assigned_tickets["12_peso_start_first"],
-                    twelve_peso_start_second: data.assigned_tickets["12_peso_start_second"],
-                    fifteen_peso_start_first: data.assigned_tickets["15_peso_start_first"],
-                    fifteen_peso_start_second: data.assigned_tickets["15_peso_start_second"],
-                    ten_peso_first_id: data.deployment_details[1].assigned_tickets[0].id,
-                    ten_peso_second_id: data.deployment_details[1].assigned_tickets[1].id,
-                    twelve_peso_first_id: data.deployment_details[1].assigned_tickets[2].id,
-                    twelve_peso_second_id: data.deployment_details[1].assigned_tickets[3].id,
-                    fifteen_peso_first_id: data.deployment_details[1].assigned_tickets[4].id,
-                    fifteen_peso_second_id: data.deployment_details[1].assigned_tickets[5].id,
+                    ten_peso_start_first: data.assigned_tickets[0]["10_peso_start_first"],
+                    ten_peso_start_second: data.assigned_tickets[1]["10_peso_start_second"],
+                    twelve_peso_start_first: data.assigned_tickets[2]["12_peso_start_first"],
+                    twelve_peso_start_second: data.assigned_tickets[3]["12_peso_start_second"],
+                    fifteen_peso_start_first: data.assigned_tickets[4]["15_peso_start_first"],
+                    fifteen_peso_start_second: data.assigned_tickets[5]["15_peso_start_second"],
+                    ten_peso_first_id: data.assigned_tickets[0]["ticket_id"],
+                    ten_peso_second_id: data.assigned_tickets[1]["ticket_id"],
+                    twelve_peso_first_id: data.assigned_tickets[2]["ticket_id"],
+                    twelve_peso_second_id: data.assigned_tickets[0]["ticket_id"],
+                    fifteen_peso_first_id: data.assigned_tickets[0]["ticket_id"],
+                    fifteen_peso_second_id: data.assigned_tickets[0]["ticket_id"],
                     deployment_id: data.deployment_details[0].deployment.id
                 }, () => console.log(this.state.ten_peso_start_first))
             }

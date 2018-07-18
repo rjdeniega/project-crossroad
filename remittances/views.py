@@ -264,7 +264,8 @@ class DeploymentDetails(APIView):
                 assigned_tickets.append({
                     a_key_start:ticket.range_from,
                     a_key_end: ticket.range_to,
-                    'number_of_void': void
+                    'number_of_void': void,
+                    'ticket_id': ticket.id
                 })
 
                 a_key_start = '10_peso_start_'
@@ -278,7 +279,8 @@ class DeploymentDetails(APIView):
                 assigned_tickets.append({
                     b_key_start:ticket.range_from,
                     b_key_end: ticket.range_to,
-                    'number_of_void': void
+                    'number_of_void': void,
+                    'ticket_id': ticket.id
                 })
 
                 b_key_start = '12_peso_start_'
@@ -292,7 +294,8 @@ class DeploymentDetails(APIView):
                 assigned_tickets.append({
                     c_key_start:ticket.range_from,
                     c_key_end: ticket.range_to,
-                    'number_of_void': void
+                    'number_of_void': void,
+                    'ticket_id': ticket.id
                 })
 
                 c_key_start = '15_peso_start_'
