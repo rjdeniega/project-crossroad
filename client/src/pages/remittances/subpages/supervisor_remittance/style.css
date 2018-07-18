@@ -378,6 +378,11 @@
     font-size: 14px!important;
     margin-top: 5px;
     }
+.remittance-modal{
+    width: 800px!important;
+    min-width: 300px!important;
+    top: 70px!important;
+    }
 
 /*change step active color*/
 /*.rem-step .ant-steps-item-process .ant-steps-item-icon{*/

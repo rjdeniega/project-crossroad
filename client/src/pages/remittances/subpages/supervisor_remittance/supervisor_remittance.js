@@ -38,6 +38,7 @@ import { data } from '../../../users/users'
 import { getDrivers } from '../../../../network_requests/drivers'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import { postData, getData } from "../../../../network_requests/general";
+import {RemittanceForm} from '../../components/remittance_form/remittance_form'
 
 const Option = Select.Option;
 const TabPane = Tabs.TabPane;
@@ -55,7 +56,6 @@ function onChange(value, dateString) {
 function onOk(value) {
     console.log('onOk: ', value);
 }
-
 export class SupervisorFirstContent extends Component {
     createShiftIteration = () => {
         const { id } = JSON.parse(localStorage.user_staff);
@@ -519,7 +519,20 @@ export class SupervisorSecondContent extends Component {
 }
 export class SupervisorLastContent extends Component {
     state = {
-        drivers: null,
+        remittances: null,
+        visible: false,
+        ten_peso_start_first: 0,
+        ten_peso_start_second: 0,
+        twelve_peso_start_first: 0,
+        twelve_peso_start_second: 0,
+        fifteen_peso_start_first: 0,
+        fifteen_peso_start_second: 0,
+        ten_peso_end_first: 0,
+        ten_peso_end_second: 0,
+        twelve_peso_end_first: 0,
+        twelve_peso_end_second: 0,
+        fifteen_peso_end_first: 0,
+        fifteen_peso_end_second: 0,
     };
 
     componentDidMount() {
@@ -531,11 +544,11 @@ export class SupervisorLastContent extends Component {
         return getData('remittances/remittance_form/pending/' + id).then(data => {
             if (!data.error) {
                 console.log(data);
-                const drivers = data.deployed_drivers.map(item =>
+                const remittances = data.unconfirmed_remittances.map(item =>
                     item
                 );
-                console.log(drivers);
-                this.setState({ drivers: drivers });
+                console.log(remittances);
+                this.setState({ remittances });
             }
             else {
                 console.log(data.error);
@@ -543,16 +556,37 @@ export class SupervisorLastContent extends Component {
         });
     }
 
+    showModal = item => event => {
+        console.log(item);
+        this.setState({
+            visible: true,
+        });
+    };
+
+    handleConfirm = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
     renderDriversList = () => ( <List
         className="driver-list"
         itemLayout="horizontal"
-        dataSource={this.state.drivers}
-        renderItem={driver => (
-            <List.Item className="driver-item">
+        dataSource={this.state.remittances}
+        renderItem={item => (
+            <List.Item onClick={this.showModal(item)} className="driver-item">
                 <List.Item.Meta
                     avatar={<Avatar
                         src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                    title={<a href="https://ant.design">{driver.name}</a>}
+                    title={<a href="https://ant.design">{item.deployment.driver.name}</a>}
                 />
                 <div>
                     <Button className="view-button" type="ghost" icon="eye">
@@ -565,16 +599,25 @@ export class SupervisorLastContent extends Component {
 
 
     render() {
-        const { drivers } = this.state;
-        const isLoading = drivers === null;
+        const { remittances } = this.state;
+        const isLoading = remittances === null;
         return (
             <div className="rem-second-content">
                 <div className="content-label">
                     <Icon icon={clockO} size={30}/>
                     <p> I-confirm ang mga remittances </p>
                 </div>
+                <Modal
+                    className="remittance-modal"
+                    title="I-kumpirma ang remittance form"
+                    visible={this.state.visible}
+                    onOk={this.handleConfirm}
+                    onCancel={this.handleCancel}
+                >
+                    <RemittanceForm {...this.state}/>
+                </Modal>
                 <div className="driver-list-wrapper">
-                    {drivers && this.renderDriversList()}
+                    {remittances && this.renderDriversList()}
                     {isLoading &&
                     <Spin className="user-spinner" indicator={antIcon} size="large"/>
                     }
@@ -668,7 +711,7 @@ export class SupervisorRemittancePage extends Component {
             content: <SupervisorSecondContent next={this.next} updateDrivers={this.updateDeployedDrivers}/>,
         }, {
             title: 'Confirm',
-            content: <SupervisorLastContent endShift={this.endShift} />,
+            content: <SupervisorLastContent endShift={this.endShift}/>,
         }];
         return (
             <div className="remittance-page-body">
