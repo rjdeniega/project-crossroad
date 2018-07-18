@@ -171,13 +171,12 @@ class DeploymentView(APIView):
 
 
 class DeployedDrivers(APIView):
+    # this function returns all ongoing deployments for the latest shift iteration of the supervisor
     @staticmethod
-    def post(request):
-        data = json.loads(request.body)
-        supervisor_id = data['supervisor_id']
+    def get(request, supervisor_id):
         current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
             "-date").first()
-        deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id)
+        deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='O')
         deployments_serializer = DeploymentSerializer(deployments, many=True)
         for item in deployments_serializer.data:
             driver = Driver.objects.get(id=item.get('driver'))
