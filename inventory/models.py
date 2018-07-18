@@ -40,7 +40,7 @@ class Item(SoftDeletionModel):
     brand = CharField(max_length=64)
     vendor = CharField(max_length=64)
     unit_price = DecimalField(max_digits=10, decimal_places=2)
-    created = models.DateTimeField(editable=False)
+    created = models.DateTimeField(editable=False,null=True)
     modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
@@ -88,7 +88,7 @@ class ItemMovement(SoftDeletionModel):
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
-    created = models.DateTimeField(editable=False)
+    created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
