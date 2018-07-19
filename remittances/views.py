@@ -263,6 +263,7 @@ class TicketUtilities():
                 a_key_end += a
 
                 final.append({
+                    'assigned_ticket_id': ticket.id,
                     a_key_start:ticket.range_from,
                     a_key_end: ticket.range_to,
                     'number_of_void': num_of_void,
@@ -278,6 +279,7 @@ class TicketUtilities():
                 b_key_end += b
 
                 final.append({
+                    'assigned_ticket_id': ticket.id,
                     b_key_start:ticket.range_from,
                     b_key_end: ticket.range_to,
                     'number_of_void': num_of_void,
@@ -293,6 +295,7 @@ class TicketUtilities():
                 c_key_end += c
 
                 final.append({
+                    'assigned_ticket_id': ticket.id,
                     c_key_start:ticket.range_from,
                     c_key_end: ticket.range_to,
                     'number_of_void': num_of_void,
@@ -362,12 +365,11 @@ class ConfirmRemittanceForm(APIView):
     # this get function returns all the unconfirmed remittances that the supervisor needs to approve
     @staticmethod
     def get(request, supervisor_id):
-        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        active_sched = RemittanceUtilities.get_active_schedule()
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
-        current_iteration = ShiftIteration.objects.get(shift=current_shift.id)
-        # , date = datetime.now().date()
+        # TODO fix this
+        current_iteration = RemittanceUtilities.get_shift_iteration(current_shift.id)
         query = RemittanceForm.objects.filter(status='P', deployment__shift_iteration=current_iteration.id)
-
         unconfirmed_remittances = list()
 
         for remittance in query:
@@ -379,6 +381,7 @@ class ConfirmRemittanceForm(APIView):
             unconfirmed_remittances.append({
                 'driver_name': deployment.driver.name,
                 'shift_type': deployment.shift_iteration.shift.type,
+                'route': deployment.route,
                 'remittance_details': form.data,
                 'assigned_tickets': tickets
             })
