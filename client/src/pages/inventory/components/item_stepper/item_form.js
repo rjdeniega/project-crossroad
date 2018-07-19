@@ -29,20 +29,20 @@ class ExtendedForm extends React.Component{
         let item = {
             name: this.props.name.value,
             brand: this.props.brand.value,
-            vendor: this.props.vendor.value,
-            unit_price: this.props.unit_price.value,
             quantity: this.props.quantity.value,
             };
-        console.log(item);
-        // fetch('inventory/items/',{
-        //     method: 'POST',
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(item),
-        // }).then(data => data.json()).then(response => );
-        postData('inventory/items/',item).then(response => {
+
+        let item_movement = {
+            vendor: this.props.vendor.value,
+            unit_price: this.props.unit_price.value,
+        };
+
+        let data = {
+            item: item,
+            item_movement: item_movement
+        };
+
+        postData('inventory/items/', data).then(response => {
             if(!response.error) {
                 message.success(response.item_name + " was added");
             }else{
