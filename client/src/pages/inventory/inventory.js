@@ -126,6 +126,7 @@ class RestockForm extends React.Component{
 
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
         const quantityError = isFieldTouched('quantity') && getFieldError('quantity');
+        const unitpriceError = isFieldTouched('unit_price') && getFieldError('unit_price');
 
         return(
             <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
