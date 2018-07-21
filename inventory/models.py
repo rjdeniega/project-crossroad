@@ -82,7 +82,6 @@ class Repair(SoftDeletionModel):
     modifications = ManyToManyField(RepairModifications)
 
 
-# TODO @Paolo I don't know the fields for this
 class ItemMovement(SoftDeletionModel):
     item = ForeignKey(Item, on_delete=models.CASCADE)
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)

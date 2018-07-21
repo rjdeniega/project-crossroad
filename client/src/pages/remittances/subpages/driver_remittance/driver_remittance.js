@@ -32,18 +32,18 @@ export class DriverRemittancePage extends Component {
         super(props);
         this.state = {
             current: 0,
-            ten_peso_start_first: 0,
-            twelve_peso_start_first: 0,
-            fifteen_peso_start_first: 0,
-            ten_peso_start_second: 0,
-            twelve_peso_start_second: 0,
-            fifteen_peso_start_second: 0,
-            ten_peso_end_first: 0,
-            twelve_peso_end_first: 0,
-            fifteen_peso_end_first: 0,
-            ten_peso_end_second: 0,
-            twelve_peso_end_second: 0,
-            fifteen_peso_end_second: 0,
+            ten_peso_start_first: null,
+            twelve_peso_start_first: null,
+            fifteen_peso_start_first: null,
+            ten_peso_start_second: null,
+            twelve_peso_start_second: null,
+            fifteen_peso_start_second: null,
+            ten_peso_end_first: null,
+            twelve_peso_end_first: null,
+            fifteen_peso_end_first: null,
+            ten_peso_end_second: null,
+            twelve_peso_end_second: null,
+            fifteen_peso_end_second: null,
             ten_peso_first_id: null,
             ten_peso_second_id: null,
             twelve_peso_first_id: null,
@@ -63,27 +63,26 @@ export class DriverRemittancePage extends Component {
         getData('/remittances/remittance_form/driver/' + id).then(data => {
             if (!data.error) {
                 console.log(data);
-                console.log(data.deployment_details[0].deployment.id);
                 this.setState({
                     ten_peso_start_first: data.assigned_tickets[0]["10_peso_start_first"],
                     ten_peso_start_second: data.assigned_tickets[1]["10_peso_start_second"],
                     twelve_peso_start_first: data.assigned_tickets[2]["12_peso_start_first"],
                     twelve_peso_start_second: data.assigned_tickets[3]["12_peso_start_second"],
                     fifteen_peso_start_first: data.assigned_tickets[4]["15_peso_start_first"],
-                    fifteen_peso_start_second: data.assigned_tickets[5]["15_peso_start_second"],
+                    fifteen_peso_start_second: data.assigned_tickets[5]["15_peso_start_firstfirst"],
                     ten_peso_end_first: data.assigned_tickets[0]["10_peso_end_first"],
                     ten_peso_end_second: data.assigned_tickets[1]["10_peso_end_second"],
                     twelve_peso_end_first: data.assigned_tickets[2]["12_peso_end_first"],
                     twelve_peso_end_second: data.assigned_tickets[3]["12_peso_end_second"],
                     fifteen_peso_end_first: data.assigned_tickets[4]["15_peso_end_first"],
-                    fifteen_peso_end_second: data.assigned_tickets[5]["15_peso_end_second"],
+                    fifteen_peso_end_second: data.assigned_tickets[5]["15_peso_end_firstfirst"],
                     ten_peso_first_id: data.assigned_tickets[0]["ticket_id"],
                     ten_peso_second_id: data.assigned_tickets[1]["ticket_id"],
                     twelve_peso_first_id: data.assigned_tickets[2]["ticket_id"],
                     twelve_peso_second_id: data.assigned_tickets[0]["ticket_id"],
                     fifteen_peso_first_id: data.assigned_tickets[0]["ticket_id"],
                     fifteen_peso_second_id: data.assigned_tickets[0]["ticket_id"],
-                    deployment_id: data.deployment_details[0].deployment.id
+                    deployment_id: data.deployment_details.id
                 }, () => console.log(this.state.ten_peso_start_first))
             }
             else {

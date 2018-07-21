@@ -22,10 +22,10 @@ export class RemittanceForm extends Component {
         fifteen_peso_end_first: null,
         fifteen_peso_end_second: null,
         ticket_visible: false,
-        km_start: 0,
-        km_end: 0,
-        fuel: 0,
-        others: 0,
+        km_start: null,
+        km_end: null,
+        fuel: null,
+        others: null,
     };
 
     onChange(time, timeString) {
@@ -33,7 +33,8 @@ export class RemittanceForm extends Component {
 
     componentDidMount() {
         const state = { ...this.state };
-        Object.keys(this.props).forEach(key => {
+        const array = {...this.props};
+        Object.keys(array).forEach(key => {
             console.log(key);
             console.log(this.props[key]);
             state[key] = this.props[key];

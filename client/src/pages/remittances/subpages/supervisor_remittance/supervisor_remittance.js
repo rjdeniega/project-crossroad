@@ -67,7 +67,8 @@ export class SupervisorFirstContent extends Component {
                 console.log(data);
                 console.log(data["error"]);
                 if (data['errors']) {
-                    message.error(data.errors.non_field_errors)
+                    message.success("A shift already exists");
+                    this.props.next()
                 }
                 else {
                     message.success(data["shift_type"] + "shift  " + data["date"]);
@@ -653,11 +654,11 @@ export class SupervisorRemittancePage extends Component {
 
     componentDidMount() {
         //persist the page
-        if (localStorage.remittance_page) {
-            this.setState({
-                current: parseInt(localStorage.remittance_page)
-            })
-        }
+        // if (localStorage.remittance_page) {
+        //     this.setState({
+        //         current: parseInt(localStorage.remittance_page)
+        //     })
+        // }
         this.getDeployedDrivers()
     }
 
@@ -667,7 +668,8 @@ export class SupervisorRemittancePage extends Component {
         const data = {
             "supervisor_id": id
         };
-        postData('remittances/deployments/deployed_drivers', data).then(data => {
+        getData('remittances/deployments/deployed_drivers/'+ id).then(data => {
+            console.log(data);
             if (!data.error) {
                 console.log(data);
                 this.setState({
@@ -686,14 +688,14 @@ export class SupervisorRemittancePage extends Component {
     next = () => {
         // makes the page persist on refresh
         const current = this.state.current + 1;
-        console.log(localStorage.remittance_page);
-        !localStorage.remittance_page ? localStorage.remittance_page = 1 :
-            localStorage.remittance_page = parseInt(localStorage.remittance_page) + 1;
-        console.log(localStorage.remittance_page);
+        // console.log(localStorage.remittance_page);
+        // !localStorage.remittance_page ? localStorage.remittance_page = 1 :
+        //     localStorage.remittance_page = parseInt(localStorage.remittance_page) + 1;
+        // console.log(localStorage.remittance_page);
         this.setState({ current });
     };
     endShift = () => {
-        localStorage.remittance_page = 0;
+        // localStorage.remittance_page = 0;
         this.setState({ current: 0 });
     };
 
