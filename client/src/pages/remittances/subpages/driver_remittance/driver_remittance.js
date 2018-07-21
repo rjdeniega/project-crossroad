@@ -76,12 +76,12 @@ export class DriverRemittancePage extends Component {
                     twelve_peso_end_second: data.assigned_tickets[3]["12_peso_end_second"],
                     fifteen_peso_end_first: data.assigned_tickets[4]["15_peso_end_first"],
                     fifteen_peso_end_second: data.assigned_tickets[5]["15_peso_end_firstfirst"],
-                    ten_peso_first_id: data.assigned_tickets[0]["ticket_id"],
-                    ten_peso_second_id: data.assigned_tickets[1]["ticket_id"],
-                    twelve_peso_first_id: data.assigned_tickets[2]["ticket_id"],
-                    twelve_peso_second_id: data.assigned_tickets[0]["ticket_id"],
-                    fifteen_peso_first_id: data.assigned_tickets[0]["ticket_id"],
-                    fifteen_peso_second_id: data.assigned_tickets[0]["ticket_id"],
+                    ten_peso_first_id: data.assigned_tickets[0]["assigned_ticket_id"],
+                    ten_peso_second_id: data.assigned_tickets[1]["assigned_ticket_id"],
+                    twelve_peso_first_id: data.assigned_tickets[2]["assigned_ticket_id"],
+                    twelve_peso_second_id: data.assigned_tickets[3]["assigned_ticket_id"],
+                    fifteen_peso_first_id: data.assigned_tickets[4]["assigned_ticket_id"],
+                    fifteen_peso_second_id: data.assigned_tickets[5]["assigned_ticket_id"],
                     deployment_id: data.deployment_details.id
                 }, () => console.log(this.state.ten_peso_start_first))
             }

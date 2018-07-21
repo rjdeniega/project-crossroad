@@ -254,6 +254,9 @@ export class RemittanceForm extends Component {
                 <div className="computed-div">
                     <div className="summary-table">
                         <p> summary </p>
+                        <div className="computations">
+
+                        </div>
                         <Button onClick={this.handleSubmit}>Submit</Button>
                         <Button onClick={this.showModal}>Assigned Tickets</Button>
                     </div>
