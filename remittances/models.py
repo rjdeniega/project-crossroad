@@ -115,6 +115,7 @@ class RemittanceForm(SoftDeletionModel):
     total = DecimalField(default=0, max_digits=19, decimal_places=10) # income - costs
     km_from = DecimalField(default=0, max_digits=19, decimal_places=10)
     km_to = DecimalField(default=0, max_digits=19, decimal_places=10)
+    discrepancy = DecimalField(default=0, max_digits=19, decimal_places=10)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
 
@@ -134,5 +135,11 @@ class ConsumedTicket(SoftDeletionModel):
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
     end_ticket = IntegerField()
     total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
+
+
+class BeepTransaction(SoftDeletionModel):
+    card_number = CharField(null=True, max_length=20)
+    total = DecimalField(default=0, max_digits=19, decimal_places=10)
+
 
 

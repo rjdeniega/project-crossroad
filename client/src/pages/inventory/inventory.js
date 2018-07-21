@@ -25,7 +25,7 @@ function hasErrors(fieldsError){
  */
 function CheckItem(props) {
     const quantity = props.quantity;
-    if (parseInt(quantity) < 3)
+    if (parseInt(quantity) <= 3)
         return <Icon className='warning-icon' icon={warning} size={18} style={{color: 'red'}}/>;
     else
         return null
