@@ -82,7 +82,7 @@ export default class App extends Component {
           });
         }
       })
-      .catch(error => message(error));
+      .catch(error => message.error(error));
   };
 
   // change pages on navbar item click
