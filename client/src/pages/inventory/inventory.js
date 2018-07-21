@@ -89,8 +89,8 @@ class RestockForm extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-        item: props.item,
-        inputValue: '',
+            item: props.item,
+            inputValue: '',
         };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -126,32 +126,55 @@ class RestockForm extends React.Component{
 
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
         const quantityError = isFieldTouched('quantity') && getFieldError('quantity');
+        const unitpriceError = isFieldTouched('unit_price') && getFieldError('unit_price');
+        const vendorError = isFieldTouched('vendor') && getFieldError('vendor');
 
         return(
             <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
-                        <FormItem className='quantity-label' label='Quantity'
-                                  validateStatus={quantityError ? 'error' : ''}
-                                  help={quantityError || ''}>
-                                  {getFieldDecorator('quantity',{
-                                      rules: [{
-                                          required: true,
-                                          message: 'Please input quantity',
-                                      }]
-                                  })(
-                                      <InputNumber className='quantity' type="text" placeholder="Quantity"
-                                                   formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
-                                )}
-                            </FormItem>
-                            <FormItem>
-                              <Button
-                                type="primary"
-                                htmlType="submit"
-                                disabled={hasErrors(getFieldsError())}
-                              >
-                                Submit
-                              </Button>
-                            </FormItem>
-                    </Form>
+                <FormItem className='quantity-label' label='Quantity' validateStatus={quantityError ? 'error' : ''}
+                          help={quantityError || ''}>
+                    {getFieldDecorator('quantity',{
+                        rules: [{
+                            required: true,
+                            message: 'Please input quantity',
+                        }]
+                    })(
+                        <InputNumber className='quantity' type="text" placeholder="Quantity"
+                                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
+                    )}
+                    </FormItem>
+                <FormItem className='unit-price-label' label='Unit Price'
+                          validateStatus={unitpriceError ? 'error' :''}
+                          help={unitpriceError || ''}>
+                    {getFieldDecorator('unit_price',{
+                        rules: [{
+                            required: true,
+                            message: 'Please input unit price',
+                        }]
+                    })(
+                        <InputNumber className='unit_price' type='text' placeholder="Unit Price"
+                                     formatter={value => `₱ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                     parser={value => value.replace(/₱\s?|(,*)/g, '')}/>
+                    )}
+                    </FormItem>
+                <FormItem className='vendor-label' label='Vendor'
+                          validateStatus={vendorError ? 'error' : ''}
+                          help={vendorError || ''}>
+                    {getFieldDecorator('vendor',{
+                        rules: [{
+                            required: true,
+                            message: 'Please input vendor',
+                        }]
+                    })(
+                        <Input className='vendor' type="text" placeholder="Vendor"/>
+                    )}
+                    </FormItem>
+                <FormItem>
+                    <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+                        Submit
+                    </Button>
+                </FormItem>
+            </Form>
         )
     }
 }
@@ -179,8 +202,15 @@ class RestockModal extends React.Component{
             fields: {
                 quantity: {
                     value: ''
+                },
+                vendor: {
+                    value: ''
+                },
+                unit_price: {
+                    value: ''
                 }
             }
+
         };
     }
 
@@ -322,28 +352,6 @@ class EditableTable extends React.Component {
                     return a.brand.localeCompare(b.brand)
                 },
                 editable: true,
-            }, {
-                title: 'Vendor',
-                dataIndex: 'vendor',
-                key: 'vendor',
-                width: 200,
-                sorter: (a, b) => {
-                    return a.vendor.localeCompare(b.vendor)
-                },
-                editable: true,
-            }, {
-                title: 'Unit Price',
-                dataIndex: 'unit_price',
-                key: 'unit_price',
-                width: 150,
-                align: 'right',
-                sorter: (a, b) => a.unit_price - b.unit_price,
-                editable: true,
-                render: text =>(
-                    <span>
-                        ₱{parseInt(text).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
-                    </span>
-                )
             }, {
                 title: 'Quantity',
                 dataIndex: 'quantity',
