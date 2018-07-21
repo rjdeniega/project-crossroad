@@ -89,8 +89,8 @@ class RestockForm extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-        item: props.item,
-        inputValue: '',
+            item: props.item,
+            inputValue: '',
         };
         this.handleSubmit = this.handleSubmit.bind(this);
     }
@@ -126,46 +126,55 @@ class RestockForm extends React.Component{
 
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
         const quantityError = isFieldTouched('quantity') && getFieldError('quantity');
+        const unitpriceError = isFieldTouched('unit_price') && getFieldError('unit_price');
+        const vendorError = isFieldTouched('vendor') && getFieldError('vendor');
 
         return(
             <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
-                        <FormItem className='quantity-label' label='Quantity'
-                                  validateStatus={quantityError ? 'error' : ''}
-                                  help={quantityError || ''}>
-                                  {getFieldDecorator('quantity',{
-                                      rules: [{
-                                          required: true,
-                                          message: 'Please input quantity',
-                                      }]
-                                  })(
-                                      <InputNumber className='quantity' type="text" placeholder="Quantity"
-                                                   formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
-                                )}
-                            </FormItem>
-                            <FormItem className='unit-price-label' label='Unit Price'
-                              validateStatus={unitpriceError ? 'error' :''}
-                                      help={unitpriceError || ''}>
-                                {getFieldDecorator('unit_price',{
-                                    rules: [{
-                                        required: true,
-                                        message: 'Please input unit price',
-                                    }]
-                                })(
-                                    <InputNumber className='unit_price' type='text' placeholder="Unit Price"
-                                             formatter={value => `₱ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                             parser={value => value.replace(/₱\s?|(,*)/g, '')}/>
-                                )}
-                            </FormItem>
-                            <FormItem>
-                              <Button
-                                type="primary"
-                                htmlType="submit"
-                                disabled={hasErrors(getFieldsError())}
-                              >
-                                Submit
-                              </Button>
-                            </FormItem>
-                    </Form>
+                <FormItem className='quantity-label' label='Quantity' validateStatus={quantityError ? 'error' : ''}
+                          help={quantityError || ''}>
+                    {getFieldDecorator('quantity',{
+                        rules: [{
+                            required: true,
+                            message: 'Please input quantity',
+                        }]
+                    })(
+                        <InputNumber className='quantity' type="text" placeholder="Quantity"
+                                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
+                    )}
+                    </FormItem>
+                <FormItem className='unit-price-label' label='Unit Price'
+                          validateStatus={unitpriceError ? 'error' :''}
+                          help={unitpriceError || ''}>
+                    {getFieldDecorator('unit_price',{
+                        rules: [{
+                            required: true,
+                            message: 'Please input unit price',
+                        }]
+                    })(
+                        <InputNumber className='unit_price' type='text' placeholder="Unit Price"
+                                     formatter={value => `₱ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                     parser={value => value.replace(/₱\s?|(,*)/g, '')}/>
+                    )}
+                    </FormItem>
+                <FormItem className='vendor-label' label='Vendor'
+                          validateStatus={vendorError ? 'error' : ''}
+                          help={vendorError || ''}>
+                    {getFieldDecorator('vendor',{
+                        rules: [{
+                            required: true,
+                            message: 'Please input vendor',
+                        }]
+                    })(
+                        <Input className='vendor' type="text" placeholder="Vendor"/>
+                    )}
+                    </FormItem>
+                <FormItem>
+                    <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+                        Submit
+                    </Button>
+                </FormItem>
+            </Form>
         )
     }
 }
