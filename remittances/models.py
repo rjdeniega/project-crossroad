@@ -136,3 +136,9 @@ class ConsumedTicket(SoftDeletionModel):
     total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
 
 
+class BeepTransaction(SoftDeletionModel):
+    card_number = CharField(null=True, max_length=20)
+    total = DecimalField(default=0, max_digits=19, decimal_places=10)
+
+
+
