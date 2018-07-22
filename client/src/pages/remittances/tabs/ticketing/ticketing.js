@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import { RemittanceList } from '../../components/remittance_list/remittance_list'
-import { List, Table, Divider, Button, Avatar, Icon } from 'antd'
+import { List, Table, Divider, Button, Avatar, Icon, Modal } from 'antd'
 import { eye } from 'react-icons-kit/fa/eye'
 import { getData } from '../../../../network_requests/general'
 
@@ -66,7 +66,8 @@ const columns = [{
 
 export class TicketingPane extends Component {
     state = {
-        shifts: []
+        shifts: [],
+        visible: false,
     };
 
     componentDidMount() {
@@ -81,7 +82,23 @@ export class TicketingPane extends Component {
     }
 
     fetchShiftData = (details) => {
+        this.setState({
+            visible: true,
+        });
         console.log(details)
+    };
+    handleOk = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
     };
 
     render() {
@@ -97,6 +114,16 @@ export class TicketingPane extends Component {
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista
                         probare, quae sunt a te dicta? Refert tamen, quo modo.</p>
                 </div>
+                <Modal
+                    title="Basic Modal"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                    <p>Some contents...</p>
+                </Modal>
                 <Table bordered size="medium"
                        className="remittance-table"
                        columns={columns}
