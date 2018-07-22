@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
+from members.serializers import SupervisorSerializer
 from remittances.resources import BeepTransactionResource
 from remittances.serializers import *
 from .models import *
@@ -150,6 +151,7 @@ class DeploymentView(APIView):
 
     @staticmethod
     def post(request):
+        print("enters here")
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
         deployment_serializer = DeploymentSerializer(data=data)
@@ -162,6 +164,8 @@ class DeploymentView(APIView):
                 'deployment': deployment.status
             }, status=status.HTTP_200_OK)
         else:
+            print("theres an error")
+            print(deployment_serializer.errors)
             return Response(data={
                 "errors": deployment_serializer.errors
             })
@@ -520,22 +524,27 @@ class AddDiscrepancy(APIView):
 
 class ShiftIterationReport(APIView):
     @staticmethod
-    def get(request, shift_iteration_id):
-        remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift_iteration_id)
-        grand_total = 0
-        for remittance in remittances:
-            grand_total += remittance.total
-
-        deployment_details = TicketUtilities.get_remittances_per_deployment(shift_iteration_id)
-
-        # get shift details
-        shift_iteration = ShiftIteration.objects.get(id=shift_iteration_id)
+    def get(request):
+        shift_iterations = []
+        for shift_iteration in ShiftIteration.objects.all():
+            remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift_iteration.id)
+            grand_total = 0
+            for remittance in remittances:
+                grand_total += remittance.total
+            deployment_details = TicketUtilities.get_remittances_per_deployment(shift_iteration.id)
+            # get shift details
+            shift_iteration = ShiftIteration.objects.get(id=shift_iteration.id)
+            iteration_serializer = ShiftIterationSerializer(shift_iteration)
+            shift_iterations.append({
+                'grand_total': grand_total,
+                'shift_type': shift_iteration.shift.type,
+                'date_of_iteration': shift_iteration.date,
+                'shift_iteration': iteration_serializer.data,
+                'details': deployment_details
+            })
 
         return Response(data={
-            'grand_total': grand_total,
-            'shift_type': shift_iteration.shift.type,
-            'date_of_iteration': shift_iteration.date,
-            'details': deployment_details
+            "shift_iterations": shift_iterations
         }, status=status.HTTP_200_OK)
 
 

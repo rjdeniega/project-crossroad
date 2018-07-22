@@ -7,6 +7,7 @@ import emptyStateImage from '../../../../images/empty_state_construction.png'
 import { RemittanceList } from '../../components/remittance_list/remittance_list'
 import { List, Table, Divider, Button, Avatar, Icon } from 'antd'
 import { eye } from 'react-icons-kit/fa/eye'
+import { getData } from '../../../../network_requests/general'
 
 const ButtonGroup = Button.Group;
 // {
@@ -23,11 +24,11 @@ const ButtonGroup = Button.Group;
 // },
 const columns = [{
     title: 'Date',
-    dataIndex: 'date',
-    key: 'date',
+    dataIndex: 'date_of_iteration',
+    key: 'date_of_iteration',
     render: (text) => (
         <div>
-            <p>{text}</p>
+            {text}
         </div>
     )
 }, {
@@ -36,16 +37,21 @@ const columns = [{
     key: 'shift_type',
     render: (text) => (
         <div className="rem-status">
-            <Icon type="check-circle" className="status-icon"/>{text}
+            {text == "A" &&
+            <div className="shift-table-column"><Icon type="check-circle" className="status-icon"/> <p>AM</p></div>}
+            {text == "P" &&
+            <div className="shift-table-column"><Icon type="check-circle" className="status-icon"/> <p>PM</p></div>}
+            {text == "MN" &&
+            <div className="shift-table-column"><Icon type="check-circle" className="status-icon"/> <p>MN</p></div>}
         </div>
     ),
 }, {
     title: 'Total Remittances',
-    dataIndex: 'total_remittance',
-    key: 'total_remittance',
+    dataIndex: 'grand_total',
+    key: 'grand_total',
     render: (text) => (
         <div className="rem-status">
-            <p><b>Php 1000</b></p>
+            <p><b>Php {text}</b></p>
         </div>
     ),
 }, {
@@ -58,34 +64,25 @@ const columns = [{
     ),
 }];
 
-const data = [{
-    date: '2013/11/10',
-    shift_type: 'AM',
-    age: 32,
-    address: 'Completed',
-}, {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'Completed',
-}, {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Completed',
-}, {
-    key: '4',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Completed',
-}, {
-    key: '5',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Completed',
-}];
 export class TicketingPane extends Component {
+    state = {
+        shifts: []
+    };
 
+    componentDidMount() {
+        getData('remittances/reports/shift_iterations/').then(data => {
+            if (!data.errors) {
+                console.log(data);
+                this.setState({
+                    shifts: data.shift_iterations
+                })
+            }
+        }).catch(error => console.log(error))
+    }
+
+    fetchShiftData = (details) => {
+        console.log(details)
+    };
 
     render() {
         return (
@@ -100,7 +97,19 @@ export class TicketingPane extends Component {
                     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista
                         probare, quae sunt a te dicta? Refert tamen, quo modo.</p>
                 </div>
-                <Table bordered size="medium" className="remittance-table" columns={columns} dataSource={data}/>
+                <Table bordered size="medium"
+                       className="remittance-table"
+                       columns={columns}
+                       dataSource={this.state.shifts}
+                       onRow={(record) => {
+                           return {
+                               onClick: () => {
+                                   console.log(record.shift_iteration.id);
+                                   this.fetchShiftData(record.details);
+                               },       // click row
+                           };
+                       }}
+                />
             </div>
         );
     }

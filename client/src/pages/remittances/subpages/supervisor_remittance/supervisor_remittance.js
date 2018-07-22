@@ -251,16 +251,16 @@ export class SupervisorSecondContent extends Component {
     handleDeploy = (e) => {
         const data = this.createDeploymentForm();
         postData('/remittances/deployments/', data).then(data => {
-            if (!data.error) {
+            console.log(data);
+            if (!data.errors) {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
-                console.log(data);
                 this.fetchDrivers();
                 this.props.updateDrivers();
             }
             else {
-                console.log(data.error);
+                console.log(data.errors);
             }
         });
         this.setState({

@@ -76,6 +76,7 @@ class ShiftIteration(SoftDeletionModel):
     date = DateField(auto_now_add=True)
 
 
+
 class Deployment(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     route = CharField(max_length=1, choices=ROUTE)

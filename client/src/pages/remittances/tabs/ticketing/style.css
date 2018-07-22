@@ -90,3 +90,13 @@
     height: 40px!important;
     /*background: rgba(85, 204, 170, 1)!important;*/
     }
+.shift-table-column{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    }
+.shift-table-column p, .rem-status p{
+    padding: 0;
+    margin: 0;
+    }

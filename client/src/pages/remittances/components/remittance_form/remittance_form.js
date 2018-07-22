@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react'
 import './style.css'
-import { Input, InputNumber, TimePicker, Button, Modal } from 'antd'
+import { Input, InputNumber, TimePicker, Button, Modal,message } from 'antd'
 import moment from 'moment';
 import { postData } from "../../../../network_requests/general";
 
@@ -85,14 +85,13 @@ export class RemittanceForm extends Component {
         const data = this.createForm();
         postData('remittances/remittance_form/', data).then(data => {
             if (!data.error) {
-                console.log(data)
+                console.log(data);
+                message.success("Nasubmit na ang iyong remittance form")
             }
             else {
                 console.log(data.error)
             }
         }).catch(error => console.log(error));
-
-        console.log("submitted")
     };
     formListener = fieldName => event => {
         return this.handleFormChange(fieldName)(event);
