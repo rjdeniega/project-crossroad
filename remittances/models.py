@@ -10,11 +10,10 @@ TICKET_TYPE = [
     ('B', '12 Pesos'),
     ('C', '15 Pesos')
 ]
-
 ROUTE = [
     ('M', 'Main Road'),
-    ('R', 'Right Route'), #Kanan
-    ('L', 'Left Route') #Kaliwa
+    ('R', 'Right Route'),  # Kanan
+    ('L', 'Left Route')  # Kaliwa
 ]
 
 SHIFT_TYPE = [
@@ -112,7 +111,7 @@ class RemittanceForm(SoftDeletionModel):
     fuel_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     other_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
-    total = DecimalField(default=0, max_digits=19, decimal_places=10) # income - costs
+    total = DecimalField(default=0, max_digits=19, decimal_places=10)  # income - costs
     km_from = DecimalField(default=0, max_digits=19, decimal_places=10)
     km_to = DecimalField(default=0, max_digits=19, decimal_places=10)
     created = models.DateTimeField(editable=False)
@@ -125,7 +124,7 @@ class RemittanceForm(SoftDeletionModel):
         return super(RemittanceForm, self).save(*args, **kwargs)
 
     def confirm_remittance(self):
-        self.status = 'C' # set status to confirmed
+        self.status = 'C'  # set status to confirmed
         self.save()
 
 
@@ -136,9 +135,12 @@ class ConsumedTicket(SoftDeletionModel):
     total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
 
 
+class BeepShift(SoftDeletionModel):
+    type = CharField(max_length=1, choices=SHIFT_TYPE)
+    date = DateField(null=True)
+
+
 class BeepTransaction(SoftDeletionModel):
+    shift = ForeignKey(BeepShift, on_delete=models.CASCADE)
     card_number = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
-
-
-

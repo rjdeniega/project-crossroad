@@ -5,10 +5,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
+from remittances.resources import BeepTransactionResource
 from remittances.serializers import *
 from .models import *
 import json
 from datetime import datetime
+from tablib import Dataset
 
 
 class ScheduleView(APIView):
@@ -264,7 +266,7 @@ class TicketUtilities():
 
                 final.append({
                     'assigned_ticket_id': ticket.id,
-                    a_key_start:ticket.range_from,
+                    a_key_start: ticket.range_from,
                     a_key_end: ticket.range_to,
                     'number_of_void': num_of_void,
                     'void_tickets': void
@@ -280,7 +282,7 @@ class TicketUtilities():
 
                 final.append({
                     'assigned_ticket_id': ticket.id,
-                    b_key_start:ticket.range_from,
+                    b_key_start: ticket.range_from,
                     b_key_end: ticket.range_to,
                     'number_of_void': num_of_void,
                     'void_tickets': void
@@ -296,7 +298,7 @@ class TicketUtilities():
 
                 final.append({
                     'assigned_ticket_id': ticket.id,
-                    c_key_start:ticket.range_from,
+                    c_key_start: ticket.range_from,
                     c_key_end: ticket.range_to,
                     'number_of_void': num_of_void,
                     'void_tickets': void
@@ -423,3 +425,23 @@ class ShiftIterationReport(APIView):
             'date_of_iteration': shift_iteration.date
         }, status=status.HTTP_200_OK)
 
+
+class BeepTransactionView(APIView):
+    @staticmethod
+    def post(request):
+        shift_type = request.POST.get('shift_type')
+        beep_shift = BeepShift()
+        beep_shift.type = shift_type
+        beep_shift.date = datetime.now()
+        beep_shift.save()
+
+        file = request.FILES.get('file')
+        beep_resource = BeepTransactionResource()
+        dataset = Dataset()
+        new_transactions = request.FILES['file']
+
+        imported_data = dataset.load(new_transactions.read())
+        result = beep_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+        if not result.has_errors():
+            beep_resource.import_data(dataset, dry_run=False)  # Actually import now
