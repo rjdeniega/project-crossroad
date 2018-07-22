@@ -306,6 +306,106 @@ class TicketUtilities():
 
         return final
 
+    # this function returns a summary of ticket details with consumed and total for each batch
+    @staticmethod
+    def get_consumed_with_assigned(deployment_id):
+        tickets = AssignedTicket.objects.filter(deployment=deployment_id)
+
+        final = list()
+
+        a = 'first'
+        b = 'first'
+        c = 'first'
+        a_key_start = '10_peso_start_'
+        a_key_end = '10_peso_end_'
+        b_key_start = '12_peso_start_'
+        b_key_end = '12_peso_end_'
+        c_key_start = '15_peso_start_'
+        c_key_end = '15_peso_end_'
+
+        for ticket in tickets:
+            num_of_void = TicketUtilities.get_num_of_void(ticket.id)
+            void_tickets = VoidTicket.objects.filter(assigned_ticket=ticket)
+            void = list()
+
+            for void_ticket in void_tickets:
+                void.append({
+                    'ticket_number': void_ticket.ticket_number
+                })
+
+            consumed_ticket = ConsumedTicket.objects.get(assigned_ticket=ticket.id)
+
+            if ticket.type == 'A':
+                a_key_start += a
+                a_key_end += a
+
+                final.append({
+                    'assigned_ticket_id': ticket.id,
+                    a_key_start: ticket.range_from,
+                    a_key_end: ticket.range_to,
+                    'number_of_void': num_of_void,
+                    'void_tickets': void,
+                    'consumed_end': consumed_ticket.end_ticket,
+                    'total': consumed_ticket.total
+                })
+
+                a_key_start = '10_peso_start_'
+                a_key_end = '10_peso_end_'
+                a = 'second'
+
+            elif ticket.type == 'B':
+                b_key_start += b
+                b_key_end += b
+
+                final.append({
+                    'assigned_ticket_id': ticket.id,
+                    b_key_start: ticket.range_from,
+                    b_key_end: ticket.range_to,
+                    'number_of_void': num_of_void,
+                    'void_tickets': void,
+                    'consumed_end': consumed_ticket.end_ticket,
+                    'total': consumed_ticket.total
+                })
+
+                b_key_start = '12_peso_start_'
+                b_key_end = '12_peso_end_'
+                b = 'second'
+
+            else:
+                c_key_start += c
+                c_key_end += c
+
+                final.append({
+                    'assigned_ticket_id': ticket.id,
+                    c_key_start: ticket.range_from,
+                    c_key_end: ticket.range_to,
+                    'number_of_void': num_of_void,
+                    'void_tickets': void,
+                    'consumed_end': consumed_ticket.end_ticket,
+                    'total': consumed_ticket.total
+                })
+
+        return final
+
+    # this function returns all the deployment details w/ remittances for the shift iteration
+    @staticmethod
+    def get_remittances_per_deployment(shift_iteration_id):
+        deployments = Deployment.objects.filter(shift_iteration=shift_iteration_id)
+        final = list()
+
+        for deployment in deployments:
+            deployment_details = TicketUtilities.get_consumed_with_assigned(deployment.id)
+            remittance_details = RemittanceForm.objects.get(deployment=deployment)
+            remittance = ReadRemittanceSerializer(remittance_details)
+            final.append({
+                'deployment_id': deployment.id,
+                'driver': deployment.driver.name,
+                'ticket_specifics': deployment_details,
+                'remittance_details': remittance.data
+            })
+
+        return final
+
 
 class DeploymentDetails(APIView):
     # to get deployment data of the driver for today
@@ -404,25 +504,38 @@ class ConfirmRemittanceForm(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class AddDiscrepancy(APIView):
+    @staticmethod
+    def post(request, remittance_form_id):
+        data = json.loads(request.body)
+        rem_form = RemittanceForm.objects.get(id=remittance_form_id)
+        rem_form.discrepancy = data['discrepancy']
+        rem_form.total = rem_form.total - rem_form.discrepancy
+        rem_form.save()
+        remittance = ReadRemittanceSerializer(rem_form)
+        return Response(data={
+            "remittance_form": remittance.data
+        }, status=status.HTTP_200_OK)
+
+
 class ShiftIterationReport(APIView):
     @staticmethod
     def get(request, shift_iteration_id):
         remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift_iteration_id)
-
-        total = 0
+        grand_total = 0
         for remittance in remittances:
-            total += remittance.total
+            grand_total += remittance.total
 
-        serialized = ReadRemittanceSerializer(remittances, many=True)
+        deployment_details = TicketUtilities.get_remittances_per_deployment(shift_iteration_id)
 
         # get shift details
         shift_iteration = ShiftIteration.objects.get(id=shift_iteration_id)
 
         return Response(data={
-            'remittances': serialized.data,
-            'total': total,
+            'grand_total': grand_total,
             'shift_type': shift_iteration.shift.type,
-            'date_of_iteration': shift_iteration.date
+            'date_of_iteration': shift_iteration.date,
+            'details': deployment_details
         }, status=status.HTTP_200_OK)
 
 
