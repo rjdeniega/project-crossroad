@@ -108,7 +108,7 @@ class NonDeployedDrivers(APIView):
     def get(request, supervisor_id):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
-        shift_iteration = ShiftIteration.objects.get(shift=current_shift.id)
+        shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
         deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
 
         drivers = []
