@@ -154,6 +154,14 @@ class DeploymentView(APIView):
         print("enters here")
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
+
+        ctr = 0
+        for assigned_ticket in data['assigned_ticket']:
+            if not len(assigned_ticket['range_from']) and not ctr % 2 == 0:
+                del data['assigned_ticket'][ctr]
+
+            ctr += 1
+
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
             deployment = deployment_serializer.create(
@@ -164,8 +172,6 @@ class DeploymentView(APIView):
                 'deployment': deployment.status
             }, status=status.HTTP_200_OK)
         else:
-            print("theres an error")
-            print(deployment_serializer.errors)
             return Response(data={
                 "errors": deployment_serializer.errors
             })
