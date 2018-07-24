@@ -108,7 +108,7 @@ class NonDeployedDrivers(APIView):
     def get(request, supervisor_id):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
-        shift_iteration = ShiftIteration.objects.get(shift=current_shift.id)
+        shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
         deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
 
         drivers = []
@@ -151,9 +151,17 @@ class DeploymentView(APIView):
 
     @staticmethod
     def post(request):
-        print("enters here")
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
+
+        ctr = 0
+        for assigned_ticket in data['assigned_ticket']:
+            if not len(assigned_ticket['range_from']) and not ctr % 2 == 0:
+                del data['assigned_ticket'][ctr]
+                ctr -= 1
+
+            ctr += 1
+
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
             deployment = deployment_serializer.create(
@@ -164,11 +172,9 @@ class DeploymentView(APIView):
                 'deployment': deployment.status
             }, status=status.HTTP_200_OK)
         else:
-            print("theres an error")
-            print(deployment_serializer.errors)
             return Response(data={
                 "errors": deployment_serializer.errors
-            })
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def delete(request, pk):
