@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react'
 import './style.css'
-import { Input, InputNumber, TimePicker, Button, Modal,message } from 'antd'
+import { Input, InputNumber, TimePicker, Button, Modal, message } from 'antd'
 import moment from 'moment';
 import { postData } from "../../../../network_requests/general";
 
@@ -26,14 +26,23 @@ export class RemittanceForm extends Component {
         km_end: null,
         fuel: null,
         others: null,
+        ten_end_final_first: null,
+        twelve_end_final_first: null,
+        fifteen_end_final_first: null,
+        ten_end_final_second: null,
+        twelve_end_final_second: null,
+        fifteen_end_final_second: null,
+        isConsumedPresent: null,
+
     };
 
     onChange(time, timeString) {
     }
 
     componentDidMount() {
+        console.log("something mounted");
         const state = { ...this.state };
-        const array = {...this.props};
+        const array = { ...this.props };
         Object.keys(array).forEach(key => {
             console.log(key);
             console.log(this.props[key]);
@@ -42,6 +51,28 @@ export class RemittanceForm extends Component {
         this.setState({
             ...state
         });
+        const isConsumed = this.props.isConsumedPresent;
+        console.log(!isConsumed);
+        if (!isConsumed) {
+            this.setState({
+                ten_end_final_first: this.state.ten_peso_end_first,
+                twelve_end_final_first: this.state.twelve_peso_end_first,
+                fifteen_end_final_first: this.state.fifteen_peso_end_first,
+                ten_end_final_second: this.state.ten_peso_end_second,
+                twelve_end_final_second: this.state.twelve_peso_end_second,
+                fifteen_end_final_second: this.state.fifteen_peso_end_first,
+            })
+        }
+        else {
+            this.setState({
+                ten_end_final_first: this.props.ten_peso_consumed_first,
+                twelve_end_final_first: this.props.twelve_peso_consumed_first,
+                fifteen_end_final_first: this.props.fifteen_peso_consumed_first,
+                ten_end_final_second: this.props.ten_peso_consumed_second,
+                twelve_end_final_second: this.props.twelve_peso_consumed_second,
+                fifteen_end_final_second: this.props.fifteen_peso_consumed_first,
+            }, () => console.log(this.props.fifteen_peso_consumed_first))
+        }
     }
 
     createForm = () => {
@@ -78,6 +109,7 @@ export class RemittanceForm extends Component {
                 },
             ]
         };
+
         console.log(data);
         return data;
     };
@@ -160,9 +192,11 @@ export class RemittanceForm extends Component {
                 <div className="input-div">
                     <div className="km-range">
                         <p>Km range from</p>
-                        <InputNumber onChange={this.formListener("km_start")} value={this.state.km_start} className="input" type="text"/>
+                        <InputNumber onChange={this.formListener("km_start")} value={this.state.km_start}
+                                     className="input" type="text"/>
                         <p>to</p>
-                        <InputNumber onChange={this.formListener("km_end")} value={this.state.km_end} className="input" type="text"/>
+                        <InputNumber onChange={this.formListener("km_end")} value={this.state.km_end} className="input"
+                                     type="text"/>
                     </div>
                     <div className="tickets-sold">
                         <p>Tickets sold</p>
@@ -172,7 +206,7 @@ export class RemittanceForm extends Component {
                                          type="text"/>
                             <p> to</p>
                             <InputNumber onChange={this.formListener("ten_peso_end_first")}
-                                         value={this.state.ten_peso_end_first} className="input" type="text"/>
+                                         value={this.state.ten_end_final_first} className="input" type="text"/>
                         </div>
                         <div className="range-div">
                             <p> 10 peso tickets sold (2)</p>
@@ -180,7 +214,7 @@ export class RemittanceForm extends Component {
                                          type="text"/>
                             <p> to</p>
                             <InputNumber onChange={this.formListener("ten_peso_end_second")}
-                                         value={this.state.ten_peso_end_second} className="input" type="text"/>
+                                         value={this.state.ten_end_final_second} className="input" type="text"/>
                         </div>
                         <div className="range-div">
                             <p> 12 peso tickets sold (1)</p>
@@ -188,7 +222,7 @@ export class RemittanceForm extends Component {
                                          type="text"/>
                             <p> to</p>
                             <InputNumber onChange={this.formListener("twelve_peso_end_first")}
-                                         value={this.state.twelve_peso_end_first} className="input"
+                                         value={this.state.twelve_end_final_first} className="input"
                                          type="text"/>
                         </div>
                         <div className="range-div">
@@ -197,7 +231,7 @@ export class RemittanceForm extends Component {
                                          type="text"/>
                             <p> to</p>
                             <InputNumber onChange={this.formListener("twelve_peso_end_second")}
-                                         value={this.state.twelve_peso_end_second} className="input"
+                                         value={this.state.twelve_end_final_second} className="input"
                                          type="text"/>
                         </div>
                         <div className="range-div">
@@ -206,7 +240,7 @@ export class RemittanceForm extends Component {
                                          type="text"/>
                             <p> to</p>
                             <InputNumber onChange={this.formListener("fifteen_peso_end_first")}
-                                         value={this.state.fifteen_peso_end_first} className="input"
+                                         value={this.state.fifteen_end_final_first} className="input"
                                          type="text"/>
                         </div>
                         <div className="range-div">
@@ -215,7 +249,7 @@ export class RemittanceForm extends Component {
                                          type="text"/>
                             <p> to</p>
                             <InputNumber onChange={this.formListener("fifteen_peso_end_second")}
-                                         value={this.state.fifteen_peso_end_second} className="input"
+                                         value={this.state.fifteen_end_final_second} className="input"
                                          type="text"/>
                         </div>
                     </div>
@@ -241,11 +275,13 @@ export class RemittanceForm extends Component {
                     <div className="less-items">
                         <div className="less-range-div">
                             <p> Fuel </p>
-                            <InputNumber onChange={this.formListener("fuel")} value={this.state.fuel} className="input" type="text"/>
+                            <InputNumber onChange={this.formListener("fuel")} value={this.state.fuel} className="input"
+                                         type="text"/>
                         </div>
                         <div className="less-range-div">
                             <p> Others </p>
-                            <InputNumber onChange={this.formListener("others")} value={this.state.others} className="input" type="text"/>
+                            <InputNumber onChange={this.formListener("others")} value={this.state.others}
+                                         className="input" type="text"/>
                         </div>
                     </div>
                     {/*</div>*/}

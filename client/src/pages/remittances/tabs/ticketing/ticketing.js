@@ -3,11 +3,12 @@
  */
 import React, { Component } from 'react';
 import './style.css'
-import emptyStateImage from '../../../../images/empty_state_construction.png'
+import emptyStateImage from '../../../../images/empty state record.png'
 import { RemittanceList } from '../../components/remittance_list/remittance_list'
 import { List, Table, Divider, Button, Avatar, Icon, Modal } from 'antd'
 import { eye } from 'react-icons-kit/fa/eye'
 import { getData } from '../../../../network_requests/general'
+import { RemittanceForm } from '../../components/remittance_form/remittance_form'
 
 const ButtonGroup = Button.Group;
 // {
@@ -68,6 +69,10 @@ export class TicketingPane extends Component {
     state = {
         shifts: [],
         visible: false,
+        fuel: null,
+        activeForm: null,
+        selected_shifts: [],
+        remittance_forms: []
     };
 
     componentDidMount() {
@@ -81,11 +86,48 @@ export class TicketingPane extends Component {
         }).catch(error => console.log(error))
     }
 
+    remittance_forms = [];
     fetchShiftData = (details) => {
+        console.log(details);
         this.setState({
             visible: true,
         });
-        console.log(details)
+        details.map(form => {
+            const props = {
+                ten_peso_start_first: form.ticket_specifics[0]["10_peso_start_first"],
+                ten_peso_start_second: form.ticket_specifics[1]["10_peso_start_second"],
+                twelve_peso_start_first: form.ticket_specifics[2]["12_peso_start_first"],
+                twelve_peso_start_second: form.ticket_specifics[3]["12_peso_start_second"],
+                fifteen_peso_start_first: form.ticket_specifics[4]["15_peso_start_first"],
+                fifteen_peso_start_second: form.ticket_specifics[5]["15_peso_start_firstfirst"],
+                ten_peso_end_first: form.ticket_specifics[0]["10_peso_end_first"],
+                ten_peso_end_second: form.ticket_specifics[1]["10_peso_end_second"],
+                twelve_peso_end_first: form.ticket_specifics[2]["12_peso_end_first"],
+                twelve_peso_end_second: form.ticket_specifics[3]["12_peso_end_second"],
+                fifteen_peso_end_first: form.ticket_specifics[4]["15_peso_end_first"],
+                fifteen_peso_end_second: form.ticket_specifics[5]["15_peso_end_firstfirst"],
+                ten_peso_consumed_first: form.ticket_specifics[0]["consumed_end"],
+                ten_peso_consumed_second: form.ticket_specifics[1]["consumed_end"],
+                twelve_peso_consumed_first: form.ticket_specifics[2]["consumed_end"],
+                twelve_peso_consumed_second: form.ticket_specifics[3]["consumed_end"],
+                fifteen_peso_consumed_first: form.ticket_specifics[4]["consumed_end"],
+                fifteen_peso_consumed_second: form.ticket_specifics[5]["consumed_end"],
+                isConsumedPresent: true,
+                km_start: parseInt(form.remittance_details.km_from),
+                km_end: parseInt(form.remittance_details.km_to),
+                others: parseInt(form.remittance_details.other_cost),
+                fuel: parseInt(form.remittance_details.fuel_cost)
+            };
+            this.state.remittance_forms.push(
+                this.state.remittance_forms[form.deployment_id] =
+                    <RemittanceForm className="remittance-form" {...props}/>
+            )
+        });
+    };
+    handleDriverSelect = id => event => {
+        this.setState({
+            activeForm: id
+        })
     };
     handleOk = (e) => {
         console.log(e);
@@ -93,12 +135,17 @@ export class TicketingPane extends Component {
             visible: false,
         });
     };
-
     handleCancel = (e) => {
         console.log(e);
         this.setState({
             visible: false,
         });
+    };
+
+    renderListItemPhoto = photoSrc => {
+        console.log("Photo src", photoSrc);
+        return <Avatar className="list-avatar" size="large"
+                       src={photoSrc ? photoSrc : "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>;
     };
 
     render() {
@@ -115,14 +162,39 @@ export class TicketingPane extends Component {
                         probare, quae sunt a te dicta? Refert tamen, quo modo.</p>
                 </div>
                 <Modal
+                    className="ticketing-modal"
                     title="Basic Modal"
                     visible={this.state.visible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                 >
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
-                    <p>Some contents...</p>
+                    <div className="modal-content">
+                        <List
+                            className="user-list"
+                            itemLayout="horizontal"
+                            dataSource={(() => {
+                                console.log(this.state.shifts);
+                                return this.state.shifts;
+                            })()}
+                            renderItem={item => (
+                                <List.Item className="list-item"
+                                           onClick={this.handleDriverSelect(item.details[0].deployment_id)}>
+                                    <List.Item.Meta
+                                        avatar={this.renderListItemPhoto(item.details[0].driver_photo)}
+                                        title={<p className="list-title"
+                                                  href="https://ant.design">{item.details[0].driver}</p>}
+                                    />
+                                </List.Item>
+                            )}
+                        />
+                        {this.state.activeForm && this.state.remittance_forms[this.state.activeForm]}
+                        {!this.state.activeForm &&
+                        <div className="empty-state">
+                            <img className="empty-image" src={emptyStateImage}/>
+                            <p><b>Please select a driver</b></p>
+                        </div>
+                        }
+                    </div>
                 </Modal>
                 <Table bordered size="medium"
                        className="remittance-table"
@@ -131,7 +203,7 @@ export class TicketingPane extends Component {
                        onRow={(record) => {
                            return {
                                onClick: () => {
-                                   console.log(record.shift_iteration.id);
+                                   console.log(record);
                                    this.fetchShiftData(record.details);
                                },       // click row
                            };

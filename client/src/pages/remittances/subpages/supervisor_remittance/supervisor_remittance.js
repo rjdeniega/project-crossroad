@@ -12,6 +12,7 @@ import { users } from 'react-icons-kit/feather/'
 import { u1F46E } from 'react-icons-kit/noto_emoji_regular/u1F46E'
 import { driversLicenseO } from 'react-icons-kit/fa/driversLicenseO'
 import { cube } from 'react-icons-kit/fa/cube'
+import userDefault from '../../../../images/default.png'
 import { UserAvatar } from "../../../../components/avatar/avatar"
 import {
     Select,
@@ -357,7 +358,7 @@ export class SupervisorSecondContent extends Component {
             <List.Item key={driver.id} onClick={() => this.handleDriverSelect(driver.id)} className="driver-item">
                 <List.Item.Meta
                     avatar={<Avatar
-                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                        src={userDefault}/>}
                     title={<a href="https://ant.design">{driver.name}</a>}
                 />
                 <div>
@@ -603,7 +604,7 @@ export class SupervisorLastContent extends Component {
             <List.Item onClick={this.showModal(item)} className="driver-item">
                 <List.Item.Meta
                     avatar={<Avatar
-                        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                        src={userDefault}/>}
                     title={<a href="https://ant.design">{item.driver_name}</a>}
                 />
                 <div>
@@ -774,7 +775,7 @@ export class SupervisorRemittancePage extends Component {
                                 <List.Item key={item.key} className="deploy-list-item">
                                     <List.Item.Meta
                                         avatar={<Avatar
-                                            src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                                            src={userDefault}/>}
                                         title={<p className="deployed-drivers-list-title">{item.driver_name}</p>}
                                     />
                                     <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>

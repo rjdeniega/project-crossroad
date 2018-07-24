@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
+import users from '../../../../images/default.png'
 import { Button, notification, Divider} from 'antd';
 import { clockO } from 'react-icons-kit/fa/clockO'
 import { Icon } from 'react-icons-kit'
@@ -20,8 +21,8 @@ const columns = [{
     title: 'Name',
     dataIndex: 'name',
     render: (text, record) => <div><Avatar className="driver-icon"
-                                           style={{ backgroundColor: 'var(--darkgreen)', marginRight: '20px' }}
-                                           src={record.photo ? record.photo : "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>
+                                           style={{marginRight: '20px' }}
+                                           src={record.photo ? record.photo : users}/>
         {record.name}</div>
 }];
 

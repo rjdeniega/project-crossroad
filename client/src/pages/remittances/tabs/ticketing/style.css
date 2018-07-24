@@ -14,12 +14,12 @@
     width: 95%;
     border-radius: 5px;
     height: 100%;
-    margin-top: 0!important;
+    margin-top: 0 !important;
     display: flex;
     flex-direction: column;
     justify-content: start;
     padding: 20px;
-    background: rgba(255,255,255,1);
+    background: rgba(255, 255, 255, 1);
     /*background: rgba(81, 109, 133, 0.33);*/
     box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);
     }
@@ -86,17 +86,53 @@
     margin-right: 10px;
     }
 
-.shift-type{
-    height: 40px!important;
+.shift-type {
+    height: 40px !important;
     /*background: rgba(85, 204, 170, 1)!important;*/
     }
-.shift-table-column{
+
+.shift-table-column {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
     }
-.shift-table-column p, .rem-status p{
+
+.shift-table-column p, .rem-status p {
     padding: 0;
     margin: 0;
+    }
+
+.ticketing-modal {
+    width: 950px !important;
+    min-width: 500px !important;
+    top: 20px !important;
+    }
+
+.modal-content {
+    display: grid;
+    grid-template-columns: 25% 75%;
+    width: 100%;
+    height: 500px !important;
+    background-color: rgba(255, 255, 255, 1);
+    }
+
+.modal-content .form-content {
+    grid-column: 2/3;
+    }
+
+.modal-content .ant-list-item-meta-title {
+    line-height: 40px !important;
+    }
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 500px;
+    border: 1px dashed #e9e9e9;
+    border-radius: 6px;
+    background-color: #fafafa;
     }

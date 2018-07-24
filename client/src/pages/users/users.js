@@ -7,6 +7,7 @@ import '../../utilities/colorsFonts.css'
 import { List, Avatar } from 'antd'
 import './style.css'
 import emptyStateImage from '../../images/empty state record.png'
+import users from '../../images/default.png'
 import { Spin, Icon } from 'antd';
 
 const antIcon = <Icon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)' }} spin/>;
@@ -66,7 +67,7 @@ export class UsersPage extends Component {
     renderListItemPhoto = photoSrc => {
         console.log("Photo src", photoSrc);
         return  <Avatar className="list-avatar" size="large"
-                src={photoSrc ? photoSrc : "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>;
+                src={photoSrc ? photoSrc : users}/>;
     };
 
     renderList = () => (
