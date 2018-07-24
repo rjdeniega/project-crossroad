@@ -775,7 +775,7 @@ export class SupervisorRemittancePage extends Component {
                                 <List.Item key={item.key} className="deploy-list-item">
                                     <List.Item.Meta
                                         avatar={<Avatar
-                                            src={userDefault}/>}
+                                            src={users}/>}
                                         title={<p className="deployed-drivers-list-title">{item.driver_name}</p>}
                                     />
                                     <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>

@@ -86,12 +86,13 @@ export class TicketingPane extends Component {
         }).catch(error => console.log(error))
     }
 
-    remittance_forms = [];
     fetchShiftData = (details) => {
         console.log(details);
         this.setState({
             visible: true,
         });
+        const array = [];
+        const selected = [];
         details.map(form => {
             const props = {
                 ten_peso_start_first: form.ticket_specifics[0]["10_peso_start_first"],
@@ -118,13 +119,20 @@ export class TicketingPane extends Component {
                 others: parseInt(form.remittance_details.other_cost),
                 fuel: parseInt(form.remittance_details.fuel_cost)
             };
-            this.state.remittance_forms.push(
-                this.state.remittance_forms[form.deployment_id] =
-                    <RemittanceForm className="remittance-form" {...props}/>
-            )
+            array.push(
+                <RemittanceForm key={form.deployment_id} className="remittance-form" {...props}/>
+            );
+            selected.push(form)
+
         });
+        console.log(array);
+        this.setState({
+            remittance_forms: array,
+            selected_shifts: selected,
+        }, () => console.log(this.state.remittance_forms))
     };
     handleDriverSelect = id => event => {
+        console.log(id);
         this.setState({
             activeForm: id
         })
@@ -133,12 +141,14 @@ export class TicketingPane extends Component {
         console.log(e);
         this.setState({
             visible: false,
+            activeForm: null,
         });
     };
     handleCancel = (e) => {
         console.log(e);
         this.setState({
             visible: false,
+            activeForm: null,
         });
     };
 
@@ -146,6 +156,12 @@ export class TicketingPane extends Component {
         console.log("Photo src", photoSrc);
         return <Avatar className="list-avatar" size="large"
                        src={photoSrc ? photoSrc : "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"}/>;
+    };
+    getCurrentForm = () => {
+        return this.state.remittance_forms.filter(item => {
+                return item.key == this.state.activeForm
+            }
+        );
     };
 
     render() {
@@ -173,21 +189,21 @@ export class TicketingPane extends Component {
                             className="user-list"
                             itemLayout="horizontal"
                             dataSource={(() => {
-                                console.log(this.state.shifts);
-                                return this.state.shifts;
+                                console.log(this.state.selected_shifts);
+                                return this.state.selected_shifts;
                             })()}
                             renderItem={item => (
                                 <List.Item className="list-item"
-                                           onClick={this.handleDriverSelect(item.details[0].deployment_id)}>
+                                           onClick={this.handleDriverSelect(item.deployment_id)}>
                                     <List.Item.Meta
-                                        avatar={this.renderListItemPhoto(item.details[0].driver_photo)}
+                                        avatar={this.renderListItemPhoto(item.driver_photo)}
                                         title={<p className="list-title"
-                                                  href="https://ant.design">{item.details[0].driver}</p>}
+                                                  href="https://ant.design">{item.driver}</p>}
                                     />
                                 </List.Item>
                             )}
                         />
-                        {this.state.activeForm && this.state.remittance_forms[this.state.activeForm]}
+                        {this.state.activeForm && this.getCurrentForm()}
                         {!this.state.activeForm &&
                         <div className="empty-state">
                             <img className="empty-image" src={emptyStateImage}/>

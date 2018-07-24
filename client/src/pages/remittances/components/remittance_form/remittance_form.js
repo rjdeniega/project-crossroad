@@ -74,7 +74,6 @@ export class RemittanceForm extends Component {
             }, () => console.log(this.props.fifteen_peso_consumed_first))
         }
     }
-
     createForm = () => {
         const data = {
             "deployment": this.props.deployment_id,
@@ -85,27 +84,27 @@ export class RemittanceForm extends Component {
             "consumed_ticket": [
                 {
                     "assigned_ticket": this.props.ten_peso_first_id,
-                    "end_ticket": this.state.ten_peso_end_first
+                    "end_ticket": this.state.ten_end_final_first,
                 },
                 {
                     "assigned_ticket": this.props.ten_peso_second_id,
-                    "end_ticket": this.state.ten_peso_end_second
+                    "end_ticket": this.state.ten_end_final_second
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_first_id,
-                    "end_ticket": this.state.twelve_peso_end_first
+                    "end_ticket": this.state.twelve_end_final_first
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_second_id,
-                    "end_ticket": this.state.twelve_peso_end_second
+                    "end_ticket": this.state.twelve_end_final_second
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_first_id,
-                    "end_ticket": this.state.fifteen_peso_end_first
+                    "end_ticket": this.state.fifteen_end_final_first
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_second_id,
-                    "end_ticket": this.state.fifteen_peso_end_second
+                    "end_ticket": this.state.fifteen_end_final_second
                 },
             ]
         };
@@ -205,7 +204,7 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.ten_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("ten_peso_end_first")}
+                            <InputNumber onChange={this.formListener("ten_end_final_first")}
                                          value={this.state.ten_end_final_first} className="input" type="text"/>
                         </div>
                         <div className="range-div">
@@ -213,7 +212,7 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.ten_peso_start_second} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("ten_peso_end_second")}
+                            <InputNumber onChange={this.formListener("ten_end_final_second")}
                                          value={this.state.ten_end_final_second} className="input" type="text"/>
                         </div>
                         <div className="range-div">
@@ -221,7 +220,7 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.twelve_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("twelve_peso_end_first")}
+                            <InputNumber onChange={this.formListener("twelve_end_final_first")}
                                          value={this.state.twelve_end_final_first} className="input"
                                          type="text"/>
                         </div>
@@ -230,7 +229,7 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.twelve_peso_start_second} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("twelve_peso_end_second")}
+                            <InputNumber onChange={this.formListener("twelve_end_final_second")}
                                          value={this.state.twelve_end_final_second} className="input"
                                          type="text"/>
                         </div>
@@ -239,7 +238,7 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.fifteen_peso_start_first} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("fifteen_peso_end_first")}
+                            <InputNumber onChange={this.formListener("fifteen_end_final_first")}
                                          value={this.state.fifteen_end_final_first} className="input"
                                          type="text"/>
                         </div>
@@ -248,7 +247,7 @@ export class RemittanceForm extends Component {
                             <InputNumber disabled value={this.props.fifteen_peso_start_second} className="input"
                                          type="text"/>
                             <p> to</p>
-                            <InputNumber onChange={this.formListener("fifteen_peso_end_second")}
+                            <InputNumber onChange={this.formListener("fifteen_end_final_second")}
                                          value={this.state.fifteen_end_final_second} className="input"
                                          type="text"/>
                         </div>
