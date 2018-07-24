@@ -559,19 +559,25 @@ class ShiftIterationReport(APIView):
 class BeepTransactionView(APIView):
     @staticmethod
     def post(request):
+        print(request.data)
         shift_type = request.POST.get('shift_type')
         beep_shift = BeepShift()
         beep_shift.type = shift_type
         beep_shift.date = datetime.now()
-        beep_shift.save()
+        print(beep_shift)
 
-        file = request.FILES.get('file')
         beep_resource = BeepTransactionResource()
         dataset = Dataset()
+
         new_transactions = request.FILES['file']
-
-        imported_data = dataset.load(new_transactions.read())
+        print(new_transactions)
+        imported_data = dataset.load(new_transactions.read().decode('utf-8'),format='csv')
         result = beep_resource.import_data(dataset, dry_run=True)  # Test the data import
-
+        print(result)
         if not result.has_errors():
             beep_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+
+        return Response(data={
+            "data": "lol"
+        }, status=status.HTTP_200_OK)

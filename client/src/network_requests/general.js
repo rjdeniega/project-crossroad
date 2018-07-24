@@ -31,6 +31,17 @@ export const postDataWithImage = (url, data) => {
     })
         .then(response => response.json()); // parses response to JSON
 };
+export const postDataWithFile = (url, data) => {
+    return fetch(url, {
+        body: data, // must match 'Content-Type' header
+        credentials: 'same-origin', //pass cookies, for authentication
+        headers: {
+            'Accept': 'application/json, application/csv, text/plain, text/html, *.*',
+        },
+        method: 'POST',
+    })
+        .then(response => response.json()); // parses response to JSON
+};
 
 
 export const postData = (url, data) =>
