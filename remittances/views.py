@@ -151,7 +151,6 @@ class DeploymentView(APIView):
 
     @staticmethod
     def post(request):
-        print("enters here")
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
 
@@ -159,6 +158,7 @@ class DeploymentView(APIView):
         for assigned_ticket in data['assigned_ticket']:
             if not len(assigned_ticket['range_from']) and not ctr % 2 == 0:
                 del data['assigned_ticket'][ctr]
+                ctr -= 1
 
             ctr += 1
 
@@ -174,7 +174,7 @@ class DeploymentView(APIView):
         else:
             return Response(data={
                 "errors": deployment_serializer.errors
-            })
+            }, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod
     def delete(request, pk):
