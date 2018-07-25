@@ -154,13 +154,21 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
 
-        ctr = 0
-        # for assigned_ticket in data['assigned_ticket']:
-        #     if not len(assigned_ticket['range_from']) and not ctr % 2 == 0:
-        #         del data['assigned_ticket'][ctr]
-        #         ctr -= 1
-        #
-        #     ctr += 1
+        def should_be_removed(data):
+            list = []
+            for ctr, assigned_ticket in enumerate(data['assigned_ticket']):
+                if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
+                    list.append(ctr)
+
+            new_list = sorted(list, reverse=True)
+
+            return new_list
+        
+        invalid_entries = should_be_removed(data)
+
+        if invalid_entries != None:
+            for entry in invalid_entries:
+                del data['assigned_ticket'][entry]
 
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
@@ -210,6 +218,11 @@ class RemittanceUtilities():
     @staticmethod
     def get_shift_iteration(shift_id):
         shift_iteration = ShiftIteration.objects.filter(shift=shift_id).order_by("-date").first()
+        return shift_iteration
+
+    @staticmethod
+    def get_shift_iteration_sup(supervisor_id):
+        shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-date").first()
         return shift_iteration
 
     # this function expects that the driver could only be assigned to one shift
@@ -553,6 +566,18 @@ class ShiftIterationReport(APIView):
 
         return Response(data={
             "shift_iterations": shift_iterations
+        }, status=status.HTTP_200_OK)
+
+
+class FinishShiftIteration(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        shift_iteration = RemittanceUtilities.get_shift_iteration_sup(data['supervisor_id'])
+        shift_iteration.finish_shift()
+        return Response(data={
+            'iteration_id': shift_iteration.id,
+            'iteration_status': shift_iteration.status
         }, status=status.HTTP_200_OK)
 
 
