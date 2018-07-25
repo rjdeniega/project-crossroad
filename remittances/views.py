@@ -542,21 +542,21 @@ class AddDiscrepancy(APIView):
             "remittance_form": remittance.data
         }, status=status.HTTP_200_OK)
 
-
-class ShiftIterationReport(APIView):
+class IterationUtilites():
     @staticmethod
-    def get(request):
-        shift_iterations = []
-        for shift_iteration in ShiftIteration.objects.all():
+    def get_iterations(shift_iterations):
+        list = []
+        for shift_iteration in shift_iterations:
             remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift_iteration.id)
             grand_total = 0
             for remittance in remittances:
                 grand_total += remittance.total
+
             deployment_details = TicketUtilities.get_remittances_per_deployment(shift_iteration.id)
             # get shift details
             shift_iteration = ShiftIteration.objects.get(id=shift_iteration.id)
             iteration_serializer = ShiftIterationSerializer(shift_iteration)
-            shift_iterations.append({
+            list.append({
                 'grand_total': grand_total,
                 'shift_type': shift_iteration.shift.type,
                 'date_of_iteration': shift_iteration.date,
@@ -564,10 +564,30 @@ class ShiftIterationReport(APIView):
                 'details': deployment_details
             })
 
+        return list
+
+
+class ShiftIterationReport(APIView):
+    @staticmethod
+    def get(request):
+        shift_iterations = ShiftIteration.objects.all()
         return Response(data={
-            "shift_iterations": shift_iterations
+            "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
         }, status=status.HTTP_200_OK)
 
+class IterationsByDate(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = data['start_date']
+        end_date = data['end_date']
+
+        shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date)
+        return Response(data={
+            "start_date": start_date,
+            "end_date": end_date,
+            "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
+        }, status=status.HTTP_200_OK)
 
 class FinishShiftIteration(APIView):
     @staticmethod
