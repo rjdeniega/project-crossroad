@@ -85,7 +85,7 @@ class EditableCell extends React.Component {
     }
 }
 
-class RestockForm extends React.Component{
+class RestockForm extends Component{
     constructor(props){
         super(props);
         this.state = {
