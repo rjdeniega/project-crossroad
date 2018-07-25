@@ -154,13 +154,21 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
 
-        ctr = 0
-        for assigned_ticket in data['assigned_ticket']:
-            if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
-                del data['assigned_ticket'][ctr]
-                ctr -= 1
+        def should_be_removed(data):
+            list = []
+            for ctr, assigned_ticket in enumerate(data['assigned_ticket']):
+                if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
+                    list.append(ctr)
+            
+            new_list = sorted(list, reverse=True)
 
-            ctr += 1
+            return new_list
+        
+        invalid_entries = should_be_removed(data)
+
+        if invalid_entries != None:
+            for entry in invalid_entries:
+                del data['assigned_ticket'][entry]
 
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
