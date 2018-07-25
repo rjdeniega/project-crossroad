@@ -589,6 +589,35 @@ class IterationsByDate(APIView):
             "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
         }, status=status.HTTP_200_OK)
 
+class IterationsBySchedule(APIView):
+    @staticmethod
+    def get(request):
+        schedule_list = list()
+        schedules = Schedule.objects.all()
+
+        for schedule in schedules:
+            shifts = Shift.objects.filter(schedule=schedule)
+            shift_list = []
+
+            for shift in shifts:
+                shift_iterations = ShiftIteration.objects.filter(shift=shift)
+                iterations = IterationUtilites.get_iterations(shift_iterations)
+                shift_list.append({
+                    'supervisor': shift.supervisor.name,
+                    'shift_type': shift.type,
+                    'iterations': iterations
+                })
+
+            schedule_list.append({
+                "start_date": schedule.start_date,
+                "end_date": schedule.end_date,
+                "shifts": shift_list
+            })
+
+        return Response(data={
+            "schedules": schedule_list
+        }, status=status.HTTP_200_OK)
+
 class FinishShiftIteration(APIView):
     @staticmethod
     def post(request):
