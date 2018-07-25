@@ -81,6 +81,9 @@ class ShiftIteration(SoftDeletionModel):
     date = DateField(auto_now_add=True)
     status = CharField(max_length=1, choices=ITERATION_STATUS, default='O')
 
+    def finish_shift(self):
+        self.status = 'F'
+        self.save()
 
 
 class Deployment(SoftDeletionModel):

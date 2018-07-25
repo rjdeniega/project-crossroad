@@ -159,7 +159,7 @@ class DeploymentView(APIView):
             for ctr, assigned_ticket in enumerate(data['assigned_ticket']):
                 if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
                     list.append(ctr)
-            
+
             new_list = sorted(list, reverse=True)
 
             return new_list
@@ -218,6 +218,11 @@ class RemittanceUtilities():
     @staticmethod
     def get_shift_iteration(shift_id):
         shift_iteration = ShiftIteration.objects.filter(shift=shift_id).order_by("-date").first()
+        return shift_iteration
+
+    @staticmethod
+    def get_shift_iteration_sup(supervisor_id):
+        shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-date").first()
         return shift_iteration
 
     # this function expects that the driver could only be assigned to one shift
@@ -561,6 +566,18 @@ class ShiftIterationReport(APIView):
 
         return Response(data={
             "shift_iterations": shift_iterations
+        }, status=status.HTTP_200_OK)
+
+
+class FinishShiftIteration(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        shift_iteration = RemittanceUtilities.get_shift_iteration_sup(data['supervisor_id'])
+        shift_iteration.finish_shift()
+        return Response(data={
+            'iteration_id': shift_iteration.id,
+            'iteration_status': shift_iteration.status
         }, status=status.HTTP_200_OK)
 
 
