@@ -5,13 +5,56 @@
 import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { Modal, Button, Input } from 'antd'
+import { Modal, Button, Input, Select } from 'antd'
 import { postDataWithImage, postDataWithFile } from "../../../../network_requests/general";
 
+const Option = Select.Option;
+const columns = [{
+    title: 'Date',
+    dataIndex: 'date_of_iteration',
+    key: 'date_of_iteration',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    )
+}, {
+    title: 'Shift Type',
+    dataIndex: 'shift_type',
+    key: 'shift_type',
+    render: (text) => (
+        <div className="rem-status">
+            {text == "A" &&
+            <div className="shift-table-column"><Icon type="check-circle" className="status-icon"/> <p>AM</p></div>}
+            {text == "P" &&
+            <div className="shift-table-column"><Icon type="check-circle" className="status-icon"/> <p>PM</p></div>}
+            {text == "MN" &&
+            <div className="shift-table-column"><Icon type="check-circle" className="status-icon"/> <p>MN</p></div>}
+        </div>
+    ),
+}, {
+    title: 'Total Remittances',
+    dataIndex: 'grand_total',
+    key: 'grand_total',
+    render: (text) => (
+        <div className="rem-status">
+            <p><b>Php {text}</b></p>
+        </div>
+    ),
+}, {
+    title: 'Action',
+    key: 'action',
+    render: (text, record) => (
+        <Button className="view-button" type="ghost" icon="eye">
+            View Report
+        </Button>
+    ),
+}];
 export class BeepPane extends Component {
     state = {
         visible: false,
-        file: null
+        file: null,
+        shift_type: null,
     };
     showModal = item => event => {
         console.log(item);
@@ -38,9 +81,17 @@ export class BeepPane extends Component {
         });
         console.log(e.target.files[0])
     };
+    handleSelectChange = fieldName => value => {
+        // this function is to handle drop-downs
+        const state = { ...this.state };
+        state[fieldName] = value;
+        this.setState({
+            ...state
+        });
+    };
     handleUpload = () => {
         const formData = new FormData();
-        formData.append('shift_type', "AM");
+        formData.append('shift_type', this.state.shift_type);
         formData.append('file', this.state.file);
         console.log(formData);
 
@@ -70,12 +121,22 @@ export class BeepPane extends Component {
                     onOk={this.handleConfirm}
                     onCancel={this.handleCancel}
                 >
+                    <Select onChange={this.handleSelectChange("shift_type")} className="user-input" defaultValue="Male">
+                        <Option value="A">AM</Option>
+                        <Option value="P">PM</Option>
+                        <Option value="M">Midnight</Option>
+                    </Select>
                     <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
                     <Button type="primary" onClick={this.handleUpload}> Submit </Button>
                 </Modal>
                 <Button type="primary" onClick={this.showModal()}>Upload CSV</Button>
-                <img className="empty-image" src={emptyStateImage}/>
-                <p className="empty-message">Area under construction</p>
+                <div className="table-div">
+                    <Table bordered size="medium"
+                           className="remittance-table"
+                           columns={columns}
+                           dataSource={this.state.shifts}
+                    />
+                </div>
             </div>
         );
     }

@@ -573,10 +573,8 @@ class BeepTransactionView(APIView):
         print(new_transactions)
         imported_data = dataset.load(new_transactions.read().decode('utf-8'),format='csv')
         result = beep_resource.import_data(dataset, dry_run=True)  # Test the data import
-        print(result)
         if not result.has_errors():
             beep_resource.import_data(dataset, dry_run=False)  # Actually import now
-
 
         return Response(data={
             "data": "lol"
