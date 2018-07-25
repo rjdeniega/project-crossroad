@@ -57,6 +57,11 @@ export class ItemMovementTable extends React.Component{
                 render: text =>(
                     <span>{checkAction(text)}</span>
                 )
+            },
+            {
+                title: 'Vendor',
+                dataIndex: 'vendor',
+                key: 'vendor'
             }, {
                 title: 'Amount',
                 dataIndex: 'quantity',
@@ -65,6 +70,15 @@ export class ItemMovementTable extends React.Component{
                     <span>
                         {checkMovementQuantity(record.type)}
                         {`${text}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                    </span>
+                )
+            }, {
+                title: 'Unit Price',
+                dataIndex: 'unit_price',
+                key: 'unit_price',
+                render: text => (
+                    <span>
+                        ₱{parseFloat(text).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
                     </span>
                 )
             }

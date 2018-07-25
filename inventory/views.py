@@ -74,7 +74,7 @@ class QuantityRestock(APIView):
         item = Item.objects.get(id=pk)
         item_movements = MovementSerializer(ItemMovement.objects.all()
                                             .filter(item=item)
-                                            .order_by('created'), many=True)
+                                            .order_by('-created'), many=True)
         return Response(data={
             'movements': item_movements.data
         }, status=status.HTTP_200_OK)
@@ -84,7 +84,8 @@ class QuantityRestock(APIView):
         quants = json.loads(request.body)
         item = Item.objects.get(id=pk)
         item.quantity = quants['new_quantity']
-        item_movement = ItemMovement(item=Item.objects.get(id=item.id), type='B', quantity=quants['added_quantity'])
+        item_movement = ItemMovement(item=Item.objects.get(id=item.id), type='B', quantity=quants['added_quantity'],
+                                     unit_price=quants['unit_price'], vendor=quants['vendor'])
         item.save()
         item_movement.save()
         return Response(data={

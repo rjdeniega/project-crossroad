@@ -108,7 +108,9 @@ class RestockForm extends React.Component{
         console.log(this.props.item.quantity);
         let quants = {
             added_quantity: this.props.quantity.value,
-            new_quantity: new_quantity
+            new_quantity: new_quantity,
+            vendor: this.props.vendor.value,
+            unit_price: this.props.unit_price.value
         };
         fetch('inventory/items/restock/' + this.props.item.id,{
             method: 'PUT',
@@ -188,6 +190,14 @@ const RestockFormInit = Form.create({
             quantity: Form.createFormField({
                 ...props.quantity,
                 value: props.quantity.value,
+            }),
+            unit_price: Form.createFormField({
+                ...props.unit_price,
+                value: props.unit_price.value,
+            }),
+            vendor: Form.createFormField({
+                ...props.vendor,
+                value: props.vendor.value,
             }),
         }
     },
@@ -281,7 +291,7 @@ class ItemMovementModal extends React.Component{
             <div>
                 <a onClick={this.showModal}>Item Movement</a>
                 <Modal visible={this.state.visible} footer={null} onCancel={this.handleCancel}
-                        title={this.state.item.name + " item movement"}>
+                        title={this.state.item.name + " item movement"} width={1000}>
                     <ItemMovementTable item={this.state.item}/>
                 </Modal>
             </div>
