@@ -32,6 +32,11 @@ FORM_STATUS = [
     ('C', 'Completed')
 ]
 
+ITERATION_STATUS = [
+    ('O', 'Ongoing'),
+    ('F', 'Finished')
+]
+
 
 class Schedule(SoftDeletionModel):
     start_date = DateField()
@@ -74,6 +79,7 @@ class DriversAssigned(SoftDeletionModel):
 class ShiftIteration(SoftDeletionModel):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
     date = DateField(auto_now_add=True)
+    status = CharField(max_length=1, choices=ITERATION_STATUS, default='O')
 
 
 

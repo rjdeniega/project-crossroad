@@ -159,7 +159,7 @@ class DeploymentView(APIView):
             if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
                 del data['assigned_ticket'][ctr]
                 ctr -= 1
-        
+
             ctr += 1
 
         deployment_serializer = DeploymentSerializer(data=data)
