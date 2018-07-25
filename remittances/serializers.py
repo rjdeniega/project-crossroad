@@ -113,18 +113,19 @@ class AssignedTicketSerializer(ModelSerializer):
 
 
 class DeploymentSerializer(ModelSerializer):
-    assigned_ticket = AssignedTicketSerializer(many=True, write_only=True) #for writing
+    assigned_ticket = AssignedTicketSerializer(many=True, write_only=True)  # for writing
 
     class Meta:
         model = Deployment
-        exclude = ('shift_iteration', )
+        exclude = ('shift_iteration',)
 
     def create(self, validated_data, supervisor_id):
         assigned_tickets_data = validated_data.pop('assigned_ticket')
 
-        #get shift_iteration_id
-        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by('-date').first()
-        deployment = Deployment.objects.create(shift_iteration=current_shift_iteration , **validated_data)
+        # get shift_iteration_id
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
+            '-date').first()
+        deployment = Deployment.objects.create(shift_iteration=current_shift_iteration, **validated_data)
 
         for assigned_ticket_data in assigned_tickets_data:
             void_tickets_data = assigned_ticket_data.pop('void_ticket')
@@ -136,7 +137,7 @@ class DeploymentSerializer(ModelSerializer):
 
 
 class GetDeploymentSerializer(ModelSerializer):
-    assigned_tickets = serializers.StringRelatedField(many=True, read_only=True) #for reading
+    assigned_tickets = serializers.StringRelatedField(many=True, read_only=True)  # for reading
 
     class Meta:
         model = Deployment
@@ -167,7 +168,7 @@ class RemittanceFormSerializer(ModelSerializer):
             assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket.assigned_ticket.id)
 
             # subtract those void tickets
-            voided = 0 # number of voided tickets
+            voided = 0  # number of voided tickets
             void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
             for void_ticket in void_tickets:
                 voided += 1
@@ -214,4 +215,16 @@ class RemittanceFormSerializer(ModelSerializer):
 class ReadRemittanceSerializer(ModelSerializer):
     class Meta:
         model = RemittanceForm
+        fields = '__all__'
+
+
+class BeepShiftSerializer(ModelSerializer):
+    class Meta:
+        model = BeepShift
+        fields = '__all__'
+
+
+class BeepTransactionSerializer(ModelSerializer):
+    class Meta:
+        model = BeepTransaction
         fields = '__all__'

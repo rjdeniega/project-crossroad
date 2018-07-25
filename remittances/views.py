@@ -163,7 +163,7 @@ class DeploymentView(APIView):
             new_list = sorted(list, reverse=True)
 
             return new_list
-        
+
         invalid_entries = should_be_removed(data)
 
         if invalid_entries != None:
@@ -542,6 +542,7 @@ class AddDiscrepancy(APIView):
             "remittance_form": remittance.data
         }, status=status.HTTP_200_OK)
 
+
 class IterationUtilites():
     @staticmethod
     def get_iterations(shift_iterations):
@@ -575,6 +576,7 @@ class ShiftIterationReport(APIView):
             "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
         }, status=status.HTTP_200_OK)
 
+
 class IterationsByDate(APIView):
     @staticmethod
     def post(request):
@@ -588,6 +590,7 @@ class IterationsByDate(APIView):
             "end_date": end_date,
             "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
         }, status=status.HTTP_200_OK)
+
 
 class IterationsBySchedule(APIView):
     @staticmethod
@@ -618,6 +621,7 @@ class IterationsBySchedule(APIView):
             "schedules": schedule_list
         }, status=status.HTTP_200_OK)
 
+
 class FinishShiftIteration(APIView):
     @staticmethod
     def post(request):
@@ -632,20 +636,31 @@ class FinishShiftIteration(APIView):
 
 class BeepTransactionView(APIView):
     @staticmethod
+    def get(request):
+        beep_shifts = []
+        for shift in BeepShift.objects.all():
+            transactions = [BeepTransactionSerializer(item).data for item in BeepTransaction.objects.all() if
+                            item.shift.id == 20]
+            beep_shifts.append({
+                "shift": ShiftSerializer(shift).data,
+                "transactions": transactions
+            })
+
+        return Response(data={
+            "beep_shifts": ShiftSerializer
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
     def post(request):
         print(request.data)
         shift_type = request.POST.get('shift_type')
-        beep_shift = BeepShift()
-        beep_shift.type = shift_type
-        beep_shift.date = datetime.now()
-        print(beep_shift)
-
+        beep_shift = BeepTransactionView.shift_get_or_create(shift_type)
         beep_resource = BeepTransactionResource()
         dataset = Dataset()
-
         new_transactions = request.FILES['file']
-        print(new_transactions)
-        imported_data = dataset.load(new_transactions.read().decode('utf-8'),format='csv')
+        imported_data = dataset.load(new_transactions.read().decode('utf-8'), format='csv')
+        dataset.insert_col(1, col=[beep_shift.id, ], header="shift")
+        print(dataset)
         result = beep_resource.import_data(dataset, dry_run=True)  # Test the data import
         if not result.has_errors():
             beep_resource.import_data(dataset, dry_run=False)  # Actually import now
@@ -653,3 +668,16 @@ class BeepTransactionView(APIView):
         return Response(data={
             "data": "lol"
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def shift_get_or_create(shift_type):
+        for shift in BeepShift.objects.all():
+            if shift.date == datetime.now().date() and shift.type == shift_type:
+                print("its the same")
+                return shift
+        print("not the same")
+        beep_shift = BeepShift()
+        beep_shift.type = shift_type
+        beep_shift.date = datetime.now()
+        beep_shift.save()
+        return beep_shift

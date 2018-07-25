@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { Modal, Button, Input, Select } from 'antd'
+import { Modal, Button, Input, Select, Icon, Table } from 'antd'
 import { postDataWithImage, postDataWithFile } from "../../../../network_requests/general";
 
 const Option = Select.Option;
@@ -64,7 +64,7 @@ export class BeepPane extends Component {
     };
 
     handleConfirm = (e) => {
-        console.log(e);
+        this.handleUpload();
         this.setState({
             visible: false,
         });
@@ -121,15 +121,15 @@ export class BeepPane extends Component {
                     onOk={this.handleConfirm}
                     onCancel={this.handleCancel}
                 >
-                    <Select onChange={this.handleSelectChange("shift_type")} className="user-input" defaultValue="Male">
+                    <Select onChange={this.handleSelectChange("shift_type")} className="user-input" defaultValue="Please select shift type">
                         <Option value="A">AM</Option>
                         <Option value="P">PM</Option>
-                        <Option value="M">Midnight</Option>
+                        <Option value="M">MN</Option>
                     </Select>
-                    <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
-                    <Button type="primary" onClick={this.handleUpload}> Submit </Button>
+                    <Input className="user-input" type="file" placeholder="select image" onChange={this.handleFileChange}/>
+                    {/*<Button type="primary" onClick={this.handleUpload}> Submit </Button>*/}
                 </Modal>
-                <Button type="primary" onClick={this.showModal()}>Upload CSV</Button>
+                <Button type="primary" className="upload-button" onClick={this.showModal()}>Upload CSV</Button>
                 <div className="table-div">
                     <Table bordered size="medium"
                            className="remittance-table"
