@@ -6,13 +6,13 @@ import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import { Modal, Button, Input, Select, Icon, Table } from 'antd'
-import { postDataWithImage, postDataWithFile } from "../../../../network_requests/general";
+import { postDataWithImage, postDataWithFile, getData } from "../../../../network_requests/general";
 
 const Option = Select.Option;
 const columns = [{
     title: 'Date',
-    dataIndex: 'date_of_iteration',
-    key: 'date_of_iteration',
+    dataIndex: 'shift.date',
+    key: 'shift_date',
     render: (text) => (
         <div>
             {text}
@@ -20,7 +20,7 @@ const columns = [{
     )
 }, {
     title: 'Shift Type',
-    dataIndex: 'shift_type',
+    dataIndex: 'shift.type',
     key: 'shift_type',
     render: (text) => (
         <div className="rem-status">
@@ -34,9 +34,9 @@ const columns = [{
     ),
 }, {
     title: 'Total Remittances',
-    dataIndex: 'grand_total',
+    dataIndex: 'total',
     key: 'grand_total',
-    render: (text) => (
+    render: (text,record) => (
         <div className="rem-status">
             <p><b>Php {text}</b></p>
         </div>
@@ -55,6 +55,22 @@ export class BeepPane extends Component {
         visible: false,
         file: null,
         shift_type: null,
+        shifts: []
+    };
+    componentDidMount(){
+        this.fetchTransactions();
+    }
+    fetchTransactions = () => {
+        getData('/remittances/beep/').then(data => {
+            if(!data.error){
+                console.log(data.beep_shifts);
+                this.setState({
+                    shifts: data.beep_shifts
+                })
+            }else{
+                console.log(data);
+            }
+        }).catch(error => console.log(error))
     };
     showModal = item => event => {
         console.log(item);

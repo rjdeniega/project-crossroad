@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from members.serializers import SupervisorSerializer
+from members.serializers import SupervisorSerializer, MemberSerializer
 from remittances.resources import BeepTransactionResource
 from remittances.serializers import *
 from .models import *
@@ -639,15 +639,30 @@ class BeepTransactionView(APIView):
     def get(request):
         beep_shifts = []
         for shift in BeepShift.objects.all():
-            transactions = [BeepTransactionSerializer(item).data for item in BeepTransaction.objects.all() if
-                            item.shift.id == 20]
+            dict_transactions = []
+            transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.all() if
+                            item.shift.id == shift.id]
+            for transaction in transactions:
+                transaction_instance = transaction.data
+                try:
+                    card = IDCards.objects.get(can=int(transaction_instance["card_number"]))
+                except ObjectDoesNotExist:
+                    card = None
+                if card is not None:
+                    member = card.member
+                    transaction_instance["member"] = MemberSerializer(member).data
+                else:
+                    transaction_instance["member"] = None
+                dict_transactions.append(transaction_instance)
+
             beep_shifts.append({
-                "shift": ShiftSerializer(shift).data,
-                "transactions": transactions
+                "total": sum([float(item["total"]) for item in dict_transactions]),
+                "shift": BeepShiftSerializer(shift).data,
+                "transactions": dict_transactions
             })
 
         return Response(data={
-            "beep_shifts": ShiftSerializer
+            "beep_shifts": beep_shifts
         }, status=status.HTTP_200_OK)
 
     @staticmethod
