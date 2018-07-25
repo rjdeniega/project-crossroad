@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Icon} from 'react-icons-kit'
 import {ic_airport_shuttle} from 'react-icons-kit/md/ic_airport_shuttle'
 import {AddShuttle} from '../add_shuttle/add_shuttle'
+import {ShuttleCards} from "./shuttle_card/shuttle_card";
 
 
 export class ListOfShuttles extends Component{
@@ -43,7 +44,7 @@ export class ListOfShuttles extends Component{
         }else{
             return(
                 <div>
-                    <p>aww</p>
+                    <ShuttleCards shuttles={shuttles} fetchShuttles={this.fetchShuttles}/>
                 </div>
             )
         }

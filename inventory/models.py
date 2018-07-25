@@ -15,12 +15,19 @@ MOVEMENT_TYPE = [
     ('B', 'Bought')
 ]
 
+SHUTTLE_STATUS = [
+    ('A', 'Available'),
+    ('NM', 'Needs Maintenance'),
+    ('UM', 'Under Maintenance')
+]
+
 
 class Shuttle(SoftDeletionModel):
 
     plate_number = CharField(max_length=6, unique=True)
     make = CharField(max_length=64)
     model = CharField(max_length=64)
+    status = CharField(max_length=2, choices=SHUTTLE_STATUS)
     date_acquired = DateField()
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)

@@ -29,7 +29,8 @@ class AddShuttleFormInit extends React.Component{
             plate_number: this.props.plate_number.value,
             make: this.props.make.value,
             model: this.props.model.value,
-            date_acquired: this.props.date_acquired.value.format('YYYY-MM-DD')
+            date_acquired: this.props.date_acquired.value.format('YYYY-MM-DD'),
+            status: "A"
         };
 
         postData('inventory/shuttles/', shuttle)
