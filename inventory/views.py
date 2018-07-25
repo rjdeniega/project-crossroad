@@ -100,3 +100,25 @@ class ShuttlesView(APIView):
         return Response(data={
             "shuttles": shuttles.data
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        shuttle_serializer = ShuttlesSerializer(data=data)
+
+        if shuttle_serializer.is_valid():
+            shuttle = shuttle_serializer.create(validated_data=shuttle_serializer.validated_data)
+
+            return Response(data={
+                'shuttle_id': shuttle.id
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                'errors': shuttle_serializer.errors
+            })
+
+    @staticmethod
+    def delete(request, pk):
+        Shuttle.objects.get(id=pk).hard_delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

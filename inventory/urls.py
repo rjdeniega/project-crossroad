@@ -10,5 +10,6 @@ inventory_urls = [
     path('items/restock/<int:pk>', QuantityRestock.as_view()),
 
     # Shuttles & Maintenance URLS
-    path('shuttles/', ShuttlesView.as_view())
+    path('shuttles/', ShuttlesView.as_view()),
+    path('shuttles/<int:pk>', ShuttlesView.as_view())
 ]

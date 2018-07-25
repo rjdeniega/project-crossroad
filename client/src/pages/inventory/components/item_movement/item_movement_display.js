@@ -76,6 +76,7 @@ export class ItemMovementTable extends React.Component{
                 title: 'Unit Price',
                 dataIndex: 'unit_price',
                 key: 'unit_price',
+                align: 'right',
                 render: text => (
                     <span>
                         ₱{parseFloat(text).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}
