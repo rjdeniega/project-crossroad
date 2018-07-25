@@ -17,3 +17,6 @@
     margin-top: 5px!important;
     margin-bottom: 5px!important;
     }
+.transaction-modal .ant-modal{
+    width: 400px!important;
+    }

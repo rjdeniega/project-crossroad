@@ -17,6 +17,7 @@ import {MaintenancePage} from '../../pages/maintenance/maintenance'
 import {money} from 'react-icons-kit/fa/money'
 import {Link, withRouter} from "react-router-dom";
 import {wrench} from 'react-icons-kit/fa/wrench'
+import { MembersPage } from "../../pages/members/members";
 
 
 //define tabs
@@ -39,7 +40,7 @@ const TABS = [
         name: "Members",
         key: "members",
         path: '/members',
-        component: RemittancePage,
+        component: MembersPage,
         image: driversLicenseO
     },
     {
@@ -108,7 +109,7 @@ const CLERK_OM_TABS = [
         name: "Members",
         key: "members",
         path: '/members',
-        component: RemittancePage,
+        component: MembersPage,
         image: driversLicenseO
     },
     {

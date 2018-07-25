@@ -4,6 +4,7 @@ import "./App.css";
 import { UsersPage } from "../pages/users/users.js";
 import { SignInPage } from "../pages/sign_in/sign_in";
 import { RemittancePage } from "../pages/remittances/remittances";
+import { MembersPage } from "../pages/members/members";
 import { NavBar } from "../components/navbar/navbar";
 import { InventoryPage } from "../pages/inventory/inventory";
 import { MaintenancePage } from "../pages/maintenance/maintenance";
@@ -178,7 +179,7 @@ export default class App extends Component {
           />
           <Route path="/inventory" render={() => <InventoryPage />} />
           <Route path="/remittances" render={() => <RemittancePage />} />
-          <Route path="/members" render={() => <RemittancePage />} />
+          <Route path="/members" render={() => <MembersPage />} />
           <Route path="/users" render={() => <UsersPage />} />
           <Route path="/maintenance" render={() => <MaintenancePage />} />
         </Switch>

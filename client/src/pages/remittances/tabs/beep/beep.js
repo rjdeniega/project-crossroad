@@ -36,7 +36,7 @@ const columns = [{
     title: 'Total Remittances',
     dataIndex: 'total',
     key: 'grand_total',
-    render: (text,record) => (
+    render: (text, record) => (
         <div className="rem-status">
             <p><b>Php {text}</b></p>
         </div>
@@ -50,35 +50,66 @@ const columns = [{
         </Button>
     ),
 }];
+const transaction_columns = [{
+    title: 'Card Number',
+    dataIndex: 'card_number',
+    key: 'card_number',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    )
+}, {
+    title: 'Member Name',
+    dataIndex: 'member',
+    key: 'member',
+    render: (text) => (
+        <div>
+            {!text && <p>Prospect</p>}
+            {text}
+        </div>
+    )
+}, {
+    title: 'Total Remittances',
+    dataIndex: 'total',
+    key: 'grand_total',
+    render: (text, record) => (
+        <p><b>Php {parseInt(text)}</b></p>
+    ),
+}];
+
 export class BeepPane extends Component {
     state = {
         visible: false,
+        report_visible: false,
         file: null,
         shift_type: null,
-        shifts: []
+        shifts: [],
+        transactions: []
     };
-    componentDidMount(){
+
+    componentDidMount() {
         this.fetchTransactions();
     }
+
     fetchTransactions = () => {
         getData('/remittances/beep/').then(data => {
-            if(!data.error){
+            if (!data.error) {
                 console.log(data.beep_shifts);
                 this.setState({
                     shifts: data.beep_shifts
                 })
-            }else{
+            }
+            else {
                 console.log(data);
             }
         }).catch(error => console.log(error))
     };
     showModal = item => event => {
-        console.log(item);
         this.setState({
-            visible: true,
-        });
+            visible: true
+        })
     };
-
     handleConfirm = (e) => {
         this.handleUpload();
         this.setState({
@@ -89,6 +120,26 @@ export class BeepPane extends Component {
         console.log(e);
         this.setState({
             visible: false,
+        });
+    };
+    fetchTransactionData = data => {
+        console.log("entered here");
+        console.log(data);
+        this.setState({
+            report_visible: true,
+            transactions: data
+        });
+    };
+    handleReportConfirm = (e) => {
+        this.handleUpload();
+        this.setState({
+            report_visible: false,
+        });
+    };
+    handleReportCancel = (e) => {
+        console.log(e);
+        this.setState({
+            report_visible: false,
         });
     };
     handleFileChange = (e) => {
@@ -137,13 +188,28 @@ export class BeepPane extends Component {
                     onOk={this.handleConfirm}
                     onCancel={this.handleCancel}
                 >
-                    <Select onChange={this.handleSelectChange("shift_type")} className="user-input" defaultValue="Please select shift type">
+                    <Select onChange={this.handleSelectChange("shift_type")} className="user-input"
+                            defaultValue="Please select shift type">
                         <Option value="A">AM</Option>
                         <Option value="P">PM</Option>
                         <Option value="M">MN</Option>
                     </Select>
-                    <Input className="user-input" type="file" placeholder="select image" onChange={this.handleFileChange}/>
+                    <Input className="user-input" type="file" placeholder="select image"
+                           onChange={this.handleFileChange}/>
                     {/*<Button type="primary" onClick={this.handleUpload}> Submit </Button>*/}
+                </Modal>
+                <Modal
+                    className="transaction-modal"
+                    title="Basic Modal"
+                    visible={this.state.report_visible}
+                    onOk={this.handleReportConfirm}
+                    onCancel={this.handleReportCancel}
+                >
+                    <Table bordered size="medium"
+                           className="remittance-table"
+                           columns={transaction_columns}
+                           dataSource={this.state.transactions}
+                    />
                 </Modal>
                 <Button type="primary" className="upload-button" onClick={this.showModal()}>Upload CSV</Button>
                 <div className="table-div">
@@ -151,6 +217,14 @@ export class BeepPane extends Component {
                            className="remittance-table"
                            columns={columns}
                            dataSource={this.state.shifts}
+                           onRow={(record) => {
+                               return {
+                                   onClick: () => {
+                                       console.log(record);
+                                       this.fetchTransactionData(record.transactions);
+                                   },       // click row
+                               };
+                           }}
                     />
                 </div>
             </div>
