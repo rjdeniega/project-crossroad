@@ -17,6 +17,9 @@ remittance_urls = [
     path('remittance_form/confirm', ConfirmRemittanceForm.as_view()),
     path('remittance_form/pending/<int:supervisor_id>', ConfirmRemittanceForm.as_view()),
     path('shift_iteration/', ShiftIterationView.as_view()),
+    path('shift_iteration/finish/', FinishShiftIteration.as_view()),
     path('reports/shift_iterations/', ShiftIterationReport.as_view()),
+    path('reports/shift_iterations/date', IterationsByDate.as_view()),
+    path('reports/shift_iterations/schedule', IterationsBySchedule.as_view()),
     path('beep/', BeepTransactionView.as_view())
 ]

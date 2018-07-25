@@ -154,13 +154,21 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
 
-        ctr = 0
-        # for assigned_ticket in data['assigned_ticket']:
-        #     if not len(assigned_ticket['range_from']) and not ctr % 2 == 0:
-        #         del data['assigned_ticket'][ctr]
-        #         ctr -= 1
-        #
-        #     ctr += 1
+        def should_be_removed(data):
+            list = []
+            for ctr, assigned_ticket in enumerate(data['assigned_ticket']):
+                if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
+                    list.append(ctr)
+
+            new_list = sorted(list, reverse=True)
+
+            return new_list
+        
+        invalid_entries = should_be_removed(data)
+
+        if invalid_entries != None:
+            for entry in invalid_entries:
+                del data['assigned_ticket'][entry]
 
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
@@ -210,6 +218,11 @@ class RemittanceUtilities():
     @staticmethod
     def get_shift_iteration(shift_id):
         shift_iteration = ShiftIteration.objects.filter(shift=shift_id).order_by("-date").first()
+        return shift_iteration
+
+    @staticmethod
+    def get_shift_iteration_sup(supervisor_id):
+        shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-date").first()
         return shift_iteration
 
     # this function expects that the driver could only be assigned to one shift
@@ -529,21 +542,21 @@ class AddDiscrepancy(APIView):
             "remittance_form": remittance.data
         }, status=status.HTTP_200_OK)
 
-
-class ShiftIterationReport(APIView):
+class IterationUtilites():
     @staticmethod
-    def get(request):
-        shift_iterations = []
-        for shift_iteration in ShiftIteration.objects.all():
+    def get_iterations(shift_iterations):
+        list = []
+        for shift_iteration in shift_iterations:
             remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift_iteration.id)
             grand_total = 0
             for remittance in remittances:
                 grand_total += remittance.total
+
             deployment_details = TicketUtilities.get_remittances_per_deployment(shift_iteration.id)
             # get shift details
             shift_iteration = ShiftIteration.objects.get(id=shift_iteration.id)
             iteration_serializer = ShiftIterationSerializer(shift_iteration)
-            shift_iterations.append({
+            list.append({
                 'grand_total': grand_total,
                 'shift_type': shift_iteration.shift.type,
                 'date_of_iteration': shift_iteration.date,
@@ -551,8 +564,69 @@ class ShiftIterationReport(APIView):
                 'details': deployment_details
             })
 
+        return list
+
+
+class ShiftIterationReport(APIView):
+    @staticmethod
+    def get(request):
+        shift_iterations = ShiftIteration.objects.all()
         return Response(data={
-            "shift_iterations": shift_iterations
+            "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
+        }, status=status.HTTP_200_OK)
+
+class IterationsByDate(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = data['start_date']
+        end_date = data['end_date']
+
+        shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date)
+        return Response(data={
+            "start_date": start_date,
+            "end_date": end_date,
+            "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
+        }, status=status.HTTP_200_OK)
+
+class IterationsBySchedule(APIView):
+    @staticmethod
+    def get(request):
+        schedule_list = list()
+        schedules = Schedule.objects.all()
+
+        for schedule in schedules:
+            shifts = Shift.objects.filter(schedule=schedule)
+            shift_list = []
+
+            for shift in shifts:
+                shift_iterations = ShiftIteration.objects.filter(shift=shift)
+                iterations = IterationUtilites.get_iterations(shift_iterations)
+                shift_list.append({
+                    'supervisor': shift.supervisor.name,
+                    'shift_type': shift.type,
+                    'iterations': iterations
+                })
+
+            schedule_list.append({
+                "start_date": schedule.start_date,
+                "end_date": schedule.end_date,
+                "shifts": shift_list
+            })
+
+        return Response(data={
+            "schedules": schedule_list
+        }, status=status.HTTP_200_OK)
+
+class FinishShiftIteration(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        shift_iteration = RemittanceUtilities.get_shift_iteration_sup(data['supervisor_id'])
+        shift_iteration.finish_shift()
+        return Response(data={
+            'iteration_id': shift_iteration.id,
+            'iteration_status': shift_iteration.status
         }, status=status.HTTP_200_OK)
 
 
