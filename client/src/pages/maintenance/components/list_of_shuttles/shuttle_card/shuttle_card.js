@@ -4,7 +4,7 @@ import {Card, List} from 'antd'
 import {u1F68C} from 'react-icons-kit/noto_emoji_regular/u1F68C'
 import {ic_edit} from 'react-icons-kit/md/ic_edit'
 import {DeleteShuttle} from "./shuttle_actions/delete_shuttle";
-import {RepairForm} from "./shuttle_actions/shuttle_repairs";
+import {Repairs} from "./shuttle_actions/shuttle_repairs";
 
 const { Meta } = Card;
 
@@ -43,7 +43,7 @@ export class ShuttleCards extends Component{
                             <Card style={{width: 260}}
                                   cover={<Icon icon={u1F68C} size={120}/>}
                                   actions={
-                                      [<RepairForm shuttle={shuttle}/>,
+                                      [<Repairs shuttle={shuttle}/>,
                                        <Icon icon={ic_edit}/>,
                                        <DeleteShuttle shuttle_id={shuttle.id}/>]}>
                                 <Meta title={"Shuttle " + shuttle.id}
