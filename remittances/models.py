@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import *
 from django.utils import timezone
+from datetime import datetime
 from core.models import SoftDeletionModel
 from members.models import *
 
@@ -91,6 +92,8 @@ class Deployment(SoftDeletionModel):
     route = CharField(max_length=1, choices=ROUTE)
     shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
+    start_time = DateTimeField(default=datetime.now(), editable=False)
+    end_time = DateTimeField(null=True)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
 
@@ -99,6 +102,10 @@ class Deployment(SoftDeletionModel):
             self.created = timezone.now()
         self.modified = timezone.now()
         return super(Deployment, self).save(*args, **kwargs)
+
+    def end_deployment(self):
+        self.end_time = datetime.now()
+        self.save()
 
 
 class AssignedTicket(SoftDeletionModel):

@@ -193,6 +193,7 @@ class RemittanceFormSerializer(ModelSerializer):
         # update deployment data to finished
         deployment = Deployment.objects.get(id=remittance_form.deployment_id)
         deployment.status = 'F'
+        deployment.end_deployment()
         deployment.save()
 
         return remittance_form
