@@ -424,7 +424,7 @@ class TicketUtilities():
             final.append({
                 'deployment_id': deployment.id,
                 'driver': deployment.driver.name,
-                'driver_photo': photo,
+                'driver_photo': photo.url,
                 'ticket_specifics': deployment_details,
                 'remittance_details': remittance.data
             })
@@ -546,7 +546,7 @@ class AddDiscrepancy(APIView):
 class IterationUtilites():
     @staticmethod
     def get_iterations(shift_iterations):
-        list = []
+        shifts = []
         for shift_iteration in shift_iterations:
             remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift_iteration.id)
             grand_total = 0
@@ -557,7 +557,7 @@ class IterationUtilites():
             # get shift details
             shift_iteration = ShiftIteration.objects.get(id=shift_iteration.id)
             iteration_serializer = ShiftIterationSerializer(shift_iteration)
-            list.append({
+            shifts.append({
                 'grand_total': grand_total,
                 'shift_type': shift_iteration.shift.type,
                 'date_of_iteration': shift_iteration.date,
@@ -565,7 +565,7 @@ class IterationUtilites():
                 'details': deployment_details
             })
 
-        return list
+        return shifts
 
 
 class ShiftIterationReport(APIView):
