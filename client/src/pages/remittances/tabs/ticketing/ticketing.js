@@ -47,7 +47,7 @@ const columns = [{
         </div>
     ),
 }, {
-    title: 'Total Remittances',
+    title: 'Total Ticket Remittances',
     dataIndex: 'grand_total',
     key: 'grand_total',
     render: (text) => (

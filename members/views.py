@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 
 from members.serializers import *
+from remittances.models import *
+from remittances.serializers import BeepTransactionSerializer
 from .models import *
 import json
 
@@ -172,3 +174,17 @@ class ProspectView(APIView):
     def delete(request, pk):
         Prospect.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MemberTransactionView(APIView):
+    @staticmethod
+    def get(request, member_id):
+        id_card = IDCards.objects.get(member=Member.objects.get(pk=member_id))
+        transactions = BeepTransaction.objects.filter(card_number=id_card.can)
+        print(transactions)
+        serialized_transactions = BeepTransactionSerializer(transactions, many=True)
+        for item in serialized_transactions.data:
+            item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+        return Response(data={
+            "transactions": serialized_transactions.data
+        }, status=status.HTTP_200_OK)
