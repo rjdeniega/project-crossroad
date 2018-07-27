@@ -503,7 +503,7 @@ class ConfirmRemittanceForm(APIView):
             deployment = TicketUtilities.get_deployment(remittance.id)
 
             form = ReadRemittanceSerializer(remittance)
-            tickets = TicketUtilities.get_tickets_with_void(deployment.id)
+            tickets = TicketUtilities.get_consumed_with_assigned(remittance.deployment.id)
 
             unconfirmed_remittances.append({
                 'driver_name': deployment.driver.name,

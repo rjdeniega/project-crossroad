@@ -83,7 +83,8 @@ class RepairModifications(SoftDeletionModel):
 class Repair(SoftDeletionModel):
     shuttle = ForeignKey(Shuttle, on_delete=models.PROTECT)
     date = DateField()
-    labor_fee = DecimalField(max_digits=10, decimal_places=2)
+    end_date = DateField(null=True)
+    labor_fee = DecimalField(max_digits=10, decimal_places=2, null=True)
     problems = ManyToManyField(RepairProblem)
     findings = ManyToManyField(RepairFinding)
     modifications = ManyToManyField(RepairModifications)
