@@ -5,23 +5,23 @@ import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import users from '../../../../images/default.png'
-import { Button, notification, Divider} from 'antd';
+import { Modal, Button, notification, Divider } from 'antd';
 import { clockO } from 'react-icons-kit/fa/clockO'
 import { Icon } from 'react-icons-kit'
 import { DatePicker } from 'antd';
 import moment from 'moment';
-import { Table, Avatar, Dropdown, Menu, message } from 'antd';
+import { Select, Table, Avatar, Dropdown, Menu, message } from 'antd';
 import { Icon as AntIcon } from 'antd';
 import { getData, postData } from "../../../../network_requests/general";
 
-
+const Option = Select.Option;
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 //this defines the struvcture of the table and how its rendered, in this case I just have one column
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
     render: (text, record) => <div><Avatar className="driver-icon"
-                                           style={{marginRight: '20px' }}
+                                           style={{ marginRight: '20px' }}
                                            src={record.photo ? record.photo : users}/>
         {record.name}</div>
 }];
@@ -33,16 +33,21 @@ export class ShiftManagementPane extends Component {
         startDate: null,
         endDate: null,
         endDateObject: null,
-        am_shift_drivers: null,
-        pm_shift_drivers: null,
-        mn_shift_drivers: null,
+        am_shift_drivers: [],
+        pm_shift_drivers: [],
+        mn_shift_drivers: [],
         am_shift_supervisor: "select AM supervisor",
         am_shift_supervisor_key: null,
         pm_shift_supervisor: "select PM supervisor",
         pm_shift_supervisor_key: null,
         mn_shift_supervisor: "select Midnight supervisor",
         mn_shift_supervisor_key: null,
-        supervisors: null
+        supervisors: null,
+        shuttles: [],
+        visible: false,
+        assigned_shuttle: null,
+        driver_selected: null,
+        selected_shift_type: null,
     };
 
     componentDidMount() {
@@ -51,6 +56,7 @@ export class ShiftManagementPane extends Component {
         }
         this.fetchDrivers();
         this.fetchSupervisors();
+        this.fetchShuttles()
 
     }
 
@@ -88,47 +94,129 @@ export class ShiftManagementPane extends Component {
                 console.log(data["error"]);
             }
         }, console.log(this.state.supervisors));
+    };
+
+    fetchShuttles() {
+        return fetch('/inventory/shuttles').then(response => response.json()).then(data => {
+
+            //Were not appending it to a table so no necessary adjustments needed
+            this.setState({ shuttles: data["shuttles"] },
+                () => console.log(this.state.shuttles));
+        });
     }
 
-    // rowSelection object indicates the need for row selection
-    amRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
+    showModal = event => {
+        this.setState({
+            visible: true
+        })
+    };
+    handleConfirm = (e) => {
+        const assignment = {
+            "driver": this.state.driver_selected,
+            "assigned_shuttle": this.state.assigned_shuttle,
+        };
+        console.log(this.state.selected_shift_type);
+        if (this.state.selected_shift_type == "AM") {
             this.setState({
-                am_shift_drivers: selectedRowKeys
+                am_shift_drivers: [...this.state.am_shift_drivers, assignment]
             }, () => {
                 console.log(this.state.am_shift_drivers);
-            })
+            });
+        }
+        else if (this.state.selected_shift_type == "PM") {
+            this.setState({
+                pm_shift_drivers: [...this.state.pm_shift_drivers, assignment]
+            }, () => {
+                console.log(this.state.pm_shift_drivers);
+            });
+        }
+        else if (this.state.selected_shift_type == "MN") {
+            this.setState({
+                am_shift_drivers: [...this.state.mn_shift_drivers, assignment]
+            }, () => {
+                console.log(this.state.mn_shift_drivers);
+            });
+        }
+        this.setState({
+            visible: false,
+        });
+    };
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+    handleSelectChange = fieldName => value => {
+        // this function is to handle drop-downs
+        const state = { ...this.state };
+        state[fieldName] = value;
+        console.log(value);
+        console.log(fieldName);
+        this.setState({
+            ...state
+        });
+    };
+
+    // rowSelection object indicates the need for row selection
+
+    amRowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            // get the last selected item
+            const current = selectedRowKeys[selectedRowKeys.length - 1];
+            this.setState({
+                driver_selected: current,
+                selected_shift_type: "AM"
+            });
+            let isChecked = false;
+            //check if item is already checked
+            this.state.am_shift_drivers.map((item) => {
+                if (item["driver_id"] == this.state.driver_selected) {
+                    isChecked = true
+                }
+            });
+            if (!isChecked) {
+                this.showModal();
+            }
         },
-        getCheckboxProps: record => ({
-            disabled: record.name === 'Disabled User', // Column configuration not to be checked
-            name: record.name,
-        }),
     };
     pmRowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
+            const current = selectedRowKeys[selectedRowKeys.length - 1];
             this.setState({
-                pm_shift_drivers: selectedRowKeys
-            }, () => {
-                console.log(this.state.pm_shift_drivers);
-            })
+                driver_selected: current,
+                selected_shift_type: "PM"
+            });
+            let isChecked = false;
+            //check if item is already checked
+            this.state.am_shift_drivers.map((item) => {
+                if (item["driver_id"] == this.state.driver_selected) {
+                    isChecked = true
+                }
+            });
+            if (!isChecked) {
+                this.showModal();
+            }
         },
-        getCheckboxProps: record => ({
-            disabled: record.name === 'Disabled User', // Column configuration not to be checked
-            name: record.name,
-        }),
     };
     mnRowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
+            const current = selectedRowKeys[selectedRowKeys.length - 1];
             this.setState({
-                mn_shift_drivers: selectedRowKeys
-            }, () => {
-                console.log(this.state.mn_shift_drivers);
-            })
+                driver_selected: current,
+                selected_shift_type: "MN"
+            });
+            let isChecked = false;
+            //check if item is already checked
+            this.state.am_shift_drivers.map((item) => {
+                if (item["driver_id"] == this.state.driver_selected) {
+                    isChecked = true
+                }
+            });
+            if (!isChecked) {
+                this.showModal();
+            }
         },
-        getCheckboxProps: record => ({
-            disabled: record.name === 'Disabled User', // Column configuration not to be checked
-            name: record.name,
-        }),
     };
 
     //normal action handlers
@@ -202,17 +290,17 @@ export class ShiftManagementPane extends Component {
         const am_shift = {
             "supervisor": this.state.am_shift_supervisor_key,
             "type": "A",
-            "drivers_assigned": this.transformToDict(this.state.am_shift_drivers)
+            "drivers_assigned": this.state.am_shift_drivers
         };
         const pm_shift = {
             "supervisor": this.state.pm_shift_supervisor_key,
             "type": "P",
-            "drivers_assigned": this.transformToDict(this.state.pm_shift_drivers)
+            "drivers_assigned": this.state.pm_shift_drivers
         };
         const mn_shift = {
             "supervisor": this.state.mn_shift_supervisor_key,
             "type": "M",
-            "drivers_assigned": this.transformToDict(this.state.mn_shift_drivers)
+            "drivers_assigned": this.state.mn_shift_drivers
         };
         return {
             "start_date": this.state.startDate,
@@ -250,6 +338,19 @@ export class ShiftManagementPane extends Component {
 //JSX rendering functions
     renderShiftTables = () => (
         <div className="tables-wrapper">
+            <Modal
+                title="Assign this driver to a shuttle"
+                visible={this.state.visible}
+                onOk={this.handleConfirm}
+                onCancel={this.handleCancel}
+            >
+                <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
+                        defaultValue="Please select shuttle">
+                    {this.state.shuttles.map(item => (
+                        <Option value={item.id}>{item.plate_number}</Option>
+                    ))}
+                </Select>
+            </Modal>
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">AM</div>
@@ -270,7 +371,7 @@ export class ShiftManagementPane extends Component {
                             {this.state.pm_shift_supervisor}<AntIcon type="down"/>
                         </Button>
                     </Dropdown>
-                     {/*<Divider orientation="left">Select Drivers</Divider>*/}
+                    {/*<Divider orientation="left">Select Drivers</Divider>*/}
                 </div>
                 <Table showHeader={false} rowSelection={this.pmRowSelection} pagination={false} columns={columns}
                        dataSource={this.state.drivers}/>,
