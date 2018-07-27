@@ -139,14 +139,7 @@ export class MembersPage extends Component {
       )}
     />
   );
-
-  render() {
-    const { users } = this.state;
-    const isLoading = users === null;
-    return (
-      <div className="body-wrapper">
-        <div className="remittance-page-body">
-          <div className="remittance-header">
+  renderPageHeader = () => ( <div className="remittance-header">
             <div className="header-text">
               <Icon className="page-icon" icon={driversLicenseO} size={42} />
               <div className="page-title"> Members</div>
@@ -178,7 +171,15 @@ export class MembersPage extends Component {
               </Tabs>
             </div>
             </div>
-          </div>
+          </div> );
+
+  render() {
+    const { users } = this.state;
+    const isLoading = users === null;
+    return (
+      <div className="body-wrapper">
+        <div className="remittance-page-body">
+            {this.renderPageHeader()}
           <div className="page-body">
             <div className="user-list-wrapper">
               {users && this.renderList()}

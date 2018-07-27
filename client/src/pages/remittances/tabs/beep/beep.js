@@ -114,6 +114,8 @@ export class BeepPane extends Component {
         this.handleUpload();
         this.setState({
             visible: false,
+            file: null,
+            shift_type: null,
         });
     };
     handleCancel = (e) => {

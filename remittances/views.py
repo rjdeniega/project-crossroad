@@ -635,6 +635,7 @@ class FinishShiftIteration(APIView):
 
 
 class BeepTransactionView(APIView):
+    temp_shift = None
     @staticmethod
     def get(request):
         beep_shifts = []
@@ -670,19 +671,24 @@ class BeepTransactionView(APIView):
         print(request.data)
         shift_type = request.POST.get('shift_type')
         beep_shift = BeepTransactionView.shift_get_or_create(shift_type)
+        BeepTransactionView.temp_shift = beep_shift
         beep_resource = BeepTransactionResource()
         dataset = Dataset()
         new_transactions = request.FILES['file']
         imported_data = dataset.load(new_transactions.read().decode('utf-8'), format='csv')
-        dataset.insert_col(1, col=[beep_shift.id, ], header="shift")
+        dataset.append_col(BeepTransactionView.generate_column, header="shift")
         print(dataset)
         result = beep_resource.import_data(dataset, dry_run=True)  # Test the data import
         if not result.has_errors():
             beep_resource.import_data(dataset, dry_run=False)  # Actually import now
 
         return Response(data={
-            "data": "lol"
+            "data": "it worked"
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def generate_column(row):
+        return BeepTransactionView.temp_shift.id
 
     @staticmethod
     def shift_get_or_create(shift_type):
