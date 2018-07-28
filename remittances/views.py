@@ -584,7 +584,7 @@ class IterationsByDate(APIView):
         start_date = data['start_date']
         end_date = data['end_date']
 
-        shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date)
+        shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date, status='F')
         return Response(data={
             "start_date": start_date,
             "end_date": end_date,
@@ -603,7 +603,7 @@ class IterationsBySchedule(APIView):
             shift_list = []
 
             for shift in shifts:
-                shift_iterations = ShiftIteration.objects.filter(shift=shift)
+                shift_iterations = ShiftIteration.objects.filter(shift=shift, status='F')
                 iterations = IterationUtilites.get_iterations(shift_iterations)
                 shift_list.append({
                     'supervisor': shift.supervisor.name,
