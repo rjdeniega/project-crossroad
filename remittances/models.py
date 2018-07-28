@@ -4,6 +4,7 @@ from django.utils import timezone
 from datetime import datetime
 from core.models import SoftDeletionModel
 from members.models import *
+from inventory.models import *
 
 # Create your models here.
 TICKET_TYPE = [
@@ -74,6 +75,7 @@ class Shift(SoftDeletionModel):
 
 class DriversAssigned(SoftDeletionModel):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
+    shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 
