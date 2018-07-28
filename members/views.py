@@ -202,3 +202,28 @@ class MemberSharesView(APIView):
         return Response(data={
             "shares": serialized_shares.data
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, member_id):
+        body = json.loads(request.body)
+        share = None
+
+        data = {
+            "member": Member.objects.get(pk=member_id),
+            "value": body["value"],
+            "date_of_update": datetime.now().date()
+        }
+        share_serializer = ShareSerializer(data=data)
+        print(share_serializer.is_valid())
+        print(share_serializer.errors)
+
+        if share_serializer.is_valid():
+            share = share_serializer.create(validated_data=share_serializer.validated_data)
+        else:
+            return Response(data={
+                "errors": share_serializer.errors
+            }, status=400)
+
+        return Response(data={
+            "share": share
+        }, status=status.HTTP_200_OK)

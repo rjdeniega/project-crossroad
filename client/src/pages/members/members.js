@@ -14,14 +14,14 @@ import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { Tabs, Spin, Input, Table, Button } from "antd";
+import { Tabs, Spin, Input, Table, Button, Modal, InputNumber } from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
 import { BeepPane } from "../../pages/remittances/tabs/beep/beep";
 import { OverviewPane } from "../../pages/remittances/tabs/overview/overview";
 import { ShiftManagementPane } from "../../pages/remittances/tabs/shift_management/shift_management";
-import { getData } from '../../network_requests/general'
+import { getData, postData } from '../../network_requests/general'
 
 const TabPane = Tabs.TabPane;
 
@@ -109,6 +109,7 @@ export class SharesManagementPane extends Component {
     state = {
         activeUser: null,
         shares: null,
+        add_share_value: null,
     };
 
     componentDidMount() {
@@ -133,6 +134,35 @@ export class SharesManagementPane extends Component {
             })
         });
     }
+
+    showModal = event => {
+        this.setState({
+            visible: true
+        })
+    };
+    handleConfirm = (e) => {
+        const {activeUser} = this.props;
+        const data = {
+            "value": this.state.add_share_value
+        };
+        postData('/members/shares/' + activeUser.id, data).then(data => {
+            console.log(data.share);
+            this.setState({
+                shares: [...this.state.shares, data.share]
+            })
+        });
+    };
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+    handleShareChange = (value) =>{
+        this.setState({
+            add_share_value: value
+        })
+    };
 
     share_columns = [{
         title: 'Date of Update',
@@ -166,7 +196,15 @@ export class SharesManagementPane extends Component {
     render() {
         return (
             <div>
-                Manage your shares
+                <Modal
+                    title="Add shares for this member"
+                    visible={this.state.visible}
+                    onOk={this.handleConfirm}
+                    onCancel={this.handleCancel}
+                >
+                    <InputNumber onChange={this.handleShareChange}/>
+                </Modal>
+                <Button onClick={this.showModal}>Add Shares</Button>
                 <Table bordered size="medium"
                        className="remittance-table"
                        columns={this.share_columns}
