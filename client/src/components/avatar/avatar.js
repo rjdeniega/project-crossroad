@@ -29,7 +29,6 @@ export class UserAvatar extends Component {
     render() {
         const content = (
             <div>
-                <p>Content</p>
                 <Button className="sign-out" onClick={this.signOut}>Sign-out</Button>
             </div>
         );

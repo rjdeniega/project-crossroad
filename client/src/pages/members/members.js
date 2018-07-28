@@ -272,23 +272,27 @@ export class ProfilePane extends Component {
                         <div className="info-row-1"><b>Termination date:</b> {activeUser.termination_date}</div>
                         <div className="info-row-2"><b>Occupation:</b> {activeUser.occupation}</div>
                         <div className="info-row-1"><b>Tin number:</b> {activeUser.tin_number}</div>
-                        <div className="info-row-2"><b>Educational Attainment:</b> {activeUser.educational_attainment}</div>
+                        <div className="info-row-2"><b>Educational Attainment:</b> {activeUser.educational_attainment}
+                        </div>
                         <div className="info-row-1"><b>Religion:</b> {activeUser.religion}</div>
                         <div className="info-row-2"><b>Sex:</b> {activeUser.sex}</div>
-                         <div className="info-row-1"><b>Address:</b> {activeUser.address}</div>
+                        <div className="info-row-1"><b>Address:</b> {activeUser.address}</div>
                         <div className="info-row-2"><b>Annual Income:</b> {activeUser.annual_income}</div>
-                         <div className="info-row-1"><b>BOD resolution:</b> {activeUser.BOD_resolution}</div>
+                        <div className="info-row-1"><b>BOD resolution:</b> {activeUser.BOD_resolution}</div>
                         <div className="info-row-2"><b>No of Dependents:</b> {activeUser.no_of_dependents}</div>
                     </div>
                 </div>
                 }
-                {!activeUser && <div>Select Member</div>}
+                {!activeUser &&
+                <div>
+                    <img className="empty-image" src={emptyStateImage}/>
+                    <p className="empty-message"> Please select a member to view their information </p>
+                </div>
+                }
             </div>
         );
     }
 }
-
-
 export class MembersPage extends Component {
     state = {
         users: null,
