@@ -200,7 +200,9 @@ class MemberSharesView(APIView):
             item["peso_value"] = float(item["value"]) * 500
 
         return Response(data={
-            "shares": serialized_shares.data
+            "shares": serialized_shares.data,
+            "total_shares": sum([float(item["value"]) for item in serialized_shares.data]),
+            "total_peso_value": sum([float(item["peso_value"]) for item in serialized_shares.data])
         }, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -225,5 +227,5 @@ class MemberSharesView(APIView):
             }, status=400)
 
         return Response(data={
-            "share": share
+            "share": share,
         }, status=status.HTTP_200_OK)

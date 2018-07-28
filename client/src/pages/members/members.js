@@ -68,6 +68,9 @@ export class TransactionsPane extends Component {
     };
 
     componentDidMount() {
+        this.setState({
+            activeUser: this.props.activeUser
+        });
         if (this.state.activeUser) {
             this.fetchMemberTransactions();
             console.log("entered mount")
@@ -94,13 +97,19 @@ export class TransactionsPane extends Component {
         const { activeUser } = this.props;
         return (
             <div>
-                {/*{activeUser && activeUser.name}*/}
+                {!activeUser &&
+                <div>
+                    <img className="empty-image" src={emptyStateImage}/>
+                    <p className="empty-message"> Please select a member to view their transactions </p>
+                </div>}
+                {activeUser &&
                 <Table bordered size="medium"
                        className="remittance-table"
                        columns={columns}
                        dataSource={this.state.transactions}
 
-                />
+                />}
+
             </div>
         );
     }
@@ -110,9 +119,14 @@ export class SharesManagementPane extends Component {
         activeUser: null,
         shares: null,
         add_share_value: null,
+        total_shares: null,
+        total_peso_value: null,
     };
 
     componentDidMount() {
+        this.setState({
+            activeUser: this.props.activeUser
+        });
         if (this.state.activeUser) {
             this.fetchMemberShares();
             console.log("entered mount")
@@ -128,9 +142,11 @@ export class SharesManagementPane extends Component {
     fetchMemberShares() {
         const { activeUser } = this.props;
         getData('/members/shares/' + activeUser.id).then(data => {
-            console.log(data.shares);
+            console.log(data);
             this.setState({
-                shares: data.shares
+                shares: data.shares,
+                total_shares: data.total_shares,
+                total_peso_value: data.total_peso_value,
             })
         });
     }
@@ -141,7 +157,7 @@ export class SharesManagementPane extends Component {
         })
     };
     handleConfirm = (e) => {
-        const {activeUser} = this.props;
+        const { activeUser } = this.props;
         const data = {
             "value": this.state.add_share_value
         };
@@ -158,7 +174,7 @@ export class SharesManagementPane extends Component {
             visible: false,
         });
     };
-    handleShareChange = (value) =>{
+    handleShareChange = (value) => {
         this.setState({
             add_share_value: value
         })
@@ -179,7 +195,7 @@ export class SharesManagementPane extends Component {
         key: 'value',
         render: (text) => (
             <div className="rem-status">
-                {text}
+                {parseInt(text)}
             </div>
         ),
     }, {
@@ -194,22 +210,36 @@ export class SharesManagementPane extends Component {
     }];
 
     render() {
+        const { activeUser } = this.props;
         return (
             <div>
-                <Modal
-                    title="Add shares for this member"
-                    visible={this.state.visible}
-                    onOk={this.handleConfirm}
-                    onCancel={this.handleCancel}
-                >
-                    <InputNumber onChange={this.handleShareChange}/>
-                </Modal>
-                <Button onClick={this.showModal}>Add Shares</Button>
-                <Table bordered size="medium"
-                       className="remittance-table"
-                       columns={this.share_columns}
-                       dataSource={this.state.shares}
-                />
+                {activeUser &&
+                <div>
+                    <Modal
+                        title="Add shares for this member"
+                        visible={this.state.visible}
+                        onOk={this.handleConfirm}
+                        onCancel={this.handleCancel}
+                    >
+                        <InputNumber onChange={this.handleShareChange}/>
+                    </Modal>
+                    <Button onClick={this.showModal}>Add Shares</Button>
+                    <p> total shares: <b>{this.state.total_shares}</b></p>
+                    <p> total shares (in Php): <b>Php {this.state.total_peso_value}</b></p>
+
+                    <Table bordered size="medium"
+                           className="remittance-table"
+                           columns={this.share_columns}
+                           dataSource={this.state.shares}
+                    />
+                </div>
+                }
+                {!activeUser &&
+                <div>
+                    <img className="empty-image" src={emptyStateImage}/>
+                    <p className="empty-message"> Please select a member to view their shares </p>
+                </div>
+                }
             </div>
         );
     }
