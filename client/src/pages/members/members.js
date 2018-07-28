@@ -14,7 +14,7 @@ import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { Tabs, Spin, Input, Table, Button, Modal, InputNumber } from "antd";
+import { Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider } from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
@@ -65,6 +65,7 @@ export class TransactionsPane extends Component {
     state = {
         activeUser: null,
         transactions: null,
+        total_transactions: null,
     };
 
     componentDidMount() {
@@ -88,7 +89,8 @@ export class TransactionsPane extends Component {
         getData('/members/transactions/' + activeUser.id).then(data => {
             console.log(data.transactions);
             this.setState({
-                transactions: data.transactions
+                transactions: data.transactions,
+                total_transactions: data.total_transactions
             })
         });
     }
@@ -103,12 +105,16 @@ export class TransactionsPane extends Component {
                     <p className="empty-message"> Please select a member to view their transactions </p>
                 </div>}
                 {activeUser &&
-                <Table bordered size="medium"
-                       className="remittance-table"
-                       columns={columns}
-                       dataSource={this.state.transactions}
+                <div>
+                    <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
+                    <Table bordered size="medium"
+                           className="remittance-table"
+                           columns={columns}
+                           dataSource={this.state.transactions}
 
-                />}
+                    />
+                </div>
+                }
 
             </div>
         );
@@ -244,6 +250,45 @@ export class SharesManagementPane extends Component {
         );
     }
 }
+export class ProfilePane extends Component {
+    render() {
+        const { activeUser } = this.props;
+        return (
+            <div className="profile-container">
+                {activeUser &&
+                <div className="container">
+                    <div className="header-div">
+                        <img className="profile-image" src={activeUser.photo}/>
+                        <div className="basic-info">
+                            <div className="info-row"><b>Name:</b> {activeUser.name}</div>
+                            <div className="info-row"><b>Contact Number:</b> {activeUser.contact_no}</div>
+                            <div className="info-row"><b>E-mail:</b> {activeUser.email}</div>
+                        </div>
+                    </div>
+                    <Divider orientation="left">Member Information</Divider>
+                    <div className="member-info">
+                        <div className="info-row-1"><b>Accepted date:</b> {activeUser.accepted_date}</div>
+                        <div className="info-row-2"><b>E-mail:</b> {activeUser.email}</div>
+                        <div className="info-row-1"><b>Termination date:</b> {activeUser.termination_date}</div>
+                        <div className="info-row-2"><b>Occupation:</b> {activeUser.occupation}</div>
+                        <div className="info-row-1"><b>Tin number:</b> {activeUser.tin_number}</div>
+                        <div className="info-row-2"><b>Educational Attainment:</b> {activeUser.educational_attainment}</div>
+                        <div className="info-row-1"><b>Religion:</b> {activeUser.religion}</div>
+                        <div className="info-row-2"><b>Sex:</b> {activeUser.sex}</div>
+                         <div className="info-row-1"><b>Address:</b> {activeUser.address}</div>
+                        <div className="info-row-2"><b>Annual Income:</b> {activeUser.annual_income}</div>
+                         <div className="info-row-1"><b>BOD resolution:</b> {activeUser.BOD_resolution}</div>
+                        <div className="info-row-2"><b>No of Dependents:</b> {activeUser.no_of_dependents}</div>
+                    </div>
+                </div>
+                }
+                {!activeUser && <div>Select Member</div>}
+            </div>
+        );
+    }
+}
+
+
 export class MembersPage extends Component {
     state = {
         users: null,
@@ -260,7 +305,7 @@ export class MembersPage extends Component {
         const { currentTab, activeUser } = this.state;
         switch (currentTab) {
             case 1:
-                return <OverviewPane />;
+                return <ProfilePane activeUser={activeUser}/>;
             case 2:
                 return <TransactionsPane activeUser={activeUser}/>;
             case 3:

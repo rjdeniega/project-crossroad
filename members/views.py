@@ -186,7 +186,8 @@ class MemberTransactionView(APIView):
         for item in serialized_transactions.data:
             item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
         return Response(data={
-            "transactions": serialized_transactions.data
+            "transactions": serialized_transactions.data,
+            "total_transactions": sum([float(item["total"]) for item in serialized_transactions.data])
         }, status=status.HTTP_200_OK)
 
 
