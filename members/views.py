@@ -188,3 +188,17 @@ class MemberTransactionView(APIView):
         return Response(data={
             "transactions": serialized_transactions.data
         }, status=status.HTTP_200_OK)
+
+
+class MemberSharesView(APIView):
+    @staticmethod
+    def get(request, member_id):
+        shares = Share.objects.filter(member=Member.objects.get(pk=member_id))
+        serialized_shares = ShareSerializer(shares, many=True)
+
+        for item in serialized_shares.data:
+            item["peso_value"] = float(item["value"]) * 500
+
+        return Response(data={
+            "shares": serialized_shares.data
+        }, status=status.HTTP_200_OK)

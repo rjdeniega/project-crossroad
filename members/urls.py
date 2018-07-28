@@ -10,6 +10,7 @@ members_urls = [
     path('', MemberView.as_view()),
     path('<int:pk>', MemberView.as_view()),
     path('transactions/<int:member_id>', MemberTransactionView.as_view()),
+    path('shares/<int:member_id>', MemberSharesView.as_view()),
     path('prospects/', ProspectView.as_view()),
     path('prospects/<int:pk>', ProspectView.as_view())
 ]

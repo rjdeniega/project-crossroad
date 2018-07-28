@@ -75,7 +75,7 @@ export class TransactionsPane extends Component {
     }
 
     componentDidUpdate() {
-         if (this.props.activeUser && !this.state.transactions) {
+        if (this.props.activeUser && !this.state.transactions) {
             this.fetchMemberTransactions();
         }
     }
@@ -103,22 +103,77 @@ export class TransactionsPane extends Component {
                 />
             </div>
         );
-        {/*onRow={(record) => {*/
+    }
+}
+export class SharesManagementPane extends Component {
+    state = {
+        activeUser: null,
+        shares: null,
+    };
+
+    componentDidMount() {
+        if (this.state.activeUser) {
+            this.fetchMemberShares();
+            console.log("entered mount")
         }
-        {/*return {*/
+    }
+
+    componentDidUpdate() {
+        if (this.props.activeUser && !this.state.shares) {
+            this.fetchMemberShares();
         }
-        {/*onClick: () => {*/
-        }
-        {/*console.log(record);*/
-        }
-        {/*this.fetchShiftData(record.details);*/
-        }
-        {/*},       // click row*/
-        }
-        {/*};*/
-        }
-        {/*}}*/
-        }
+    }
+
+    fetchMemberShares() {
+        const { activeUser } = this.props;
+        getData('/members/shares/' + activeUser.id).then(data => {
+            console.log(data.shares);
+            this.setState({
+                shares: data.shares
+            })
+        });
+    }
+
+    share_columns = [{
+        title: 'Date of Update',
+        dataIndex: 'date_of_update',
+        key: 'date_of_update',
+        render: (text) => (
+            <div>
+                {text}
+            </div>
+        )
+    }, {
+        title: 'Share Value',
+        dataIndex: 'value',
+        key: 'value',
+        render: (text) => (
+            <div className="rem-status">
+                {text}
+            </div>
+        ),
+    }, {
+        title: 'Peso value',
+        dataIndex: 'peso_value',
+        key: 'peso_value',
+        render: (text) => (
+            <div className="rem-status">
+                <p><b>Php {parseInt(text)}</b></p>
+            </div>
+        ),
+    }];
+
+    render() {
+        return (
+            <div>
+                Manage your shares
+                <Table bordered size="medium"
+                       className="remittance-table"
+                       columns={this.share_columns}
+                       dataSource={this.state.shares}
+                />
+            </div>
+        );
     }
 }
 export class MembersPage extends Component {
@@ -137,13 +192,13 @@ export class MembersPage extends Component {
         const { currentTab, activeUser } = this.state;
         switch (currentTab) {
             case 1:
-                return <TransactionsPane activeUser={activeUser}/>;
-            case 2:
                 return <OverviewPane />;
+            case 2:
+                return <TransactionsPane activeUser={activeUser}/>;
             case 3:
-                return <TicketingPane />;
+                return <SharesManagementPane activeUser={activeUser}/>;
             default:
-                return <BeepPane />;
+                return <OverviewPane />;
         }
     };
 
@@ -226,10 +281,9 @@ export class MembersPage extends Component {
                     defaultActiveKey="1"
                     onChange={this.onTabChange}
                 >
-                    <TabPane className="tab-item" tab="Transactions" key="1"/>
-                    <TabPane className="tab-item" tab="Overview" key="2"/>
-                    <TabPane className="tab-item" tab="Ticketing™" key="3"/>
-                    <TabPane className="tab-item" tab="Beep™" key="4"/>
+                    <TabPane className="tab-item" tab="Overview" key="1"/>
+                    <TabPane className="tab-item" tab="Transactions" key="2"/>
+                    <TabPane className="tab-item" tab="Shares" key="3"/>
                 </Tabs>
             </div>
         </div>

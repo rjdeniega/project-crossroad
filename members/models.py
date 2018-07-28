@@ -88,6 +88,7 @@ class Prospect(Person):
 class Share(SoftDeletionModel):
     member = ForeignKey(Member, on_delete=models.CASCADE)
     value = DecimalField(max_digits=6, decimal_places=2)
+    date_of_update = DateField(null=True)
 
 
 class ShareCertificate(SoftDeletionModel):
