@@ -61,9 +61,9 @@ const transaction_columns = [{
     )
 }, {
     title: 'Member Name',
-    dataIndex: 'member',
-    key: 'member',
-    render: (text) => (
+    dataIndex: 'member.name',
+    key: 'member.name',
+    render: (text,record) => (
         <div>
             {!text && <p>Prospect</p>}
             {text}
@@ -129,8 +129,8 @@ export class BeepPane extends Component {
         console.log(data);
         this.setState({
             report_visible: true,
-            transactions: data
-        });
+            transactions: data,
+        }, console.log(this.state.transactions));
     };
     handleReportConfirm = (e) => {
         this.handleUpload();

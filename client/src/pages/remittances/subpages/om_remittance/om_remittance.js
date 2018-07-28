@@ -41,9 +41,9 @@ export class OMRemittancePage extends Component {
         if (key == "1") {
             this.invokeChangeTab(<ShiftManagementPane/>)
         } else if (key == "2") {
-            this.invokeChangeTab(<OverviewPane/>)
-        } else if (key == "3")  {
             this.invokeChangeTab(<TicketingPane/>)
+        } else if (key == "3")  {
+            this.invokeChangeTab(<BeepPane/>)
         }else {
             this.invokeChangeTab(<BeepPane/>)
         }
@@ -63,9 +63,8 @@ export class OMRemittancePage extends Component {
                         <div className="user-tabs-wrapper">
                             <Tabs className="user-tabs" defaultActiveKey="1" onChange={this.callback}>
                                 <TabPane className="tab-item" tab="Create Shift" key="1"></TabPane>
-                                <TabPane className="tab-item" tab="Overview" key="2"></TabPane>
-                                <TabPane className="tab-item" tab="Ticketing™" key="3"></TabPane>
-                                <TabPane className="tab-item" tab="Beep™" key="4"></TabPane>
+                                <TabPane className="tab-item" tab="Ticketing" key="2"></TabPane>
+                                <TabPane className="tab-item" tab="Beep™" key="3"></TabPane>
                             </Tabs>
                         </div>
                     </div>
