@@ -133,13 +133,11 @@ export class BeepPane extends Component {
         }, console.log(this.state.transactions));
     };
     handleReportConfirm = (e) => {
-        this.handleUpload();
         this.setState({
             report_visible: false,
         });
     };
     handleReportCancel = (e) => {
-        console.log(e);
         this.setState({
             report_visible: false,
         });
