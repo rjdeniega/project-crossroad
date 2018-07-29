@@ -14,10 +14,13 @@ import {userCircleO} from 'react-icons-kit/fa/userCircleO'
 import {RemittancePage} from '../../pages/remittances/remittances'
 import {InventoryPage} from '../../pages/inventory/inventory'
 import {MaintenancePage} from '../../pages/maintenance/maintenance'
+import {ReportsPage} from '../../pages/reports/reports'
 import {money} from 'react-icons-kit/fa/money'
 import {Link, withRouter} from "react-router-dom";
 import {wrench} from 'react-icons-kit/fa/wrench'
 import { MembersPage } from "../../pages/members/members";
+import {fileTextO} from 'react-icons-kit/fa/fileTextO'
+
 
 
 //define tabs
@@ -56,6 +59,13 @@ const TABS = [
         path: '/maintenance',
         component: MaintenancePage,
         image: wrench
+    },
+    {
+        name: "Reports",
+        key: "reports",
+        path: '/reports',
+        component: MembersPage,
+        image: fileTextO
     },
 ];
 const SUPERVISOR_TABS = [
@@ -125,6 +135,13 @@ const CLERK_OM_TABS = [
         path: '/maintenance',
         component: MaintenancePage,
         image: wrench
+    },
+    {
+        name: "Reports",
+        key: "reports",
+        path: '/reports',
+        component: ReportsPage,
+        image: fileTextO
     },
 ];
 export class NavBar extends Component {
