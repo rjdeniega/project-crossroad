@@ -568,8 +568,29 @@ class IterationUtilites():
                 'shift_iteration': iteration_serializer.data,
                 'details': deployment_details
             })
-
         return shifts
+
+    @staticmethod
+    def get_report_items(deployments):
+        report_items = []
+        for deployment in deployments:
+            shift = deployment.shift_iteration.shift.id
+            driver = deployment.driver.name
+            rem = RemittanceForm.objects.get(deployment=deployment)
+            date = deployment.shift_iteration.date
+            da = DriversAssigned.objects.get(shift=shift, driver=deployment.driver.id)
+            report_items.append({
+                "shift": shift,
+                "shuttle": da.shuttle.id,
+                "driver": driver,
+                "remittance": rem.id,
+                "date": date,
+                "shift_type": deployment.shift_iteration.shift.type,
+                "total": rem.total
+            })
+        return report_items
+
+
 
 
 class ShiftIterationReport(APIView):
@@ -635,6 +656,24 @@ class FinishShiftIteration(APIView):
         return Response(data={
             'iteration_id': shift_iteration.id,
             'iteration_status': shift_iteration.status
+        }, status=status.HTTP_200_OK)
+
+class RemittanceReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = data['start_date']
+        end_date = data['end_date']
+
+        deployments = Deployment.objects.filter(shift_iteration__date__gte=start_date, shift_iteration__date__lte=end_date)
+
+        report_items = IterationUtilites.get_report_items(deployments)
+        grand_total = RemittanceForm.objects.filter(deployment__shift_iteration__date__gte=start_date,
+                                                    deployment__shift_iteration__date__lte=end_date).aggregate(Sum('total'))
+
+        return Response(data={
+            'grand_total': grand_total,
+            'report_items': report_items
         }, status=status.HTTP_200_OK)
 
 

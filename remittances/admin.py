@@ -6,6 +6,7 @@ from django.contrib import admin
 # Register your models here.
 from remittances.resources import BeepTransactionResource
 
+admin.site.register(Schedule)
 admin.site.register(Shift)
 admin.site.register(Deployment)
 admin.site.register(VoidTicket)
