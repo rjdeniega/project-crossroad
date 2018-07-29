@@ -4,6 +4,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
     }
 
 .reports-header {
@@ -40,4 +41,20 @@
 .report-item .ant-card-cover {
     height: 50px !important;
     padding: 20px !important;
+    }
+.report-modal{
+    height: auto!important;
+    max-width: 800px;
+    width: auto!important;
+    }
+.remittance-reports{
+    height: auto;
+    width: 100%;
+
+    }
+.maintenance-reports{
+    height: auto;
+    width: 100%;
+    margin-top: 10px;
+
     }

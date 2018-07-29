@@ -71,7 +71,7 @@ export class RemittanceForm extends Component {
                 fifteen_end_final_first: this.props.fifteen_peso_consumed_first,
                 ten_end_final_second: this.props.ten_peso_consumed_second,
                 twelve_end_final_second: this.props.twelve_peso_consumed_second,
-                fifteen_end_final_second: this.props.fifteen_peso_consumed_first,
+                fifteen_end_final_second: this.props.fifteen_peso_consumed_second,
             }, () => console.log(this.props.fifteen_peso_consumed_first))
         }
     }

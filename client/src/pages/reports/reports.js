@@ -6,7 +6,7 @@ import React, { Component, Fragment } from 'react'
 import '../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Modal } from 'antd'
+import { Icon as AntIcon, Input, Card, Modal, Divider } from 'antd'
 import { Icon } from 'react-icons-kit'
 import { UserAvatar } from '../../components/avatar/avatar'
 import { postData } from '../../network_requests/general'
@@ -15,14 +15,21 @@ import { RemittancePage } from '../../pages/remittances/remittances'
 import { InventoryPage } from '../../pages/inventory/inventory'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
+import {wrench} from 'react-icons-kit/fa/wrench'
 import { RemittanceReport } from './content/remittance_report/remittance_report'
 
 
 const { Meta } = Card;
-const CARDS = [{
+const REMITTANCE_CARDS = [{
     'title': 'Remittance Report',
     'description': 'view remittances for a time period',
     'icon': money,
+    'content': <RemittanceReport/>
+}];
+const MAINTENANCE_CARDS = [{
+    'title': 'Maintenance Report',
+    'description': 'view maintenance cost per shuttle',
+    'icon': wrench,
     'content': <RemittanceReport/>
 }];
 export class ReportsPage extends Component {
@@ -66,7 +73,21 @@ export class ReportsPage extends Component {
             modalTitle: title
         }, this.showModal())
     };
-    renderCards = () => CARDS.map(item =>
+    renderRemittanceCards = () => REMITTANCE_CARDS.map(item =>
+        <Card
+            className="report-item"
+            onClick={this.changeModalContent(item.content, item.title)}
+            hoverable
+            style={{ width: 240 }}
+            cover={<div style={{ color: 'var(--darkgreen)' }}><Icon icon={item.icon} size={42}/></div>}
+        >
+            <Meta
+                title={item.title}
+                description={item.description}
+            />
+        </Card>
+    );
+    renderMaintenanceCards = () => MAINTENANCE_CARDS.map(item =>
         <Card
             className="report-item"
             onClick={this.changeModalContent(item.content, item.title)}
@@ -82,6 +103,7 @@ export class ReportsPage extends Component {
     );
     renderModal = () => (
         <Modal
+            className="report-modal"
             title={this.state.modalTitle}
             visible={this.state.visible}
             onOk={this.handleOk}
@@ -98,7 +120,14 @@ export class ReportsPage extends Component {
                 <div className="reports-page-wrapper">
                     {this.renderHeader()}
                     <div className="reports-content">
-                        {this.renderCards()}
+                        <div className="remittance-reports">
+                            <Divider>Remittance Reports</Divider>
+                            {this.renderRemittanceCards()}
+                        </div>
+                        <div className="maintenance-reports">
+                            <Divider>Maintenance Reports</Divider>
+                            {this.renderMaintenanceCards()}
+                        </div>
                     </div>
                 </div>
             </div>

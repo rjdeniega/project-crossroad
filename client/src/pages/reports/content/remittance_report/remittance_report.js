@@ -58,7 +58,7 @@ export class RemittanceReport extends Component {
 
     render() {
         return (
-            <div>
+            <div className="report-body">
                 Remittance Report
                 <Table bordered size="medium"
                        className="remittance-table"

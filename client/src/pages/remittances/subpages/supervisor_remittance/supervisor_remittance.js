@@ -575,6 +575,13 @@ export class SupervisorLastContent extends Component {
             twelve_peso_end_second: item.assigned_tickets[3]["12_peso_end_second"],
             fifteen_peso_end_first: item.assigned_tickets[4]["15_peso_end_first"],
             fifteen_peso_end_second: item.assigned_tickets[5]["15_peso_end_firstfirst"],
+            ten_peso_consumed_first: item.assigned_tickets[0]["consumed_end"],
+            ten_peso_consumed_second: item.assigned_tickets[1]["consumed_end"],
+            twelve_peso_consumed_first: item.assigned_tickets[2]["consumed_end"],
+            twelve_peso_consumed_second: item.assigned_tickets[3]["consumed_end"],
+            fifteen_peso_consumed_first: item.assigned_tickets[4]["consumed_end"],
+            fifteen_peso_consumed_second: item.assigned_tickets[5]["consumed_end"],
+            isConsumedPresent: true,
             km_start: parseInt(item.remittance_details.km_from),
             km_end: parseInt(item.remittance_details.km_to),
             fuel: parseInt(item.remittance_details.fuel_cost),
@@ -669,7 +676,7 @@ export class SupervisorRemittancePage extends Component {
         const data = {
             "supervisor_id": id
         };
-        getData('remittances/deployments/deployed_drivers/'+ id).then(data => {
+        getData('remittances/deployments/deployed_drivers/' + id).then(data => {
             console.log(data);
             if (!data.error) {
                 console.log(data);

@@ -91,6 +91,7 @@ export class TicketingPane extends Component {
         this.setState({
             visible: true,
         });
+        console.log(details);
         const array = [];
         const selected = [];
         details.map(form => {
