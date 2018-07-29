@@ -182,6 +182,7 @@ export default class App extends Component {
           <Route path="/members" render={() => <MembersPage />} />
           <Route path="/users" render={() => <UsersPage />} />
           <Route path="/maintenance" render={() => <MaintenancePage />} />
+          <Route path="/reports" render={() => <MembersPage />} />
         </Switch>
         {/*render navbar if there is a user and path is not sign-in*/}
         {user && currentPath !== "sign-in" && <NavBar />}

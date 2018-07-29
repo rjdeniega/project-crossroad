@@ -45,14 +45,10 @@ class ScheduleSerializer(ModelSerializer):
         schedule.end_date = schedule.start_date + timedelta(days=14)  # start_date + 14 days = 15 days
         schedule.save()
         new_sched = Schedule.objects.get(id=schedule.id)  # gets django object to be used
-        print(shifts_data)
         for shift_data in shifts_data:
-            print(shift_data)
             drivers_data = shift_data.pop('drivers_assigned')
-            print(drivers_data)
             shift = Shift.objects.create(schedule=new_sched, **shift_data)
             for driver_data in drivers_data:
-                print(driver_data)
                 DriversAssigned.objects.create(shift=shift, **driver_data)
         return schedule
 
@@ -107,8 +103,9 @@ class AssignedTicketSerializer(ModelSerializer):
         exclude = ('deployment',)
 
     def validate(self, data):
-        if data['range_from'] >= data['range_to']:
-            raise serializers.ValidationError("starting ticket should be lower than the ending ticket")
+        if data['range_from']:
+            if data['range_from'] >= data['range_to']:
+                raise serializers.ValidationError("starting ticket should be lower than the ending ticket")
         return data
 
 
@@ -167,25 +164,30 @@ class RemittanceFormSerializer(ModelSerializer):
             consumed_ticket = ConsumedTicket.objects.create(remittance_form=remittance_form, **consumed_ticket_data)
             assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket.assigned_ticket.id)
 
-            # subtract those void tickets
-            voided = 0  # number of voided tickets
-            void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
-            for void_ticket in void_tickets:
-                voided += 1
+            if assigned_ticket.range_from is not None and assigned_ticket.range_to is not None:
+                # subtract those void tickets
+                voided = 0  # number of voided tickets
+                void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
+                for void_ticket in void_tickets:
+                    voided += 1
 
-            # compute number of tickets
-            number_of_tickets = consumed_ticket.end_ticket - assigned_ticket.range_from - voided + 1
+                # compute number of tickets
+                number_of_tickets = consumed_ticket.end_ticket - assigned_ticket.range_from - voided + 1
 
-            if assigned_ticket.type == 'A':
-                consumed_ticket.total = 10 * number_of_tickets
-            elif assigned_ticket.type == 'B':
-                consumed_ticket.total = 12 * number_of_tickets
-            else:
-                consumed_ticket.total = 15 * number_of_tickets
+                if assigned_ticket.type == 'A':
+                    consumed_ticket.total = 10 * number_of_tickets
+                    print("A", consumed_ticket.total)
+                elif assigned_ticket.type == 'B':
+                    consumed_ticket.total = 12 * number_of_tickets
+                    print("B", consumed_ticket.total)
+                else:
+                    consumed_ticket.total = 15 * number_of_tickets
+                    print("C", consumed_ticket.total)
 
-            consumed_ticket.save()
-            remittance_form.total += consumed_ticket.total
-            remittance_form.save()
+                consumed_ticket.save()
+                remittance_form.total += consumed_ticket.total
+                print("Total", remittance_form.total)
+                remittance_form.save()
 
         remittance_form.total -= remittance_form.fuel_cost + remittance_form.other_cost
         remittance_form.save()
@@ -204,12 +206,10 @@ class RemittanceFormSerializer(ModelSerializer):
             end_ticket = ticket['end_ticket']
 
             assigned_ticket = AssignedTicket.objects.get(id=assigned_ticket_id.id)
-            print(end_ticket)
-            print(assigned_ticket.range_to)
-            print(assigned_ticket.range_from)
 
-            if end_ticket > assigned_ticket.range_to or end_ticket < assigned_ticket.range_from:
-                raise serializers.ValidationError("End Ticket is not in range")
+            if assigned_ticket.range_from is not None:
+                if end_ticket > assigned_ticket.range_to or end_ticket < assigned_ticket.range_from:
+                    raise serializers.ValidationError("End Ticket is not in range")
         return data
 
 

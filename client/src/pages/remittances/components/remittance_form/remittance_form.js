@@ -43,6 +43,7 @@ export class RemittanceForm extends Component {
         console.log("something mounted");
         const state = { ...this.state };
         const array = { ...this.props };
+        console.log(array);
         Object.keys(array).forEach(key => {
             console.log(key);
             console.log(this.props[key]);
@@ -88,7 +89,7 @@ export class RemittanceForm extends Component {
                 },
                 {
                     "assigned_ticket": this.props.ten_peso_second_id,
-                    "end_ticket": this.state.ten_end_final_second
+                    "end_ticket": this.props.ten_peso_start_second ? this.state.ten_end_final_second : 0
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_first_id,
@@ -96,7 +97,7 @@ export class RemittanceForm extends Component {
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_second_id,
-                    "end_ticket": this.state.twelve_end_final_second
+                    "end_ticket": this.props.twelve_peso_start_second ? this.state.twelve_end_final_second : 0
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_first_id,
@@ -104,7 +105,7 @@ export class RemittanceForm extends Component {
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_second_id,
-                    "end_ticket": this.state.fifteen_end_final_second
+                    "end_ticket": this.props.fifteen_peso_start_firstfirst ? this.state.fifteen_end_final_second : 0
                 },
             ]
         };

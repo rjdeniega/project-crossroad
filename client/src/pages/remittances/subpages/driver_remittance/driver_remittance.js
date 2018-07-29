@@ -61,21 +61,21 @@ export class DriverRemittancePage extends Component {
     fetchRemittanceData = () => {
         const { id } = JSON.parse(localStorage.user_staff);
         getData('/remittances/remittance_form/driver/' + id).then(data => {
+            console.log(data);
             if (!data.error) {
-                console.log(data);
                 this.setState({
                     ten_peso_start_first: data.assigned_tickets[0]["10_peso_start_first"],
-                    ten_peso_start_second: data.assigned_tickets[1]["10_peso_start_second"],
+                    ten_peso_start_second: data.assigned_tickets[1]["10_peso_start_second"] ?  data.assigned_tickets[0]["10_peso_start_second"] : null,
                     twelve_peso_start_first: data.assigned_tickets[2]["12_peso_start_first"],
-                    twelve_peso_start_second: data.assigned_tickets[3]["12_peso_start_second"],
+                    twelve_peso_start_second: data.assigned_tickets[3]["12_peso_start_second"] ? data.assigned_tickets[3]["12_peso_start_second"] : null,
                     fifteen_peso_start_first: data.assigned_tickets[4]["15_peso_start_first"],
-                    fifteen_peso_start_second: data.assigned_tickets[5]["15_peso_start_firstfirst"],
+                    fifteen_peso_start_second: data.assigned_tickets[5]["15_peso_start_firstfirst"] ? data.assigned_tickets[5]["15_peso_start_firstfirst"] : null,
                     ten_peso_end_first: data.assigned_tickets[0]["10_peso_end_first"],
-                    ten_peso_end_second: data.assigned_tickets[1]["10_peso_end_second"],
+                    ten_peso_end_second: data.assigned_tickets[1]["10_peso_end_second"] ? data.assigned_tickets[1]["10_peso_end_second"] : null,
                     twelve_peso_end_first: data.assigned_tickets[2]["12_peso_end_first"],
-                    twelve_peso_end_second: data.assigned_tickets[3]["12_peso_end_second"],
+                    twelve_peso_end_second: data.assigned_tickets[3]["12_peso_end_second"] ? data.assigned_tickets[3]["12_peso_end_second"] : null,
                     fifteen_peso_end_first: data.assigned_tickets[4]["15_peso_end_first"],
-                    fifteen_peso_end_second: data.assigned_tickets[5]["15_peso_end_firstfirst"],
+                    fifteen_peso_end_second: data.assigned_tickets[5]["15_peso_end_firstfirst"] ? data.assigned_tickets[5]["15_peso_end_firstfirst"] : null,
                     ten_peso_first_id: data.assigned_tickets[0]["assigned_ticket_id"],
                     ten_peso_second_id: data.assigned_tickets[1]["assigned_ticket_id"],
                     twelve_peso_first_id: data.assigned_tickets[2]["assigned_ticket_id"],
@@ -83,7 +83,7 @@ export class DriverRemittancePage extends Component {
                     fifteen_peso_first_id: data.assigned_tickets[4]["assigned_ticket_id"],
                     fifteen_peso_second_id: data.assigned_tickets[5]["assigned_ticket_id"],
                     deployment_id: data.deployment_details.id
-                }, () => console.log(this.state.ten_peso_start_first))
+                }, () => console.log(this.state.twelve_peso_start_first))
             }
             else {
                 console.log(data);

@@ -154,21 +154,22 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
 
-        def should_be_removed(data):
-            list = []
-            for ctr, assigned_ticket in enumerate(data['assigned_ticket']):
-                if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
-                    list.append(ctr)
-
-            new_list = sorted(list, reverse=True)
-
-            return new_list
-
-        invalid_entries = should_be_removed(data)
-
-        if invalid_entries != None:
-            for entry in invalid_entries:
-                del data['assigned_ticket'][entry]
+        # def should_be_removed(data):
+        #     list = []
+        #     for ctr, assigned_ticket in enumerate(data['assigned_ticket']):
+        #         if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
+        #             list.append(ctr)
+        #
+        #     new_list = sorted(list, reverse=True)
+        #
+        #     return new_list
+        #
+        # invalid_entries = should_be_removed(data)
+        # empty_tickets = []
+        # if invalid_entries is not None:
+        #     for entry in invalid_entries:
+        #         empty_tickets.append(data['assigned_ticket'][entry])
+        #         del data['assigned_ticket'][entry]
 
         deployment_serializer = DeploymentSerializer(data=data)
         if deployment_serializer.is_valid():
@@ -176,8 +177,10 @@ class DeploymentView(APIView):
                 validated_data=deployment_serializer.validated_data,
                 supervisor_id=supervisor_id
             )
+            serialized_deployment = DeploymentSerializer(deployment)
+            print(serialized_deployment)
             return Response(data={
-                'deployment': deployment.status
+                'deployment': serialized_deployment.data
             }, status=status.HTTP_200_OK)
         else:
             return Response(data={
@@ -443,7 +446,7 @@ class DeploymentDetails(APIView):
         deployment_query = Deployment.objects.get(shift_iteration=shift_iteration)
         deployment = DeploymentSerializer(deployment_query)
         assigned_tickets = TicketUtilities.get_tickets_with_void(deployment_query.id)
-
+        print(assigned_tickets)
         return Response(data={
             'deployment_details': deployment.data,
             'assigned_tickets': assigned_tickets,
@@ -474,6 +477,7 @@ class RemittanceFormView(APIView):
         remittance_serializer = RemittanceFormSerializer(data=data)
         if remittance_serializer.is_valid():
             remittance_form = remittance_serializer.create(validated_data=remittance_serializer.validated_data)
+            print(remittance_form.total)
             return Response(data={
                 "total": remittance_form.total
             }, status=status.HTTP_200_OK)
@@ -636,6 +640,7 @@ class FinishShiftIteration(APIView):
 
 class BeepTransactionView(APIView):
     temp_shift = None
+
     @staticmethod
     def get(request):
         beep_shifts = []

@@ -113,7 +113,7 @@ export class ShiftManagementPane extends Component {
     handleConfirm = (e) => {
         const assignment = {
             "driver": this.state.driver_selected,
-            "assigned_shuttle": this.state.assigned_shuttle,
+            "shuttle": this.state.assigned_shuttle,
         };
         console.log(this.state.selected_shift_type);
         if (this.state.selected_shift_type == "AM") {
@@ -132,7 +132,7 @@ export class ShiftManagementPane extends Component {
         }
         else if (this.state.selected_shift_type == "MN") {
             this.setState({
-                am_shift_drivers: [...this.state.mn_shift_drivers, assignment]
+                mn_shift_drivers: [...this.state.mn_shift_drivers, assignment]
             }, () => {
                 console.log(this.state.mn_shift_drivers);
             });
@@ -189,7 +189,7 @@ export class ShiftManagementPane extends Component {
             });
             let isChecked = false;
             //check if item is already checked
-            this.state.am_shift_drivers.map((item) => {
+            this.state.pm_shift_drivers.map((item) => {
                 if (item["driver_id"] == this.state.driver_selected) {
                     isChecked = true
                 }
@@ -208,7 +208,7 @@ export class ShiftManagementPane extends Component {
             });
             let isChecked = false;
             //check if item is already checked
-            this.state.am_shift_drivers.map((item) => {
+            this.state.mn_shift_drivers.map((item) => {
                 if (item["driver_id"] == this.state.driver_selected) {
                     isChecked = true
                 }

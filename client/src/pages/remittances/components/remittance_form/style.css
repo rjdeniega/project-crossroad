@@ -76,8 +76,8 @@
 
 .input {
     width: 30% !important;
-    background: var(--bgcolor) !important;
-    border: none !important;
+    /*background: var(--bgcolor) !important;*/
+    /*border: none !important;*/
     }
 
 .tickets-sold {
