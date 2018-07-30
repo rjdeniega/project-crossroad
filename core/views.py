@@ -331,6 +331,11 @@ class TransactionReport(APIView):
             try:
                 id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
             except ObjectDoesNotExist:
+                report_items.append({
+                    "member": MemberSerializer(member).data,
+                    "transactions": None,
+                    "total_transactions": 0
+                })
                 id_card = None
 
             if id_card is not None:

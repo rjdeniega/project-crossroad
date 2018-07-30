@@ -1,21 +1,21 @@
-.report-body{
+.transaction-report-body{
     width: auto!important;
-    display: grid;
-    grid-template-columns: 30% 70%;
+    /*display: grid;*/
+    /*grid-template-columns: 30% 70%;*/
     }
 .report-filters{
     width: 100%;
     grid-column: 1/2;
     height: 100%;
     }
-.report-body .remittance-table{
+.transaction-report-body .remittance-table{
     width: auto!important;
-    grid-column: 2/3;
-    margin-left: 20px!important;
+    /*grid-column: 2/3;*/
+    /*margin-left: 20px!important;*/
     }
-.report-body p{
-    grid-column: 2/3;
-    }
-.report-body .remittance-table .ant-table-tbody{
+/*.report-body p{*/
+    /*grid-column: 2/3;*/
+    /*}*/
+.transaction-report-body .remittance-table .ant-table-tbody{
     overflow: scroll;
     }

@@ -60,8 +60,9 @@ export class TransactionReport extends Component {
 
     getNumberOfTransactions = (id) => {
         const array = this.state.all_transactions.filter(item => item.member.id == id).map(item => item.transactions);
-        console.log(array);
-        return array.length
+        const checker = array.filter(item => item!=null);
+        console.log(checker);
+        return checker.length
     };
     getGrandTotal = () => {
         console.log("enters here");
@@ -139,11 +140,11 @@ export class TransactionReport extends Component {
 
     render() {
         return (
-            <div className="report-body">
-                <div className="report-filters">
-                    <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
-                    <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
-                </div>
+            <div className="transaction-report-body">
+                {/*<div className="report-filters">*/}
+                    {/*<DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>*/}
+                    {/*<DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>*/}
+                {/*</div>*/}
                 <Table bordered size="small"
                        pagination={false}
                        className="remittance-table"
