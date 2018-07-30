@@ -11,4 +11,8 @@
 .report-body .remittance-table{
     width: auto!important;
     grid-column: 2/3;
+    margin-left: 20px!important;
+    }
+.report-body p{
+    grid-column: 2/3;
     }
