@@ -6,7 +6,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
 import { getData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -65,43 +65,72 @@ const columns = [{
         ),
     }];
 const dateFormat = "YYYY-MM-DD";
+const Option = Select.Option;
 
 export class RemittanceReport extends Component {
     state = {
         all_transactions: [],
-        transactions: [],
+        filtered_transactions: [],
+        drivers: [],
+        shuttles: [],
         start_date: null,
         start_date_object: moment('2015/01/01', dateFormat),
         end_date: null,
         end_date_object: moment('2015/01/01', dateFormat),
+        grand_total: null,
+        am_shift_total: null,
+        pm_shift_total: null,
     };
 
     componentDidMount() {
         this.fetchTransactions()
     }
 
+    getGrandTotal = () => {
+        console.log("enters here");
+        const array = this.state.filtered_transactions.map(item => {
+            return item.total
+        });
+        return array.reduce((a, b) => a + b, 0)
+    };
+    getShiftTypeTotal = (type) => {
+        const array = this.state.filtered_transactions.filter(item => item.shift_type == type).map(item => item.total);
+        return array.reduce((a, b) => a + b, 0)
+    };
+
     fetchTransactions() {
         getData('/remittance_report/').then(data => {
             console.log(data);
             this.setState({
-                all_transactions: data.report_items
-            },() => this.setState({
-                transactions: this.state.all_transactions
-            }))
+                all_transactions: data.report_items,
+            }), this.setState({
+                filtered_transactions: this.state.all_transactions,
+            }), this.setState({
+                grand_total: this.getGrandTotal(),
+                am_shift_total: this.getShiftTypeTotal("A"),
+                pm_shift_total: this.getShiftTypeTotal("P"),
+            })
+        });
+        getData('/inventory/shuttles').then(data => {
+            this.setState({
+                shuttles: data.shuttles
+            });
+        });
+        getData('/members/drivers').then(data => {
+            this.setState({
+                drivers: data.drivers
+            });
         })
     }
 
-    handleDateFormChange = (date, dateString) => this.setState({
-        birth_date_object: date,
-        birth_date: dateString
-    });
-
     handleStartDateChange = (date, dateString) => {
         const match = this.state.all_transactions.filter(item => {
-            if(item.date == dateString) return item;
+            if (item.date == dateString) {
+                return item;
+            }
         });
         this.setState({
-            transactions: match,
+            filtered_transactions: match,
             start_date_object: date,
             start_date: dateString
         })
@@ -111,11 +140,11 @@ export class RemittanceReport extends Component {
             let start_date = this.state.start_date;
             let end_date = dateString;
             let item_date = item.date;
-            
+
             console.log(item_date, start_date, end_date);
-            if(moment(item_date).isAfter(start_date)|| moment(item_date).isSame(start_date) &&
-                    moment(item_date).isBefore(end_date)|| moment(item_date).isSame(end_date)
-            ){
+            if (moment(item_date).isAfter(start_date) || moment(item_date).isSame(start_date) &&
+                moment(item_date).isBefore(end_date) || moment(item_date).isSame(end_date)
+            ) {
                 return item;
             }
         });
@@ -123,19 +152,34 @@ export class RemittanceReport extends Component {
             transactions: match
         })
     };
+    resetFilters = () => {
+        this.setState({
+            filtered_transactions: this.state.all_transactions,
+        });
+
+    };
+
     render() {
         return (
             <div className="report-body">
                 <div className="report-filters">
+                    <p><b>grand total:</b> {this.state.grand_total} </p>
+                    <p><b>AM shift total:</b> {this.state.am_shift_total} </p>
+                    <p><b>PM shift total:</b> {this.state.pm_shift_total} </p>
+
                     <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                     <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
-
-
+                    <Select className="user-input" defaultValue="Select Shuttle">
+                        {this.state.shuttles.map(item => (
+                            <Option value={item.plate_number}>{item.plate_number}</Option>
+                        ))}
+                    </Select>
+                    <Button size="small" type="primary" icon="reload" onClick={this.resetFilters}>Reset Filters</Button>
                 </div>
                 <Table bordered size="medium"
                        className="remittance-table"
                        columns={columns}
-                       dataSource={this.state.transactions}
+                       dataSource={this.state.filtered_transactions}
                 />
             </div>
         );
