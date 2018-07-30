@@ -523,6 +523,7 @@ export class SupervisorLastContent extends Component {
     state = {
         remittances: null,
         visible: false,
+        current_iteration: null,
         ten_peso_start_first: 0,
         ten_peso_start_second: 0,
         twelve_peso_start_first: 0,
@@ -550,7 +551,10 @@ export class SupervisorLastContent extends Component {
                     item
                 );
                 console.log(remittances);
-                this.setState({ remittances });
+                this.setState({
+                    remittances : remittances,
+                    current_iteration : data.current_iteration
+                });
             }
             else {
                 console.log(data.error);
@@ -703,7 +707,19 @@ export class SupervisorRemittancePage extends Component {
         this.setState({ current });
     };
     endShift = () => {
+        const {id} = JSON.parse(localStorage.user);
+        const data = {
+            "supervisor_id": id
+        };
         // localStorage.remittance_page = 0;
+        postData('/remittances/shift_iteration/finish/',data).then(data => {
+            if(!data.error){
+                message.success("Natapos na ang iyong shift")
+            }else{
+                console.log(data)
+            }
+        }).catch(error=> console.log(error));
+
         this.setState({ current: 0 });
     };
 

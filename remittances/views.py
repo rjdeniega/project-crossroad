@@ -518,6 +518,7 @@ class ConfirmRemittanceForm(APIView):
             })
 
         return Response(data={
+            "current_iteration": ShiftIterationSerializer(current_iteration).data,
             "unconfirmed_remittances": unconfirmed_remittances
         }, status=status.HTTP_200_OK)
 
@@ -594,7 +595,7 @@ class IterationUtilites():
 class ShiftIterationReport(APIView):
     @staticmethod
     def get(request):
-        shift_iterations = ShiftIteration.objects.all()
+        shift_iterations = ShiftIteration.objects.filter(status='F')
         return Response(data={
             "shift_iterations": IterationUtilites.get_iterations(shift_iterations)
         }, status=status.HTTP_200_OK)
