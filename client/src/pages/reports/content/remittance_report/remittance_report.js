@@ -133,7 +133,11 @@ export class RemittanceReport extends Component {
             filtered_transactions: match,
             start_date_object: date,
             start_date: dateString
-        })
+        }, () => this.setState({
+            am_shift_total: this.getShiftTypeTotal("A"),
+            pm_shift_total: this.getShiftTypeTotal("P"),
+            grand_total: this.getGrandTotal("A")
+        }))
     };
     handleEndDateChange = (date, dateString) => {
         const match = this.state.all_transactions.filter(item => {
@@ -149,13 +153,23 @@ export class RemittanceReport extends Component {
             }
         });
         this.setState({
-            transactions: match
-        })
+            filtered_transactions: match,
+            start_date_object: date,
+            start_date: dateString
+        },() =>  this.setState({
+            am_shift_total: this.getShiftTypeTotal("A"),
+            pm_shift_total: this.getShiftTypeTotal("P"),
+            grand_total: this.getGrandTotal("A")
+        }))
     };
     resetFilters = () => {
         this.setState({
             filtered_transactions: this.state.all_transactions,
-        });
+        },() =>  this.setState({
+            am_shift_total: this.getShiftTypeTotal("A"),
+            pm_shift_total: this.getShiftTypeTotal("P"),
+            grand_total: this.getGrandTotal("A")
+        }));
 
     };
 
