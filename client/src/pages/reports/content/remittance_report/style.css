@@ -1,3 +1,14 @@
 .report-body{
-    width: 500px!important;
+    width: auto!important;
+    display: grid;
+    grid-template-columns: 30% 70%;
+    }
+.report-filters{
+    width: 100%;
+    grid-column: 1/2;
+    height: 100%;
+    }
+.report-body .remittance-table{
+    width: auto!important;
+    grid-column: 2/3;
     }

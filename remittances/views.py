@@ -581,7 +581,7 @@ class IterationUtilites():
             da = DriversAssigned.objects.get(shift=shift, driver=deployment.driver.id)
             report_items.append({
                 "shift": shift,
-                "shuttle": da.shuttle.id,
+                "shuttle": da.shuttle.plate_number,
                 "driver": driver,
                 "remittance": rem.id,
                 "date": date,

@@ -279,18 +279,19 @@ class StaffView(APIView):
 
 class RemittanceReport(APIView):
     @staticmethod
-    def post(request):
-        data = json.loads(request.body)
-        start_date = data['start_date']
-        end_date = data['end_date']
+    def get(request):
+        # data = json.loads(request.body)
+        # start_date = data['start_date']
+        # end_date = data['end_date']
 
-        deployments = Deployment.objects.filter(shift_iteration__date__gte=start_date,
-                                                shift_iteration__date__lte=end_date)
-
+        # deployments = Deployment.objects.filter(shift_iteration__date__gte=start_date,
+        #                                         shift_iteration__date__lte=end_date)
+        deployments = Deployment.objects.all()
         report_items = IterationUtilites.get_report_items(deployments)
-        grand_total = RemittanceForm.objects.filter(deployment__shift_iteration__date__gte=start_date,
-                                                    deployment__shift_iteration__date__lte=end_date).aggregate(
-            Sum('total'))
+        # grand_total = RemittanceForm.objects.filter(deployment__shift_iteration__date__gte=start_date,
+        #                                             deployment__shift_iteration__date__lte=end_date).aggregate(
+        #     Sum('total'))
+        grand_total = RemittanceForm.objects.all().aggregate(Sum('total'))
 
         return Response(data={
             'grand_total': grand_total,
