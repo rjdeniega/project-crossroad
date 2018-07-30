@@ -286,7 +286,7 @@ class RemittanceReport(APIView):
 
         # deployments = Deployment.objects.filter(shift_iteration__date__gte=start_date,
         #                                         shift_iteration__date__lte=end_date)
-        deployments = Deployment.objects.all()
+        deployments = Deployment.objects.filter(shift_iteration__status='F')
         report_items = IterationUtilites.get_report_items(deployments)
         # grand_total = RemittanceForm.objects.filter(deployment__shift_iteration__date__gte=start_date,
         #                                             deployment__shift_iteration__date__lte=end_date).aggregate(
