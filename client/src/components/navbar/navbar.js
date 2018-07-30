@@ -91,6 +91,15 @@ const SUPERVISOR_TABS = [
         image: wrench
     },
 ];
+const MECHANIC_TABS = [
+    {
+        name: "Maintenance",
+        key: "maintenance",
+        path: '/maintenance',
+        component: MaintenancePage,
+        image: wrench
+    },
+];
 const DRIVER_TABS = [
     {
         name: "Remittances",
@@ -166,6 +175,9 @@ export class NavBar extends Component {
         if(user_type === "supervisor"){
             return this.renderSupervisorNav()
         }
+        if(user_type === "mechanic"){
+            return this.renderMechanicNav()
+        }
     };
     renderAdminNav = () => TABS.map(tab =>
         <Link key={tab.key} className="tab-link" to={tab.path} component={tab.component}>
@@ -174,6 +186,12 @@ export class NavBar extends Component {
         </Link>
     );
     renderDriverNav = () => DRIVER_TABS.map(tab =>
+        <Link className="tab-link" to={tab.path} component={tab.component}>
+            <NavBarItems key={tab.key} name={tab.name}
+                         icon={tab.image}/>
+        </Link>
+    );
+    renderMechanicNav = () => MECHANIC_TABS.map(tab =>
         <Link className="tab-link" to={tab.path} component={tab.component}>
             <NavBarItems key={tab.key} name={tab.name}
                          icon={tab.image}/>
