@@ -21,16 +21,17 @@ function checkStatus(status) {
 }
 
 export class ShuttleCards extends Component {
-
-    state = {
+    constructor(props){
+      super(props);
+      this.state = {
         shuttles: this.props.shuttles
-    };
-
-
-    componentDidUpdate() {
-        this.props.fetchShuttles();
-        this.state.shuttles = this.props.shuttles;
+      }
     }
+
+    // componentDidUpdate() {
+    //     this.props.fetchShuttles();
+    //     this.state.shuttles = this.props.shuttles;
+    // }
 
     render() {
         const { shuttles } = this.state;

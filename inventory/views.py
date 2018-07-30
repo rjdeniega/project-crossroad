@@ -131,7 +131,22 @@ class RepairProblems(APIView):
 
         repairs = RepairSerializer(Repair.objects.all()
                                         .filter(shuttle=shuttle)
-                                        .order_by("-created"), many=True)
+                                        .order_by("-date_requested"), many=True)
         return Response(data={
             "repairs": repairs.data
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, pk):
+        data = json.loads(request.body)
+        shuttle = Shuttle.objects.get(id=pk)
+
+        repair = Repair(shuttle=shuttle, date_requested=data['date_reported'],
+                        status='NS')
+        repair.save()
+        for problem in data['problems']:
+            rp = RepairProblem(description=problem)
+            rp.save()
+            repair.problems.add(rp)
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

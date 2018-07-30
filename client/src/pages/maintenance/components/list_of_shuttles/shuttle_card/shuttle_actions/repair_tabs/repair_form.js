@@ -36,6 +36,7 @@ class RepairFormInit extends React.Component{
 
     add = () => {
         const { form } = this.props;
+        console.log(this.props.shuttle)
         // can use data-binding to get
         const keys = form.getFieldValue('keys');
         const nextKeys = keys.concat(uuid);
@@ -46,16 +47,28 @@ class RepairFormInit extends React.Component{
             keys: nextKeys,
         });
     };
-/*
-    componentDidMount(){
-        this.props.form.validateFields();
-    }*/
 
     handleSubmit(e){
         e.preventDefault();
+        const {shuttle} = this.props;
         this.props.form.validateFields((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', values);
+            if (typeof values['problems'] === 'undefined'){
+              message.warning('Add problem fields!');
+            }
+            if (!err && typeof values['problems'] !== 'undefined') {
+                console.log(values['problems'])
+                let cleaned_problems = values['problems']
+                                .filter(function(n){return n != undefined});
+                const data = {
+                    problems: cleaned_problems,
+                    date_reported: values['date_reported'].format('YYYY-MM-DD')
+                }
+
+                postData('inventory/shuttles/repairs/' + shuttle.id, data)
+                    .then(response => response);
+
+                this.props.requestSubmitted();
+                message.success("Checkup request has been sent to mechanic!")
             }
         });
     }
@@ -79,14 +92,14 @@ class RepairFormInit extends React.Component{
                 sm: { span: 20, offset: 4 },
             },
         };
-        getFieldDecorator('keys', { initialValue: [1] });
+        getFieldDecorator('keys', { initialValue: [] });
         const keys = getFieldValue('keys');
         const formItems = keys.map((k, index) => {
             return (
                 <FormItem
                     {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
                     label={index === 0 ? 'Problems' : ''}
-                    required={false}
+                    required={true}
                     key={k}>
                     {getFieldDecorator(`problems[${k}]`, {
                         validateTrigger: ['onChange', 'onBlur'],
@@ -130,7 +143,6 @@ class RepairFormInit extends React.Component{
 const WrappedRepairForm = Form.create()(RepairFormInit);
 
 export class RepairForm extends Component{
-
     handleOk = () => {
         this.props.handleOk()
     };
@@ -140,7 +152,9 @@ export class RepairForm extends Component{
             <div>
                 <br/>
                 <h2>Submit Checkup Request</h2>
-                <WrappedRepairForm handleOk={this.handleOk}/>
+                <WrappedRepairForm handleOk={this.handleOk}
+                    requestSubmitted={this.props.requestSubmitted}
+                    shuttle={this.props.shuttle}/>
             </div>
         )
     }
