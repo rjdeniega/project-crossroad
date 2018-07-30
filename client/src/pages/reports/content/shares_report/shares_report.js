@@ -36,10 +36,10 @@ const columns = [{
 }, {
     title: 'Share Value (in Php)',
     dataIndex: 'total_peso_value',
-    key: 'driver',
+    key: 'total_peso_value',
     render: (text) => (
-        <div>
-            {text}
+        <div className="rem-status">
+            <p><b>Php {text}</b></p>
         </div>
     )
 },];
@@ -68,7 +68,7 @@ export class SharesReport extends Component {
     resetFilters = () => {
         this.setState({
             filtered_transactions: this.state.all_transactions,
-        },() =>  this.setState({
+        }, () => this.setState({
             am_shift_total: this.getShiftTypeTotal("A"),
             pm_shift_total: this.getShiftTypeTotal("P"),
             grand_total: this.getGrandTotal("A")

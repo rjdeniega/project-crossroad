@@ -22,7 +22,8 @@ from core.serializers import UserSerializer, PersonSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
 from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
     MemberSerializer, MechanicSerializer, ShareSerializer
-from remittances.models import Deployment, RemittanceForm
+from remittances.models import Deployment, RemittanceForm, BeepTransaction, BeepShift
+from remittances.serializers import BeepTransactionSerializer
 from remittances.views import IterationUtilites
 
 
@@ -317,6 +318,32 @@ class SharesReport(APIView):
                 "total_peso_value": sum([float(item["peso_value"]) for item in serialized_shares.data])
             })
 
+        return Response(data={
+            "report_items": report_items
+        }, status=status.HTTP_200_OK)
+
+
+class TransactionReport(APIView):
+    @staticmethod
+    def get(request):
+        report_items = []
+        for member in Member.objects.all():
+            try:
+                id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
+            except ObjectDoesNotExist:
+                id_card = None
+
+            if id_card is not None:
+                transactions = BeepTransaction.objects.filter(card_number=id_card.can)
+                print(transactions)
+                serialized_transactions = BeepTransactionSerializer(transactions, many=True)
+                for item in serialized_transactions.data:
+                    item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+                report_items.append({
+                    "member": MemberSerializer(member).data,
+                    "transactions": serialized_transactions.data,
+                    "total_transactions": sum([float(item["total"]) for item in serialized_transactions.data])
+                })
         return Response(data={
             "report_items": report_items
         }, status=status.HTTP_200_OK)

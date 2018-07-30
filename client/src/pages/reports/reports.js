@@ -19,6 +19,8 @@ import {wrench} from 'react-icons-kit/fa/wrench'
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { RemittanceReport } from './content/remittance_report/remittance_report'
 import { SharesReport } from './content/shares_report/shares_report'
+import { TransactionReport } from './content/transactions_report/transactions_report'
+
 
 
 
@@ -36,11 +38,17 @@ const MAINTENANCE_CARDS = [{
     'content': <RemittanceReport/>
 }];
 const MEMBER_CARDS = [{
-    'title': 'Member Report',
-    'description': 'View Shares per Member',
+    'title': 'Shares Report',
+    'description': 'View Shares of every member of the transport cooperative',
     'icon': driversLicenseO,
     'content': <SharesReport/>
-}];
+},
+{
+    'title': 'Transaction Report',
+    'description': 'View transactions of members over a period of time',
+    'icon': driversLicenseO,
+    'content': <TransactionReport/>
+},];
 export class ReportsPage extends Component {
     state = {
         content: null,
