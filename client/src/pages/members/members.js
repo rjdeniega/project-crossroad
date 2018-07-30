@@ -127,6 +127,7 @@ export class SharesManagementPane extends Component {
         add_share_value: null,
         total_shares: null,
         total_peso_value: null,
+        visible: false,
     };
 
     componentDidMount() {
@@ -170,9 +171,25 @@ export class SharesManagementPane extends Component {
         postData('/members/shares/' + activeUser.id, data).then(data => {
             console.log(data.share);
             this.setState({
-                shares: [...this.state.shares, data.share]
+                total_shares: this.computeValue(this.state.total_shares, data.share.value),
+                total_peso_value: this.computeValue(this.state.total_peso_value, (parseInt(data.share.value) * 500)),
+                shares: [...this.state.shares, this.convertToDefaultShare(data.share)],
+                visible: false,
             })
         });
+    };
+    convertToDefaultShare = (share) => {
+        console.log(share);
+        return {
+            "value": share.value,
+            "peso_value": parseInt(share.value) * 500,
+            "date_of_update": share.date_of_update,
+        }
+    };
+    computeValue = (first, second) => {
+        let first_n = parseInt(first);
+        let second_n = parseInt(second);
+        return first_n + second_n;
     };
     handleCancel = (e) => {
         console.log(e);

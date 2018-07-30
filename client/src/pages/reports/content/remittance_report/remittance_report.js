@@ -73,6 +73,8 @@ export class RemittanceReport extends Component {
         filtered_transactions: [],
         drivers: [],
         shuttles: [],
+        driver: null,
+        shuttle: null,
         start_date: null,
         start_date_object: moment('2015/01/01', dateFormat),
         end_date: null,
@@ -156,7 +158,7 @@ export class RemittanceReport extends Component {
             filtered_transactions: match,
             start_date_object: date,
             start_date: dateString
-        },() =>  this.setState({
+        }, () => this.setState({
             am_shift_total: this.getShiftTypeTotal("A"),
             pm_shift_total: this.getShiftTypeTotal("P"),
             grand_total: this.getGrandTotal("A")
@@ -165,12 +167,40 @@ export class RemittanceReport extends Component {
     resetFilters = () => {
         this.setState({
             filtered_transactions: this.state.all_transactions,
-        },() =>  this.setState({
+        }, () => this.setState({
             am_shift_total: this.getShiftTypeTotal("A"),
             pm_shift_total: this.getShiftTypeTotal("P"),
             grand_total: this.getGrandTotal("A")
         }));
 
+    };
+    filterBy = fieldName => value => {
+        // this function is to handle drop-downs
+        const state = { ...this.state };
+        state[fieldName] = value;
+        this.setState({
+            ...state
+        });
+        if (fieldName == "driver") {
+            const match = this.state.filtered_transactions.filter(item => {
+                if (item.driver == value) {
+                    return item
+                }
+            });
+             this.setState({
+                 filtered_transactions: match,
+             });
+        }
+        if(fieldName == "shuttle"){
+            const match = this.state.filtered_transactions.filter(item => {
+                if (item.shuttle == value) {
+                    return item
+                }
+            });
+             this.setState({
+                 filtered_transactions: match,
+             });
+        }
     };
 
     render() {
@@ -183,9 +213,14 @@ export class RemittanceReport extends Component {
 
                     <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                     <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
-                    <Select className="user-input" defaultValue="Select Shuttle">
+                    <Select onSelect={this.filterBy("shuttle")} className="user-input" defaultValue="Select Shuttle">
                         {this.state.shuttles.map(item => (
                             <Option value={item.plate_number}>{item.plate_number}</Option>
+                        ))}
+                    </Select>
+                    <Select className="user-input" defaultValue="Select Driver" onSelect={this.filterBy("driver")}>
+                        {this.state.drivers.map(item => (
+                            <Option value={item.name}>{item.name}</Option>
                         ))}
                     </Select>
                     <Button size="small" type="primary" icon="reload" onClick={this.resetFilters}>Reset Filters</Button>

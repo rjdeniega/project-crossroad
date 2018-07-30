@@ -226,7 +226,7 @@ class MemberSharesView(APIView):
             return Response(data={
                 "errors": share_serializer.errors
             }, status=400)
-
+        print(ShareSerializer(share).data)
         return Response(data={
-            "share": share,
+            "share": ShareSerializer(share).data,
         }, status=status.HTTP_200_OK)
