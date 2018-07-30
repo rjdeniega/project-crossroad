@@ -98,7 +98,7 @@ class RepairFormInit extends React.Component{
                     })(
                         <Input className='problems' placeholder="Problem" style={{ width: '60%', marginRight: 8 }} />
                     )}
-                    {keys.length > 2 ? (
+                    {keys.length > 1 ? (
                         <Icon
                             className="dynamic-delete-button" icon={withMinus}
                             disabled={keys.length === 1} onClick={() => this.remove(k)}/>
@@ -106,17 +106,17 @@ class RepairFormInit extends React.Component{
                     </FormItem>);
         });
         return(
-            <Form onSubmit={this.handleSubmit}>
-                <FormItem label='Date Reported' required={true}>
-                  {getFieldDecorator('date_reported', {
-                      rules: [{required: true,
-                               message: 'Date reported is required!'}],
-                  })(<DatePicker format='YYYY-MM-DD'/>)}
-                </FormItem>
+            <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
+              <FormItem {...formItemLayout} label='Date Reported' required={true}>
+                {getFieldDecorator('date_reported', {
+                  rules: [{required: true,
+                           message: 'Date reported is required!'}],
+                         })(<DatePicker format='YYYY-MM-DD' style={{width: '60%'}}/>)}
+              </FormItem>
                 {formItems}
                 <FormItem {...formItemLayoutWithOutLabel}>
                     <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
-                        <Icon icon={plus} /> Add field
+                        <Icon icon={plus} /> Add problem
                     </Button>
                 </FormItem>
                 <FormItem {...formItemLayoutWithOutLabel}>
