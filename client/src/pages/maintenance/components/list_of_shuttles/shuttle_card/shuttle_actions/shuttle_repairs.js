@@ -11,7 +11,7 @@ export class Repairs extends Component{
         this.state = {
             shuttle: props.shuttle,
             visible: false,
-            currentPage: 'repairInfo'
+            currentPage: "repairInfo"
         }
     }
 
@@ -51,7 +51,7 @@ export class Repairs extends Component{
                     <Menu onClick={this.handleClick}
                           selectedKeys={[this.state.currentPage]}
                           mode="horizontal">
-                        <Menu.Item key='repairInfo'>
+                        <Menu.Item key='repairInfo' active>
                             <Icon icon={wrench}/> Repair Information
                         </Menu.Item>
                         <Menu.Item key='repairForm'>

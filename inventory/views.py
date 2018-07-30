@@ -122,3 +122,16 @@ class ShuttlesView(APIView):
     def delete(request, pk):
         Shuttle.objects.get(id=pk).hard_delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RepairProblems(APIView):
+    @staticmethod
+    def get(request, pk):
+        shuttle = Shuttle.objects.get(id=pk)
+
+        repairs = RepairSerializer(Repair.objects.all()
+                                        .filter(shuttle=shuttle)
+                                        .order_by("-created"), many=True)
+        return Response(data={
+            "repairs": repairs.data
+        }, status=status.HTTP_200_OK)

@@ -18,3 +18,9 @@ class ShuttlesSerializer(ModelSerializer):
     class Meta:
         model = Shuttle
         fields = "__all__"
+
+
+class RepairSerializer(ModelSerializer):
+    class Meta:
+        model = Repair
+        fields = "__all__"

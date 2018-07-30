@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
-import {Form, Input, Button, message, Icon} from 'antd'
+import {Icon} from 'react-icons-kit'
+import {Form, Input, Button, message, DatePicker} from 'antd'
 import {postData} from "../../../../../../../network_requests/general";
 import {withMinus} from 'react-icons-kit/entypo/withMinus'
 import {plus} from 'react-icons-kit/entypo/plus'
@@ -11,7 +12,7 @@ function hasErrors(fieldsError){
     return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
 
-let uuid = 0;
+let uuid = 1;
 
 class RepairFormInit extends React.Component{
     constructor(props){
@@ -45,13 +46,18 @@ class RepairFormInit extends React.Component{
             keys: nextKeys,
         });
     };
-
+/*
     componentDidMount(){
         this.props.form.validateFields();
-    }
+    }*/
 
     handleSubmit(e){
         e.preventDefault();
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                console.log('Received values of form: ', values);
+            }
+        });
     }
 
     render(){
@@ -73,7 +79,7 @@ class RepairFormInit extends React.Component{
                 sm: { span: 20, offset: 4 },
             },
         };
-        getFieldDecorator('keys', { initialValue: [] });
+        getFieldDecorator('keys', { initialValue: [1] });
         const keys = getFieldValue('keys');
         const formItems = keys.map((k, index) => {
             return (
@@ -82,17 +88,17 @@ class RepairFormInit extends React.Component{
                     label={index === 0 ? 'Problems' : ''}
                     required={false}
                     key={k}>
-                    {getFieldDecorator(`names[${k}]`, {
+                    {getFieldDecorator(`problems[${k}]`, {
                         validateTrigger: ['onChange', 'onBlur'],
                         rules: [{
                             required: true,
                             whitespace: true,
-                            message: "Please input problem's name or delete this field.",
+                            message: "Please input problem or delete this field.",
                         }],
                     })(
-                        <Input placeholder="Problem" style={{ width: '60%', marginRight: 8 }} />
+                        <Input className='problems' placeholder="Problem" style={{ width: '60%', marginRight: 8 }} />
                     )}
-                    {keys.length > 1 ? (
+                    {keys.length > 2 ? (
                         <Icon
                             className="dynamic-delete-button" icon={withMinus}
                             disabled={keys.length === 1} onClick={() => this.remove(k)}/>
@@ -101,6 +107,12 @@ class RepairFormInit extends React.Component{
         });
         return(
             <Form onSubmit={this.handleSubmit}>
+                <FormItem label='Date Reported' required={true}>
+                  {getFieldDecorator('date_reported', {
+                      rules: [{required: true,
+                               message: 'Date reported is required!'}],
+                  })(<DatePicker format='YYYY-MM-DD'/>)}
+                </FormItem>
                 {formItems}
                 <FormItem {...formItemLayoutWithOutLabel}>
                     <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
@@ -115,47 +127,20 @@ class RepairFormInit extends React.Component{
     }
 }
 
-const WrappedRepairForm = Form.create({
-    onFieldsChange(props, changedFields){
-        props.onChange(changedFields);
-    },
-
-    mapPropsToFields(props){
-        return{
-            problems: Form.createFormField({
-                ...props.problems,
-                value:props.problems.value,
-            })
-        }
-    }
-})(RepairFormInit);
+const WrappedRepairForm = Form.create()(RepairFormInit);
 
 export class RepairForm extends Component{
-    state = {
-
-        formLayout: 'vertical',
-        fields:{
-            problems:{
-                value:''
-            },
-        }
-    };
-
-    handleFormChange = (changedFields) => {
-        this.setState(({fields}) => ({
-            fields: {...fields, ...changedFields}
-        }));
-    };
 
     handleOk = () => {
         this.props.handleOk()
     };
 
     render(){
-        const fields = this.state.fields;
         return(
             <div>
-                <RepairForm {...fields} onChange={this.handleFormChange} handleOk={this.handleOk}/>
+                <br/>
+                <h2>Submit Checkup Request</h2>
+                <WrappedRepairForm handleOk={this.handleOk}/>
             </div>
         )
     }

@@ -21,6 +21,12 @@ SHUTTLE_STATUS = [
     ('UM', 'Under Maintenance')
 ]
 
+REPAIR_STATUS = [
+    ('NS', 'Not Started'),
+    ('IP', 'In Progress'),
+    ('C', 'Completed')
+]
+
 
 class Shuttle(SoftDeletionModel):
 
@@ -82,8 +88,10 @@ class RepairModifications(SoftDeletionModel):
 
 class Repair(SoftDeletionModel):
     shuttle = ForeignKey(Shuttle, on_delete=models.PROTECT)
-    date = DateField()
+    date_requested = DateField()
+    start_date = DateField(null=True)
     end_date = DateField(null=True)
+    status = CharField(max_length=2, choices=REPAIR_STATUS)
     labor_fee = DecimalField(max_digits=10, decimal_places=2, null=True)
     problems = ManyToManyField(RepairProblem)
     findings = ManyToManyField(RepairFinding)
