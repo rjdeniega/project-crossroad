@@ -37,6 +37,7 @@ urlpatterns = [
     path('inventory/', include(inventory_urls)),
     path('remittances/', include(remittance_urls)),
     path('remittance_report/', RemittanceReport.as_view()),
+    path('shares_report/', SharesReport.as_view()),
 
 ]
 

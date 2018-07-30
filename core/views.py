@@ -21,7 +21,7 @@ from members.models import *
 from core.serializers import UserSerializer, PersonSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
 from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
-    MemberSerializer, MechanicSerializer
+    MemberSerializer, MechanicSerializer, ShareSerializer
 from remittances.models import Deployment, RemittanceForm
 from remittances.views import IterationUtilites
 
@@ -296,4 +296,27 @@ class RemittanceReport(APIView):
         return Response(data={
             'grand_total': grand_total,
             'report_items': report_items
+        }, status=status.HTTP_200_OK)
+
+
+class SharesReport(APIView):
+    @staticmethod
+    def get(request):
+        report_items = []
+        for member in Member.objects.all():
+            shares = Share.objects.filter(member=Member.objects.get(pk=member.id))
+            serialized_shares = ShareSerializer(shares, many=True)
+
+            for item in serialized_shares.data:
+                item["peso_value"] = float(item["value"]) * 500
+
+            report_items.append({
+                "member": MemberSerializer(member).data,
+                "shares": serialized_shares.data,
+                "total_shares": sum([float(item["value"]) for item in serialized_shares.data]),
+                "total_peso_value": sum([float(item["peso_value"]) for item in serialized_shares.data])
+            })
+
+        return Response(data={
+            "report_items": report_items
         }, status=status.HTTP_200_OK)

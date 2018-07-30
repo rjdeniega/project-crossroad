@@ -16,7 +16,10 @@ import { InventoryPage } from '../../pages/inventory/inventory'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
 import {wrench} from 'react-icons-kit/fa/wrench'
+import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { RemittanceReport } from './content/remittance_report/remittance_report'
+import { SharesReport } from './content/shares_report/shares_report'
+
 
 
 const { Meta } = Card;
@@ -31,6 +34,12 @@ const MAINTENANCE_CARDS = [{
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
     'content': <RemittanceReport/>
+}];
+const MEMBER_CARDS = [{
+    'title': 'Member Report',
+    'description': 'View Shares per Member',
+    'icon': driversLicenseO,
+    'content': <SharesReport/>
 }];
 export class ReportsPage extends Component {
     state = {
@@ -101,6 +110,20 @@ export class ReportsPage extends Component {
             />
         </Card>
     );
+    renderMemberCards = () => MEMBER_CARDS.map(item =>
+        <Card
+            className="report-item"
+            onClick={this.changeModalContent(item.content, item.title)}
+            hoverable
+            style={{ width: 240 }}
+            cover={<div style={{ color: 'var(--darkgreen)' }}><Icon icon={item.icon} size={42}/></div>}
+        >
+            <Meta
+                title={item.title}
+                description={item.description}
+            />
+        </Card>
+    );
     renderModal = () => (
         <Modal
             className="report-modal"
@@ -127,6 +150,10 @@ export class ReportsPage extends Component {
                         <div className="maintenance-reports">
                             <Divider>Maintenance Reports</Divider>
                             {this.renderMaintenanceCards()}
+                        </div>
+                        <div className="member-reports">
+                            <Divider>Member Reports</Divider>
+                            {this.renderMemberCards()}
                         </div>
                     </div>
                 </div>
