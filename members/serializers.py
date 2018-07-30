@@ -33,6 +33,7 @@ class SupervisorSerializer(ModelSerializer):
         supervisor.save()
         return supervisor
 
+
 class ClerkSerializer(ModelSerializer):
     class Meta:
         model = Clerk
@@ -48,6 +49,12 @@ class OperationsManagerSerializer(ModelSerializer):
 class PersonSerializer(ModelSerializer):
     class Meta:
         model = Person
+        fields = '__all__'
+
+
+class MechanicSerializer(ModelSerializer):
+    class Meta:
+        model = Mechanic
         fields = '__all__'
 
 

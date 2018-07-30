@@ -21,7 +21,7 @@ from members.models import *
 from core.serializers import UserSerializer, PersonSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
 from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
-    MemberSerializer
+    MemberSerializer, MechanicSerializer
 
 
 class SignInView(APIView):
@@ -66,8 +66,10 @@ class SignInView(APIView):
             return "operations_manager"
         if user in [clerk.user for clerk in Clerk.objects.all()]:
             return "clerk"
-            # if user in [clerkuser for clerk in Clerk.objects.all()]:
-            #     return "supervisor"
+        if user in [member.user for member in Member.objects.all()]:
+            return "member"
+        if user in [mechanic.user for mechanic in Mechanic.objects.all()]:
+            return "mechanic"
 
     @staticmethod
     def get_user_staff(user_type, user):
@@ -81,6 +83,10 @@ class SignInView(APIView):
             return OperationsManagerSerializer(OperationsManager.objects.get(user=user)).data
         if user_type == "clerk":
             return ClerkSerializer(Clerk.objects.get(user=user)).data
+        if user_type == "member":
+            return MemberSerializer(Member.objects.get(user=user)).data
+        if user_type == "mechanic":
+            return MechanicSerializer(Mechanic.objects.get(user=user)).data
 
 
 class CreateUserView(APIView):
@@ -162,6 +168,8 @@ class CreateUserView(APIView):
             return Supervisor.objects.create(**data)
         if user_type == "Member":
             return Member.objects.create(**data)
+        if user_type == "Mechanic":
+            return Mechanic.objects.create(**data)
 
     @staticmethod
     def get_serialized_data(user_type, user_staff):
@@ -175,6 +183,8 @@ class CreateUserView(APIView):
             return SupervisorSerializer(user_staff)
         if user_type == "Member":
             return MemberSerializer(user_staff)
+        if user_type == "Mechanic":
+            return MechanicSerializer(user_staff)
 
 
 class CreateDefaultUserView(APIView):

@@ -100,6 +100,7 @@ export class FirstContent extends Component {
             <Menu.Item key="Clerk">Clerk</Menu.Item>
             <Menu.Item key="Supervisor">Supervisor</Menu.Item>
             <Menu.Item key="Member">Member</Menu.Item>
+            <Menu.Item key="Mechanic">Mechanic</Menu.Item>
         </Menu>
     );
 

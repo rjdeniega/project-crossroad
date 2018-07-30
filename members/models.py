@@ -47,6 +47,11 @@ class Clerk(Person):
     application_date = DateField()
 
 
+class Mechanic(Person):
+    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    application_date = DateField()
+
+
 class OperationsManager(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
