@@ -35,7 +35,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('members/', include(members_urls)),
     path('inventory/', include(inventory_urls)),
-    path('remittances/', include(remittance_urls))
+    path('remittances/', include(remittance_urls)),
+    path('remittance_report/', RemittanceReport.as_view()),
+
 ]
 
 if settings.DEBUG:

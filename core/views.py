@@ -22,6 +22,8 @@ from core.serializers import UserSerializer, PersonSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
 from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
     MemberSerializer, MechanicSerializer
+from remittances.models import Deployment, RemittanceForm
+from remittances.views import IterationUtilites
 
 
 class SignInView(APIView):
@@ -272,4 +274,25 @@ class StaffView(APIView):
             "managers": managers.data,
             "clerks": clerks.data,
             "supervisors": supervisors.data
+        }, status=status.HTTP_200_OK)
+
+
+class RemittanceReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = data['start_date']
+        end_date = data['end_date']
+
+        deployments = Deployment.objects.filter(shift_iteration__date__gte=start_date,
+                                                shift_iteration__date__lte=end_date)
+
+        report_items = IterationUtilites.get_report_items(deployments)
+        grand_total = RemittanceForm.objects.filter(deployment__shift_iteration__date__gte=start_date,
+                                                    deployment__shift_iteration__date__lte=end_date).aggregate(
+            Sum('total'))
+
+        return Response(data={
+            'grand_total': grand_total,
+            'report_items': report_items
         }, status=status.HTTP_200_OK)
