@@ -16,7 +16,7 @@ EDUCATIONAL_ATTAINMENT = [
     ('V', 'Vocational'),
     ('B', 'Bachelors Degree'),
     ('M', 'Masters Degree'),
-    ('D', 'Doctorate')
+
 ]
 SEX = [
     ('M', 'Male'),
@@ -67,7 +67,7 @@ class Member(Person):
     no_of_dependents = PositiveIntegerField()
     religion = CharField(max_length=64)
     annual_income = PositiveIntegerField()  # TODO replace with ranges
-    termination_date = DateField()
+    termination_date = DateField(null=True)
     BOD_resolution = CharField(max_length=64)
 
     @property

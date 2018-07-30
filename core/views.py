@@ -15,11 +15,13 @@ import json
 from django.contrib.auth.models import User
 from rest_framework import status
 from django.forms.models import model_to_dict
+from members.models import *
 
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
-from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer
+from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
+    MemberSerializer
 
 
 class SignInView(APIView):
@@ -117,7 +119,27 @@ class CreateUserView(APIView):
             "application_date": request.POST.get('application_date'),
             "photo": request.FILES.get('image')
         }
-        user_staff = CreateUserView.create_user_type(user, user_type, data)
+        member_data = {
+            "user": user,
+            "name": request.POST.get('name'),
+            "email": request.POST.get('email'),
+            "sex": request.POST.get('sex'),
+            "address": request.POST.get('address'),
+            "contact_no": request.POST.get('contact_no'),
+            "birth_date": request.POST.get('birth_date'),
+            "accepted_date": request.POST.get('accepted_date'),
+            "BOD_resolution": request.POST.get('BOD_resolution'),
+            "tin_number": request.POST.get('tin_number'),
+            "religion": request.POST.get('religion'),
+            "occupation": request.POST.get('occupation'),
+            "no_of_dependents": request.POST.get('no_of_dependents'),
+            "annual_income": request.POST.get('annual_income'),
+            "civil_status": request.POST.get('civil_status'),
+            "educational_attainment": request.POST.get('civil_status'),
+            "photo": request.FILES.get('image')
+        }
+        staff_data = data if user_type != "Member" else member_data
+        user_staff = CreateUserView.create_user_type(user, user_type, staff_data)
         print(model_to_dict(user_staff))
         # user_staff.photo = Image.open(photo)
         # user_staff.save()
@@ -138,6 +160,8 @@ class CreateUserView(APIView):
             return OperationsManager.objects.create(**data)
         if user_type == "Supervisor":
             return Supervisor.objects.create(**data)
+        if user_type == "Member":
+            return Member.objects.create(**data)
 
     @staticmethod
     def get_serialized_data(user_type, user_staff):
@@ -149,6 +173,8 @@ class CreateUserView(APIView):
             return OperationsManagerSerializer(user_staff)
         if user_type == "Supervisor":
             return SupervisorSerializer(user_staff)
+        if user_type == "Member":
+            return MemberSerializer(user_staff)
 
 
 class CreateDefaultUserView(APIView):

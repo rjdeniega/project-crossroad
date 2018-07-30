@@ -21,7 +21,9 @@
     padding: 20px;
     background: rgba(255, 255, 255, 1);
     /*background: rgba(81, 109, 133, 0.33);*/
-    box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);
+    /*box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);*/
+    box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);
+
     }
 
 .remittance-table {
@@ -29,7 +31,8 @@
     grid-column: 2 / 3;
     border-radius: 5px;
     background: rgba(255, 255, 255, 1);
-    box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);
+    /*box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);*/
+    box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);
 
     }
 

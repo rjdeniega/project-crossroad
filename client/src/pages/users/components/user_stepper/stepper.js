@@ -4,7 +4,7 @@
 import React, { Component } from "react"
 import '../../../../utilities/colorsFonts.css'
 import { Steps } from 'antd'
-import { Upload, Icon, Input, Button, message, Select, Menu, Dropdown } from 'antd'
+import { Upload, Icon, InputNumber, Input, Button, message, Select, Menu, Dropdown } from 'antd'
 import './style.css'
 import { postData, getData, postDataWithImage } from '../../../../network_requests/general'
 import moment from 'moment';
@@ -144,7 +144,17 @@ export class SecondContent extends Component {
         birth_date: "",
         image: null,
         application_date_object: moment('2015/01/01', dateFormat),
-        application_date: ""
+        application_date: "",
+        BOD_resolution: "",
+        educational_attainment: "",
+        occupation: "",
+        religion: "",
+        tin_number: "",
+        annual_income: "",
+        no_of_dependents: "",
+        civil_status: "",
+        accepted_date_object: moment('2015/01/01', dateFormat),
+        accepted_date: "",
     };
     //shortcut to instantiating one by one handleEmail, handleName, etc...
     // no need to understand just use haha
@@ -172,6 +182,11 @@ export class SecondContent extends Component {
         //this is asynchronous, it does not execute in order
         //if console.log is not in callback, it might execute before state is updated
     };
+    handleNumberFormChange = fieldName => value => {
+        return this.handleSelectChange(fieldName)(value);
+        //this is asynchronous, it does not execute in order
+        //if console.log is not in callback, it might execute before state is updated
+    };
 
     handleDateFormChange = (date, dateString) => this.setState({
         birth_date_object: date,
@@ -189,6 +204,10 @@ export class SecondContent extends Component {
     handleApplicationDateChange = (date, dateString) => this.setState({
         application_date_object: date,
         application_date: dateString
+    });
+    handleAcceptedDateChange = (date, dateString) => this.setState({
+        accepted_date_object: date,
+        accepted_date: dateString
     });
 
 
@@ -222,18 +241,75 @@ export class SecondContent extends Component {
             <Input onChange={this.handleFormChange("email")} value={this.state.email} className="user-input"
                    addonAfter=".com"
                    placeholder="Enter email address"/>
-            <Input onChange={this.handleFormChange("contact_no")} value={this.state.contact_no}
-                   className="user-input" addonBefore="+639"
-                   placeholder="Enter contact number"/>
+            <InputNumber onChange={this.handleNumberFormChange("contact_no")} value={this.state.contact_no}
+                         className="user-input" addonBefore="+639"
+                         placeholder="Enter contact number"/>
             <DatePicker onChange={this.handleApplicationDateChange} format={dateFormat}/>
             <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
         </div>
     );
     renderMemberContent = () => (
         <div>
-            something
+            <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
+            <Input onChange={this.handleFormChange("name")} value={this.state.name} className="user-input"
+                   type="text"
+                   placeholder="enter name"/>
+            <Select onChange={this.handleSelectChange("sex")} className="user-input" defaultValue="Male">
+                <Option value="M">Male</Option>
+                <Option value="F">Female</Option>
+            </Select>
+            <DatePicker onChange={this.handleDateFormChange} format={dateFormat}/>
+            <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
+                   type="text"
+                   placeholder="Enter address"/>
+            <Input onChange={this.handleFormChange("email")} value={this.state.email} className="user-input"
+                   addonAfter=".com"
+                   placeholder="Enter email address"/>
+            <InputNumber onChange={this.handleNumberFormChange("contact_no")} value={this.state.contact_no}
+                         className="user-input" addonBefore="+639"
+                         placeholder="Enter contact number"/>
+            <Input onChange={this.handleFormChange("BOD_resolution")} value={this.state.BOD_resolution}
+                   className="user-input"
+                   type="text"
+                   placeholder="Enter BOD resolution"/>
+            <InputNumber onChange={this.handleNumberFormChange("no_of_dependents")} value={this.state.no_of_dependents}
+                         className="user-input"
+                         type="text"
+                         placeholder="Enter number of dependents"/>
+            <Input onChange={this.handleFormChange("occupation")} value={this.state.occupation} className="user-input"
+                   type="text"
+                   placeholder="Enter Occupation"/>
+            <Input onChange={this.handleFormChange("religion")} value={this.state.religion} className="user-input"
+                   type="text"
+                   placeholder="Enter Religion resolution"/>
+            <Select onChange={this.handleSelectChange("civil_status")} className="user-input"
+                    defaultValue="Please select civil status">
+                <Option value="S">Single</Option>
+                <Option value="M">Married</Option>
+            </Select>
+            <Select onChange={this.handleSelectChange("educational_attainment")} className="user-input"
+                    defaultValue="Please select educational attainment">
+                <Option value="E">Elementary</Option>
+                <Option value="H">High School</Option>
+                <Option value="V">Vocational</Option>
+                <Option value="V">Bachelors Degree</Option>
+                <Option value="M">Masters Degree</Option>
+                <Option value="D">Doctorate</Option>
+            </Select>
+            <Input onChange={this.handleFormChange("tin_number")} value={this.state.tin_number} className="user-input"
+                   type="text"
+                   placeholder="Enter Tin Number"/>
+            <InputNumber onChange={this.handleNumberFormChange("annual_income")} value={this.state.annual_income}
+                         className="user-input"
+                         type="text"
+                         placeholder="Enter Annual Income"/>
+            <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
+                   type="text"
+                   placeholder="Enter address"/>
+            <DatePicker onChange={this.handleAcceptedDateChange} format={dateFormat}/>
+            <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
         </div>
-    )
+    );
 
     render() {
         return (

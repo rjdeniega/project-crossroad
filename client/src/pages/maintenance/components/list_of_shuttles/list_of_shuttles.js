@@ -32,7 +32,6 @@ export class ListOfShuttles extends Component {
             .then(response => response.json())
             .then(data => {
                 if (!data.error) {
-                    console.log(data.shuttles);
                     this.setState({
                         shuttles: data.shuttles
                     });
