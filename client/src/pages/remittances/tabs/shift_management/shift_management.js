@@ -116,12 +116,11 @@ export class ShiftManagementPane extends Component {
             "shuttle": this.state.assigned_shuttle,
         };
         console.log(this.state.selected_shift_type);
+        console.log(this.state.am_shift_drivers);
         if (this.state.selected_shift_type == "AM") {
             this.setState({
                 am_shift_drivers: [...this.state.am_shift_drivers, assignment]
-            }, () => {
-                console.log(this.state.am_shift_drivers);
-            });
+            }, console.log(this.state.am_shift_drivers));
         }
         else if (this.state.selected_shift_type == "PM") {
             this.setState({
@@ -168,15 +167,21 @@ export class ShiftManagementPane extends Component {
                 driver_selected: current,
                 selected_shift_type: "AM"
             });
-            let isChecked = false;
             //check if item is already checked
+            let isChecked = false;
             this.state.am_shift_drivers.map((item) => {
-                if (item["driver_id"] == this.state.driver_selected) {
-                    isChecked = true
+                if (item["driver"] == this.state.driver_selected) {
+                    isChecked = true;
                 }
             });
             if (!isChecked) {
                 this.showModal();
+            }else{
+                let index = this.state.am_shift_drivers.indexOf(this.state.driver_selected);
+                let array = this.state.am_shift_drivers.splice(index);
+                this.setState({
+                    am_shift_drivers: array
+                }, console.log(this.state.am_shift_drivers))
             }
         },
     };
@@ -190,12 +195,18 @@ export class ShiftManagementPane extends Component {
             let isChecked = false;
             //check if item is already checked
             this.state.pm_shift_drivers.map((item) => {
-                if (item["driver_id"] == this.state.driver_selected) {
+                if (item["driver"] == this.state.driver_selected) {
                     isChecked = true
                 }
             });
             if (!isChecked) {
                 this.showModal();
+            }else{
+                let index = this.state.pm_shift_drivers.indexOf(this.state.driver_selected);
+                let array = this.state.pm_shift_drivers.splice(index);
+                this.setState({
+                    pm_shift_drivers: array
+                }, console.log(this.state.pm_shift_drivers))
             }
         },
     };
@@ -209,12 +220,19 @@ export class ShiftManagementPane extends Component {
             let isChecked = false;
             //check if item is already checked
             this.state.mn_shift_drivers.map((item) => {
-                if (item["driver_id"] == this.state.driver_selected) {
+                if (item["driver"] == this.state.driver_selected) {
                     isChecked = true
                 }
             });
             if (!isChecked) {
                 this.showModal();
+            }else{
+                console.log("entered here");
+                let index = this.state.mn_shift_drivers.indexOf(this.state.driver_selected);
+                let array = this.state.mn_shift_drivers.splice(index);
+                this.setState({
+                    mn_shift_drivers: array
+                }, console.log(this.state.mn_shift_drivers))
             }
         },
     };

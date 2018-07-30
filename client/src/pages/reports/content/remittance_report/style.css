@@ -16,3 +16,6 @@
 .report-body p{
     grid-column: 2/3;
     }
+.report-body .remittance-table .ant-table-tbody{
+    overflow: scroll;
+    }

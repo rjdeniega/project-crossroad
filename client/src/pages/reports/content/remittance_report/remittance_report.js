@@ -190,7 +190,8 @@ export class RemittanceReport extends Component {
                     </Select>
                     <Button size="small" type="primary" icon="reload" onClick={this.resetFilters}>Reset Filters</Button>
                 </div>
-                <Table bordered size="medium"
+                <Table bordered size="small"
+                       pagination={false}
                        className="remittance-table"
                        columns={columns}
                        dataSource={this.state.filtered_transactions}
