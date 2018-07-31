@@ -652,7 +652,7 @@ export class SupervisorLastContent extends Component {
                     <Spin className="user-spinner" indicator={antIcon} size="large"/>
                     }
                 </div>
-                <Button type="primary" onClick={this.props.endShift()}>Tapusin ang shift</Button>
+                <Button type="primary" onClick={() => this.props.endShift(this.state.current_iteration.id)}>Tapusin ang shift</Button>
             </div>
         );
     }

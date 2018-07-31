@@ -268,6 +268,10 @@ export class SharesManagementPane extends Component {
     }
 }
 export class ProfilePane extends Component {
+    renderListItemPhoto = photoSrc => {
+        console.log("Photo src", photoSrc);
+        return photoSrc ? photoSrc : users
+    };
     render() {
         const { activeUser } = this.props;
         return (
@@ -275,7 +279,7 @@ export class ProfilePane extends Component {
                 {activeUser &&
                 <div className="container">
                     <div className="header-div">
-                        <img className="profile-image" src={activeUser.photo}/>
+                        <img className="profile-image" src={this.renderListItemPhoto(activeUser.photo)}/>
                         <div className="basic-info">
                             <div className="info-row"><b>Name:</b> {activeUser.name}</div>
                             <div className="info-row"><b>Contact Number:</b> {activeUser.contact_no}</div>

@@ -423,11 +423,11 @@ class TicketUtilities():
             deployment_details = TicketUtilities.get_consumed_with_assigned(deployment.id)
             remittance_details = RemittanceForm.objects.get(deployment=deployment)
             remittance = ReadRemittanceSerializer(remittance_details)
-            photo = deployment.driver.photo if deployment.driver.photo else None
+            photo = deployment.driver.photo.url if deployment.driver.photo else None
             final.append({
                 'deployment_id': deployment.id,
                 'driver': deployment.driver.name,
-                'driver_photo': photo.url,
+                'driver_photo': photo,
                 'ticket_specifics': deployment_details,
                 'remittance_details': remittance.data
             })

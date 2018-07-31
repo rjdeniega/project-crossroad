@@ -187,19 +187,27 @@ export class RemittanceReport extends Component {
                     return item
                 }
             });
-             this.setState({
-                 filtered_transactions: match,
-             });
+            this.setState({
+                filtered_transactions: match,
+            }, () => this.setState({
+                am_shift_total: this.getShiftTypeTotal("A"),
+                pm_shift_total: this.getShiftTypeTotal("P"),
+                grand_total: this.getGrandTotal("A")
+            }));
         }
-        if(fieldName == "shuttle"){
+        if (fieldName == "shuttle") {
             const match = this.state.filtered_transactions.filter(item => {
                 if (item.shuttle == value) {
                     return item
                 }
             });
-             this.setState({
-                 filtered_transactions: match,
-             });
+            this.setState({
+                filtered_transactions: match,
+            }, () => this.setState({
+                am_shift_total: this.getShiftTypeTotal("A"),
+                pm_shift_total: this.getShiftTypeTotal("P"),
+                grand_total: this.getGrandTotal("A")
+            }));
         }
     };
 
