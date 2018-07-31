@@ -149,7 +149,7 @@ export class RepairForm extends Component{
 
     render(){
         return(
-            <div>
+            <div style={{width: '100%'}}>
                 <br/>
                 <h2>Submit Checkup Request</h2>
                 <WrappedRepairForm handleOk={this.handleOk}

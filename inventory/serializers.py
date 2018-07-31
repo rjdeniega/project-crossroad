@@ -24,3 +24,21 @@ class RepairSerializer(ModelSerializer):
     class Meta:
         model = Repair
         fields = "__all__"
+
+
+class RepairProblemSerializer(ModelSerializer):
+    class Meta:
+        model = RepairProblem
+        fields = "__all__"
+
+
+class RepairFindingSerializer(ModelSerializer):
+    class Meta:
+        model = RepairFinding
+        fields = "__all__"
+
+
+class RepairModificationsSerializer(ModelSerializer):
+    class Meta:
+        model = RepairModifications
+        fields = "__all__"

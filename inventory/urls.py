@@ -11,5 +11,6 @@ inventory_urls = [
     # Shuttles & Maintenance URLS
     path('shuttles/', ShuttlesView.as_view()),
     path('shuttles/<int:pk>', ShuttlesView.as_view()),
-    path('shuttles/repairs/<int:pk>', RepairProblems.as_view())
+    path('shuttles/repairs/<int:pk>', RepairProblems.as_view()),
+    path('shuttles/repairs/specific/<int:pk>', ProblemsView.as_view())
 ]

@@ -14,7 +14,7 @@ export class MaintenancePage extends Component {
         return (
             <div className="body-wrapper" align="middle">
                 <Header />
-                <div className={'shuttles-div'} align="left">
+                <div className={'shuttles-div'} align="left" style={{overflowY: 'scroll'}}>
                     <div className='upper'>
                         <h1 className={'shuttles-title'}>Shuttles</h1>
                         <div  style={{marginLeft: 15, marginTop: 27}}>

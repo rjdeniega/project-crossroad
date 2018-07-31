@@ -150,3 +150,18 @@ class RepairProblems(APIView):
             repair.problems.add(rp)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ProblemsView(APIView):
+    @staticmethod
+    def get(request, pk):
+        repair = Repair.objects.get(id=pk)
+        problems = RepairProblemSerializer(repair.problems.all(), many=True)
+        findings = RepairFindingSerializer(repair.findings.all(), many=True)
+        modifications = RepairModificationsSerializer(repair.modifications.all(), many=True)
+
+        return Response(data={
+            'problems': problems.data,
+            'findings': findings.data,
+            'modifications': modifications.data,
+        }, status=status.HTTP_200_OK)

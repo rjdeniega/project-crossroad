@@ -12,7 +12,8 @@ export class Repairs extends Component{
         this.state = {
             shuttle: props.shuttle,
             visible: false,
-            currentPage: <RepairsTable shuttle={props.shuttle} />
+            currentPage: <RepairsTable shuttle={props.shuttle} />,
+            modalWidth: 1100
         }
     }
 
@@ -30,20 +31,25 @@ export class Repairs extends Component{
 
     handleClick = (e) => {
         let content;
+        let width;
         if (e.key === "repairForm") {
             content = <RepairForm requestSubmitted={this.requestSubmitted.bind(this)}
                                   shuttle={this.state.shuttle}/>;
+                              width = 650;
         } else {
-            content = <RepairsTable shuttle={this.state.shuttle} />
+            content = <RepairsTable shuttle={this.state.shuttle} />;
+            width = 1100;
         }
         this.setState({
             currentPage: content,
+            modalWidth: width
         });
     };
 
     requestSubmitted(){
         this.setState({
-            currentPage: <RepairsTable shuttle={this.state.shuttle} />
+            currentPage: <RepairsTable shuttle={this.state.shuttle} />,
+            modalWidth: 1100
         })
     }
 
@@ -55,7 +61,7 @@ export class Repairs extends Component{
                 <Modal title={"Shuttle " + shuttle.id + " repair information"}
                        visible={this.state.visible}
                        onCancel={this.handleCancel}
-                       footer={false} width={750}>
+                       footer={false} width={this.state.modalWidth}>
                     <Menu onClick={this.handleClick}
                           selectedKeys={[this.state.currentPage]}
                           mode="horizontal">
@@ -63,7 +69,7 @@ export class Repairs extends Component{
                             <Icon icon={wrench}/> Repair Information
                         </Menu.Item>
                         <Menu.Item key='repairForm'>
-                            <Icon icon={iosListOutline}/> Repair Form
+                            <Icon icon={iosListOutline}/> Repair Request
                         </Menu.Item>
                     </Menu>
                     <div className='repair-modal-body'>
