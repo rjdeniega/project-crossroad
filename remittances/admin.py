@@ -11,6 +11,7 @@ admin.site.register(Shift)
 admin.site.register(Deployment)
 admin.site.register(VoidTicket)
 admin.site.register(RemittanceForm)
+admin.site.register(ShiftIteration)
 
 
 @admin.register(BeepTransaction)

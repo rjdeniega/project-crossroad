@@ -12,7 +12,7 @@ export class Repairs extends Component{
         this.state = {
             shuttle: props.shuttle,
             visible: false,
-            currentPage: <RepairsTable shuttle={props.shuttle} />,
+            currentPage: 1,
             modalWidth: 1100
         }
     }
@@ -32,12 +32,11 @@ export class Repairs extends Component{
     handleClick = (e) => {
         let content;
         let width;
-        if (e.key === "repairForm") {
-            content = <RepairForm requestSubmitted={this.requestSubmitted.bind(this)}
-                                  shuttle={this.state.shuttle}/>;
-                              width = 650;
+        if (e.key === "1") {
+            content = 1;
+            width = 650;
         } else {
-            content = <RepairsTable shuttle={this.state.shuttle} />;
+            content = 2;
             width = 1100;
         }
         this.setState({
@@ -48,10 +47,22 @@ export class Repairs extends Component{
 
     requestSubmitted(){
         this.setState({
-            currentPage: <RepairsTable shuttle={this.state.shuttle} />,
+            currentPage: 1,
             modalWidth: 1100
         })
     }
+    renderCurrentPage = () => {
+        const { currentPage} = this.state;
+        switch (currentPage) {
+            case 1:
+                return <RepairsTable shuttle={this.state.shuttle} />;
+            case 2:
+                return <RepairForm requestSubmitted={this.requestSubmitted.bind(this)}
+                                  shuttle={this.props.shuttle}/>;
+            default:
+                return <RepairsTable shuttle={this.state.shuttle}/>;
+        }
+    };
 
     render() {
         const {shuttle} = this.state;
@@ -65,15 +76,15 @@ export class Repairs extends Component{
                     <Menu onClick={this.handleClick}
                           selectedKeys={[this.state.currentPage]}
                           mode="horizontal">
-                        <Menu.Item key='repairInfo' active>
+                        <Menu.Item key="1" active>
                             <Icon icon={wrench}/> Repair Information
                         </Menu.Item>
-                        <Menu.Item key='repairForm'>
+                        <Menu.Item key="2">
                             <Icon icon={iosListOutline}/> Repair Request
                         </Menu.Item>
                     </Menu>
                     <div className='repair-modal-body'>
-                        {this.state.currentPage}
+                        {this.renderCurrentPage()}
                     </div>
                 </Modal>
             </div>

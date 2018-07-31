@@ -36,7 +36,7 @@ class RepairFormInit extends React.Component{
 
     add = () => {
         const { form } = this.props;
-        console.log(this.props.shuttle)
+        console.log(this.props.shuttle);
         // can use data-binding to get
         const keys = form.getFieldValue('keys');
         const nextKeys = keys.concat(uuid);
@@ -56,13 +56,13 @@ class RepairFormInit extends React.Component{
               message.warning('Add problem fields!');
             }
             if (!err && typeof values['problems'] !== 'undefined') {
-                console.log(values['problems'])
+                console.log(values['problems']);
                 let cleaned_problems = values['problems']
                                 .filter(function(n){return n != undefined});
                 const data = {
                     problems: cleaned_problems,
                     date_reported: values['date_reported'].format('YYYY-MM-DD')
-                }
+                };
 
                 postData('inventory/shuttles/repairs/' + shuttle.id, data)
                     .then(response => response);

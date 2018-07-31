@@ -650,8 +650,10 @@ class FinishShiftIteration(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        shift_iteration = RemittanceUtilities.get_shift_iteration_sup(data['supervisor_id'])
+        # shift_iteration = RemittanceUtilities.get_shift_iteration_sup(data['supervisor_id'])
+        shift_iteration = ShiftIteration.objects.get(pk=data["iteration_id"])
         shift_iteration.finish_shift()
+        print(shift_iteration.status)
         return Response(data={
             'iteration_id': shift_iteration.id,
             'iteration_status': shift_iteration.status

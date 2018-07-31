@@ -652,7 +652,7 @@ export class SupervisorLastContent extends Component {
                     <Spin className="user-spinner" indicator={antIcon} size="large"/>
                     }
                 </div>
-                <Button type="primary" onClick={() => this.props.endShift()}>Tapusin ang shift</Button>
+                <Button type="primary" onClick={this.props.endShift()}>Tapusin ang shift</Button>
             </div>
         );
     }
@@ -706,10 +706,9 @@ export class SupervisorRemittancePage extends Component {
         // console.log(localStorage.remittance_page);
         this.setState({ current });
     };
-    endShift = () => {
-        const {id} = JSON.parse(localStorage.user);
+    endShift = (id) => {
         const data = {
-            "supervisor_id": id
+            "iteration_id": id
         };
         // localStorage.remittance_page = 0;
         postData('/remittances/shift_iteration/finish/',data).then(data => {

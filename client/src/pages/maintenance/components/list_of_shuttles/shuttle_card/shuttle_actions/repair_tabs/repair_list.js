@@ -13,7 +13,7 @@ export class RepairsTable extends Component{
             shuttle: props.shuttle,
             repairs: [],
             loadedRepair: '',
-        }
+        };
 
         this.columns = [{
             title: 'Date Requested',
@@ -62,17 +62,18 @@ export class RepairsTable extends Component{
     }
 
     componentDidMount(){
+        console.log("repair mounted");
         this.fetchRepairs();
     }
 
-    loadNewRepair(record){
-        console.log(record)
+    loadNewRepair = (record) => {
+        console.log(record);
         this.setState({
             loadedRepair: record
         }, () => console.log(this.state.loadedRepair))
-    }
+    };
 
-    fetchRepairs(){
+    fetchRepairs() {
         const {shuttle} = this.state;
         console.log(shuttle.id);
         fetch('inventory/shuttles/repairs/' + shuttle.id)
@@ -87,7 +88,7 @@ export class RepairsTable extends Component{
                         console.log(data.error)
                     }
             })
-    }
+    };
 
     render(){
         const {repairs} = this.state;

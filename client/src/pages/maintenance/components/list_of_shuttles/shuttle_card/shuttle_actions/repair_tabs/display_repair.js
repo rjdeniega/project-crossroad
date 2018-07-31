@@ -12,8 +12,9 @@ export class RepairDisplay extends Component{
 
 
     componentDidMount(){
-        const repair = this.props.loadedRepair
-        console.log(repair)
+        const repair = this.props.loadedRepair;
+        console.log(repair);
+        console.log(typeof repair !== 'undefined');
         if(typeof repair !== 'undefined'){
             fetch('inventory/shuttles/repairs/specific/' + repair.id)
                 .then(response => {
@@ -24,14 +25,19 @@ export class RepairDisplay extends Component{
         }
 
     }
+    showRepair = () => {
+        let repair = this.props.loadedRepair;
+        console.log(repair);
+    };
 
     render(){
-        let repair = this.props.loadedRepair
+        let repair = this.props.loadedRepair;
         if(typeof repair === 'undefined'){
             return(
                 <div>heee</div>
             )
         } else {
+            {this.showRepair()}
             return(
                 <div> awow </div>
             )
