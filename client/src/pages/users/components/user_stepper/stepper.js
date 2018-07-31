@@ -146,7 +146,7 @@ export class SecondContent extends Component {
         image: null,
         application_date_object: moment('2015/01/01', dateFormat),
         application_date: "",
-        BOD_resolution: "",
+        card_number: "",
         educational_attainment: "",
         occupation: "",
         religion: "",
@@ -269,10 +269,10 @@ export class SecondContent extends Component {
             <InputNumber onChange={this.handleNumberFormChange("contact_no")} value={this.state.contact_no}
                          className="user-input" addonBefore="+639"
                          placeholder="Enter contact number"/>
-            <Input onChange={this.handleFormChange("BOD_resolution")} value={this.state.BOD_resolution}
+            <InputNumber onChange={this.handleNumberFormChange("card_number")} value={this.state.card_number}
                    className="user-input"
                    type="text"
-                   placeholder="Enter BOD resolution"/>
+                   placeholder="Enter Card Number"/>
             <InputNumber onChange={this.handleNumberFormChange("no_of_dependents")} value={this.state.no_of_dependents}
                          className="user-input"
                          type="text"
@@ -282,7 +282,7 @@ export class SecondContent extends Component {
                    placeholder="Enter Occupation"/>
             <Input onChange={this.handleFormChange("religion")} value={this.state.religion} className="user-input"
                    type="text"
-                   placeholder="Enter Religion resolution"/>
+                   placeholder="Enter Religion"/>
             <Select onChange={this.handleSelectChange("civil_status")} className="user-input"
                     defaultValue="Please select civil status">
                 <Option value="S">Single</Option>

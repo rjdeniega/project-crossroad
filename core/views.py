@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -137,7 +139,7 @@ class CreateUserView(APIView):
             "contact_no": request.POST.get('contact_no'),
             "birth_date": request.POST.get('birth_date'),
             "accepted_date": request.POST.get('accepted_date'),
-            "BOD_resolution": request.POST.get('BOD_resolution'),
+            "card_number": request.POST.get('card_number'),
             "tin_number": request.POST.get('tin_number'),
             "religion": request.POST.get('religion'),
             "occupation": request.POST.get('occupation'),
@@ -170,7 +172,14 @@ class CreateUserView(APIView):
         if user_type == "Supervisor":
             return Supervisor.objects.create(**data)
         if user_type == "Member":
-            return Member.objects.create(**data)
+            card_number = data.pop('card_number')
+            member = Member.objects.create(**data)
+            id_card = IDCards()
+            id_card.member = member
+            id_card.register_date = datetime.now().date()
+            id_card.can = card_number
+            id_card.save()
+            return member
         if user_type == "Mechanic":
             return Mechanic.objects.create(**data)
 

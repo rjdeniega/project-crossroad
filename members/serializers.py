@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework.serializers import ModelSerializer
 from .models import *
 
@@ -62,6 +63,7 @@ class MemberSerializer(ModelSerializer):
     class Meta:
         model = Member
         fields = '__all__'
+
 
 
 class IDCardSerializer(ModelSerializer):

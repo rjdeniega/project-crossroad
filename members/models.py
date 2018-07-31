@@ -73,7 +73,6 @@ class Member(Person):
     religion = CharField(max_length=64)
     annual_income = PositiveIntegerField()  # TODO replace with ranges
     termination_date = DateField(null=True)
-    BOD_resolution = CharField(max_length=64)
 
     @property
     def id_cards(self):

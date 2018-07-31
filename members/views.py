@@ -123,6 +123,19 @@ class MemberView(APIView):
     @staticmethod
     def get(request):
         members = MemberSerializer(Member.objects.all(), many=True)
+        for item in members.data:
+            try:
+                id_card = IDCards.objects.filter(member=Member.objects.get(pk=item["id"])).first()
+            except ObjectDoesNotExist:
+                id_card = None
+
+            if id_card is not None:
+                card_number = id_card.can
+            else:
+                card_number = None
+
+            item["card_number"] = card_number
+
         return Response(data={
             "members": members.data
         }, status=status.HTTP_200_OK)

@@ -299,7 +299,7 @@ export class ProfilePane extends Component {
                         <div className="info-row-2"><b>Sex:</b> {activeUser.sex}</div>
                         <div className="info-row-1"><b>Address:</b> {activeUser.address}</div>
                         <div className="info-row-2"><b>Annual Income:</b> {activeUser.annual_income}</div>
-                        <div className="info-row-1"><b>BOD resolution:</b> {activeUser.BOD_resolution}</div>
+                        <div className="info-row-1"><b>Card Number:</b> {activeUser.card_number}</div>
                         <div className="info-row-2"><b>No of Dependents:</b> {activeUser.no_of_dependents}</div>
                     </div>
                 </div>
