@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@opuscapita/react-perfect-scrollbar": "^3.0.3",
     "antd": "latest",
     "moment": "latest",
     "rc-form": "latest",

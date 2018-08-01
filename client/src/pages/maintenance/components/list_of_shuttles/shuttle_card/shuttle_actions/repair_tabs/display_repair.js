@@ -4,6 +4,7 @@ import {List} from 'antd'
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_done} from 'react-icons-kit/md/ic_done'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
+import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 
 export class RepairDisplay extends Component{
     constructor(props){
@@ -44,40 +45,51 @@ export class RepairDisplay extends Component{
                     <h2>Please select a repair</h2>
                 ) : (
                     <div>
-                        <h3>Shuttle {repair.shuttle} - Repair {repair.id}</h3>
-
-                        <p>{this.checkStatus(repair.status)}</p>
-                        <List size='small' header={<div><h3>Problems</h3></div>}
-                              bordered>
-                              {problems.map(function(problem, index){
-                                  return (
-                                      <List.Item>{problem.description}</List.Item>
-                                  )
-                              })}
-                        </List>
-
-                        {findings.length == 0 ? '' :
-                            (
-                                <List size='small' header={<h3>Findings</h3>}
-                                      bordered>
-                                      {findings.map(function(finding, index){
+                        <PerfectScrollbar>
+                            <h3>Shuttle {repair.shuttle} - Repair {repair.id}</h3>
+                            <i>Date requested: {repair.date_requested}</i>
+                            <p>{this.checkStatus(repair.status)}</p>
+                            {!repair.labor_fee ? '': (
+                                <p><b>Labor Fee: </b>₱{repair.labor_fee}</p>
+                            )}
+                            {!repair.start_date ? '': (
+                                <p><b>Start date: </b>{repair.start_date}</p>
+                            )}
+                            {!repair.end_date ? '': (
+                                <p><b>End date: </b>{repair.end_date}</p>
+                            )}
+                            <List size='small' header={<div><h3>Problems</h3></div>}
+                                  bordered>
+                                  {problems.map(function(problem, index){
                                       return (
-                                          <List.Item>{finding.description}</List.Item>
-                                      )})}
-                                </List>
-                        )}
+                                          <List.Item>{problem.description}</List.Item>
+                                      )
+                                  })}
+                            </List>
 
-                        {modifications.length == 0 ? '' :
-                            (
-                                <List size='small' header={<h3>Items Used</h3>}
-                                      bordered>
-                                      {modifications.map(function(modification, index){
-                                      return (
-                                          <List.Item>{modification.quantity}" "
-                                              {modification.item_used}</List.Item>
-                                      )})}
-                                </List>
-                        )}
+                            {findings.length == 0 ? '' :
+                                (
+                                    <List size='small' header={<h3>Findings</h3>}
+                                          bordered>
+                                          {findings.map(function(finding, index){
+                                          return (
+                                              <List.Item>{finding.description}</List.Item>
+                                          )})}
+                                    </List>
+                            )}
+
+                            {modifications.length == 0 ? '' :
+                                (
+                                    <List size='small' header={<h3>Items Used</h3>}
+                                          bordered>
+                                          {modifications.map(function(modification, index){
+                                          return (
+                                              <List.Item>{modification.quantity}" "
+                                                  {modification.item_used}</List.Item>
+                                          )})}
+                                    </List>
+                            )}
+                        </PerfectScrollbar>
                     </div>
                 )}
             </div>

@@ -28,6 +28,7 @@ class ExtendedForm extends React.Component{
         e.preventDefault();
         let item = {
             name: this.props.name.value,
+            description: this.props.description.value,
             brand: this.props.brand.value,
             quantity: this.props.quantity.value,
             };
@@ -55,6 +56,7 @@ class ExtendedForm extends React.Component{
     render(){
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
         const nameError = isFieldTouched('name') && getFieldError('name');
+        const descriptionError = isFieldTouched('description') && getFieldError('description');
         const brandError = isFieldTouched('brand') && getFieldError('brand');
         const vendorError = isFieldTouched('vendor') && getFieldError('vendor');
         const unitpriceError = isFieldTouched('unit_price') && getFieldError('unit_price');
@@ -72,6 +74,18 @@ class ExtendedForm extends React.Component{
                             }]
                         })(
                             <Input autoFocus='true' className='item-name' type="text" placeholder="Item Name"/>
+                        )}
+                    </FormItem>
+                    <FormItem label="Item Description" className='item-description-label'
+                              validateStatus={descriptionError ? 'error' : ''}
+                              help={descriptionError || ''}>
+                        {getFieldDecorator('description',{
+                            rules: [{
+                                required: true,
+                                message: 'Please input description',
+                            }]
+                        })(
+                            <Input className='item-name' type="text" placeholder="Item Description"/>
                         )}
                     </FormItem>
                     <FormItem className='brand-label' label='Brand'
@@ -146,6 +160,10 @@ const WrappedItemForm = Form.create({
                 ...props.name,
                 value: props.name.value,
             }),
+            description: Form.createFormField({
+                ...props.description,
+                value: props.description.value,
+            }),
             brand: Form.createFormField({
                 ...props.brand,
                 value: props.brand.value,
@@ -171,6 +189,9 @@ export class ItemForm extends Component {
         formLayout: 'vertical',
         fields: {
             name: {
+                value: ''
+            },
+            description: {
                 value: ''
             },
             brand:{
@@ -208,4 +229,3 @@ export class ItemForm extends Component {
 
     }
 }
-
