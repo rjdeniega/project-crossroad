@@ -31,6 +31,7 @@ class ExtendedForm extends React.Component{
             description: this.props.description.value,
             brand: this.props.brand.value,
             quantity: this.props.quantity.value,
+            average_price: this.props.unit_price.value
             };
 
         let item_movement = {

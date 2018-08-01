@@ -54,6 +54,7 @@ class Item(SoftDeletionModel):
     description = CharField(max_length=255)
     quantity = PositiveIntegerField()
     brand = CharField(max_length=64)
+    average_price = DecimalField(max_digits=10, decimal_places=2)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
 

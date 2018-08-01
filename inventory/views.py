@@ -83,6 +83,8 @@ class QuantityRestock(APIView):
     def put(request, pk):
         quants = json.loads(request.body)
         item = Item.objects.get(id=pk)
+        average = quants['unit_price'] + item.average_price
+        item.average_price = average
         item.quantity = quants['new_quantity']
         item_movement = ItemMovement(item=Item.objects.get(id=item.id), type='B', quantity=quants['added_quantity'],
                                      unit_price=quants['unit_price'], vendor=quants['vendor'])

@@ -76,7 +76,8 @@ export class MechanicView extends Component{
                                                         <List.Item.Meta
                                                             avatar={<Icon icon={repair.status == 'NS' ?
                                                                             ic_access_time : ic_loop}
-                                                                        style={{color: '#E9C46A'}}/>}
+                                                                        style={{color: '#E9C46A'}}
+                                                                        size={24}/>}
                                                             title={<h4>Repair {repair.id} </h4>}
                                                             description={'Date requested ' + repair.date_requested}
                                                             align="left"/>
@@ -92,7 +93,13 @@ export class MechanicView extends Component{
                         <div style={div_style}>
                             {!loadedRepair ? (
                                 <h2>Select a repair to load</h2>
-                            ) : 'no'}
+                            ) : (
+                                <div align='left'>
+                                    <h2>Repair: {loadedRepair.id}</h2>
+                                    <h3>Shuttle {loadedRepair.shuttle}</h3>
+                                    <p><i>Date Requested: {loadedRepair.date_requested}</i></p>
+                                </div>
+                            )}
                         </div>
                     </Col>
                 </Row>
