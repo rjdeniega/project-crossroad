@@ -19,12 +19,22 @@ export class TransactionReport extends Component {
     state = {
         all_transactions: [],
         filtered_transactions: [],
+        members: [],
         start_date: null,
         start_date_object: moment('2015/01/01', dateFormat),
         end_date: null,
         end_date_object: moment('2015/01/01', dateFormat),
     };
     columns = [{
+        title: 'Card Number',
+        dataIndex: 'member.card_number',
+        key: 'member.card_number',
+        render: (text) => (
+            <div>
+                {text}
+            </div>
+        )
+    }, {
         title: 'Name',
         dataIndex: 'member.name',
         key: 'member.name',
@@ -103,6 +113,12 @@ export class TransactionReport extends Component {
                 filtered_transactions: this.state.all_transactions,
             })
         });
+        getData('/members/').then(data => {
+            console.log(data.members);
+            this.setState({
+                members: data.members,
+            })
+        });
 
     }
 
@@ -142,6 +158,24 @@ export class TransactionReport extends Component {
         }));
 
     };
+    filterBy = fieldName => value => {
+        // this function is to handle drop-downs
+        const state = { ...this.state };
+        state[fieldName] = value;
+        this.setState({
+            ...state
+        });
+        const match = this.state.filtered_transactions.filter(item => {
+            if (item.member.card_number == value) {
+                return item
+            }
+        });
+        this.setState({
+            filtered_transactions: match,
+        });
+
+    };
+
 
     render() {
         return (
@@ -150,8 +184,15 @@ export class TransactionReport extends Component {
                 {/*<DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>*/}
                 {/*<DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>*/}
                 {/*</div>*/}
-                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
-                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
+                <div className="report-filters">
+                    <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                    <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
+                    <Select onSelect={this.filterBy("member")} className="user-input" defaultValue="Select Member">
+                        {this.state.members.map(item => (
+                            <Option value={item.card_number}>{item.name + " - " + item.card_number}</Option>
+                        ))}
+                    </Select>
+                </div>
                 <Table bordered size="small"
                        pagination={false}
                        className="remittance-table"
