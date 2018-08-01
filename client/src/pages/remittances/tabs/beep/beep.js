@@ -46,7 +46,7 @@ const columns = [{
     key: 'action',
     render: (text, record) => (
         <Button className="view-button" type="ghost" icon="eye">
-            View Report
+            View Details
         </Button>
     ),
 }];

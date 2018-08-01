@@ -729,3 +729,29 @@ class BeepTransactionView(APIView):
         beep_shift.date = datetime.now()
         beep_shift.save()
         return beep_shift
+
+
+class CarwashTransactionView(APIView):
+    @staticmethod
+    def get(request, member_id):
+        print("enters here")
+        transactions = CarwashTransaction.objects.all()
+        carwash_transactions = [item for item in transactions if item.member.id == member_id]
+        serialized_carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions]
+        return Response(data={
+            "carwash_transactions": serialized_carwash_transactions
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        transaction_serializer = CarwashTransactionSerializer(data=data)
+        if transaction_serializer.is_valid():
+            transaction = transaction_serializer.create(validated_data=transaction_serializer.validated_data)
+            return Response(data={
+                "carwash_transaction": CarwashTransactionSerializer(transaction).data
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": transaction_serializer.errors
+            })
