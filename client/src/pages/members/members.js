@@ -14,7 +14,7 @@ import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider } from "antd";
+import { Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker } from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
@@ -22,6 +22,7 @@ import { BeepPane } from "../../pages/remittances/tabs/beep/beep";
 import { OverviewPane } from "../../pages/remittances/tabs/overview/overview";
 import { ShiftManagementPane } from "../../pages/remittances/tabs/shift_management/shift_management";
 import { getData, postData } from '../../network_requests/general'
+import moment from "moment";
 
 const TabPane = Tabs.TabPane;
 
@@ -60,12 +61,45 @@ const columns = [{
         </div>
     ),
 }];
-
+const carwash_columns = [{
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    )
+}, {
+    title: 'Receipt Number',
+    dataIndex: 'receipt',
+    key: 'receipt',
+    render: (text) => (
+        <div className="rem-status">
+            {text}
+        </div>
+    ),
+}, {
+    title: 'Transaction Cost',
+    dataIndex: 'total',
+    key: 'total',
+    render: (text) => (
+        <div className="rem-status">
+            <p><b>Php {parseInt(text)}</b></p>
+        </div>
+    ),
+}];
+const dateFormat = "YYYY-MM-DD";
 export class TransactionsPane extends Component {
     state = {
         activeUser: null,
         transactions: null,
         total_transactions: null,
+        total: null,
+        receipt: null,
+        visible: false,
+        date: null,
+        date_object: moment('2015/01/01', dateFormat)
     };
 
     componentDidMount() {
@@ -93,27 +127,115 @@ export class TransactionsPane extends Component {
                 total_transactions: data.total_transactions
             })
         });
+         getData('/remittances/get_carwash_transaction/' + activeUser.id).then(data => {
+            console.log(data);
+            this.setState({
+                carwash_transactions: data.carwash_transactions,
+            })
+        });
     }
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+    handleOk = (e) => {
+        const data = {
+            "member": this.state.activeUser.id,
+            "total": this.state.total,
+            "receipt": this.state.receipt,
+            "date": this.state.date,
+        };
+        postData('/remittances/carwash_transaction/',data).then(data => {
+            console.log(data)
+        });
+        this.setState({
+            visible: false,
+        });
+    };
+
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    };
+
+    formListener = fieldName => event => {
+        return this.handleFormChange(fieldName)(event);
+        //this is asynchronous, it does not execute in order
+        //if console.log is not in callback, it might execute before state is updated
+    };
+    handleFormChange = fieldName => value => {
+        // this function is to handle drop-downs
+        const state = { ...this.state };
+        state[fieldName] = value;
+        console.log(fieldName);
+        console.log(state[fieldName]);
+        this.setState({
+            ...state
+        });
+    };
+    handleDateChange = (date, dateString) => this.setState({
+        date_object: date,
+        date: dateString
+    });
+    handleReceipt = event => {
+        // this function is to handle drop-downs
+        this.setState({
+            receipt: event.target.value
+        })
+    };
 
     render() {
         const { activeUser } = this.props;
         return (
-            <div>
+            <div className="transactions">
                 {!activeUser &&
                 <div>
                     <img className="empty-image" src={emptyStateImage}/>
                     <p className="empty-message"> Please select a member to view their transactions </p>
                 </div>}
                 {activeUser &&
-                <div>
-                    <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
-                    <Table bordered size="medium"
-                           className="remittance-table"
-                           columns={columns}
-                           dataSource={this.state.transactions}
+                <div className="transaction-tables">
+                    <Modal
+                        title="Add a carwash transaction for this member"
+                        visible={this.state.visible}
+                        onOk={this.handleOk}
+                        onCancel={this.handleCancel}
+                    >
+                        <DatePicker className="user-input" onChange={this.handleDateChange} format={dateFormat}/>
+                        <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
+                        <InputNumber className="user-input" addOnBefore="Php" placeholder="value" onChange={this.formListener("total")}/>
+                    </Modal>
+                    <div className="table-container">
+                        <div className="tab-label">
+                            Beep transactions
+                        </div>
+                        <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
+                        <Table bordered size="medium"
+                               className="remittance-table"
+                               columns={columns}
+                               dataSource={this.state.transactions}
 
-                    />
+                        />
+                    </div>
+                    <div className="table-container">
+                        <div className="tab-label">
+                            Carwash transactions
+                            <Button onClick={this.showModal}>Add Transaction</Button>
+                        </div>
+                        <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
+                        <Table bordered size="medium"
+                               className="remittance-table"
+                               columns={carwash_columns}
+                               dataSource={this.state.carwash_transactions}
+
+                        />
+                    </div>
                 </div>
+
+
                 }
 
             </div>
@@ -272,6 +394,7 @@ export class ProfilePane extends Component {
         console.log("Photo src", photoSrc);
         return photoSrc ? photoSrc : users
     };
+
     render() {
         const { activeUser } = this.props;
         return (

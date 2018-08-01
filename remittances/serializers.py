@@ -229,3 +229,9 @@ class BeepTransactionSerializer(ModelSerializer):
     class Meta:
         model = BeepTransaction
         fields = '__all__'
+
+
+class CarwashTransactionSerializer(ModelSerializer):
+    class Meta:
+        model = CarwashTransaction
+        fields = '__all__'

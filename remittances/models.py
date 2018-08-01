@@ -164,3 +164,10 @@ class BeepTransaction(SoftDeletionModel):
     shift = ForeignKey(BeepShift, on_delete=models.CASCADE, null=True)
     card_number = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
+
+
+class CarwashTransaction(SoftDeletionModel):
+    date = DateField()
+    member = ForeignKey(Member,on_delete=models.CASCADE)
+    receipt = CharField(null=True, max_length=20)
+    total = DecimalField(default=0, max_digits=19, decimal_places=10)
