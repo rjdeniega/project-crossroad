@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Icon} from 'react-icons-kit'
-import {Table, Divider, Button} from 'antd'
+import {Table, Divider, Button, Row, Col} from 'antd'
 import {ic_pageview} from 'react-icons-kit/md/ic_pageview'
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_done} from 'react-icons-kit/md/ic_done'
@@ -101,16 +101,17 @@ export class RepairsTable extends Component{
             )
         }else{
             return(
-                <div height={{height: '100%', width: '100%'}}>
-                    <div style={{width: '40%'}}>
-                        <br/>
-                        <Table size={'small'} dataSource={repairs}
-                               columns={this.columns}
-                               loadNewRepair={this.loadNewRepair}/>
-                    </div>
-                    <div style={{width: '60%'}}>
-                        <RepairDisplay loadedRepair={this.state.loadedRepair}/>
-                    </div>
+                <div style={{paddingTop: 10}}>
+                    <Row gutter={16}>
+                        <Col span={10}>
+                            <Table size={'small'} dataSource={repairs}
+                                   columns={this.columns}
+                                   loadNewRepair={this.loadNewRepair}/>
+                        </Col>
+                        <Col span={14}>
+                            <RepairDisplay loadedRepair={this.state.loadedRepair}/>
+                        </Col>
+                    </Row>
                 </div>
             )
         }

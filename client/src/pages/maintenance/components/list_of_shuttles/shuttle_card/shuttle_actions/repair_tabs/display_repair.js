@@ -12,9 +12,8 @@ export class RepairDisplay extends Component{
 
 
     componentDidMount(){
-        const repair = this.props.loadedRepair;
-        console.log(repair);
-        console.log(typeof repair !== 'undefined');
+        let repair = this.props.loadedRepair
+        console.log(repair)
         if(typeof repair !== 'undefined'){
             fetch('inventory/shuttles/repairs/specific/' + repair.id)
                 .then(response => {
@@ -25,23 +24,23 @@ export class RepairDisplay extends Component{
         }
 
     }
-    showRepair = () => {
-        let repair = this.props.loadedRepair;
-        console.log(repair);
-    };
 
     render(){
-        let repair = this.props.loadedRepair;
-        if(typeof repair === 'undefined'){
+        let repair = this.props.loadedRepair
+        if(!repair.id){
             return(
-                <div>heee</div>
+                <div style={{border: 'solid', height: 250, width: '100%',
+                            borderColor: '#E8E8E8', borderRadius: 5,
+                            borderWidth: 1}} align='middle'>
+                    <h2>Please select a repair</h2>
+                </div>
             )
         } else {
-            {this.showRepair()}
             return(
-                <div> awow </div>
+                <div>
+                    {repair.id}
+                </div>
             )
         }
-
     }
 }

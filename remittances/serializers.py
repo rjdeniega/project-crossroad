@@ -42,7 +42,7 @@ class ScheduleSerializer(ModelSerializer):
     def create(self, validated_data):
         shifts_data = validated_data.pop('shifts')
         schedule = Schedule.objects.create(**validated_data)
-        schedule.end_date = schedule.start_date + timedelta(days=14)  # start_date + 14 days = 15 days
+        schedule.end_date = schedule.start_date + timedelta(days=15)  # start_date + 14 days = 15 days (changed to +15 since every 15 days)
         schedule.save()
         new_sched = Schedule.objects.get(id=schedule.id)  # gets django object to be used
         for shift_data in shifts_data:

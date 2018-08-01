@@ -34,10 +34,10 @@ export class Repairs extends Component{
         let width;
         if (e.key === "1") {
             content = 1;
-            width = 650;
+            width = 1100;
         } else {
             content = 2;
-            width = 1100;
+            width = 650;
         }
         this.setState({
             currentPage: content,
