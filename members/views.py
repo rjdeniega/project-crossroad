@@ -227,7 +227,8 @@ class MemberSharesView(APIView):
         data = {
             "member": Member.objects.get(pk=member_id),
             "value": body["value"],
-            "date_of_update": datetime.now().date()
+            "date_of_update": body["date"],
+            "receipt": body["receipt"],
         }
         share_serializer = ShareSerializer(data=data)
         print(share_serializer.is_valid())

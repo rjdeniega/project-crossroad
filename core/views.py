@@ -401,9 +401,7 @@ class TransactionByDate(APIView):
                     carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
                                             start_date.date() <= item.date <= end_date.date()]
                 else:
-                    print(start_date.date())
-                    print(carwash_transactions[0].date)
-                    print(start_date.date() == carwash_transactions[0].date)
+                
                     transactions = [item for item in transactions if start_date.date() == item.shift.date]
                     carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
                                             start_date.date() == item.date]

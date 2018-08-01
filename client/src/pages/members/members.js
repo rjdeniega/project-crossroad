@@ -127,13 +127,14 @@ export class TransactionsPane extends Component {
                 total_transactions: data.total_transactions
             })
         });
-         getData('/remittances/get_carwash_transaction/' + activeUser.id).then(data => {
+        getData('/remittances/get_carwash_transaction/' + activeUser.id).then(data => {
             console.log(data);
             this.setState({
                 carwash_transactions: data.carwash_transactions,
             })
         });
     }
+
     showModal = () => {
         this.setState({
             visible: true,
@@ -146,7 +147,7 @@ export class TransactionsPane extends Component {
             "receipt": this.state.receipt,
             "date": this.state.date,
         };
-        postData('/remittances/carwash_transaction/',data).then(data => {
+        postData('/remittances/carwash_transaction/', data).then(data => {
             console.log(data)
         });
         this.setState({
@@ -206,7 +207,8 @@ export class TransactionsPane extends Component {
                     >
                         <DatePicker className="user-input" onChange={this.handleDateChange} format={dateFormat}/>
                         <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
-                        <InputNumber className="user-input" addOnBefore="Php" placeholder="value" onChange={this.formListener("total")}/>
+                        <InputNumber className="user-input" addOnBefore="Php" placeholder="value"
+                                     onChange={this.formListener("total")}/>
                     </Modal>
                     <div className="table-container">
                         <div className="tab-label">
@@ -250,6 +252,8 @@ export class SharesManagementPane extends Component {
         total_shares: null,
         total_peso_value: null,
         visible: false,
+        date: null,
+        date_object: moment('2015/01/01', dateFormat)
     };
 
     componentDidMount() {
@@ -288,6 +292,8 @@ export class SharesManagementPane extends Component {
     handleConfirm = (e) => {
         const { activeUser } = this.props;
         const data = {
+            "date": this.state.date,
+            "receipt": this.state.receipt,
             "value": this.state.add_share_value
         };
         postData('/members/shares/' + activeUser.id, data).then(data => {
@@ -322,6 +328,16 @@ export class SharesManagementPane extends Component {
     handleShareChange = (value) => {
         this.setState({
             add_share_value: value
+        })
+    };
+    handleDateChange = (date, dateString) => this.setState({
+        date_object: date,
+        date: dateString
+    });
+    handleReceipt = event => {
+        // this function is to handle drop-downs
+        this.setState({
+            receipt: event.target.value
         })
     };
 
@@ -366,6 +382,8 @@ export class SharesManagementPane extends Component {
                         onOk={this.handleConfirm}
                         onCancel={this.handleCancel}
                     >
+                        <DatePicker className="user-input" onChange={this.handleDateChange} format={dateFormat}/>
+                        <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
                         <InputNumber onChange={this.handleShareChange}/>
                     </Modal>
                     <Button onClick={this.showModal}>Add Shares</Button>

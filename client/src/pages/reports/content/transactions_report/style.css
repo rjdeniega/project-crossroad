@@ -19,3 +19,6 @@
 .transaction-report-body .remittance-table .ant-table-tbody{
     overflow: scroll;
     }
+.report-modal .ant-modal-content{
+    width: 800px!important;
+    }
