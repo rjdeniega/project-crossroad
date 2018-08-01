@@ -348,6 +348,8 @@ class TransactionReport(APIView):
                 id_card = None
 
             if id_card is not None:
+                member_data = MemberSerializer(member).data
+                member_data["card_number"] = id_card.can
                 transactions = BeepTransaction.objects.filter(card_number=id_card.can)
                 carwash_transactions = [CarwashTransactionSerializer(item).data for item in
                                         CarwashTransaction.objects.all() if item.member == member]
@@ -356,7 +358,7 @@ class TransactionReport(APIView):
                 for item in serialized_transactions:
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
                 report_items.append({
-                    "member": MemberSerializer(member).data,
+                    "member": member_data,
                     "beep_transactions": serialized_transactions,
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([float(item["total"]) for item in serialized_transactions])
@@ -378,6 +380,7 @@ class TransactionByDate(APIView):
 
         report_items = []
         for member in Member.objects.all():
+            member_data = MemberSerializer(member).data
             try:
                 id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
             except ObjectDoesNotExist:
@@ -389,6 +392,7 @@ class TransactionByDate(APIView):
                 id_card = None
 
             if id_card is not None:
+                member_data["id_card"] = id_card.can
                 transactions = BeepTransaction.objects.filter(card_number=id_card.can)
                 carwash_transactions = [item for item in
                                         CarwashTransaction.objects.all() if item.member == member]
@@ -409,7 +413,7 @@ class TransactionByDate(APIView):
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
                 report_items.append({
-                    "member": MemberSerializer(member).data,
+                    "member": member_data,
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([float(item["total"]) for item in serialized_transactions.data])
