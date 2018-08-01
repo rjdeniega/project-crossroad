@@ -540,8 +540,7 @@ class AddDiscrepancy(APIView):
         data = json.loads(request.body)
         rem_form = RemittanceForm.objects.get(id=remittance_form_id)
         rem_form.discrepancy = (data['discrepancy'])
-        rem_form.total = float(rem_form.total) - float(rem_form.discrepancy)
-
+        # rem_form.total = float(rem_form.total) - float(rem_form.discrepancy)
         # rem_form.total = rem_form.total - rem_form.discrepancy
         rem_form.save()
         remittance = ReadRemittanceSerializer(rem_form)
@@ -741,7 +740,8 @@ class CarwashTransactionView(APIView):
         carwash_transactions = [item for item in transactions if item.member.id == member_id]
         serialized_carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions]
         return Response(data={
-            "carwash_transactions": serialized_carwash_transactions
+            "carwash_transactions": serialized_carwash_transactions,
+            "carwash_transaction_total": sum([float(item["total"]) for item in serialized_carwash_transactions])
         }, status=status.HTTP_200_OK)
 
     @staticmethod
