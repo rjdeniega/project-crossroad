@@ -235,7 +235,7 @@ export class SecondContent extends Component {
                 <Option value="M">Male</Option>
                 <Option value="F">Female</Option>
             </Select>
-            <DatePicker onChange={this.handleDateFormChange} format={dateFormat}/>
+            <DatePicker className="user-input" placeholder="Birth date" onChange={this.handleDateFormChange} format={dateFormat}/>
             <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
                    type="text"
                    placeholder="Enter address"/>
@@ -245,7 +245,7 @@ export class SecondContent extends Component {
             <InputNumber onChange={this.handleNumberFormChange("contact_no")} value={this.state.contact_no}
                          className="user-input" addonBefore="+639"
                          placeholder="Enter contact number"/>
-            <DatePicker onChange={this.handleApplicationDateChange} format={dateFormat}/>
+            <DatePicker className="user-input" placeholder="Application date" onChange={this.handleApplicationDateChange} format={dateFormat}/>
             <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
         </div>
     );
@@ -259,7 +259,7 @@ export class SecondContent extends Component {
                 <Option value="M">Male</Option>
                 <Option value="F">Female</Option>
             </Select>
-            <DatePicker onChange={this.handleDateFormChange} format={dateFormat}/>
+            <DatePicker className="user-input" placeholder="birthdate" onChange={this.handleDateFormChange} format={dateFormat}/>
             <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
                    type="text"
                    placeholder="Enter address"/>
@@ -307,7 +307,7 @@ export class SecondContent extends Component {
             <Input onChange={this.handleFormChange("address")} value={this.state.address} className="user-input"
                    type="text"
                    placeholder="Enter address"/>
-            <DatePicker onChange={this.handleAcceptedDateChange} format={dateFormat}/>
+            <DatePicker className="user-input" placeholder="accepted date" onChange={this.handleAcceptedDateChange} format={dateFormat}/>
             <Button onClick={() => this.props.handleSubmit(this.getDataFromState())}>Next</Button>
         </div>
     );

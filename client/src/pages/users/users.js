@@ -82,7 +82,7 @@ export class UsersPage extends Component {
                 <List.Item className="list-item">
                     <List.Item.Meta
                         avatar={this.renderListItemPhoto(item.photo)}
-                        title={<a className="list-title" href="https://ant.design">{item.name}</a>}
+                        title={<p className="list-title">{item.name}</p>}
                         description={<p className="list-description"> operations manager</p>}
                     />
                 </List.Item>

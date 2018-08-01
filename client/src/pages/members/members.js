@@ -92,7 +92,6 @@ const carwash_columns = [{
 const dateFormat = "YYYY-MM-DD";
 export class TransactionsPane extends Component {
     state = {
-        activeUser: null,
         transactions: null,
         total_transactions: null,
         total: null,
@@ -106,17 +105,18 @@ export class TransactionsPane extends Component {
         this.setState({
             activeUser: this.props.activeUser
         });
-        if (this.state.activeUser) {
+        if (this.props.activeUser) {
             this.fetchMemberTransactions();
             console.log("entered mount")
         }
     }
 
-    componentDidUpdate() {
-        if (this.props.activeUser && !this.state.transactions) {
-            this.fetchMemberTransactions();
-        }
-    }
+    // componentWillUpdate() {
+    //     console.log(this.props.activeUser);
+    //     if (this.props.activeUser) {
+    //         this.fetchMemberTransactions();
+    //     }
+    // }
 
     fetchMemberTransactions() {
         const { activeUser } = this.props;
@@ -131,6 +131,7 @@ export class TransactionsPane extends Component {
             console.log(data);
             this.setState({
                 carwash_transactions: data.carwash_transactions,
+                total_carwash_transactions: parseInt(data.carwash_transaction_total),
             })
         });
     }
@@ -142,7 +143,7 @@ export class TransactionsPane extends Component {
     };
     handleOk = (e) => {
         const data = {
-            "member": this.state.activeUser.id,
+            "member": this.props.activeUser.id,
             "total": this.state.total,
             "receipt": this.state.receipt,
             "date": this.state.date,
@@ -227,7 +228,7 @@ export class TransactionsPane extends Component {
                             Carwash transactions
                             <Button onClick={this.showModal}>Add Transaction</Button>
                         </div>
-                        <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
+                        <p> total transaction cost: <b>{this.state.total_carwash_transactions} </b></p>
                         <Table bordered size="medium"
                                className="remittance-table"
                                columns={carwash_columns}
@@ -246,7 +247,6 @@ export class TransactionsPane extends Component {
 }
 export class SharesManagementPane extends Component {
     state = {
-        activeUser: null,
         shares: null,
         add_share_value: null,
         total_shares: null,
@@ -260,17 +260,17 @@ export class SharesManagementPane extends Component {
         this.setState({
             activeUser: this.props.activeUser
         });
-        if (this.state.activeUser) {
+        if (this.props.activeUser) {
             this.fetchMemberShares();
             console.log("entered mount")
         }
     }
 
-    componentDidUpdate() {
-        if (this.props.activeUser && !this.state.shares) {
-            this.fetchMemberShares();
-        }
-    }
+    // componentDidUpdate() {
+    //     if (this.props.activeUser && !this.state.shares) {
+    //         this.fetchMemberShares();
+    //     }
+    // }
 
     fetchMemberShares() {
         const { activeUser } = this.props;
@@ -294,7 +294,7 @@ export class SharesManagementPane extends Component {
         const data = {
             "date": this.state.date,
             "receipt": this.state.receipt,
-            "value": this.state.add_share_value
+            "value": this.state.add_share_value,
         };
         postData('/members/shares/' + activeUser.id, data).then(data => {
             console.log(data.share);
@@ -501,7 +501,7 @@ export class MembersPage extends Component {
     assignUser = id => event => {
         const user = this.state.users.find(item => item.id == id);
         this.setState({
-            activeUser: user
+            activeUser: user,
         });
         // this.renderTab();
     };
