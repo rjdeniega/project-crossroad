@@ -3,7 +3,7 @@ from django.utils import timezone
 
 # Create your models here.
 from django.db.models import ForeignKey
-from django.db.models import CharField, PositiveIntegerField, DateField, IntegerField, TextField, DecimalField
+from django.db.models import CharField, PositiveIntegerField, DateField, IntegerField, TextField, DecimalField, BooleanField
 from django.db.models import ManyToManyField
 
 from core.models import SoftDeletionModel
@@ -54,6 +54,7 @@ class Item(SoftDeletionModel):
     description = CharField(max_length=255)
     quantity = PositiveIntegerField()
     brand = CharField(max_length=64)
+    consumable = BooleanField()
     average_price = DecimalField(max_digits=10, decimal_places=2)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
@@ -86,6 +87,7 @@ class RepairModifications(SoftDeletionModel):
     item_used = ForeignKey(Item, on_delete=models.CASCADE)
     quantity = PositiveIntegerField()
     description = TextField()
+    used_up = BooleanField()
 
 
 class Repair(SoftDeletionModel):

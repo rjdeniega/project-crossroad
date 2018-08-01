@@ -3,7 +3,7 @@
  */
 import React, {Component} from "react"
 import '../../../../utilities/colorsFonts.css'
-import {Form, Input, Button, message, InputNumber} from 'antd'
+import {Form, Input, Button, message, InputNumber, Checkbox} from 'antd'
 import './style.css'
 import { postData } from "../../../../network_requests/general";
 
@@ -18,7 +18,16 @@ class ExtendedForm extends React.Component{
     constructor(props){
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.state = {
+            consumable: false,
+        }
     }
+
+    toggleChecked = () => {
+        this.setState({ consumable: !this.state.consumable });
+
+    }
+
 
     componentDidMount(){
         this.props.form.validateFields();
@@ -31,7 +40,8 @@ class ExtendedForm extends React.Component{
             description: this.props.description.value,
             brand: this.props.brand.value,
             quantity: this.props.quantity.value,
-            average_price: this.props.unit_price.value
+            average_price: this.props.unit_price.value,
+            consumable: this.state.consumable,
             };
 
         let item_movement = {
@@ -140,6 +150,13 @@ class ExtendedForm extends React.Component{
                                     formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
                         )}
                     </FormItem>
+                    <FormItem className='consumable-label'>
+                        {getFieldDecorator('consumable', {
+                            valuePropName: 'checked',
+                        })(
+                            <Checkbox className='consumable' onChange={this.toggleChecked}>Consumable</Checkbox>
+                        )}
+                    </FormItem>
                     <FormItem>
                         <Button type='primary' htmlType='submit' className='item_submit'
                                 disabled={hasErrors(getFieldsError())}>Submit</Button>
@@ -181,6 +198,10 @@ const WrappedItemForm = Form.create({
                 ...props.quantity,
                 value: props.quantity.value,
             }),
+            consumable: Form.createFormField({
+                ...props.consumable,
+                value: props.consumable.value,
+            })
         }
     },
 })(ExtendedForm);
@@ -205,6 +226,9 @@ export class ItemForm extends Component {
                 value: ''
             },
             quantity:{
+                value: ''
+            },
+            consumable: {
                 value: ''
             }
         }

@@ -79,7 +79,7 @@ export class RepairDisplay extends Component{
                                           bordered>
                                           {modifications.map(function(modification, index){
                                           return (
-                                              <List.Item>{modification.quantity}" "
+                                              <List.Item>{modification.quantity} &nbsp;
                                                   {modification.item_used}</List.Item>
                                           )})}
                                     </List>
