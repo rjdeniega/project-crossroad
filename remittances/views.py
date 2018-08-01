@@ -541,7 +541,7 @@ class AddDiscrepancy(APIView):
         rem_form = RemittanceForm.objects.get(id=remittance_form_id)
         rem_form.discrepancy = (data['discrepancy'])
         rem_form.total = float(rem_form.total) - float(rem_form.discrepancy)
-        
+
         # rem_form.total = rem_form.total - rem_form.discrepancy
         rem_form.save()
         remittance = ReadRemittanceSerializer(rem_form)

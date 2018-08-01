@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty state record.png'
 import { RemittanceList } from '../../components/remittance_list/remittance_list'
-import { List, Table, Divider, Button, Avatar, Icon, Modal } from 'antd'
+import { List, Table, Divider, Button, Avatar, Icon, Modal, Input } from 'antd'
 import { eye } from 'react-icons-kit/fa/eye'
 import { getData } from '../../../../network_requests/general'
 import { RemittanceForm } from '../../components/remittance_form/remittance_form'
@@ -122,9 +122,9 @@ export class TicketingPane extends Component {
                 discrepancy: parseInt(form.remittance_details.discrepancy),
             };
             array.push(
-                <div>
-                    <RemittanceForm key={form.deployment_id} className="remittance-form" {...props}/>
-                    <Input disabled={true} placeholder={"discrepancies: " + props.discrepancy}/>
+                <div key={form.deployment_id}>
+                    <RemittanceForm className="remittance-form" {...props}/>
+                    <Input className="discrepancy-row" disabled={true} placeholder={"discrepancies: " + props.discrepancy + "Php"}/>
                 </div>
             );
             selected.push(form)

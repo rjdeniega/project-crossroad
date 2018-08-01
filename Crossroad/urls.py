@@ -39,6 +39,7 @@ urlpatterns = [
     path('remittance_report/', RemittanceReport.as_view()),
     path('shares_report/', SharesReport.as_view()),
     path('transaction_report/', TransactionReport.as_view()),
+    path('transaction_report_by_date/', TransactionByDate.as_view()),
 
 ]
 

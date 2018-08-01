@@ -7,7 +7,7 @@ import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
 import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
-import { getData } from '../../../../network_requests/general'
+import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
@@ -34,22 +34,32 @@ export class TransactionReport extends Component {
             </div>
         )
     }, {
-        title: 'Number of Transactions',
+        title: 'Beep Transactions',
         dataIndex: 'no_of_transactions',
         key: 'no_of_transactions',
         render: (text, record) => (
             <div>
-                {this.getNumberOfTransactions(record.member.id)}
+                {"Php " + this.getNumberOfBeepTransactions(record.member.id)}
             </div>
         ),
     },
         {
-            title: 'Transaction Cost',
+            title: 'Carwash Transactions',
+            dataIndex: 'no_of_transactions',
+            key: 'no_of_transactions',
+            render: (text, record) => (
+                <div>
+                    {"Php " + this.getNumberOfCarwashTransactions(record.member.id)}
+                </div>
+            ),
+        },
+        {
+            title: 'Transactions Total',
             dataIndex: 'total_transactions',
             key: 'total_transactions',
-            render: (text) => (
+            render: (text, record) => (
                 <div className="rem-status">
-                    <p><b>Php {text}</b></p>
+                    <p><b>Php {this.getGrandTotal(record.member.id)}</b></p>
                 </div>
             ),
         },];
@@ -58,18 +68,26 @@ export class TransactionReport extends Component {
         this.fetchTransactions()
     }
 
-    getNumberOfTransactions = (id) => {
-        const array = this.state.all_transactions.filter(item => item.member.id == id).map(item => item.transactions);
-        const checker = array.filter(item => item!=null);
-        console.log(checker);
-        return checker.length
+    getNumberOfBeepTransactions = (id) => {
+        const array = this.state.all_transactions.filter(item => item.member.id == id).map(item => item.beep_transactions);
+        // const checker = array.filter(item => item != null);
+        // console.log(checker);
+        // console.log(checker[0]);
+        const values = array[0].map(item => item.total);
+        return parseInt(values.reduce((a, b) => a + b, 0));
     };
-    getGrandTotal = () => {
-        console.log("enters here");
-        const array = this.state.filtered_transactions.map(item => {
-            return item.total
-        });
-        return array.reduce((a, b) => a + b, 0)
+    getNumberOfCarwashTransactions = (id) => {
+        const array = this.state.all_transactions.filter(item => item.member.id == id).map(item => item.carwash_transactions);
+        // const checker = array.filter(item => item != null);
+        // console.log(checker);
+        // console.log(checker[0]);
+        const values = array[0].map(item => item.total);
+        return parseInt(values.reduce((a, b) => a + b, 0));
+    };
+    getGrandTotal = (id) => {
+        let beep = this.getNumberOfBeepTransactions(id);
+        let carwash = this.getNumberOfCarwashTransactions(id);
+        return parseInt(beep + carwash)
     };
     getShiftTypeTotal = (type) => {
         const array = this.state.filtered_transactions.filter(item => item.shift_type == type).map(item => item.total);
@@ -77,8 +95,8 @@ export class TransactionReport extends Component {
     };
 
     fetchTransactions() {
-        console.log("entered transactions");
         getData('/transaction_report/').then(data => {
+            console.log(data.report_items);
             this.setState({
                 all_transactions: data.report_items,
             }), this.setState({
@@ -89,43 +107,30 @@ export class TransactionReport extends Component {
     }
 
     handleStartDateChange = (date, dateString) => {
-        const match = this.state.all_transactions.filter(item => {
-            if (item.date == dateString) {
-                return item;
-            }
+        const data = {
+            "start_date": dateString
+        };
+
+        postData('/transaction_report_by_date/', data).then(data => {
+            this.setState({
+                all_transactions: data.report_items
+            })
         });
         this.setState({
-            filtered_transactions: match,
-            start_date_object: date,
             start_date: dateString
-        }, () => this.setState({
-            am_shift_total: this.getShiftTypeTotal("A"),
-            pm_shift_total: this.getShiftTypeTotal("P"),
-            grand_total: this.getGrandTotal("A")
-        }))
+        });
+
     };
     handleEndDateChange = (date, dateString) => {
-        const match = this.state.all_transactions.filter(item => {
-            let start_date = this.state.start_date;
-            let end_date = dateString;
-            let item_date = item.date;
-
-            console.log(item_date, start_date, end_date);
-            if (moment(item_date).isAfter(start_date) || moment(item_date).isSame(start_date) &&
-                moment(item_date).isBefore(end_date) || moment(item_date).isSame(end_date)
-            ) {
-                return item;
-            }
-        });
-        this.setState({
-            filtered_transactions: match,
-            start_date_object: date,
-            start_date: dateString
-        }, () => this.setState({
-            am_shift_total: this.getShiftTypeTotal("A"),
-            pm_shift_total: this.getShiftTypeTotal("P"),
-            grand_total: this.getGrandTotal("A")
-        }))
+        const data = {
+            "start_date": this.state.start_date,
+            "end_date": this.state.end_date,
+        };
+        postData('/transaction_report_by_date/', data).then(data => {
+            this.setState({
+                all_transactions: data.report_items
+            })
+        })
     };
     resetFilters = () => {
         this.setState({
@@ -142,9 +147,11 @@ export class TransactionReport extends Component {
         return (
             <div className="transaction-report-body">
                 {/*<div className="report-filters">*/}
-                    {/*<DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>*/}
-                    {/*<DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>*/}
+                {/*<DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>*/}
+                {/*<DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>*/}
                 {/*</div>*/}
+                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <Table bordered size="small"
                        pagination={false}
                        className="remittance-table"
