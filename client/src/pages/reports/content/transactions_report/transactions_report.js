@@ -124,7 +124,7 @@ export class TransactionReport extends Component {
     handleEndDateChange = (date, dateString) => {
         const data = {
             "start_date": this.state.start_date,
-            "end_date": this.state.end_date,
+            "end_date": dateString,
         };
         postData('/transaction_report_by_date/', data).then(data => {
             this.setState({

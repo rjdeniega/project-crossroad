@@ -372,7 +372,7 @@ class TransactionByDate(APIView):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
         if "end_date" in request.data:
-            end_date = datetime.strptime(data["end_date"], '%Y-%m-%d')
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
         else:
             end_date = None
 
