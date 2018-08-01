@@ -111,13 +111,6 @@ const DRIVER_TABS = [
 ];
 const CLERK_OM_TABS = [
     {
-        name: "Drivers",
-        key: "drivers",
-        path: '/drivers',
-        component: RemittancePage,
-        image: u1F46E
-    },
-    {
         name: "Remittances",
         key: "remittances",
         path: '/remittances',
