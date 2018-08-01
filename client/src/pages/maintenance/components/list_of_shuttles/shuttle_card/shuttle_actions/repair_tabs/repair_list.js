@@ -69,13 +69,10 @@ export class RepairsTable extends Component{
     }
 
     componentDidMount(){
-        console.log("repair mounted");
         this.fetchRepairs();
     }
 
     loadNewRepair = (record) => {
-        console.log(record);
-
         fetch('inventory/shuttles/repairs/specific/' + record.id)
             .then(response => {
                 return response;

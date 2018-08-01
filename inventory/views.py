@@ -165,3 +165,15 @@ class ProblemsView(APIView):
             'findings': findings.data,
             'modifications': modifications.data,
         }, status=status.HTTP_200_OK)
+
+
+class MechanicRepairs(APIView):
+    @staticmethod
+    def get(request):
+        repairs = RepairSerializer(Repair.objects.all()
+                                        .exclude(status='C')
+                                        .order_by('-date_requested'), many=True)
+
+        return Response(data={
+            'repairs': repairs.data
+        }, status=status.HTTP_200_OK)

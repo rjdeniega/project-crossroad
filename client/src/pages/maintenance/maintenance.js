@@ -8,6 +8,7 @@ import '../../utilities/colorsFonts.css'
 import './style.css'
 import {ListOfShuttles} from "./components/list_of_shuttles/list_of_shuttles";
 import {AddShuttle} from "./components/add_shuttle/add_shuttle";
+import {MechanicView} from './components/mechanic_view'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 
 export class MaintenancePage extends Component {
@@ -16,8 +17,9 @@ export class MaintenancePage extends Component {
         return (
             <div className="body-wrapper" align="middle">
                 <Header />
-                {user_type == 'mechanic' ? '':
-                (
+                {user_type == 'mechanic' ? (
+                    <MechanicView/>
+                ):(
                     <div className={'shuttles-div'} align="left"
                         style={{overflowY: 'hidden', overflowX: 'hidden'}}>
                         <PerfectScrollbar>
