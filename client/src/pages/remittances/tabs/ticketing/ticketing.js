@@ -118,10 +118,14 @@ export class TicketingPane extends Component {
                 km_start: parseInt(form.remittance_details.km_from),
                 km_end: parseInt(form.remittance_details.km_to),
                 others: parseInt(form.remittance_details.other_cost),
-                fuel: parseInt(form.remittance_details.fuel_cost)
+                fuel: parseInt(form.remittance_details.fuel_cost),
+                discrepancy: parseInt(form.remittance_details.discrepancy),
             };
             array.push(
-                <RemittanceForm key={form.deployment_id} className="remittance-form" {...props}/>
+                <div>
+                    <RemittanceForm key={form.deployment_id} className="remittance-form" {...props}/>
+                    <Input disabled={true} placeholder={"discrepancies: " + props.discrepancy}/>
+                </div>
             );
             selected.push(form)
 

@@ -15,6 +15,7 @@ remittance_urls = [
     path('remittance_form/', RemittanceFormView.as_view()),
     path('remittance_form/confirm', ConfirmRemittanceForm.as_view()),
     path('remittance_form/pending/<int:supervisor_id>', ConfirmRemittanceForm.as_view()),
+    path('remittance_form/add_discrepancy/<int:remittance_form_id>', AddDiscrepancy.as_view()),
     path('get_carwash_transaction/<int:member_id>', CarwashTransactionView.as_view()),
     path('carwash_transaction/', CarwashTransactionView.as_view()),
     path('shift_iteration/', ShiftIterationView.as_view()),

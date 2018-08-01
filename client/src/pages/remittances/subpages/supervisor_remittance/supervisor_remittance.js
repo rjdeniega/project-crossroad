@@ -552,8 +552,8 @@ export class SupervisorLastContent extends Component {
                 );
                 console.log(remittances);
                 this.setState({
-                    remittances : remittances,
-                    current_iteration : data.current_iteration
+                    remittances: remittances,
+                    current_iteration: data.current_iteration
                 });
             }
             else {
@@ -589,12 +589,19 @@ export class SupervisorLastContent extends Component {
             km_start: parseInt(item.remittance_details.km_from),
             km_end: parseInt(item.remittance_details.km_to),
             fuel: parseInt(item.remittance_details.fuel_cost),
-            others: parseInt(item.remittance_details.other_cost)
+            others: parseInt(item.remittance_details.other_cost),
+            discrepancy: parseInt(item.remittance_details.discrepancy),
+            remittance_id: parseInt(item.remittance_details.id),
         });
     };
 
     handleConfirm = (e) => {
-        console.log(e);
+        const data = {
+            "discrepancy": this.state.discrepancy
+        };
+        postData('/remittances/remittance_form/add_discrepancy/' + this.state.remittance_id,data).then(data => {
+            console.log(data);
+        });
         this.setState({
             visible: false,
         });
@@ -605,6 +612,12 @@ export class SupervisorLastContent extends Component {
         this.setState({
             visible: false,
         });
+    };
+    handleDiscrepancyChange = event => {
+        // this function is to handle drop-downs
+        this.setState({
+            discrepancy: event.target.value
+        })
     };
 
     renderDriversList = () => ( <List
@@ -645,6 +658,10 @@ export class SupervisorLastContent extends Component {
                     onCancel={this.handleCancel}
                 >
                     <RemittanceForm {...this.state}/>
+                    <div className="discrepancy-row">
+                        <p> Ilagay dito ang kulang na pera sa remittance </p>
+                        <Input value={this.state.discrepancy} onChange={this.handleDiscrepancyChange}/>
+                    </div>
                 </Modal>
                 <div className="driver-list-wrapper">
                     {remittances && this.renderDriversList()}
@@ -652,7 +669,8 @@ export class SupervisorLastContent extends Component {
                     <Spin className="user-spinner" indicator={antIcon} size="large"/>
                     }
                 </div>
-                <Button type="primary" onClick={() => this.props.endShift(this.state.current_iteration.id)}>Tapusin ang shift</Button>
+                <Button type="primary" onClick={() => this.props.endShift(this.state.current_iteration.id)}>Tapusin ang
+                    shift</Button>
             </div>
         );
     }
@@ -711,13 +729,14 @@ export class SupervisorRemittancePage extends Component {
             "iteration_id": id
         };
         // localStorage.remittance_page = 0;
-        postData('/remittances/shift_iteration/finish/',data).then(data => {
-            if(!data.error){
+        postData('/remittances/shift_iteration/finish/', data).then(data => {
+            if (!data.error) {
                 message.success("Natapos na ang iyong shift")
-            }else{
+            }
+            else {
                 console.log(data)
             }
-        }).catch(error=> console.log(error));
+        }).catch(error => console.log(error));
 
         this.setState({ current: 0 });
     };
