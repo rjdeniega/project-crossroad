@@ -9,11 +9,6 @@ import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 export class RepairDisplay extends Component{
     constructor(props){
         super(props);
-        this.state = {
-            problems: null,
-            findings: null,
-            modifications: null
-        }
     }
 
     checkStatus(status){
