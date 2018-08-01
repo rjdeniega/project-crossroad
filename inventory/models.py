@@ -51,6 +51,7 @@ class Shuttle(SoftDeletionModel):
 
 class Item(SoftDeletionModel):
     name = CharField(max_length=64)
+    description = CharField(max_length=255)
     quantity = PositiveIntegerField()
     brand = CharField(max_length=64)
     created = models.DateTimeField(editable=False, null=True)

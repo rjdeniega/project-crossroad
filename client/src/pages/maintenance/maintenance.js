@@ -8,22 +8,30 @@ import '../../utilities/colorsFonts.css'
 import './style.css'
 import {ListOfShuttles} from "./components/list_of_shuttles/list_of_shuttles";
 import {AddShuttle} from "./components/add_shuttle/add_shuttle";
+import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 
 export class MaintenancePage extends Component {
     render() {
+        const user_type = JSON.parse(localStorage.user_type);
         return (
             <div className="body-wrapper" align="middle">
                 <Header />
-                <div className={'shuttles-div'} align="left" style={{overflowY: 'scroll'}}>
-                    <div className='upper'>
-                        <h1 className={'shuttles-title'}>Shuttles</h1>
-                        <div  style={{marginLeft: 15, marginTop: 27}}>
-                            <AddShuttle/>
-                        </div>
+                {user_type == 'mechanic' ? '':
+                (
+                    <div className={'shuttles-div'} align="left"
+                        style={{overflowY: 'hidden', overflowX: 'hidden'}}>
+                        <PerfectScrollbar>
+                            <div className='upper'>
+                                <h1 className={'shuttles-title'}>Shuttles</h1>
+                                <div  style={{marginLeft: 15, marginTop: 27}}>
+                                    <AddShuttle/>
+                                </div>
+                            </div>
+                            <Divider/>
+                            <ListOfShuttles/>
+                        </PerfectScrollbar>
                     </div>
-                    <Divider/>
-                    <ListOfShuttles/>
-                </div>
+                )}
             </div>
         );
     }

@@ -346,13 +346,22 @@ class EditableTable extends React.Component {
             {
                 title: 'Name',
                 dataIndex: 'name',
-                width: 300,
+                width: 200,
                 key: 'name',
                 editable: true,
                 defaultSortOrder: 'ascend',
                 sorter: (a, b) => {
                     return a.name.localeCompare(b.name)
                 },
+            }, {
+                title: 'Description',
+                dataIndex: 'description',
+                key: 'description',
+                width: 300,
+                sorter: (a, b) => {
+                    return a.brand.localeCompare(b.description)
+                },
+                editable: true,
             }, {
                 title: 'Brand',
                 dataIndex: 'brand',
