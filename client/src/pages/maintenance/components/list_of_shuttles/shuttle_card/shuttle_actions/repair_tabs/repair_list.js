@@ -4,6 +4,7 @@ import {Table, Divider, Button, Row, Col} from 'antd'
 import {ic_pageview} from 'react-icons-kit/md/ic_pageview'
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_done} from 'react-icons-kit/md/ic_done'
+import {ic_loop} from 'react-icons-kit/md/ic_loop'
 import {RepairDisplay} from './display_repair'
 
 export class RepairsTable extends Component{
@@ -13,6 +14,9 @@ export class RepairsTable extends Component{
             shuttle: props.shuttle,
             repairs: [],
             loadedRepair: '',
+            problems: '',
+            findings: '',
+            modifications: '',
         };
 
         this.columns = [{
@@ -30,19 +34,22 @@ export class RepairsTable extends Component{
                             <p style={{color: '#000000'}}>
                                 <Icon icon={ic_access_time}
                                       size={24}
-                                      style={{ color:'#E9C46A'}}/>
-                                 Not Started</p>
+                                      style={{ color:'#E9C46A', verticalAlign: 'middle'}}/>
+                                      &ensp;Not Started</p>
                         </span>
                     )
                 } else if (record === 'IP'){
                     return(
-                        <span>In Progress</span>
+                        <span><Icon icon={ic_loop} size={24}
+                                    style={{color: '#E9C46A', verticalAlign: 'middle'}}/>
+                                    &ensp;In Progress</span>
                     )
                 } else {
                     return(
                         <span> <Icon icon={ic_done}
                                      size={24}
-                                     style={{ color: '#42933C'}}/>Completed</span>
+                                     style={{ color: '#42933C', verticalAlign: 'middle'}}
+                                     />&ensp;Completed</span>
                     )
                 }
             }
@@ -68,9 +75,18 @@ export class RepairsTable extends Component{
 
     loadNewRepair = (record) => {
         console.log(record);
-        this.setState({
-            loadedRepair: record
-        }, () => console.log(this.state.loadedRepair))
+
+        fetch('inventory/shuttles/repairs/specific/' + record.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => this.setState({
+                problems: data.problems,
+                findings: data.findings,
+                modifications: data.modifications,
+                loadedRepair: record
+            }))
     };
 
     fetchRepairs() {
@@ -91,7 +107,7 @@ export class RepairsTable extends Component{
     };
 
     render(){
-        const {repairs} = this.state;
+        const {repairs, loadedRepair, problems, findings, modifications} = this.state;
 
         if (repairs.length === 0){
             return(
@@ -109,7 +125,10 @@ export class RepairsTable extends Component{
                                    loadNewRepair={this.loadNewRepair}/>
                         </Col>
                         <Col span={14}>
-                            <RepairDisplay loadedRepair={this.state.loadedRepair}/>
+                            <RepairDisplay repair={loadedRepair}
+                                           problems={problems}
+                                           findings={findings}
+                                           modifications={modifications}/>
                         </Col>
                     </Row>
                 </div>
