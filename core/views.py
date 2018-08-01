@@ -417,3 +417,32 @@ class TransactionByDate(APIView):
         return Response(data={
             "report_items": report_items
         }, status=status.HTTP_200_OK)
+
+
+class SharesByDate(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = None
+
+        report_items = []
+        for member in Member.objects.all():
+            share_updates = Share.objects.filter(member=member.id)
+
+            if end_date is not None:
+                share_updates = [item for item in share_updates if start_date.date() <= item.date_of_update <= end_date.date()]
+            else:
+                share_updates = [item for item in share_updates if start_date.date() == item.date_of_update]
+
+            report_items.append({
+                "member": MemberSerializer(member).data,
+                "share_updates": share_updates
+            })
+
+        return Response(data={
+            "report_items": report_items
+        }, status=status.HTTP_200_OK)
