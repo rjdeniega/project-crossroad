@@ -183,7 +183,7 @@ export class BeepPane extends Component {
         return (
             <div className="beep-tab-body">
                 <Modal
-                    title="Something"
+                    title="Add Beep CSV"
                     visible={this.state.visible}
                     onOk={this.handleConfirm}
                     onCancel={this.handleCancel}
@@ -200,7 +200,7 @@ export class BeepPane extends Component {
                 </Modal>
                 <Modal
                     className="transaction-modal"
-                    title="Basic Modal"
+                    title="Beep Shift Transactions"
                     visible={this.state.report_visible}
                     onOk={this.handleReportConfirm}
                     onCancel={this.handleReportCancel}
