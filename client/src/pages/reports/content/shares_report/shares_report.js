@@ -64,7 +64,7 @@ export class SharesReport extends Component {
         postData('/shares_by_date/', data).then(data => {
             console.log(data);
             this.setState({
-                all_transactions: data.report_items
+                filtered_shares: data.report_items,
             })
         });
         this.setState({
@@ -79,7 +79,7 @@ export class SharesReport extends Component {
         };
         postData('/shares_by_date/', data).then(data => {
             this.setState({
-                all_transactions: data.report_items
+                filtered_shares: data.report_items
             })
         })
     };
@@ -118,7 +118,7 @@ export class SharesReport extends Component {
         this.setState({
             ...state
         });
-        const match = this.state.filtered_transactions.filter(item => {
+        const match = this.state.filtered_shares.filter(item => {
             if (item.member.card_number == value) {
                 return item
             }
@@ -134,7 +134,7 @@ export class SharesReport extends Component {
             <div className="shares-report-body">
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                 <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
-                <Select onSelect={this.filterBy("member")} defaultValue="Select Member">
+                <Select onSelect={this.filterBy("member")} className="user-input" defaultValue="Select Member">
                     {this.state.members.map(item => (
                         <Option value={item.card_number}>{item.name + " - " + item.card_number}</Option>
                     ))}

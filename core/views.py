@@ -322,8 +322,13 @@ class SharesReport(APIView):
             for item in serialized_shares.data:
                 item["peso_value"] = float(item["value"]) * 500
 
+            id_card = [item for item in IDCards.objects.all() if item.member == member][0]
+            member = MemberSerializer(member).data
+            member["card_number"] = id_card.can
+            print(id_card.can)
+
             report_items.append({
-                "member": MemberSerializer(member).data,
+                "member": member,
                 "shares": serialized_shares.data,
                 "total_shares": sum([float(item["value"]) for item in serialized_shares.data]),
                 "total_peso_value": sum([float(item["peso_value"]) for item in serialized_shares.data])
@@ -399,11 +404,12 @@ class TransactionByDate(APIView):
                 carwash_transactions = [item for item in
                                         CarwashTransaction.objects.all() if item.member == member]
                 if end_date is not None:
-                    transactions = [item for item in transactions if start_date.date() <= item.shift.date <= end_date.date()]
+                    transactions = [item for item in transactions if
+                                    start_date.date() <= item.shift.date <= end_date.date()]
                     carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
                                             start_date.date() <= item.date <= end_date.date()]
                 else:
-                
+
                     transactions = [item for item in transactions if start_date.date() == item.shift.date]
                     carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
                                             start_date.date() == item.date]
@@ -435,16 +441,28 @@ class SharesByDate(APIView):
 
         report_items = []
         for member in Member.objects.all():
-            share_updates = Share.objects.filter(member=member.id)
+            shares = Share.objects.filter(member=member)
 
             if end_date is not None:
-                share_updates = [item for item in share_updates if start_date.date() <= item.date_of_update <= end_date.date()]
+                share_updates = [item for item in shares if
+                                 start_date.date() <= item.date_of_update <= end_date.date()]
             else:
-                share_updates = [item for item in share_updates if start_date.date() == item.date_of_update]
+                share_updates = [item for item in shares if start_date.date() == item.date_of_update]
+
+            serialized_shares = ShareSerializer(share_updates, many=True)
+            for item in serialized_shares.data:
+                item["peso_value"] = float(item["value"]) * 500
+
+            id_card = [item for item in IDCards.objects.all() if item.member == member][0]
+            member = MemberSerializer(member).data
+            member["id_card"] = id_card.can
+            print(id_card.can)
 
             report_items.append({
-                "member": MemberSerializer(member).data,
-                "share_updates": share_updates
+                "member": member,
+                "shares": serialized_shares.data,
+                "total_shares": sum([float(item["value"]) for item in serialized_shares.data]),
+                "total_peso_value": sum([float(item["peso_value"]) for item in serialized_shares.data])
             })
 
         return Response(data={
@@ -468,6 +486,7 @@ class PassengerCountUtilities():
     @staticmethod
     def count_beep(shift_type, current_date):
         return len(BeepTransaction.objects.filter(shift__date=current_date, shift__type=shift_type))
+
 
 class PassengerCountByDate(APIView):
     @staticmethod
