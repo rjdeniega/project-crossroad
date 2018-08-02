@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {postData, getData} from "../../../network_requests/general"
-import {Form, Menu, Select, InputNumber, Button, Checkbox} from 'antd'
+import {Form, Menu, Select, InputNumber, Button, Checkbox, message} from 'antd'
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -8,6 +8,7 @@ const Option = Select.Option;
 class ConsumableItemFormInit extends Component{
     constructor(props){
         super(props)
+        this.handleSubmit = this.handleSubmit.bind(this)
         this.state = {
             items: [],
             selectedItem: 0,
@@ -34,6 +35,26 @@ class ConsumableItemFormInit extends Component{
 
     handleSubmit(e){
         e.preventDefault()
+        this.props.form.validateFields((err, values) => {
+            if(!err){
+                const data = {
+                    selectedItem: this.state.selectedItem,
+                    depleted: this.state.depleted,
+                }
+
+                postData('inventory/mechanic/items/add/' + this.props.repair, data)
+                    .then(data => {
+                        if(!data.error){
+                            this.props.loadItems(data.modifications)
+                        }else{
+                            console.log(data.error)
+                        }
+                    })
+
+                this.props.close();
+                message.success('Item added!')
+            }
+        })
     }
 
     handleChange(value){
@@ -72,7 +93,7 @@ class ConsumableItemFormInit extends Component{
                     })(
                         <Select placeholder='Please select an item' onChange={this.handleChange.bind(this)}>
                             {items.map((item, index) => (
-                                <Option value={item.id}>{item.name} - {item.quantity}</Option>
+                                <Option value={item.id}>{item.name}</Option>
                             ))}
                         </Select>
                     )}
@@ -97,7 +118,8 @@ const ConsumableItemForm = Form.create()(ConsumableItemFormInit)
 
 class NonConsumableItemFormInit extends Component{
     constructor(props){
-        super(props)
+        super(props);
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             items: [],
             maxQuantity: 1,
@@ -120,7 +142,27 @@ class NonConsumableItemFormInit extends Component{
     }
 
     handleSubmit(e){
-        e.preventDefault()
+        e.preventDefault();
+        this.props.form.validateFields((err, values) =>{
+            if(!err){
+                const data = {
+                    quantity: values['quantity'],
+                    selectedItem: this.state.selectedItem
+                }
+
+                postData('inventory/mechanic/items/add/' + this.props.repair, data)
+                    .then(data => {
+                        if(!data.error){
+                            this.props.loadItems(data.modifications)
+                        }else{
+                            console.log(data.error)
+                        }
+                    })
+
+                this.props.close();
+                message.success('Item added!')
+            }
+        })
     }
 
     handleChange(value, key){
@@ -165,7 +207,7 @@ class NonConsumableItemFormInit extends Component{
                             {items.map((item,index) =>
                                 (
                                     <Option value={item.quantity}
-                                            key={item.id}>{item.name} - {item.quantity}</Option>
+                                            key={item.id}>{item.quantity} - {item.name}</Option>
                                 )
                             )}
                         </Select>
@@ -218,9 +260,11 @@ export class AddItems extends Component{
         const {currentTab} = this.state;
         switch (currentTab){
             case 1:
-                return (<ConsumableItemForm/>)
+                return (<ConsumableItemForm repair={this.props.repair} loadItems={this.props.loadItems}
+                    close={this.props.close}/>)
             case 2:
-                return (<NonConsumableItemForm/>)
+                return (<NonConsumableItemForm repair={this.props.repair} loadItems={this.props.loadItems}
+                    close={this.props.close}/>)
         }
     }
 

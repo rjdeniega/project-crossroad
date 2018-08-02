@@ -3,12 +3,16 @@ import {Icon} from 'react-icons-kit'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 import {List, Row, Col, Menu, Button, Modal, Form, message, Input} from 'antd'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
-import {postData, getData} from "../../../network_requests/general"
+import {postData, getData, putData} from "../../../network_requests/general"
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
+import {ic_check} from 'react-icons-kit/md/ic_check'
+import {ic_import_export} from 'react-icons-kit/md/ic_import_export'
 import {ic_navigate_next} from 'react-icons-kit/md/ic_navigate_next'
 import {withMinus} from 'react-icons-kit/entypo/withMinus'
 import {plus} from 'react-icons-kit/entypo/plus'
 import {AddItems} from './add_item_modal'
+
+const ButtonGroup = Button.Group;
 
 const div_style = {border: 'solid', width: '100%',
              borderColor: '#E8E8E8', borderRadius: 5,
@@ -72,7 +76,7 @@ class FindingsFormInit extends Component{
                     })
                     .then(data => {
                         if(!data.error){
-                            this.props.loadFindings(data)
+                            this.props.loadFindings(data.findings)
                         }else{
                             console.log(data.error)
                         }
@@ -160,6 +164,7 @@ export class MechanicView extends Component{
             currentTab: 1,
             findingsModal: false,
             itemsModal: false,
+            items: [],
         }
     }
 
@@ -172,6 +177,21 @@ export class MechanicView extends Component{
     }
 
     componentDidMount(){
+        this.loadRepairs()
+
+        getData('inventory/items')
+            .then(data=>{
+                if(!data.error){
+                    this.setState({
+                        items: data.items
+                    })
+                } else {
+                    console.log(data.error)
+                }
+            })
+    }
+
+    loadRepairs(){
         fetch('inventory/mechanic/repairs')
             .then(response => response.json())
             .then(
@@ -187,10 +207,34 @@ export class MechanicView extends Component{
             )
     }
 
+    repairAction(pk, action){
+        let data = {
+            action: action
+        }
+        putData('inventory/mechanic/items/add/' + pk, data)
+            .then(response => {
+                return response;
+            }, () => {
+                this.loadRepairs()
+                message.success('Repair ' + action)
+                if(action === 'complete'){
+                    this.setState({
+                        loadedRepair: ''
+                    })
+                }
+            })
+    }
+
     loadFindings(findings){
         console.log('aw')
         this.setState({
             findings: findings,
+        })
+    }
+
+    loadItems(items){
+        this.setState({
+            modifications: items
         })
     }
 
@@ -227,7 +271,8 @@ export class MechanicView extends Component{
     }
 
     renderCurrentPage = () => {
-        const {currentTab, problems, findings, modifications, loadedRepair} = this.state;
+        const {currentTab, problems, findings, modifications, loadedRepair, items} = this.state;
+
         switch (currentTab) {
             case 1:
                 return (
@@ -258,7 +303,7 @@ export class MechanicView extends Component{
                             title='Add Findings'
                             onCancel={() => this.setfindingsVisible(false)}
                             footer={null} visible={this.state.findingsModal}>
-                            <FindingsForm repair={loadedRepair} loadFindings={this.loadFindings}
+                            <FindingsForm repair={loadedRepair} loadFindings={this.loadFindings.bind(this)}
                                 close={() => this.setfindingsVisible(false)}/>
                         </Modal>
                     </div>
@@ -271,10 +316,16 @@ export class MechanicView extends Component{
                                 <List size='small'
                                       bordered>
                                       {modifications.map(function(modification, index){
-                                      return (
-                                          <List.Item>{modification.quantity} &nbsp;
-                                              {modification.item_used}</List.Item>
-                                      )})}
+                                          return items.map(function(item, index){
+                                              if(item.id === modification.item_used){
+                                                  console.log('nice')
+                                                  return (
+                                                  <List.Item>{modification.quantity} - {item.name}</List.Item>
+                                                )
+                                              }
+
+                                          })
+                                    })}
                                 </List>
                         )}
                         <br/>
@@ -284,7 +335,8 @@ export class MechanicView extends Component{
                             title='Add Items' width={450}
                             onCancel={() => this.setItemsVisible(false)}
                             footer={null} visible={this.state.itemsModal}>
-                            <AddItems/>
+                            <AddItems repair={this.state.loadedRepair.id} loadItems={this.loadItems.bind(this)}
+                                close={() => this.setItemsVisible(false)}/>
                         </Modal>
                     </div>
                     );
@@ -337,6 +389,19 @@ export class MechanicView extends Component{
                                         <h2>Repair: {loadedRepair.id}</h2>
                                         <h3>Shuttle {loadedRepair.shuttle}</h3>
                                         <p><i>Date Requested: {loadedRepair.date_requested}</i></p>
+                                        {loadedRepair.start_date ? (
+                                            <p><b>Start Date: </b> loadedRepair.start_date</p>
+                                        ) :""}
+                                        {loadedRepair.status === 'IP' ? '' : (
+                                            <ButtonGroup align-self='center'>
+                                                <Button type='primary' onClick={() => this.repairAction(loadedRepair.id, 'complete')}>
+                                                    <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
+                                                </Button>
+                                                <Button type='primary' onClick={() => this.repairAction(loadedRepair.id, 'outsourced')}>
+                                                    Send to repair shop (Major repair) <Icon icon={ic_import_export} size={18} style={{verticalAlign: 'middle'}}/>
+                                                </Button>
+                                            </ButtonGroup>
+                                        )}
                                         <Menu onClick={this.handleClick} selectedKeys={[this.state.currentTab]}
                                               mode='horizontal'>
                                              <Menu.Item key={1}>

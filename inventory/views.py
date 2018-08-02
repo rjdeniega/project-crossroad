@@ -10,6 +10,15 @@ from .models import *
 import json
 
 
+class SpecificItemView(APIView):
+    @staticmethod
+    def get(request, pk):
+        item = ItemSerializer(Item.objects.get(id=pk))
+        return Response(data={
+            'item': item.data
+        }, status=status.HTTP_200_OK)
+
+
 class ItemView(APIView):
     @staticmethod
     def get(request):
@@ -211,12 +220,43 @@ class MechanicItems(APIView):
             }, status=status.HTTP_200_OK)
 
     @staticmethod
+    def put(request, pk):
+        repair = Repair.objects.get(id=pk)
+        data = json.loads(request.body)
+        if data['action'] == 'complete':
+            repair.status = 'C'
+            repair.save()
+        else:
+            repair.status = 'IP'
+            repair.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @staticmethod
     def post(request, pk):
         repair = Repair.objects.get(id=pk)
         data = json.loads(request.body)
 
-        item = Item.Object.get(id=data['selectedItem'])
+        item = Item.objects.get(id=data['selectedItem'])
         if(item.consumable == True):
             rm = RepairModifications(item_used=item, quantity=1, used_up=data['depleted'])
             rm.save()
             repair.modifications.add(rm)
+            if(rm.used_up == True):
+                im = ItemMovement(item=item, type='G', quantity=1, repair=repair)
+                im.save()
+                item.quantity = item.quantity - 1
+
+        else:
+            rm = RepairModifications(item_used=item, quantity=data['quantity'], used_up=True)
+            rm.save()
+            repair.modifications.add(rm)
+            im = ItemMovement(item=item, type='G', quantity=data['quantity'], repair=repair)
+            im.save()
+            item.quantity = item.quantity - data['quantity']
+
+        item.save()
+        modifications = RepairModificationsSerializer(repair.modifications.all(), many=True)
+        return Response(data={
+            'modifications': modifications.data
+        }, status=status.HTTP_200_OK)
