@@ -159,41 +159,41 @@ export class RemittanceForm extends Component {
     };
 
     calculateSum(fieldName) {
-        const first_ten_sum = parseInt((parseInt(this.state.ten_end_final_first) - parseInt(this.props.ten_peso_start_first)) * 10);
-        const second_ten_sum = parseInt((parseInt(this.state.ten_end_final_second) - parseInt(this.props.ten_peso_start_second)) * 10);
-        const first_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_first) - parseInt(this.props.twelve_peso_start_first)) * 12);
-        const second_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_second) - parseInt(this.props.twelve_peso_start_second)) * 12);
-        const first_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_first) - parseInt(this.props.fifteen_peso_start_first)) * 15);
-        const second_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_second) - parseInt(this.props.fifteen_peso_start_firstfirst)) * 15);
+        const first_ten_sum = parseInt((parseInt(this.state.ten_end_final_first) - parseInt(this.props.ten_peso_start_first) + 1) * 10);
+        const second_ten_sum = parseInt((parseInt(this.state.ten_end_final_second) - parseInt(this.props.ten_peso_start_second) + 1) * 10);
+        const first_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_first) - parseInt(this.props.twelve_peso_start_first) + 1) * 12);
+        const second_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_second) - parseInt(this.props.twelve_peso_start_second) + 1) * 12);
+        const first_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_first) - parseInt(this.props.fifteen_peso_start_first) + 1) * 15);
+        const second_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_second) - parseInt(this.props.fifteen_peso_start_firstfirst) + 1) * 15);
 
         if (fieldName == "ten_end_final_first") {
             this.setState({
-                first_ten_sum
+                first_ten_sum: isNaN(first_ten_sum) ? 0 : first_ten_sum
             })
         }
         if (fieldName == "ten_end_final_second") {
             this.setState({
-                second_ten_sum
+                second_ten_sum: isNaN(second_ten_sum) ? 0 : second_ten_sum
             })
         }
         if (fieldName == "twelve_end_final_first") {
             this.setState({
-                first_twelve_sum
+                first_twelve_sum: isNaN(first_twelve_sum) ? 0 : first_twelve_sum
             })
         }
         if (fieldName == "twelve_end_final_second") {
             this.setState({
-                second_twelve_sum,
+                second_twelve_sum: isNaN(second_twelve_sum) ? 0 : second_twelve_sum
             })
         }
         if (fieldName == "fifteen_end_final_first") {
             this.setState({
-                first_fifteen_sum
+                first_fifteen_sum: isNaN(first_fifteen_sum) ? 0 : first_fifteen_sum
             })
         }
         if (fieldName == "fifteen_end_final_second") {
             this.setState({
-                second_fifteen_sum
+                second_fifteen_sum: isNaN(second_fifteen_sum) ? 0 : second_fifteen_sum
             })
         }
 
@@ -205,16 +205,15 @@ export class RemittanceForm extends Component {
         const second_fifteen_sum_final = isNaN(second_fifteen_sum) || second_fifteen_sum < 0 ? 0 : second_fifteen_sum;
         const fuel = this.state.fuel ? this.state.fuel : 0;
         const others = this.state.others ? this.state.others : 0;
-
         this.setState({
             total: parseInt((first_ten_sum_final + second_ten_sum_final + first_twelve_sum_final + second_twelve_sum_final + first_fifteen_sum_final
-            + second_fifteen_sum_final) - (parseInt(fuel) + parseInt(others)))
+                + second_fifteen_sum_final) - (parseInt(fuel) + parseInt(others)))
         }, () => console.log(this.state.total))
 
     }
 
     calculateQuantity = (first, second) => {
-        const quantity = parseInt(first) - parseInt(second);
+        const quantity = parseInt(first) - parseInt(second) + 1;
         return isNaN(quantity) || quantity < 0 ? 0 : quantity
     };
     showModal = () => {
