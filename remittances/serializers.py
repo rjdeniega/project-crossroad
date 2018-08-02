@@ -168,6 +168,7 @@ class RemittanceFormSerializer(ModelSerializer):
                 # subtract those void tickets
                 voided = 0  # number of voided tickets
                 void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
+                void_tickets = [item for item in void_tickets if item.ticket_number <= consumed_ticket.end_ticket]
                 for void_ticket in void_tickets:
                     voided += 1
 
