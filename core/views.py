@@ -490,7 +490,7 @@ class PassengerCountUtilities():
 
         for remittance in RemittanceForm.objects.filter(deployment__shift_iteration__date=current_date,
                                                         deployment__shift_iteration__shift__type=shift_type):
-            for assigned_ticket in AssignedTicket.objects.filter(remittance=remittance.id):
+            for assigned_ticket in AssignedTicket.objects.filter(deployment__remittanceform=remittance.id):
                 consumed_ticket = ConsumedTicket.objects.get(assigned_ticket=assigned_ticket.id)
                 passenger_count += consumed_ticket.end_ticket - assigned_ticket.range_from + 1
 

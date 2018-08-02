@@ -108,8 +108,9 @@ export class RepairsTable extends Component{
 
         if (repairs.length === 0){
             return(
-                <div>
-                    <p>wow</p>
+                <div align='center'>
+                    <br/>
+                    <h2>This shuttle has no history of repairs</h2>
                 </div>
             )
         }else{
