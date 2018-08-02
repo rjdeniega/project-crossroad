@@ -93,6 +93,7 @@ class RepairModifications(SoftDeletionModel):
 class Repair(SoftDeletionModel):
     shuttle = ForeignKey(Shuttle, on_delete=models.PROTECT)
     date_requested = DateField()
+    vendor = CharField(max_length=64, null=True)
     start_date = DateField(null=True)
     end_date = DateField(null=True)
     status = CharField(max_length=2, choices=REPAIR_STATUS)

@@ -3,11 +3,12 @@ import {Icon} from 'react-icons-kit'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 import {List, Row, Col, Menu, Button, Modal, Form, message, Input} from 'antd'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
-import {postData} from "../../../network_requests/general"
+import {postData, getData} from "../../../network_requests/general"
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_navigate_next} from 'react-icons-kit/md/ic_navigate_next'
 import {withMinus} from 'react-icons-kit/entypo/withMinus'
 import {plus} from 'react-icons-kit/entypo/plus'
+import {AddItems} from './add_item_modal'
 
 const div_style = {border: 'solid', width: '100%',
              borderColor: '#E8E8E8', borderRadius: 5,
@@ -17,8 +18,6 @@ const div_style = {border: 'solid', width: '100%',
 function hasErrors(fieldsError){
     return Object.keys(fieldsError).some(field=>fieldsError[field])
 }
-
-
 
 class FindingsFormInit extends Component{
     constructor(props){
@@ -282,9 +281,10 @@ export class MechanicView extends Component{
                         <Button type='dashed' onClick={() => this.setItemsVisible(true)}
                             style={{width: '100%'}}>Add Item</Button>
                         <Modal
-                            title='Add Items' width={600}
+                            title='Add Items' width={450}
                             onCancel={() => this.setItemsVisible(false)}
                             footer={null} visible={this.state.itemsModal}>
+                            <AddItems/>
                         </Modal>
                     </div>
                     );

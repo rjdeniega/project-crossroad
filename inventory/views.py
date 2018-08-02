@@ -193,3 +193,24 @@ class MechanicRepairs(APIView):
         return Response(data={
             'findings': findings.data,
         }, status=status.HTTP_200_OK)
+
+
+class MechanicItems(APIView):
+    @staticmethod
+    def get(request, consume):
+        consumable = True
+        if(consume == 1):
+            consumable = False
+
+        items = ItemSerializer(Item.objects.all()
+                                .filter(consumable=consumable)
+                                .filter(quantity__gte=0), many=True)
+
+        return Response(data={
+            'items': items.data
+            }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, pk):
+        repair = Repair.objects.get(id=pk)
+        data = json.loads(request.body)
