@@ -209,6 +209,20 @@ export class RemittanceReport extends Component {
                 grand_total: this.getGrandTotal("A")
             }));
         }
+        if (fieldName == "shift") {
+            const match = this.state.filtered_transactions.filter(item => {
+                if (item.shift_type == value) {
+                    return item
+                }
+            });
+            this.setState({
+                filtered_transactions: match,
+            }, () => this.setState({
+                am_shift_total: this.getShiftTypeTotal("A"),
+                pm_shift_total: this.getShiftTypeTotal("P"),
+                grand_total: this.getGrandTotal("A")
+            }));
+        }
     };
 
     render() {
@@ -221,6 +235,11 @@ export class RemittanceReport extends Component {
 
                     <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                     <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
+                    <Select className="user-input" defaultValue="Select Shift" onSelect={this.filterBy("shift")}>
+                        <Option value="A">AM</Option>
+                        <Option value="P">PM</Option>
+                        <Option value="M">MN</Option>
+                    </Select>
                     <Select onSelect={this.filterBy("shuttle")} className="user-input" defaultValue="Select Shuttle">
                         {this.state.shuttles.map(item => (
                             <Option value={item.plate_number}>{item.plate_number}</Option>

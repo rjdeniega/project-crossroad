@@ -431,7 +431,7 @@ export class ProfilePane extends Component {
                     <div className="member-info">
                         <div className="info-row-1"><b>Accepted date:</b> {activeUser.accepted_date}</div>
                         <div className="info-row-2"><b>E-mail:</b> {activeUser.email}</div>
-                        <div className="info-row-1"><b>Termination date:</b> {activeUser.termination_date}</div>
+                        <div className="info-row-1"><b>Withrawal date:</b> {activeUser.termination_date}</div>
                         <div className="info-row-2"><b>Occupation:</b> {activeUser.occupation}</div>
                         <div className="info-row-1"><b>Tin number:</b> {activeUser.tin_number}</div>
                         <div className="info-row-2"><b>Educational Attainment:</b> {activeUser.educational_attainment}
