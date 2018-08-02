@@ -85,7 +85,6 @@
     }
 
 .om-tab-body .ant-table-body * {
-    overflow: scroll !important;
     /*border: 1px dashed var(--darkgreen);*/
     background: transparent;
     border: none !important;
