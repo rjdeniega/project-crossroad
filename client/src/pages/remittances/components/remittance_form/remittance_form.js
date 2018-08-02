@@ -3,7 +3,7 @@
  */
 import React, { Component } from 'react'
 import './style.css'
-import { Input, InputNumber, TimePicker, Button, Modal, message } from 'antd'
+import { Input, InputNumber, TimePicker, Button, Modal, message, Divider } from 'antd'
 import moment from 'moment';
 import { postData } from "../../../../network_requests/general";
 
@@ -75,6 +75,7 @@ export class RemittanceForm extends Component {
             }, () => console.log(this.props.fifteen_peso_consumed_first))
         }
     }
+
     createForm = () => {
         const data = {
             "deployment": this.props.deployment_id,
@@ -288,8 +289,21 @@ export class RemittanceForm extends Component {
                 </div>
                 <div className="computed-div">
                     <div className="summary-table">
-                        <p> summary </p>
+                        <p><b>summary</b></p>
                         <div className="computations">
+                            <p> {this.state.ten_end_final_first ? this.state.ten_end_final_first : 0} * 10 = 0</p>
+                            <p> {this.state.ten_end_final_second ? this.state.ten_end_final_second : 0} * 10 = 0</p>
+                            <p> {this.state.twelve_end_final_first ? this.state.twelve_end_final_first:0 } * 12 = 0</p>
+                            <p> {this.state.twelve_end_final_second ? this.state.twelve_end_final_second : 0} * 12 = 0</p>
+                            <p> {this.state.fifteen_end_final_first ? this.state.fifteen_end_final_first: 0} * 15 = 0</p>
+                            <p> {this.state.fifteen_end_final_second ? this.state.fifteen_end_final_second : 0} * 15 = 0</p>
+                            <Divider></Divider>
+                            <p><b> less </b></p>
+                            <p> {this.state.fuel}</p>
+                            <p> {this.state.others}</p>
+                            <Divider></Divider>
+                            <p><b>Total: </b> 20</p>
+
 
                         </div>
                         <Button onClick={this.handleSubmit}>Submit</Button>
