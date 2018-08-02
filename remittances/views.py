@@ -443,7 +443,7 @@ class DeploymentDetails(APIView):
     def get(request, driver_id):
         shift = RemittanceUtilities.get_shift_of_driver(driver_id)
         shift_iteration = RemittanceUtilities.get_shift_iteration(shift.id)
-        deployment_query = Deployment.objects.get(shift_iteration=shift_iteration)
+        deployment_query = Deployment.objects.get(shift_iteration=shift_iteration, driver=driver_id)
         deployment = DeploymentSerializer(deployment_query)
         assigned_tickets = TicketUtilities.get_tickets_with_void(deployment_query.id)
         print(assigned_tickets)
