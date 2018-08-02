@@ -18,13 +18,14 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from django.forms.models import model_to_dict
 from members.models import *
+from datetime import timedelta
 
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
 from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
     MemberSerializer, MechanicSerializer, ShareSerializer
-from remittances.models import Deployment, RemittanceForm, BeepTransaction, BeepShift, CarwashTransaction
+from remittances.models import *
 from remittances.serializers import BeepTransactionSerializer, CarwashTransactionSerializer
 from remittances.views import IterationUtilites
 
@@ -444,6 +445,82 @@ class SharesByDate(APIView):
                 "member": MemberSerializer(member).data,
                 "share_updates": share_updates
             })
+
+        return Response(data={
+            "report_items": report_items
+        }, status=status.HTTP_200_OK)
+
+
+class PassengerCountUtilities():
+    @staticmethod
+    def count_remittance(shift_type, current_date):
+        passenger_count = 0
+
+        for remittance in RemittanceForm.objects.filter(deployment__shift_iteration__date=current_date,
+                                                        deployment__shift_iteration__shift__type=shift_type):
+            for assigned_ticket in AssignedTicket.objects.filter(remittance=remittance.id):
+                consumed_ticket = ConsumedTicket.objects.get(assigned_ticket=assigned_ticket.id)
+                passenger_count += consumed_ticket.end_ticket - assigned_ticket.range_from + 1
+
+        return passenger_count
+
+    @staticmethod
+    def count_beep(shift_type, current_date):
+        return len(BeepTransaction.objects.filter(shift__date=current_date, shift__type=shift_type))
+
+class PassengerCountByDate(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = None
+
+        report_items = []
+
+        current_date = start_date
+        if end_date is not None:
+            while current_date is not end_date:
+                am_count = PassengerCountUtilities.count_remittance('A', current_date)
+                pm_count = PassengerCountUtilities.count_remittance('P', current_date)
+                am_beep = PassengerCountUtilities.count_beep('A', current_date)
+                pm_beep = PassengerCountUtilities.count_beep('P', current_date)
+
+                report_items.append({
+                    "date": current_date,
+                    "day": current_date.weekday(),
+                    "am_count": am_count,
+                    "pm_count": pm_count,
+                    "am_beep": am_beep,
+                    "pm_beep": pm_beep,
+                    "am_total": am_count + am_beep,
+                    "pm_total": pm_count + pm_beep,
+                    "total": am_count + am_beep + pm_count + pm_beep
+                })
+
+                current_date += timedelta(days=1)
+        else:
+            while current_date is not datetime.today().date():
+                am_count = PassengerCountUtilities.count_remittance('A', current_date)
+                pm_count = PassengerCountUtilities.count_remittance('P', current_date)
+                am_beep = PassengerCountUtilities.count_beep('A', current_date)
+                pm_beep = PassengerCountUtilities.count_beep('P', current_date)
+
+                report_items.append({
+                    "date": current_date,
+                    "day": current_date.weekday(),
+                    "am_count": am_count,
+                    "pm_count": pm_count,
+                    "am_beep": am_beep,
+                    "pm_beep": pm_beep,
+                    "am_total": am_count + am_beep,
+                    "pm_total": pm_count + pm_beep,
+                    "total": am_count + am_beep + pm_count + pm_beep
+                })
+
+                current_date += timedelta(days=1)
 
         return Response(data={
             "report_items": report_items
