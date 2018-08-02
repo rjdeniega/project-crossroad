@@ -65,7 +65,7 @@ export class DriverRemittancePage extends Component {
             if (!data.error) {
                 this.setState({
                     ten_peso_start_first: data.assigned_tickets[0]["10_peso_start_first"],
-                    ten_peso_start_second: data.assigned_tickets[1]["10_peso_start_second"] ?  data.assigned_tickets[0]["10_peso_start_second"] : null,
+                    ten_peso_start_second: data.assigned_tickets[1]["10_peso_start_second"] ?  data.assigned_tickets[1]["10_peso_start_second"] : null,
                     twelve_peso_start_first: data.assigned_tickets[2]["12_peso_start_first"],
                     twelve_peso_start_second: data.assigned_tickets[3]["12_peso_start_second"] ? data.assigned_tickets[3]["12_peso_start_second"] : null,
                     fifteen_peso_start_first: data.assigned_tickets[4]["15_peso_start_first"],

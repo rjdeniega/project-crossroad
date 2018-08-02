@@ -584,7 +584,7 @@ class PassengerCountByDate(APIView):
                 })
 
                 current_date += timedelta(days=1)
-
+        print("entered here")
         return Response(data={
             "report_items": report_items
         }, status=status.HTTP_200_OK)

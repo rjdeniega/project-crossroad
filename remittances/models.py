@@ -94,8 +94,8 @@ class Deployment(SoftDeletionModel):
     route = CharField(max_length=1, choices=ROUTE)
     shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
-    start_time = DateTimeField(default=datetime.now(), editable=False)
-    end_time = DateTimeField(null=True)
+    # start_time = DateTimeField(default=datetime.now(), editable=False)
+    # end_time = DateTimeField(null=True)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
 

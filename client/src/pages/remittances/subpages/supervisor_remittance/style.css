@@ -203,9 +203,9 @@
     flex-direction: column;
     }
 
-.void-list {
-    overflow: scroll !important;
-    }
+/*.void-list {*/
+    /*overflow: scroll !important;*/
+    /*}*/
 
 .void-item * {
     color: var(--warningred) !important;
