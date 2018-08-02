@@ -7,7 +7,7 @@ import {Icon} from 'react-icons-kit'
 import {warning} from 'react-icons-kit/typicons/warning'
 import {arrowSortedDown} from 'react-icons-kit/typicons/arrowSortedDown'
 import {zoom} from 'react-icons-kit/typicons/zoom'
-import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm} from 'antd'
+import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm, Tooltip} from 'antd'
 import {ItemMovementTable} from "./components/item_movement/item_movement_display";
 import '../../utilities/colorsFonts.css'
 import './style.css'
@@ -26,7 +26,9 @@ function hasErrors(fieldsError){
 function CheckItem(props) {
     const quantity = props.quantity;
     if (parseInt(quantity) <= 3)
-        return <Icon className='warning-icon' icon={warning} size={18} style={{color: 'red'}}/>;
+        return (<Tooltip title='Quantity is below 3!'>
+                    <Icon className='warning-icon' icon={warning} size={18} style={{color: 'red'}}/>
+                </Tooltip>);
     else
         return null
 }
