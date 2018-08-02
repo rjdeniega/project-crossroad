@@ -19,6 +19,7 @@ from rest_framework import status
 from django.forms.models import model_to_dict
 from members.models import *
 from datetime import timedelta
+import calendar
 
 # Create your views here.
 from core.serializers import UserSerializer, PersonSerializer
@@ -490,7 +491,7 @@ class PassengerCountByDate(APIView):
 
                 report_items.append({
                     "date": current_date,
-                    "day": current_date.weekday(),
+                    "day": calendar.day_name[current_date.weekday()],
                     "am_count": am_count,
                     "pm_count": pm_count,
                     "am_beep": am_beep,
@@ -510,7 +511,7 @@ class PassengerCountByDate(APIView):
 
                 report_items.append({
                     "date": current_date,
-                    "day": current_date.weekday(),
+                    "day": calendar.day_name[current_date.weekday()],
                     "am_count": am_count,
                     "pm_count": pm_count,
                     "am_beep": am_beep,
