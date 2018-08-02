@@ -53,6 +53,7 @@ export class RepairDisplay extends Component{
                             {!repair.end_date ? '': (
                                 <p><b>End date: </b>{repair.end_date}</p>
                             )}
+                            <br/>
                             <List size='small' header={<div><h3>Problems</h3></div>}
                                   bordered>
                                   {problems.map(function(problem, index){
@@ -61,7 +62,7 @@ export class RepairDisplay extends Component{
                                       )
                                   })}
                             </List>
-
+                            <br/>
                             {findings.length == 0 ? '' :
                                 (
                                     <List size='small' header={<h3>Findings</h3>}
@@ -72,7 +73,7 @@ export class RepairDisplay extends Component{
                                           )})}
                                     </List>
                             )}
-
+                            <br/>
                             {modifications.length == 0 ? '' :
                                 (
                                     <List size='small' header={<h3>Items Used</h3>}

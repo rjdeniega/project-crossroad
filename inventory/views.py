@@ -7,7 +7,7 @@ from rest_framework import status
 
 from inventory.serializers import *
 from .models import *
-import json
+import json, datetime
 
 
 class SpecificItemView(APIView):
@@ -225,12 +225,16 @@ class MechanicItems(APIView):
         data = json.loads(request.body)
         if data['action'] == 'complete':
             repair.status = 'C'
+            repair.end_date = datetime.now()
             repair.save()
         else:
             repair.status = 'IP'
             repair.save()
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        sendRepair = RepairSerializer(repair)
+        return Response(data={
+            'repair': sendRepair.data
+        },status=status.HTTP_200_OK)
 
     @staticmethod
     def post(request, pk):

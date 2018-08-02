@@ -214,12 +214,17 @@ export class MechanicView extends Component{
         putData('inventory/mechanic/items/add/' + pk, data)
             .then(response => {
                 return response;
-            }, () => {
+            })
+            .then(data => {
                 this.loadRepairs()
                 message.success('Repair ' + action)
                 if(action === 'complete'){
                     this.setState({
                         loadedRepair: ''
+                    })
+                }else{
+                    this.setState({
+                        loadedRepair: data.repair
                     })
                 }
             })
@@ -297,7 +302,7 @@ export class MechanicView extends Component{
                                 </List>
                         )}
                         <br/>
-                        <Button type='dashed' onClick={() => this.setfindingsVisible(true)}
+                        <Button type='dashed' onClick={() => this.setfindingsVisible(true)} hidden={loadedRepair.status === 'IP' ? 'true' :''}
                             style={{width: '100%'}}>Add Finding</Button>
                         <Modal
                             title='Add Findings'
@@ -329,7 +334,7 @@ export class MechanicView extends Component{
                                 </List>
                         )}
                         <br/>
-                        <Button type='dashed' onClick={() => this.setItemsVisible(true)}
+                        <Button type='dashed' onClick={() => this.setItemsVisible(true)} hidden={loadedRepair.status === 'IP' ? 'true':''}
                             style={{width: '100%'}}>Add Item</Button>
                         <Modal
                             title='Add Items' width={450}
