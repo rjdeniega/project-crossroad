@@ -33,6 +33,14 @@ export class RemittanceForm extends Component {
         twelve_end_final_second: null,
         fifteen_end_final_second: null,
         isConsumedPresent: null,
+        first_ten_sum: 0,
+        second_ten_sum: 0,
+        first_twelve_sum: 0,
+        second_twelve_sum: 0,
+        first_fifteen_sum: 0,
+        second_fifteen_sum: 0,
+        total: 0,
+
 
     };
 
@@ -72,7 +80,14 @@ export class RemittanceForm extends Component {
                 ten_end_final_second: this.props.ten_peso_consumed_second,
                 twelve_end_final_second: this.props.twelve_peso_consumed_second,
                 fifteen_end_final_second: this.props.fifteen_peso_consumed_second,
-            }, () => console.log(this.props.fifteen_peso_consumed_first))
+            }, () => {
+                this.calculateSum("ten_end_final_first");
+                this.calculateSum("ten_end_final_second");
+                this.calculateSum("twelve_end_final_first");
+                this.calculateSum("twelve_end_final_second");
+                this.calculateSum("fifteen_end_final_first");
+                this.calculateSum("fifteen_end_final_second");
+            })
         }
     }
 
@@ -137,9 +152,70 @@ export class RemittanceForm extends Component {
         state[fieldName] = value;
         console.log(fieldName);
         console.log(state[fieldName]);
+
         this.setState({
             ...state
-        });
+        }, () => this.calculateSum(fieldName));
+    };
+
+    calculateSum(fieldName) {
+        const first_ten_sum = parseInt((parseInt(this.state.ten_end_final_first) - parseInt(this.props.ten_peso_start_first)) * 10);
+        const second_ten_sum = parseInt((parseInt(this.state.ten_end_final_second) - parseInt(this.props.ten_peso_start_second)) * 10);
+        const first_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_first) - parseInt(this.props.twelve_peso_start_first)) * 12);
+        const second_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_second) - parseInt(this.props.twelve_peso_start_second)) * 12);
+        const first_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_first) - parseInt(this.props.fifteen_peso_start_first)) * 15);
+        const second_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_second) - parseInt(this.props.fifteen_peso_start_firstfirst)) * 15);
+
+        if (fieldName == "ten_end_final_first") {
+            this.setState({
+                first_ten_sum
+            })
+        }
+        if (fieldName == "ten_end_final_second") {
+            this.setState({
+                second_ten_sum
+            })
+        }
+        if (fieldName == "twelve_end_final_first") {
+            this.setState({
+                first_twelve_sum
+            })
+        }
+        if (fieldName == "twelve_end_final_second") {
+            this.setState({
+                second_twelve_sum,
+            })
+        }
+        if (fieldName == "fifteen_end_final_first") {
+            this.setState({
+                first_fifteen_sum
+            })
+        }
+        if (fieldName == "fifteen_end_final_second") {
+            this.setState({
+                second_fifteen_sum
+            })
+        }
+
+        const first_ten_sum_final = isNaN(first_ten_sum) || first_ten_sum < 0 ? 0 : first_ten_sum;
+        const second_ten_sum_final = isNaN(second_ten_sum) || second_ten_sum < 0 ? 0 : second_ten_sum;
+        const first_twelve_sum_final = isNaN(first_twelve_sum) || first_twelve_sum < 0 ? 0 : first_twelve_sum;
+        const second_twelve_sum_final = isNaN(second_twelve_sum) || second_twelve_sum < 0 ? 0 : second_twelve_sum;
+        const first_fifteen_sum_final = isNaN(first_fifteen_sum) || first_fifteen_sum < 0 ? 0 : first_fifteen_sum;
+        const second_fifteen_sum_final = isNaN(second_fifteen_sum) || second_fifteen_sum < 0 ? 0 : second_fifteen_sum;
+        const fuel = this.state.fuel ? this.state.fuel : 0;
+        const others = this.state.others ? this.state.others : 0;
+
+        this.setState({
+            total: parseInt((first_ten_sum_final + second_ten_sum_final + first_twelve_sum_final + second_twelve_sum_final + first_fifteen_sum_final
+            + second_fifteen_sum_final) - (parseInt(fuel) + parseInt(others)))
+        }, () => console.log(this.state.total))
+
+    }
+
+    calculateQuantity = (first, second) => {
+        const quantity = parseInt(first) - parseInt(second);
+        return isNaN(quantity) || quantity < 0 ? 0 : quantity
     };
     showModal = () => {
         this.setState({
@@ -291,18 +367,24 @@ export class RemittanceForm extends Component {
                     <div className="summary-table">
                         <p><b>summary</b></p>
                         <div className="computations">
-                            <p> {this.state.ten_end_final_first ? this.state.ten_end_final_first : 0} * 10 = 0</p>
-                            <p> {this.state.ten_end_final_second ? this.state.ten_end_final_second : 0} * 10 = 0</p>
-                            <p> {this.state.twelve_end_final_first ? this.state.twelve_end_final_first:0 } * 12 = 0</p>
-                            <p> {this.state.twelve_end_final_second ? this.state.twelve_end_final_second : 0} * 12 = 0</p>
-                            <p> {this.state.fifteen_end_final_first ? this.state.fifteen_end_final_first: 0} * 15 = 0</p>
-                            <p> {this.state.fifteen_end_final_second ? this.state.fifteen_end_final_second : 0} * 15 = 0</p>
+                            <p> {this.calculateQuantity(this.state.ten_end_final_first, this.props.ten_peso_start_first)}
+                                * 10 = {this.state.first_ten_sum}</p>
+                            <p> {this.calculateQuantity(this.state.ten_end_final_second, this.props.ten_peso_start_second)}
+                                * 10 = {this.state.second_ten_sum}</p>
+                            <p> {this.calculateQuantity(this.state.twelve_end_final_first, this.props.twelve_peso_start_first)}
+                                * 12 = {this.state.first_twelve_sum}</p>
+                            <p> {this.calculateQuantity(this.state.twelve_end_final_second, this.props.twelve_peso_start_second)}
+                                * 12 = {this.state.second_twelve_sum}</p>
+                            <p> {this.calculateQuantity(this.state.fifteen_end_final_first, this.props.fifteen_peso_start_first)}
+                                * 15 = {this.state.first_fifteen_sum}</p>
+                            <p> {this.calculateQuantity(this.state.fifteen_end_final_second, this.props.fifteen_peso_start_firstfirst)}
+                                * 15 = {this.state.second_fifteen_sum}</p>
                             <Divider></Divider>
                             <p><b> less </b></p>
                             <p> {this.state.fuel}</p>
                             <p> {this.state.others}</p>
                             <Divider></Divider>
-                            <p><b>Total: </b> 20</p>
+                            <p><b>Total: </b> {this.state.total} </p>
 
 
                         </div>
