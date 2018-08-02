@@ -149,7 +149,10 @@ class CreateUserView(APIView):
             "annual_income": request.POST.get('annual_income'),
             "civil_status": request.POST.get('civil_status'),
             "educational_attainment": request.POST.get('civil_status'),
-            "photo": request.FILES.get('image')
+            "photo": request.FILES.get('image'),
+            "initial_share": request.POST.get('initial_share'),
+            "buy_in_date": request.POST.get('buy_in_date'),
+            "receipt": request.POST.get('receipt'),
         }
         staff_data = data if user_type != "Member" else member_data
         user_staff = CreateUserView.create_user_type(user, user_type, staff_data)
@@ -175,12 +178,22 @@ class CreateUserView(APIView):
             return Supervisor.objects.create(**data)
         if user_type == "Member":
             card_number = data.pop('card_number')
+            share_value = data.pop('initial_share')
+            date = data.pop('buy_in_date')
+            receipt = data.pop('receipt')
             member = Member.objects.create(**data)
             id_card = IDCards()
             id_card.member = member
             id_card.register_date = datetime.now().date()
             id_card.can = card_number
             id_card.save()
+            share = Share()
+            share.member = member
+            share.date_of_update = date
+            share.value = share_value
+            share.receipt = f"buy-in share {receipt}"
+            share.save()
+
             return member
         if user_type == "Mechanic":
             return Mechanic.objects.create(**data)

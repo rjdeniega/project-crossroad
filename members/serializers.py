@@ -65,7 +65,6 @@ class MemberSerializer(ModelSerializer):
         fields = '__all__'
 
 
-
 class IDCardSerializer(ModelSerializer):
     class Meta:
         model = IDCards
