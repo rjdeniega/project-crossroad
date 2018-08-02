@@ -89,6 +89,12 @@ class RepairModifications(SoftDeletionModel):
     used_up = BooleanField()
 
 
+class OutSourcedItems(SoftDeletionModel):
+    item = CharField(max_length=64)
+    quantity = PositiveIntegerField()
+    unit_price = DecimalField(max_digits=10, decimal_places=2)
+
+
 class Repair(SoftDeletionModel):
     shuttle = ForeignKey(Shuttle, on_delete=models.PROTECT)
     date_requested = DateField()
@@ -100,6 +106,7 @@ class Repair(SoftDeletionModel):
     problems = ManyToManyField(RepairProblem)
     findings = ManyToManyField(RepairFinding)
     modifications = ManyToManyField(RepairModifications)
+    outsourced_items = ManyToManyField(OutSourcedItems)
 
 
 class ItemMovement(SoftDeletionModel):
