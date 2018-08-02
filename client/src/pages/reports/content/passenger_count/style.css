@@ -1,0 +1,11 @@
+.shares-report-body{
+    width: auto!important;
+    }
+
+.shares-report-body .remittance-table{
+    width: auto!important;
+    margin-left: 20px!important;
+    }
+.report-body .remittance-table .ant-table-tbody{
+    overflow: scroll;
+    }

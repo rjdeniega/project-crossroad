@@ -115,12 +115,10 @@ export class ShiftManagementPane extends Component {
             "driver": this.state.driver_selected,
             "shuttle": this.state.assigned_shuttle,
         };
-        console.log(this.state.selected_shift_type);
-        console.log(this.state.am_shift_drivers);
         if (this.state.selected_shift_type == "AM") {
             this.setState({
                 am_shift_drivers: [...this.state.am_shift_drivers, assignment]
-            }, console.log(this.state.am_shift_drivers));
+            }, () => console.log(this.state.am_shift_drivers));
         }
         else if (this.state.selected_shift_type == "PM") {
             this.setState({
@@ -158,25 +156,27 @@ export class ShiftManagementPane extends Component {
     };
 
     // rowSelection object indicates the need for row selection
-
+    isChecked = false;
     amRowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             // get the last selected item
             const current = selectedRowKeys[selectedRowKeys.length - 1];
-            this.setState({
-                driver_selected: current,
-                selected_shift_type: "AM"
-            });
-            //check if item is already checked
-            let isChecked = false;
             this.state.am_shift_drivers.map((item) => {
-                if (item["driver"] == this.state.driver_selected) {
-                    isChecked = true;
+                if (item["driver"] == current) {
+                    this.isChecked = true;
+                    console.log("checked became true")
                 }
             });
-            if (!isChecked) {
+            console.log(this.isChecked);
+            if (!this.isChecked) {
+                this.setState({
+                    driver_selected: current,
+                    selected_shift_type: "AM"
+                }, () => console.log(this.state.driver_selected));
+
                 this.showModal();
-            }else{
+            }
+            else {
                 let index = this.state.am_shift_drivers.indexOf(this.state.driver_selected);
                 let array = this.state.am_shift_drivers.splice(index);
                 this.setState({
@@ -188,20 +188,20 @@ export class ShiftManagementPane extends Component {
     pmRowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             const current = selectedRowKeys[selectedRowKeys.length - 1];
-            this.setState({
-                driver_selected: current,
-                selected_shift_type: "PM"
-            });
-            let isChecked = false;
             //check if item is already checked
             this.state.pm_shift_drivers.map((item) => {
-                if (item["driver"] == this.state.driver_selected) {
-                    isChecked = true
+                if (item["driver"] == current) {
+                    this.isChecked = true
                 }
             });
-            if (!isChecked) {
+            if (!this.isChecked) {
+                this.setState({
+                    driver_selected: current,
+                    selected_shift_type: "PM"
+                });
                 this.showModal();
-            }else{
+            }
+            else {
                 let index = this.state.pm_shift_drivers.indexOf(this.state.driver_selected);
                 let array = this.state.pm_shift_drivers.splice(index);
                 this.setState({
@@ -213,20 +213,21 @@ export class ShiftManagementPane extends Component {
     mnRowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             const current = selectedRowKeys[selectedRowKeys.length - 1];
-            this.setState({
-                driver_selected: current,
-                selected_shift_type: "MN"
-            });
-            let isChecked = false;
+
             //check if item is already checked
             this.state.mn_shift_drivers.map((item) => {
-                if (item["driver"] == this.state.driver_selected) {
-                    isChecked = true
+                if (item["driver"] == current) {
+                    this.isChecked = true
                 }
             });
-            if (!isChecked) {
+            if (!this.isChecked) {
+                this.setState({
+                    driver_selected: current,
+                    selected_shift_type: "MN"
+                });
                 this.showModal();
-            }else{
+            }
+            else {
                 console.log("entered here");
                 let index = this.state.mn_shift_drivers.indexOf(this.state.driver_selected);
                 let array = this.state.mn_shift_drivers.splice(index);

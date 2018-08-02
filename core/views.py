@@ -501,6 +501,36 @@ class PassengerCountUtilities():
         return len(BeepTransaction.objects.filter(shift__date=current_date, shift__type=shift_type))
 
 
+# class PassengerCount(APIView):
+#     @staticmethod
+#     def get(request):
+#         report_items = []
+#         current_date = start_date
+#         while current_date is not datetime.today().date():
+#                 am_count = PassengerCountUtilities.count_remittance('A', current_date)
+#                 pm_count = PassengerCountUtilities.count_remittance('P', current_date)
+#                 am_beep = PassengerCountUtilities.count_beep('A', current_date)
+#                 pm_beep = PassengerCountUtilities.count_beep('P', current_date)
+#
+#                 report_items.append({
+#                     "date": current_date,
+#                     "day": calendar.day_name[current_date.weekday()],
+#                     "am_count": am_count,
+#                     "pm_count": pm_count,
+#                     "am_beep": am_beep,
+#                     "pm_beep": pm_beep,
+#                     "am_total": am_count + am_beep,
+#                     "pm_total": pm_count + pm_beep,
+#                     "total": am_count + am_beep + pm_count + pm_beep
+#                 })
+#
+#                 current_date += timedelta(days=1)
+#
+#         return Response(data={
+#             "report_items": report_items
+#         }, status=status.HTTP_200_OK)
+
+
 class PassengerCountByDate(APIView):
     @staticmethod
     def post(request):
