@@ -214,3 +214,9 @@ class MechanicItems(APIView):
     def post(request, pk):
         repair = Repair.objects.get(id=pk)
         data = json.loads(request.body)
+
+        item = Item.Object.get(id=data['selectedItem'])
+        if(item.consumable == True):
+            rm = RepairModifications(item_used=item, quantity=1, used_up=data['depleted'])
+            rm.save()
+            repair.modifications.add(rm)

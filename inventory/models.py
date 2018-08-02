@@ -86,8 +86,13 @@ class RepairFinding(SoftDeletionModel):
 class RepairModifications(SoftDeletionModel):
     item_used = ForeignKey(Item, on_delete=models.CASCADE)
     quantity = PositiveIntegerField()
-    description = TextField()
     used_up = BooleanField()
+
+
+class OutSourcedItems(SoftDeletionModel):
+    item = CharField(max_length=64)
+    quantity = PositiveIntegerField()
+    unit_price = DecimalField(max_digits=10, decimal_places=2)
 
 
 class Repair(SoftDeletionModel):
@@ -101,14 +106,15 @@ class Repair(SoftDeletionModel):
     problems = ManyToManyField(RepairProblem)
     findings = ManyToManyField(RepairFinding)
     modifications = ManyToManyField(RepairModifications)
+    outsourced_items = ManyToManyField(OutSourcedItems)
 
 
 class ItemMovement(SoftDeletionModel):
     item = ForeignKey(Item, on_delete=models.CASCADE)
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
-    vendor = CharField(max_length=64)
-    unit_price = DecimalField(max_digits=10, decimal_places=2)
+    vendor = CharField(max_length=64, null=True)
+    unit_price = DecimalField(max_digits=10, decimal_places=2, null=True)
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
