@@ -27,6 +27,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('sign-in', SignInView.as_view()),
+    path('passengers_by_date/', PassengerCountByDate.as_view()),
     path('raw-user', CreateDefaultUserView.as_view()),
     path('users', CreateUserView.as_view()),
     path('staff_accounts', PersonView.as_view()),
@@ -41,7 +42,6 @@ urlpatterns = [
     path('transaction_report/', TransactionReport.as_view()),
     path('transaction_report_by_date/', TransactionByDate.as_view()),
     path('shares_by_date/', SharesByDate.as_view()),
-    path('passengers_by_date/', PassengerCountByDate.as_view())
 
 ]
 

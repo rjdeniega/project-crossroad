@@ -565,26 +565,29 @@ class PassengerCountByDate(APIView):
 
                 current_date += timedelta(days=1)
         else:
-            while current_date is not datetime.today().date():
-                am_count = PassengerCountUtilities.count_remittance('A', current_date)
-                pm_count = PassengerCountUtilities.count_remittance('P', current_date)
-                am_beep = PassengerCountUtilities.count_beep('A', current_date)
-                pm_beep = PassengerCountUtilities.count_beep('P', current_date)
+            am_beep = [item for item in BeepTransaction.objects.all() if
+                       item.shift.type == "A" and item.shift.date == start_date.date()]
+            pm_beep = [item for item in BeepTransaction.objects.all() if
+                       item.shift.type == "P" and item.shift.date == start_date.date()]
 
-                report_items.append({
-                    "date": current_date,
-                    "day": calendar.day_name[current_date.weekday()],
-                    "am_count": am_count,
-                    "pm_count": pm_count,
-                    "am_beep": am_beep,
-                    "pm_beep": pm_beep,
-                    "am_total": am_count + am_beep,
-                    "pm_total": pm_count + pm_beep,
-                    "total": am_count + am_beep + pm_count + pm_beep
-                })
 
-                current_date += timedelta(days=1)
-        print("entered here")
+
+
+
+
+
+                        # report_items.append({
+                        #     "date": current_date,
+                        #     "day": calendar.day_name[current_date.weekday()],
+                        #     "am_count": am_count,
+                        #     "pm_count": pm_count,
+                        #     "am_beep": am_beep,
+                        #     "pm_beep": pm_beep,
+                        #     "am_total": am_count + am_beep,
+                        #     "pm_total": pm_count + pm_beep,
+                        #     "total": am_count + am_beep + pm_count + pm_beep
+                        # })
+
         return Response(data={
             "report_items": report_items
         }, status=status.HTTP_200_OK)
