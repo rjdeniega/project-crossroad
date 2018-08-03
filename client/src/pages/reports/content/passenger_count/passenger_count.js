@@ -92,6 +92,8 @@ export class PassengerCount extends Component {
         postData('/passengers_by_date/', data).then(data => {
             this.setState({
                 filtered_transactions: data.report_items,
+                am_total: data.am_total,
+                pm_total: data.pm_total,
             })
         });
         this.setState({
@@ -108,6 +110,8 @@ export class PassengerCount extends Component {
             console.log(data);
             this.setState({
                 filtered_transactions: data.report_items,
+                am_total: data.am_total,
+                pm_total: data.pm_total,
             })
         });
         this.setState({
@@ -116,20 +120,15 @@ export class PassengerCount extends Component {
     };
 
     fetchShares() {
-        // getData('/shares_report/').then(data => {
-        //     console.log(data);
-        //     this.setState({
-        //         all_transactions: data.report_items,
-        //     }, () => this.setState({
-        //         filtered_transactions: this.state.all_transactions
-        //     }))
-        // });
-        // getData('/members/').then(data => {
-        //     console.log(data.members);
-        //     this.setState({
-        //         members: data.members,
-        //     })
-        // });
+        getData('/passengers/').then(data => {
+            this.setState({
+                all_transactions: data.report_items,
+                am_total: data.am_total,
+                pm_total: data.pm_total,
+            }, () => this.setState({
+                filtered_transactions: this.state.all_transactions
+            }))
+        });
     }
 
     resetFilters = () => {
@@ -165,6 +164,8 @@ export class PassengerCount extends Component {
             <div className="shares-report-body">
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                 <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
+                <p> AM Total: {this.state.am_total}</p>
+                <p> PM Total: {this.state.pm_total}</p>
                 <Table bordered size="medium"
                        pagination={false}
                        className="remittance-table"
