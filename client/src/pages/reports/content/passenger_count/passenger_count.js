@@ -16,32 +16,59 @@ import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 const columns = [{
-    title: 'Name',
-    dataIndex: 'member.name',
-    key: 'mamber.name',
+    title: 'Date',
+    dataIndex: 'date',
+    key: 'date',
     render: (text) => (
         <div>
             {text}
         </div>
     )
 }, {
-    title: 'Shares',
-    dataIndex: 'total_shares',
-    key: 'total_shares',
+    title: 'Day',
+    dataIndex: 'day',
+    key: 'day',
     render: (text) => (
         <div>
             {text}
         </div>
     ),
 }, {
-    title: 'Share Value (in Php)',
-    dataIndex: 'total_peso_value',
-    key: 'total_peso_value',
+    title: 'AM Ticketing count',
+    dataIndex: 'am_count',
+    key: 'am_count',
     render: (text) => (
-        <div className="rem-status">
-            <p><b>Php {text}</b></p>
+        <div>
+            {text}
         </div>
-    )
+    ),
+}, {
+    title: 'PM Ticketing count',
+    dataIndex: 'pm_count',
+    key: 'pm_count',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    ),
+}, {
+    title: 'AM Beep Count',
+    dataIndex: 'am_beep',
+    key: 'am_beep',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    ),
+}, {
+    title: 'PM Beep Count',
+    dataIndex: 'pm_beep',
+    key: 'pm_beep',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    ),
 },];
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
@@ -56,15 +83,17 @@ export class PassengerCount extends Component {
     componentDidMount() {
         this.fetchShares()
     }
+
     handleStartDateChange = (date, dateString) => {
         const data = {
             "start_date": dateString
         };
         console.log("entered here");
-        postData('passengers_by_date/', data).then(data => {
-            console.log(data);
+        postData('/passengers_by_date/', data).then(data => {
             this.setState({
                 filtered_transactions: data.report_items,
+                am_total: data.am_total,
+                pm_total: data.pm_total,
             })
         });
         this.setState({
@@ -77,27 +106,28 @@ export class PassengerCount extends Component {
             "start_date": this.state.start_date,
             "end_date": dateString,
         };
-        postData('/shares_by_date/', data).then(data => {
+        postData('/passengers_by_date/', data).then(data => {
+            console.log(data);
             this.setState({
-                filtered_transactions: data.report_items
+                filtered_transactions: data.report_items,
+                am_total: data.am_total,
+                pm_total: data.pm_total,
             })
-        })
+        });
+        this.setState({
+            end_date: dateString
+        });
     };
 
     fetchShares() {
-        getData('/shares_report/').then(data => {
-            console.log(data);
+        getData('/passengers/').then(data => {
             this.setState({
                 all_transactions: data.report_items,
+                am_total: data.am_total,
+                pm_total: data.pm_total,
             }, () => this.setState({
                 filtered_transactions: this.state.all_transactions
             }))
-        });
-        getData('/members/').then(data => {
-            console.log(data.members);
-            this.setState({
-                members: data.members,
-            })
         });
     }
 
@@ -134,11 +164,8 @@ export class PassengerCount extends Component {
             <div className="shares-report-body">
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                 <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
-                <Select onSelect={this.filterBy("member")} className="user-input" defaultValue="Select Member">
-                    {this.state.members.map(item => (
-                        <Option value={item.card_number}>{item.name + " - " + item.card_number}</Option>
-                    ))}
-                </Select>
+                <p> AM Total: {this.state.am_total}</p>
+                <p> PM Total: {this.state.pm_total}</p>
                 <Table bordered size="medium"
                        pagination={false}
                        className="remittance-table"
