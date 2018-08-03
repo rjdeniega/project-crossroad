@@ -11,6 +11,8 @@ import {ic_navigate_next} from 'react-icons-kit/md/ic_navigate_next'
 import {withMinus} from 'react-icons-kit/entypo/withMinus'
 import {plus} from 'react-icons-kit/entypo/plus'
 import {AddItems} from './add_item_modal'
+import {OutsourceForm} from './confirm_outsource'
+
 
 const ButtonGroup = Button.Group;
 
@@ -164,6 +166,7 @@ export class MechanicView extends Component{
             currentTab: 1,
             findingsModal: false,
             itemsModal: false,
+            outsourceModal: false,
             items: [],
         }
     }
@@ -174,6 +177,10 @@ export class MechanicView extends Component{
 
     setItemsVisible(itemsModal){
         this.setState({itemsModal})
+    }
+
+    setOutsourcedVisible(outsourceModal){
+        this.setState({outsourceModal})
     }
 
     componentDidMount(){
@@ -397,7 +404,19 @@ export class MechanicView extends Component{
                                         {loadedRepair.start_date ? (
                                             <p><b>Start Date: </b> loadedRepair.start_date</p>
                                         ) :""}
-                                        {loadedRepair.status === 'IP' ? '' : (
+                                        {loadedRepair.status === 'IP' ? (
+                                            <div>
+                                                <Button type='primary' onClick={() => this.setOutsourcedVisible(true)}>
+                                                        <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
+                                                </Button>
+                                                <Modal
+                                                    title='Enter Repair Summary' width={600}
+                                                    onCancel={() => this.setOutsourcedVisible(false)}
+                                                    footer={null} visible={this.state.outsourceModal}>
+                                                    <OutsourceForm/>
+                                                </Modal>
+                                            </div>
+                                        ) : (
                                             <ButtonGroup align-self='center'>
                                                 <Button type='primary' onClick={() => this.repairAction(loadedRepair.id, 'complete')}>
                                                     <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
