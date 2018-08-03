@@ -121,7 +121,7 @@ export class RemittanceForm extends Component {
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_second_id,
-                    "end_ticket": this.props.fifteen_peso_start_firstfirst ? this.state.fifteen_end_final_second : 0
+                    "end_ticket": this.props.fifteen_peso_start_second ? this.state.fifteen_end_final_second : 0
                 },
             ]
         };
@@ -164,7 +164,7 @@ export class RemittanceForm extends Component {
         const first_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_first) - parseInt(this.props.twelve_peso_start_first) + 1) * 12);
         const second_twelve_sum = parseInt((parseInt(this.state.twelve_end_final_second) - parseInt(this.props.twelve_peso_start_second) + 1) * 12);
         const first_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_first) - parseInt(this.props.fifteen_peso_start_first) + 1) * 15);
-        const second_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_second) - parseInt(this.props.fifteen_peso_start_firstfirst) + 1) * 15);
+        const second_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_second) - parseInt(this.props.fifteen_peso_start_second) + 1) * 15);
 
         if (fieldName == "ten_end_final_first") {
             this.setState({
@@ -376,7 +376,7 @@ export class RemittanceForm extends Component {
                                 * 12 = {this.state.second_twelve_sum}</p>
                             <p> {this.calculateQuantity(this.state.fifteen_end_final_first, this.props.fifteen_peso_start_first)}
                                 * 15 = {this.state.first_fifteen_sum}</p>
-                            <p> {this.calculateQuantity(this.state.fifteen_end_final_second, this.props.fifteen_peso_start_firstfirst)}
+                            <p> {this.calculateQuantity(this.state.fifteen_end_final_second, this.props.fifteen_peso_start_second)}
                                 * 15 = {this.state.second_fifteen_sum}</p>
                             <Divider></Divider>
                             <p><b> less </b></p>

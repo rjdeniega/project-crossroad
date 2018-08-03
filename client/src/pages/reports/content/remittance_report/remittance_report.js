@@ -31,7 +31,7 @@ const columns = [{
             <div className="shift-table-column"><AntIcon type="check-circle" className="status-icon"/> <p>AM</p></div>}
             {text == "P" &&
             <div className="shift-table-column"><AntIcon type="check-circle" className="status-icon"/> <p>PM</p></div>}
-            {text == "MN" &&
+            {text == "M" &&
             <div className="shift-table-column"><AntIcon type="check-circle" className="status-icon"/> <p>MN</p></div>}
         </div>
     ),
