@@ -17,5 +17,9 @@ inventory_urls = [
     path('mechanic/repairs', MechanicRepairs.as_view()),
     path('mechanic/repairs/<int:pk>', MechanicRepairs.as_view()),
     path('mechanic/items/<int:consume>', MechanicItems.as_view()),
-    path('mechanic/items/add/<int:pk>', MechanicItems.as_view())
+    path('mechanic/items/add/<int:pk>', MechanicItems.as_view()),
+    path('finalize/<int:pk>', OutsourceModification.as_view()),
+
+    # Maintenance Report
+    path('report/<int:pk>', MaintenanceReport.as_view())
 ]

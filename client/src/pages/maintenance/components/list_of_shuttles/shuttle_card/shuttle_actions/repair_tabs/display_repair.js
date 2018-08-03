@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {Icon} from 'react-icons-kit'
 import {List} from 'antd'
+import {getData} from '../../../../../../../network_requests/general'
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_done} from 'react-icons-kit/md/ic_done'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
@@ -30,7 +31,8 @@ export class RepairDisplay extends Component{
     }
 
     render(){
-        let {repair, problems, findings, modifications} = this.props;
+        let {repair, problems, findings, modifications, outsourcedItems, items} = this.props;
+
 
         return(
             <div style={{border: 'solid', width: '100%',
@@ -79,11 +81,28 @@ export class RepairDisplay extends Component{
                                     <List size='small' header={<h3>Items Used</h3>}
                                           bordered>
                                           {modifications.map(function(modification, index){
-                                          return (
-                                              <List.Item>{modification.quantity} &nbsp;
-                                                  {modification.item_used}</List.Item>
-                                          )})}
+                                              return items.map(function(item, index){
+                                                  if(item.id === modification.item_used){
+                                                      console.log('nice')
+                                                      return (
+                                                      <List.Item>{modification.quantity} - {item.name}</List.Item>
+                                                    )
+                                                  }
+
+                                              })
+                                        })}
                                     </List>
+                            )}
+                            {outsourcedItems.length == 0 ? '' :
+                            (
+                                <List size='small' header={<h3>Outsourced Repair</h3>}
+                                        bordered>
+                                        {outsourcedItems.map(function(item, index){
+                                            return (
+                                                <List.Item>P{item.unit_price} - {item.item}, {item.quantity} px</List.Item>
+                                            )
+                                        })}
+                                </List>
                             )}
                         </PerfectScrollbar>
                     </div>

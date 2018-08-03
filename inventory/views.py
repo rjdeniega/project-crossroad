@@ -170,11 +170,13 @@ class ProblemsView(APIView):
         problems = RepairProblemSerializer(repair.problems.all(), many=True)
         findings = RepairFindingSerializer(repair.findings.all(), many=True)
         modifications = RepairModificationsSerializer(repair.modifications.all(), many=True)
+        outsourcedItems = OutsourcedItemsSerializer(repair.outsourced_items.all(), many=True)
 
         return Response(data={
             'problems': problems.data,
             'findings': findings.data,
             'modifications': modifications.data,
+            'outsourcedItems': outsourcedItems.data
         }, status=status.HTTP_200_OK)
 
 
@@ -263,4 +265,45 @@ class MechanicItems(APIView):
         modifications = RepairModificationsSerializer(repair.modifications.all(), many=True)
         return Response(data={
             'modifications': modifications.data
+        }, status=status.HTTP_200_OK)
+
+
+class OutsourceModification(APIView):
+    @staticmethod
+    def post(request, pk):
+        repair = Repair.objects.get(id=pk)
+        data = json.loads(request.body)
+        repair.labor_fee = data['labor_cost']
+        repair.status = 'C'
+        for item in data['items']:
+            oi = OutSourcedItems(item=item['item_name'], quantity=item['quantity'], unit_price=item['unit_price'])
+            oi.save()
+            repair.outsourced_items.add(oi)
+
+        repair.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MaintenanceReport(APIView):
+    @staticmethod
+    def get(request, pk):
+        shuttle = Shuttle.objects.get(id=pk)
+        initialMaintenanceCost = 0
+        repairs = Repair.objects.all().filter(shuttle=shuttle)
+
+        for repair in repairs:
+            if(repair.labor_fee):
+                initialMaintenanceCost = initialMaintenanceCost + repair.labor_fee
+
+            for modification in repair.modifications.all():
+                item = Item.objects.get(id=modification.item_used.id)
+                amount = item.average_price * modification.quantity
+                initialMaintenanceCost = initialMaintenanceCost + amount
+
+            for outsourced in repair.outsourced_items.all():
+                amount = outsourced.quantity * outsourced.unit_price
+                initialMaintenanceCost = initialMaintenanceCost + amount
+
+        return Response(data={
+            'maintenance_cost': initialMaintenanceCost
         }, status=status.HTTP_200_OK)

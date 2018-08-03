@@ -21,6 +21,7 @@ import { RemittanceReport } from './content/remittance_report/remittance_report'
 import { SharesReport } from './content/shares_report/shares_report'
 import { TransactionReport } from './content/transactions_report/transactions_report'
 import { PassengerCount } from './content/passenger_count/passenger_count'
+import {MaintenanceReport  } from './content/maintenance_report/maintenance_report'
 
 
 
@@ -42,7 +43,7 @@ const MAINTENANCE_CARDS = [{
     'title': 'Maintenance Report',
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
-    'content': <RemittanceReport/>
+    'content': <MaintenanceReport/>
 }];
 const MEMBER_CARDS = [{
     'title': 'Shares Report',

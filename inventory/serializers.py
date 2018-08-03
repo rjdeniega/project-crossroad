@@ -42,3 +42,9 @@ class RepairModificationsSerializer(ModelSerializer):
     class Meta:
         model = RepairModifications
         fields = "__all__"
+
+
+class OutsourcedItemsSerializer(ModelSerializer):
+    class Meta:
+        model = OutSourcedItems
+        fields = "__all__"

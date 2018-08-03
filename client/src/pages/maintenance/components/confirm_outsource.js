@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {Form, Input, InputNumber, Col, Button, message} from 'antd'
 import {Icon} from 'react-icons-kit'
 import {withMinus} from 'react-icons-kit/entypo/withMinus'
+import {postData} from  "../../../network_requests/general"
 import {plus} from 'react-icons-kit/entypo/plus'
 
 
@@ -43,13 +44,34 @@ class OutsourceFormInit extends Component{
 
     handleSubmit(e){
         e.preventDefault();
+        const {repair} = this.props
         this.props.form.validateFields((err, values) => {
             if(typeof values['items'] === 'undefined'){
                 message.warning('Add item fields!')
             }
             if(!err && typeof values['items'] !== 'undefined'){
-                let cleaned_items = values.filter(function(n){return n!= undefined})
-                console.log(cleaned_items)
+                let labor_cost = values['labor_cost'];
+                let items = []
+                values['item_name'] = values['item_name'].filter(function(n){return n!= undefined})
+                values['quantity'] = values['quantity'].filter(function(n){return n!= undefined})
+                values['unit_price'] = values['quantity'].filter(function(n){return n!= undefined})
+                values['item_name'].map(function(value, index){
+                    let item = {
+                        item_name: values['item_name'][index],
+                        quantity: values['quantity'][index],
+                        unit_price: values['unit_price'][index]
+                    }
+                    items.push(item)
+                })
+                let data = {
+                    labor_cost: labor_cost,
+                    items: items
+                }
+
+                postData('inventory/finalize/' + repair.id, data)
+                this.props.unload()
+                this.props.close()
+                message.success('Repair ' + repair.id + ' complete!')
             }
         })
     }
