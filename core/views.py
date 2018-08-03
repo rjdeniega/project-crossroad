@@ -492,7 +492,10 @@ class PassengerCountUtilities():
                                                         deployment__shift_iteration__shift__type=shift_type):
             for assigned_ticket in AssignedTicket.objects.filter(deployment__remittanceform=remittance.id):
                 consumed_ticket = ConsumedTicket.objects.get(assigned_ticket=assigned_ticket.id)
-                passenger_count += consumed_ticket.end_ticket - assigned_ticket.range_from + 1
+                print(consumed_ticket.end_ticket)
+                print(assigned_ticket.range_from)
+                if assigned_ticket.range_from is not None:
+                    passenger_count += consumed_ticket.end_ticket - assigned_ticket.range_from + 1
 
         return passenger_count
 
@@ -545,46 +548,48 @@ class PassengerCountByDate(APIView):
 
         current_date = start_date
         if end_date is not None:
-            while current_date is not end_date:
-                am_count = PassengerCountUtilities.count_remittance('A', current_date)
-                pm_count = PassengerCountUtilities.count_remittance('P', current_date)
-                am_beep = PassengerCountUtilities.count_beep('A', current_date)
-                pm_beep = PassengerCountUtilities.count_beep('P', current_date)
-
-                report_items.append({
-                    "date": current_date,
-                    "day": calendar.day_name[current_date.weekday()],
-                    "am_count": am_count,
-                    "pm_count": pm_count,
-                    "am_beep": am_beep,
-                    "pm_beep": pm_beep,
-                    "am_total": am_count + am_beep,
-                    "pm_total": pm_count + pm_beep,
-                    "total": am_count + am_beep + pm_count + pm_beep
-                })
-
-                current_date += timedelta(days=1)
+            dates = [item.shift.date for item in BeepTransaction.objects.all() if item.shift.type == "A"]
+            dates = list(set(dates))
+            
+            for date in dates:
+                print(end_date.date())
+                print(date)
+                print(start_date.date())
+                if start_date.date() <= date <= end_date.date():
+                    am_count = PassengerCountUtilities.count_remittance('A', date)
+                    pm_count = PassengerCountUtilities.count_remittance('P', date)
+                    am_beep = PassengerCountUtilities.count_beep('A', date)
+                    pm_beep = PassengerCountUtilities.count_beep('P', date)
+                    item = {
+                        "date": date,
+                        "day": calendar.day_name[date.weekday()],
+                        "am_count": am_count,
+                        "pm_count": pm_count,
+                        "am_beep": am_beep,
+                        "pm_beep": pm_beep,
+                        "am_total": am_count + am_beep,
+                        "pm_total": pm_count + pm_beep,
+                        "total": am_count + am_beep + pm_count + pm_beep
+                    }
+                    report_items.append(item)
         else:
-            while current_date is not datetime.today().date():
-                am_count = PassengerCountUtilities.count_remittance('A', current_date)
-                pm_count = PassengerCountUtilities.count_remittance('P', current_date)
-                am_beep = PassengerCountUtilities.count_beep('A', current_date)
-                pm_beep = PassengerCountUtilities.count_beep('P', current_date)
+            am_count = PassengerCountUtilities.count_remittance('A', current_date)
+            pm_count = PassengerCountUtilities.count_remittance('P', current_date)
+            am_beep = PassengerCountUtilities.count_beep('A', current_date)
+            pm_beep = PassengerCountUtilities.count_beep('P', current_date)
 
-                report_items.append({
-                    "date": current_date,
-                    "day": calendar.day_name[current_date.weekday()],
-                    "am_count": am_count,
-                    "pm_count": pm_count,
-                    "am_beep": am_beep,
-                    "pm_beep": pm_beep,
-                    "am_total": am_count + am_beep,
-                    "pm_total": pm_count + pm_beep,
-                    "total": am_count + am_beep + pm_count + pm_beep
-                })
-
-                current_date += timedelta(days=1)
-        print("entered here")
+            report_items.append({
+                "date": current_date.date(),
+                "day": calendar.day_name[current_date.weekday()],
+                "am_count": am_count,
+                "pm_count": pm_count,
+                "am_beep": am_beep,
+                "pm_beep": pm_beep,
+                "am_total": am_count + am_beep,
+                "pm_total": pm_count + pm_beep,
+                "total": am_count + am_beep + pm_count + pm_beep
+            })
+        print(report_items)
         return Response(data={
             "report_items": report_items
         }, status=status.HTTP_200_OK)
