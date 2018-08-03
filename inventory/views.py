@@ -282,3 +282,28 @@ class OutsourceModification(APIView):
 
         repair.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MaintenanceReport(APIView):
+    @staticmethod
+    def get(request, pk):
+        shuttle = Shuttle.objects.get(id=pk)
+        initialMaintenanceCost = 0
+        repairs = Repair.objects.all().filter(shuttle=shuttle)
+
+        for repair in repairs:
+            if(repair.labor_fee):
+                initialMaintenanceCost = initialMaintenanceCost + repair.labor_fee
+
+            for modification in repair.modifications.all():
+                item = Item.objects.get(id=modification.item_used.id)
+                amount = item.average_price * modification.quantity
+                initialMaintenanceCost = initialMaintenanceCost + amount
+
+            for outsourced in repair.outsourced_items.all():
+                amount = outsourced.quantity * outsourced.unit_price
+                initialMaintenanceCost = initialMaintenanceCost + amount
+
+        return Response(data={
+            'maintenance_cost': initialMaintenanceCost
+        }, status=status.HTTP_200_OK)
