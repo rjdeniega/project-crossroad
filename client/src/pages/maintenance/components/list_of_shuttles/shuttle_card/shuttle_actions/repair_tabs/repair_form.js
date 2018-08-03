@@ -56,7 +56,6 @@ class RepairFormInit extends React.Component{
               message.warning('Add problem fields!');
             }
             if (!err && typeof values['problems'] !== 'undefined') {
-                console.log(values['problems']);
                 let cleaned_problems = values['problems']
                                 .filter(function(n){return n != undefined});
                 const data = {
