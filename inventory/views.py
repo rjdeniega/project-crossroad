@@ -4,6 +4,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from remittances.models import *
 
 from inventory.serializers import *
 from .models import *
@@ -290,6 +291,9 @@ class MaintenanceReport(APIView):
         shuttle = Shuttle.objects.get(id=pk)
         initialMaintenanceCost = 0
         repairs = Repair.objects.all().filter(shuttle=shuttle)
+
+        shuttle_remittance = sum([item.total for item in RemittanceForm.objects.filter(deployment__shift_iteration__shift__drivers_assigned__shuttle=shuttle.id)])
+        print(shuttle_remittance)
 
         for repair in repairs:
             if(repair.labor_fee):
