@@ -61,8 +61,11 @@ export class PassengerCount extends Component {
             "start_date": dateString
         };
         console.log("entered here");
-        postData('/passengers_by_date/', data).then(response => {
-            console.log(response);
+        postData('passengers_by_date/', data).then(data => {
+            console.log(data);
+            this.setState({
+                filtered_transactions: data.report_items,
+            })
         });
         this.setState({
             start_date: dateString
