@@ -6,6 +6,7 @@ import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_done} from 'react-icons-kit/md/ic_done'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
 import {RepairDisplay} from './display_repair'
+import {getData} from '../../../../../../../network_requests/general'
 
 export class RepairsTable extends Component{
     constructor(props){
@@ -17,6 +18,8 @@ export class RepairsTable extends Component{
             problems: '',
             findings: '',
             modifications: '',
+            outsourcedItems: '',
+            items: []
         };
 
         this.columns = [{
@@ -70,6 +73,17 @@ export class RepairsTable extends Component{
 
     componentDidMount(){
         this.fetchRepairs();
+
+        getData('inventory/items')
+            .then(data=>{
+                if(!data.error){
+                    this.setState({
+                        items: data.items
+                    })
+                } else {
+                    console.log(data.error)
+                }
+            })
     }
 
     loadNewRepair = (record) => {
@@ -82,6 +96,7 @@ export class RepairsTable extends Component{
                 problems: data.problems,
                 findings: data.findings,
                 modifications: data.modifications,
+                outsourcedItems: data.outsourcedItems,
                 loadedRepair: record
             }))
     };
@@ -104,7 +119,7 @@ export class RepairsTable extends Component{
     };
 
     render(){
-        const {repairs, loadedRepair, problems, findings, modifications} = this.state;
+        const {repairs, loadedRepair, problems, findings, modifications, outsourcedItems, items} = this.state;
 
         if (repairs.length === 0){
             return(
@@ -126,7 +141,9 @@ export class RepairsTable extends Component{
                             <RepairDisplay repair={loadedRepair}
                                            problems={problems}
                                            findings={findings}
-                                           modifications={modifications}/>
+                                           modifications={modifications}
+                                           outsourcedItems={outsourcedItems}
+                                           items={items}/>
                         </Col>
                     </Row>
                 </div>

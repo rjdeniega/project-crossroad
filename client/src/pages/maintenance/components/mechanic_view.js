@@ -171,6 +171,12 @@ export class MechanicView extends Component{
         }
     }
 
+    unloadRepair(){
+        this.setState({
+            loadedRepair: ''
+        })
+    }
+
     setfindingsVisible(findingsModal){
         this.setState({findingsModal})
     }
@@ -413,7 +419,8 @@ export class MechanicView extends Component{
                                                     title='Enter Repair Summary' width={600}
                                                     onCancel={() => this.setOutsourcedVisible(false)}
                                                     footer={null} visible={this.state.outsourceModal}>
-                                                    <OutsourceForm/>
+                                                    <OutsourceForm close={() => this.setOutsourcedVisible(false)} unload={this.unloadRepair.bind(this)}
+                                                                   repair={loadedRepair}/>
                                                 </Modal>
                                             </div>
                                         ) : (
