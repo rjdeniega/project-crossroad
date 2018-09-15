@@ -1,12 +1,12 @@
 from django.db import models
-from django.db.models import Model, QuerySet, Manager, CharField, DateTimeField
+from django.db.models import Model, QuerySet, Manager, CharField, DateTimeField, BooleanField
 from django.utils import timezone
 
 
 # Create your models here.
 # These models are for audit trail
 # When an object is deleted, it doesnt get removed it just gets archived
-#refer to
+# refer to
 
 
 class SoftDeletionQuerySet(QuerySet):
@@ -69,3 +69,26 @@ class SoftDeletionModel(Model):
         self.archived_at = None
         self.archiver = ""
         self.save()
+
+
+NOTIFICATION_TYPE = [
+    ('I', 'Inventory'),
+    ('R', 'Remittances'),
+    ('M', 'Members')
+]
+
+
+class Notification(SoftDeletionModel):
+    type = CharField(max_length=1, choices=NOTIFICATION_TYPE)
+    description = CharField(max_length=255)
+    is_read = BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+            self.modified = timezone.now()
+        self.modified = timezone.now()
+        return super(Notification, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.description}"
