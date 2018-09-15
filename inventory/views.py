@@ -8,7 +8,8 @@ from remittances.models import *
 
 from inventory.serializers import *
 from .models import *
-import json, datetime
+import json
+from datetime import datetime
 
 
 class SpecificItemView(APIView):
@@ -228,7 +229,7 @@ class MechanicItems(APIView):
         data = json.loads(request.body)
         if data['action'] == 'complete':
             repair.status = 'C'
-            repair.end_date = datetime.now()
+            repair.end_date = datetime.now().date()
             repair.save()
         else:
             repair.status = 'IP'
