@@ -263,6 +263,9 @@ export class ShiftManagementPane extends Component {
         const endDateObject = moment(date).add(15, 'days');
         const startDateString = moment(date).format('YYYY-MM-DD');
 
+        console.log(date);
+        console.log(dateString);
+
         this.setState({
             startDate: startDateString,
             startDateObject: moment(date),
