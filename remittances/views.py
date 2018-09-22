@@ -44,6 +44,45 @@ class ScheduleView(APIView):
             })
 
 
+class ScheduleHistoryView(APIView):
+    @staticmethod
+    def get(request):
+        schedulehistory = []
+        schedules = Schedule.objects.all()
+
+        for schedule in schedules:
+            tempsched = []
+
+            tempsched.append({
+                'schedule_details':{
+                    'start_date':schedule.start_date,
+                    'end_date':schedule.end_date
+                }
+            })
+
+            tempshifts = []
+            tempshifts.append(schedule.objects.get(schedule=schedule.id, type='A'))
+            tempshifts.append(schedule.objects.get(schedule=schedule.id, type='P'))
+            tempshifts.append(schedule.objects.get(schedule=schedule.id, type='M'))
+
+            shifts = []
+            for shift in tempshifts:
+                if shift.type == 'A':
+                    pass
+                elif shift.type == 'P':
+                    pass
+                else:
+                    pass
+            
+            schedulehistory.append(tempsched)
+        
+        return Response(data={
+            "history": schedulehistory
+        }, status=status.HTTP_200_OK)
+
+
+
+
 # Ignore this class for now
 class ShiftView(APIView):
     @staticmethod
