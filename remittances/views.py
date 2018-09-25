@@ -47,37 +47,41 @@ class ScheduleView(APIView):
 class ScheduleHistoryView(APIView):
     @staticmethod
     def get(request):
-        schedulehistory = []
         schedules = Schedule.objects.all()
+        schedulehistory = []
 
         for schedule in schedules:
-            tempsched = []
-
-            tempsched.append({
-                'schedule_details':{
-                    'start_date':schedule.start_date,
-                    'end_date':schedule.end_date
-                }
-            })
-
             tempshifts = []
-            tempshifts.append(schedule.objects.get(schedule=schedule.id, type='A'))
-            tempshifts.append(schedule.objects.get(schedule=schedule.id, type='P'))
-            tempshifts.append(schedule.objects.get(schedule=schedule.id, type='M'))
+            shifts = Shift.objects.filter(schedule=schedule.id)
 
-            shifts = []
-            for shift in tempshifts:
-                if shift.type == 'A':
-                    pass
-                elif shift.type == 'P':
-                    pass
-                else:
-                    pass
-            
-            schedulehistory.append(tempsched)
+            for shift in shifts:
+                drivers = DriversAssigned.objects.filter(shift=shift.id)
+                tempdrivers = []
+
+                for driver in drivers:
+                    tempdrivers.append({
+                        'id': driver.id, # id for DriversAssigned object
+                        'driver_id': driver.driver.id, # id for the actual driver
+                        'driver_name': driver.driver.name,
+                        'shuttle_id': driver.shuttle.id,
+                        'shuttle_plate_number': driver.shuttle.plate_number,
+                        'shuttle_make': driver.shuttle.make
+                    })
+
+                tempshifts.append({
+                    'type': shift.type,
+                    'drivers': tempdrivers
+                })
+
+            schedulehistory.append({
+                'id': schedule.id,
+                'start_date': schedule.start_date,
+                'end_date': schedule.end_date,
+                'shifts': tempshifts
+            })
         
         return Response(data={
-            "history": schedulehistory
+            "schedule_history": schedulehistory
         }, status=status.HTTP_200_OK)
 
 
