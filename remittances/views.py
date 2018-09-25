@@ -85,6 +85,38 @@ class ScheduleHistoryView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class SpecificScheduleView(APIView):
+    @staticmethod
+    def get(request, schedule_id):
+        schedule = Schedule.objects.get(id=schedule_id)
+        tempshifts = []
+        shifts = Shift.objects.filter(schedule=schedule.id)
+
+        for shift in shifts:
+            drivers = DriversAssigned.objects.filter(shift=shift.id)
+            tempdrivers = []
+
+            for driver in drivers:
+                tempdrivers.append({
+                    'id': driver.id,  # id for DriversAssigned object
+                    'driver_id': driver.driver.id,  # id for the actual driver
+                    'driver_name': driver.driver.name,
+                    'shuttle_id': driver.shuttle.id,
+                    'shuttle_plate_number': driver.shuttle.plate_number,
+                    'shuttle_make': driver.shuttle.make
+                })
+
+            tempshifts.append({
+                'type': shift.type,
+                'drivers': tempdrivers
+            })
+
+        return Response(data={
+            'id': schedule.id,
+            'start_date': schedule.start_date,
+            'end_date': schedule.end_date,
+            'shifts': tempshifts
+        }, status=status.HTTP_200_OK)
 
 
 # Ignore this class for now

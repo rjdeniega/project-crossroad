@@ -5,6 +5,7 @@ from remittances.views import *
 remittance_urls = [
     path('schedules/', ScheduleView.as_view()),
     path('schedules/history', ScheduleHistoryView.as_view()),
+    path('schedules/<int:schedule_id>', SpecificScheduleView.as_view()),
     path('deployments/', DeploymentView.as_view()),
     path('deployments/<int:pk>', DeploymentView.as_view()),
     path('deployments/deployed_drivers/<int:supervisor_id>', DeployedDrivers.as_view()),
