@@ -70,7 +70,9 @@ class ScheduleHistoryView(APIView):
 
                 tempshifts.append({
                     'type': shift.type,
-                    'drivers': tempdrivers
+                    'supervisor_id': shift.supervisor.id,
+                    'supervisor_name': shift.supervisor.name,
+                    'drivers': tempdrivers,
                 })
 
             schedulehistory.append({
