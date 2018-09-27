@@ -373,6 +373,29 @@ export class ShiftHistoryPane extends Component {
             })
             .catch(error => console.log(error));
     };
+    handleSelectSchedule = (id) => {
+        console.log(id);
+        this.getSchedule(id)
+
+    };
+    getSchedule(id){
+        return getData('remittances/schedules/' + id).then(data => {
+            if (!data["error"]) {
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
+                const tableData = [];
+                //append drivers with their ids as key
+                console.log(data.shifts[0].drivers);
+                this.setState({
+                    drivers: data.shifts[0].drivers
+                })
+            }
+            else {
+                console.log(data["error"]);
+            }
+        });
+    }
 
     renderSupervisors = () => this.state.supervisors.map(supervisor =>
         <Menu.Item key={supervisor.id}>{supervisor.name}</Menu.Item>
@@ -383,8 +406,9 @@ export class ShiftHistoryPane extends Component {
             {this.state.supervisors && this.renderSupervisors()}
         </Menu>
     );
+
 //JSX rendering functions
-    renderShiftTables = () => (
+    renderShiftTables = (amSupervisor,pmSupervisor,mnSupervisor) => (
         <div className="tables-wrapper">
             <Modal
                 title="Assign this driver to a shuttle"
@@ -402,11 +426,7 @@ export class ShiftHistoryPane extends Component {
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">AM</div>
-                    <Dropdown overlay={this.supervisors("AM")}>
-                        <Button className="supervisor-select" style={{ marginLeft: 8 }}>
-                            {this.state.am_shift_supervisor} <AntIcon type="down"/>
-                        </Button>
-                    </Dropdown>
+                    <p><b>{amSupervisor}</b></p>
                 </div>
                 <Table showHeader={false} rowSelection={this.amRowSelection} pagination={false} columns={columns}
                        dataSource={this.state.drivers}/>,
@@ -447,7 +467,8 @@ export class ShiftHistoryPane extends Component {
                 return this.state.schedules;
             })()}
             renderItem={item => (
-                <List.Item className="list-item">
+                <List.Item className="list-item" onClick={() => this.handleSelectSchedule(item.id)}
+>
                     <List.Item.Meta
                         title={<p className="list-title">{item.start_date} - {item.end_date}</p>}
                     />
