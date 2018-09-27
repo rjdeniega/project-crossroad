@@ -27,6 +27,8 @@ import {TicketingPane} from '../../tabs/ticketing/ticketing'
 import {BeepPane} from '../../tabs/beep/beep'
 import {OverviewPane} from '../../tabs/overview/overview'
 import {ShiftManagementPane} from '../../tabs/shift_management/shift_management'
+import {ShiftHistoryPane} from '../../tabs/shift_history/shift_history'
+
 const TabPane = Tabs.TabPane;
 
 export class OMRemittancePage extends Component {
@@ -41,9 +43,9 @@ export class OMRemittancePage extends Component {
         if (key == "1") {
             this.invokeChangeTab(<ShiftManagementPane/>)
         } else if (key == "2") {
-            this.invokeChangeTab(<TicketingPane/>)
+            this.invokeChangeTab(<ShiftHistoryPane/>)
         } else if (key == "3")  {
-            this.invokeChangeTab(<BeepPane/>)
+            this.invokeChangeTab(<TicketingPane/>)
         }else {
             this.invokeChangeTab(<BeepPane/>)
         }
@@ -63,8 +65,9 @@ export class OMRemittancePage extends Component {
                         <div className="user-tabs-wrapper">
                             <Tabs className="user-tabs" defaultActiveKey="1" onChange={this.callback}>
                                 <TabPane className="tab-item" tab="Create Shift" key="1"></TabPane>
-                                <TabPane className="tab-item" tab="Ticketing" key="2"></TabPane>
-                                <TabPane className="tab-item" tab="Beep™" key="3"></TabPane>
+                                <TabPane className="tab-item" tab="Past Schedules" key="2"></TabPane>
+                                <TabPane className="tab-item" tab="Ticketing" key="3"></TabPane>
+                                <TabPane className="tab-item" tab="Beep™" key="4"></TabPane>
                             </Tabs>
                         </div>
                     </div>
