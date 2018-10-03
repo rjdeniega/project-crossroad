@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './style.css';
 import {List} from 'antd';
 
-export class Notification extends Component{
+export default class Notification extends Component{
     constructor(props){
         super(props);
     }
