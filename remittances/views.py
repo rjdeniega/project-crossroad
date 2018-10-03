@@ -19,12 +19,15 @@ class ScheduleView(APIView):
     def get(request):
         schedules = ScheduleSerializer(Schedule.objects.all(), many=True)
         temp_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
-        active_sched = ScheduleSerializer(temp_sched)
+        active_sched = []
+        active_sched.append({
+            'start_date': temp_sched.start_date,
+            'end_date': temp_sched.end_date
+        })
         days_left = temp_sched.end_date - datetime.now().date()
         return Response(data={
             "days_left": days_left.days,
-            "active_sched": active_sched.data,
-            "schedules": schedules.data,
+            "active_sched": active_sched
         }, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -43,6 +46,46 @@ class ScheduleView(APIView):
                 "errors": schedule_serializer.errors
             })
 
+class ActiveScheduleView(APIView):
+    @staticmethod
+    def get(request):
+        schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date()).first()
+
+        if schedule is None:
+            return Response(data={
+                'message': 'No Active Schedule'
+            }, status=status.HTTP_200_OK)
+
+
+        tempshifts = []
+        shifts = Shift.objects.filter(schedule=schedule.id)
+
+        for shift in shifts:
+            drivers = DriversAssigned.objects.filter(shift=shift.id)
+            tempdrivers = []
+
+            for driver in drivers:
+                tempdrivers.append({
+                    'id': driver.id,  # id for DriversAssigned object
+                    'driver_id': driver.driver.id,  # id for the actual driver
+                    'driver_name': driver.driver.name,
+                    'shuttle_id': driver.shuttle.id,
+                    'shuttle_plate_number': driver.shuttle.plate_number,
+                    'shuttle_make': driver.shuttle.make,
+                    'deployment_type': driver.deployment_type
+                })
+
+            tempshifts.append({
+                'type': shift.type,
+                'drivers': tempdrivers
+            })
+
+        return Response(data={
+            'id': schedule.id,
+            'start_date': schedule.start_date,
+            'end_date': schedule.end_date,
+            'shifts': tempshifts
+        }, status=status.HTTP_200_OK)
 
 class ScheduleHistoryView(APIView):
     @staticmethod
