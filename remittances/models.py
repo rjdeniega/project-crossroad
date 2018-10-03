@@ -23,7 +23,7 @@ SHIFT_TYPE = [
     ('P', 'PM Shift'),
 ]
 
-SHIFT_DEPLOYMENT_TYPE = [
+DRIVER_DEPLOYMENT_TYPE = [
     ('E', 'Early'),
     ('R', 'Regular'),
     ('L', 'Late')
@@ -66,7 +66,6 @@ class Schedule(SoftDeletionModel):
 
 class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
-    deployment_type = CharField(max_length=1, choices=SHIFT_DEPLOYMENT_TYPE)
     supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
     schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
     created = models.DateTimeField(editable=False)
@@ -82,6 +81,7 @@ class Shift(SoftDeletionModel):
 class DriversAssigned(SoftDeletionModel):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
     shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
+    deployment_type = CharField(max_length=1, choices=DRIVER_DEPLOYMENT_TYPE)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 
