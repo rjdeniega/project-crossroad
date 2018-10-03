@@ -3,13 +3,14 @@
  */
 import React, { Component } from 'react';
 import './style.css'
-import { Button, Badge, Tag, Avatar, Popover } from 'antd'
+import { Button, Badge, Tag, Avatar, Popover, List } from 'antd'
 import { me } from '../../images/me.jpg'
 import { Icon } from 'react-icons-kit'
 import { bell } from 'react-icons-kit/fa/bell'
 import { withRouter } from "react-router-dom";
 import history from '../../utilities/history'
 import users from '../../images/default.png'
+import Notification from './components/notification/notification'
 
 export class UserAvatar extends Component {
     constructor(props) {
@@ -33,6 +34,16 @@ export class UserAvatar extends Component {
             </div>
         );
         const { username } = JSON.parse(localStorage.user);
+        const notificationContent = (
+            <div className="notification-area">
+                <List>
+                    <Notification/>
+                    <Notification/>
+                    <Notification/>
+                    <Notification/>
+                </List>
+            </div>
+        );
         return (
             <div className="header-icons">
                 <div className="user-full-name"> {username}</div>
@@ -42,9 +53,11 @@ export class UserAvatar extends Component {
                         <Avatar className="avatar-photo" size="large" src={users}/>
                     </div>
                 </Popover>
-                <Badge count={5} className="notification" size={5}>
-                    <Icon icon={bell} size={25}/>
-                </Badge>
+                <Popover placement="bottomRight" content={notificationContent} title="Notifications" trigger="click">
+                    <Badge count={5} className="notification" size={5}>
+                        <Icon icon={bell} size={25} />
+                    </Badge>
+                </Popover>
             </div>
         );
     }
