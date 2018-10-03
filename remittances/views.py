@@ -93,6 +93,9 @@ class ScheduleHistoryView(APIView):
         schedules = Schedule.objects.all()
         schedulehistory = []
 
+        active_schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
+                                           end_date__gte=datetime.now().date()).first()
+
         for schedule in schedules:
             tempshifts = []
             shifts = Shift.objects.filter(schedule=schedule.id)
@@ -122,6 +125,7 @@ class ScheduleHistoryView(APIView):
                 'id': schedule.id,
                 'start_date': schedule.start_date,
                 'end_date': schedule.end_date,
+                'schedule_status': schedule.get_status(active_schedule),
                 'shifts': tempshifts
             })
         

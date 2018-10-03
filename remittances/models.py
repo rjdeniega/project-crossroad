@@ -63,6 +63,20 @@ class Schedule(SoftDeletionModel):
         self.modified = timezone.now()
         return super(Schedule, self).save(*args, **kwargs)
 
+    def get_status(self, current_schedule):
+        if current_schedule is None:
+            if self.start_date > datetime.today().date():
+                return 'pending'
+            elif self.end_date < datetime.today().date():
+                return 'completed'
+
+        if self.id == current_schedule.id:
+            return 'current'
+        elif self.start_date < current_schedule.start_date:
+            return 'completed'
+        else:
+            return 'pending'
+
 
 class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
@@ -81,7 +95,7 @@ class Shift(SoftDeletionModel):
 class DriversAssigned(SoftDeletionModel):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
     shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
-    deployment_type = CharField(max_length=1, choices=DRIVER_DEPLOYMENT_TYPE)
+    deployment_type = CharField(max_length=1, choices=DRIVER_DEPLOYMENT_TYPE, default='R')
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 
