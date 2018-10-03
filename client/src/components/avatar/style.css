@@ -53,6 +53,8 @@
 .notification-area{
     height: 30vh;
     width: 20vw;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 /*.name-tag-grid{*/
