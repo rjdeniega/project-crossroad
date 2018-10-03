@@ -21,7 +21,12 @@ ROUTE = [
 SHIFT_TYPE = [
     ('A', 'AM Shift'),
     ('P', 'PM Shift'),
-    ('M', 'Midnight Shift')
+]
+
+SHIFT_DEPLOYMENT_TYPE = [
+    ('E', 'Early'),
+    ('R', 'Regular'),
+    ('L', 'Late')
 ]
 
 DEPLOYMENT_STATUS = [
@@ -61,6 +66,7 @@ class Schedule(SoftDeletionModel):
 
 class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
+    deployment_type = CharField(max_length=1, choices=SHIFT_DEPLOYMENT_TYPE)
     supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
     schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
     created = models.DateTimeField(editable=False)
