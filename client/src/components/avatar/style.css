@@ -43,7 +43,19 @@
     grid-row: 2 / 2;
     justify-self: start;
     align-self: center;
+    cursor: pointer;
     }
+
+.notification:hover{
+    opacity: 0.8;
+}
+
+.notification-area{
+    height: 30vh;
+    width: 20vw;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
 
 /*.name-tag-grid{*/
     /*display: grid;*/
