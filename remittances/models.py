@@ -21,7 +21,12 @@ ROUTE = [
 SHIFT_TYPE = [
     ('A', 'AM Shift'),
     ('P', 'PM Shift'),
-    ('M', 'Midnight Shift')
+]
+
+DRIVER_DEPLOYMENT_TYPE = [
+    ('E', 'Early'),
+    ('R', 'Regular'),
+    ('L', 'Late')
 ]
 
 DEPLOYMENT_STATUS = [
@@ -76,6 +81,7 @@ class Shift(SoftDeletionModel):
 class DriversAssigned(SoftDeletionModel):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
     shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
+    deployment_type = CharField(max_length=1, choices=DRIVER_DEPLOYMENT_TYPE)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 

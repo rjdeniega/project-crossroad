@@ -105,7 +105,8 @@ class SpecificScheduleView(APIView):
                     'driver_name': driver.driver.name,
                     'shuttle_id': driver.shuttle.id,
                     'shuttle_plate_number': driver.shuttle.plate_number,
-                    'shuttle_make': driver.shuttle.make
+                    'shuttle_make': driver.shuttle.make,
+                    'deployment_type': driver.deployment_type
                 })
 
             tempshifts.append({
