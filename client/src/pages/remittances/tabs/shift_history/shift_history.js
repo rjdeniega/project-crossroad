@@ -1,7 +1,7 @@
 /**
  * Created by JasonDeniega on 27/09/2018.
  */
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import users from '../../../../images/default.png'
@@ -49,6 +49,7 @@ export class ShiftHistoryPane extends Component {
         assigned_shuttle: null,
         driver_selected: null,
         selected_shift_type: null,
+        activeSchedule: null,
     };
 
     componentDidMount() {
@@ -391,6 +392,7 @@ export class ShiftHistoryPane extends Component {
                 this.setState({
                     am_shift_drivers: data.shifts[0].drivers,
                     pm_shift_drivers: data.shifts[1].drivers,
+                    activeSchedule: data.id,
                 })
             }
             else {
@@ -479,6 +481,7 @@ export class ShiftHistoryPane extends Component {
     );
     renderScheduleList = () => (
         <List
+            className="sched-list"
             itemLayout="horizontal"
             dataSource={(() => {
                 console.log(this.state.schedules);
@@ -510,22 +513,34 @@ export class ShiftHistoryPane extends Component {
                                 Schedules
                             </div>
                         </div>
+                        <Button className="add-button">Add New</Button>
                         <div className="expiration-label">select schedule to view details</div>
                         {this.renderScheduleList()}
 
                     </div>
                     <div className="history-pane-content">
-                        <Button>Sayang tuition</Button>
-                        {/*<div className="table-label-div">*/}
-                        {/*<div className="tab-label">*/}
-                        {/*Select Drivers*/}
-                        {/*</div>*/}
-                        {/*<div className="guideline">*/}
-                        {/*Select N drivers for each shift*/}
-                        {/*</div>*/}
-                        {/*</div>*/}
-                        {this.renderShiftTables()}
+                        {this.state.activeSchedule &&
+                        <Fragment>
+                            {/*<div className="table-label-div">*/}
+                            {/*<div className="tab-label">*/}
+                            {/*Select Drivers*/}
+                            {/*</div>*/}
+                            {/*<div className="guideline">*/}
+                            {/*Select N drivers for each shift*/}
+                            {/*</div>*/}
+                            {/*</div>*/}
+                            {this.renderShiftTables()}
+                        </Fragment>
+                        }
+                        {!this.state.activeSchedule &&
+                        <div>
+                            <img className="empty-image" src={emptyStateImage}/>
+                            <p className="empty-message"> Please select a schedule to view details </p>
+                        </div>
+                        }
+
                     </div>
+
                 </div>
             </div>
         )

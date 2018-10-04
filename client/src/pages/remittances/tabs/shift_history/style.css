@@ -27,6 +27,9 @@
     }
 
 .shift-creation-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     height: 100%;
     grid-column: 1 / 2;
     /*box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);*/
@@ -204,4 +207,7 @@
 
 .driver-icon img {
     object-fit: cover !important;
+    }
+.sched-list{
+    margin-top: 20px!important;
     }
