@@ -127,13 +127,13 @@ export class ShiftManagementPane extends Component {
                 console.log(this.state.pm_shift_drivers);
             });
         }
-        else if (this.state.selected_shift_type == "MN") {
-            this.setState({
-                mn_shift_drivers: [...this.state.mn_shift_drivers, assignment]
-            }, () => {
-                console.log(this.state.mn_shift_drivers);
-            });
-        }
+        // else if (this.state.selected_shift_type == "MN") {
+        //     this.setState({
+        //         mn_shift_drivers: [...this.state.mn_shift_drivers, assignment]
+        //     }, () => {
+        //         console.log(this.state.mn_shift_drivers);
+        //     });
+        // }
         this.setState({
             visible: false,
         });
@@ -172,9 +172,8 @@ export class ShiftManagementPane extends Component {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "AM"
-                }, () => console.log(this.state.driver_selected));
-
-                this.showModal();
+                });
+                this.showModal()
             }
             else {
                 let index = this.state.am_shift_drivers.indexOf(this.state.driver_selected);
@@ -198,8 +197,9 @@ export class ShiftManagementPane extends Component {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "PM"
-                });
-                this.showModal();
+                }, () => console.log(this.state.selected_shift_type));
+
+                this.showModal()
             }
             else {
                 let index = this.state.pm_shift_drivers.indexOf(this.state.driver_selected);
@@ -210,33 +210,33 @@ export class ShiftManagementPane extends Component {
             }
         },
     };
-    mnRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-
-            //check if item is already checked
-            this.state.mn_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true
-                }
-            });
-            if (!this.isChecked) {
-                this.setState({
-                    driver_selected: current,
-                    selected_shift_type: "MN"
-                });
-                this.showModal();
-            }
-            else {
-                console.log("entered here");
-                let index = this.state.mn_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.mn_shift_drivers.splice(index);
-                this.setState({
-                    mn_shift_drivers: array
-                }, console.log(this.state.mn_shift_drivers))
-            }
-        },
-    };
+    // mnRowSelection = {
+    //     onChange: (selectedRowKeys, selectedRows) => {
+    //         const current = selectedRowKeys[selectedRowKeys.length - 1];
+    //
+    //         //check if item is already checked
+    //         this.state.mn_shift_drivers.map((item) => {
+    //             if (item["driver"] == current) {
+    //                 this.isChecked = true
+    //             }
+    //         });
+    //         if (!this.isChecked) {
+    //             this.setState({
+    //                 driver_selected: current,
+    //                 selected_shift_type: "MN"
+    //             });
+    //             this.showModal();
+    //         }
+    //         else {
+    //             console.log("entered here");
+    //             let index = this.state.mn_shift_drivers.indexOf(this.state.driver_selected);
+    //             let array = this.state.mn_shift_drivers.splice(index);
+    //             this.setState({
+    //                 mn_shift_drivers: array
+    //             }, console.log(this.state.mn_shift_drivers))
+    //         }
+    //     },
+    // };
 
     //normal action handlers
     close = () => {
@@ -292,12 +292,12 @@ export class ShiftManagementPane extends Component {
                 pm_shift_supervisor_key: event.item.props.eventKey
             }, () => console.log("pm" + this.state.pm_shift_supervisor))
         }
-        else {
-            this.setState({
-                mn_shift_supervisor: event.item.props.children,
-                mn_shift_supervisor_key: event.item.props.eventKey
-            }, () => console.log("midnight" + this.state.mn_shift_supervisor))
-        }
+        // else {
+        //     this.setState({
+        //         mn_shift_supervisor: event.item.props.children,
+        //         mn_shift_supervisor_key: event.item.props.eventKey
+        //     }, () => console.log("midnight" + this.state.mn_shift_supervisor))
+        // }
     };
     transformToDict = array => {
         const array_dict = [];
@@ -319,15 +319,17 @@ export class ShiftManagementPane extends Component {
             "type": "P",
             "drivers_assigned": this.state.pm_shift_drivers
         };
-        const mn_shift = {
-            "supervisor": this.state.mn_shift_supervisor_key,
-            "type": "M",
-            "drivers_assigned": this.state.mn_shift_drivers
-        };
+        // const mn_shift = {
+        //     "supervisor": this.state.mn_shift_supervisor_key,
+        //     "type": "M",
+        //     "drivers_assigned": this.state.mn_shift_drivers
+        // };
+
+        //removed mn shift in shifts dict
         return {
             "start_date": this.state.startDate,
             "end_date": this.state.endDate,
-            "shifts": [am_shift, pm_shift, mn_shift],
+            "shifts": [am_shift, pm_shift],
         };
     };
     handleShiftCreate = () => {
@@ -358,6 +360,21 @@ export class ShiftManagementPane extends Component {
         </Menu>
     );
 //JSX rendering functions
+//     renderDeploymentOptions = () => {
+//         if (this.state.selected_shift_type = "AM") {
+//             return <Select className="user-input">
+//                 <Option value="E">Early</Option>
+//                 <Option value="R">Regular</Option>
+//             </Select>
+//         }
+//         else {
+//             return <Select className="user-input">
+//                 <Option value="L">Late</Option>
+//                 <Option value="R">Regular</Option>
+//             </Select>
+//         }
+//
+//     }
     renderShiftTables = () => (
         <div className="tables-wrapper">
             <Modal
@@ -365,7 +382,20 @@ export class ShiftManagementPane extends Component {
                 visible={this.state.visible}
                 onOk={this.handleConfirm}
                 onCancel={this.handleCancel}
+
             >
+                {this.state.selected_shift_type == "AM" &&
+                <Select className="user-input"  defaultValue="Please select deployment type">
+                    <Option value="E">Early</Option>
+                    <Option value="R">Regular</Option>
+                </Select>
+                }
+                {this.state.selected_shift_type == "PM" &&
+                <Select className="user-input" defaultValue="Please select deployment type">
+                    <Option value="L">Late</Option>
+                    <Option value="R">Regular</Option>
+                </Select>
+                }
                 <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
                         defaultValue="Please select shuttle">
                     {this.state.shuttles.map(item => (
@@ -399,18 +429,18 @@ export class ShiftManagementPane extends Component {
                        dataSource={this.state.drivers}/>,
 
             </div>
-            <div className="mn-shift-pane">
-                <div className="shifts-label-div">
-                    <div className="tab-label-type">Midnight</div>
-                    <Dropdown overlay={this.supervisors("MN")}>
-                        <Button className="supervisor-select" style={{ marginLeft: 8 }}>
-                            {this.state.mn_shift_supervisor}<AntIcon type="down"/>
-                        </Button>
-                    </Dropdown>
-                </div>
-                <Table showHeader={false} rowSelection={this.mnRowSelection} pagination={false} columns={columns}
-                       dataSource={this.state.drivers}/>,
-            </div>
+            {/*<div className="mn-shift-pane">*/}
+            {/*<div className="shifts-label-div">*/}
+            {/*<div className="tab-label-type">Midnight</div>*/}
+            {/*<Dropdown overlay={this.supervisors("MN")}>*/}
+            {/*<Button className="supervisor-select" style={{ marginLeft: 8 }}>*/}
+            {/*{this.state.mn_shift_supervisor}<AntIcon type="down"/>*/}
+            {/*</Button>*/}
+            {/*</Dropdown>*/}
+            {/*</div>*/}
+            {/*<Table showHeader={false} rowSelection={this.mnRowSelection} pagination={false} columns={columns}*/}
+            {/*dataSource={this.state.drivers}/>,*/}
+            {/*</div>*/}
         </div>
     );
 

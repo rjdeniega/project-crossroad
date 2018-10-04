@@ -46,16 +46,17 @@ class ScheduleView(APIView):
                 "errors": schedule_serializer.errors
             })
 
+
 class ActiveScheduleView(APIView):
     @staticmethod
     def get(request):
-        schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date()).first()
+        schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
+                                           end_date__gte=datetime.now().date()).first()
 
         if schedule is None:
             return Response(data={
                 'message': 'No Active Schedule'
             }, status=status.HTTP_200_OK)
-
 
         tempshifts = []
         shifts = Shift.objects.filter(schedule=schedule.id)
@@ -72,7 +73,7 @@ class ActiveScheduleView(APIView):
                     'shuttle_id': driver.shuttle.id,
                     'shuttle_plate_number': driver.shuttle.plate_number,
                     'shuttle_make': driver.shuttle.make,
-                    'deployment_type': driver.deployment_type
+                    # 'deployment_type': driver.deployment_type
                 })
 
             tempshifts.append({
@@ -87,6 +88,7 @@ class ActiveScheduleView(APIView):
             'shifts': tempshifts
         }, status=status.HTTP_200_OK)
 
+
 class ScheduleHistoryView(APIView):
     @staticmethod
     def get(request):
@@ -94,7 +96,7 @@ class ScheduleHistoryView(APIView):
         schedulehistory = []
 
         active_schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
-                                           end_date__gte=datetime.now().date()).first()
+                                                  end_date__gte=datetime.now().date()).first()
 
         for schedule in schedules:
             tempshifts = []
@@ -103,11 +105,10 @@ class ScheduleHistoryView(APIView):
             for shift in shifts:
                 drivers = DriversAssigned.objects.filter(shift=shift.id)
                 tempdrivers = []
-
                 for driver in drivers:
                     tempdrivers.append({
-                        'id': driver.id, # id for DriversAssigned object
-                        'driver_id': driver.driver.id, # id for the actual driver
+                        'id': driver.id,  # id for DriversAssigned object
+                        'driver_id': driver.driver.id,  # id for the actual driver
                         'driver_name': driver.driver.name,
                         'shuttle_id': driver.shuttle.id,
                         'shuttle_plate_number': driver.shuttle.plate_number,
@@ -128,7 +129,7 @@ class ScheduleHistoryView(APIView):
                 'schedule_status': schedule.get_status(active_schedule),
                 'shifts': tempshifts
             })
-        
+
         return Response(data={
             "schedule_history": schedulehistory
         }, status=status.HTTP_200_OK)
@@ -153,7 +154,7 @@ class SpecificScheduleView(APIView):
                     'shuttle_id': driver.shuttle.id,
                     'shuttle_plate_number': driver.shuttle.plate_number,
                     'shuttle_make': driver.shuttle.make,
-                    'deployment_type': driver.deployment_type
+                    # 'deployment_type': driver.deployment_type
                 })
 
             tempshifts.append({
