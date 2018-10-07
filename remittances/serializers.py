@@ -8,6 +8,7 @@ class DriversAssignedSerializer(ModelSerializer):
     class Meta:
         model = DriversAssigned
         exclude = ('shift',)
+        depth = 2
 
 
 class PlannedDriversSerializer(ModelSerializer):
