@@ -29,7 +29,9 @@ class ShiftSerializer(ModelSerializer, serializers.Serializer):
         drivers_data = validated_data.pop('drivers_assigned')
         shift = Shift.objects.create(**validated_data)
         for data in drivers_data:
-            DriversAssigned.objects.create(shift=shift, driver_id=data['driver'], shuttle_id=data['shuttle'])
+            DriversAssigned.objects.create(shift=shift,
+                                           driver_id=data['driver'],
+                                           shuttle_id=data['shuttle'])
         return shift
 
 
@@ -43,14 +45,33 @@ class ScheduleSerializer(ModelSerializer):
     def create(self, validated_data):
         shifts_data = validated_data.pop('shifts')
         schedule = Schedule.objects.create(**validated_data)
-        schedule.end_date = schedule.start_date + timedelta(days=15)  # start_date + 14 days = 15 days (changed to +15 since every 15 days)
+        schedule.end_date = schedule.start_date + timedelta(days=14)  # start_date + 14 days = 15 days (changed to +15 since every 15 days)
         schedule.save()
         new_sched = Schedule.objects.get(id=schedule.id)  # gets django object to be used
+
         for shift_data in shifts_data:
+
             drivers_data = shift_data.pop('drivers_assigned')
             shift = Shift.objects.create(schedule=new_sched, **shift_data)
+
             for driver_data in drivers_data:
-                DriversAssigned.objects.create(shift=shift, **driver_data)
+                print(driver_data)
+                driver_id = driver_data.pop('driver')
+                shuttle_id = driver_data.pop('shuttle')
+                deployment_type = driver_data.pop('deployment_type')
+
+                if deployment_type is 'Early':
+                    type = 'E'
+                elif deployment_type is 'Late':
+                    type = 'L'
+                else:
+                    type = 'R'
+
+                DriversAssigned.objects.create(shift=shift,
+                                               deployment_type=type,
+                                               driver=driver_id,
+                                               shuttle=shuttle_id)
+
         return schedule
 
     # TODO validate that there are am shifts, pm shifts, and mn shifts in the schedule

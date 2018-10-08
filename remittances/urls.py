@@ -4,6 +4,7 @@ from remittances.views import *
 
 remittance_urls = [
     path('schedules/', ScheduleView.as_view()),
+    path('schedules/create', CreateSchedule.as_view()),
     path('schedules/history', ScheduleHistoryView.as_view()),
     path('schedules/active', ActiveScheduleView.as_view()),
     path('schedules/<int:schedule_id>', SpecificScheduleView.as_view()),

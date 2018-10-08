@@ -46,6 +46,37 @@ class ScheduleView(APIView):
                 "errors": schedule_serializer.errors
             })
 
+class CreateSchedule(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        schedule = Schedule()
+        schedule.start_date = data['start_date']
+        schedule.save()
+        new_sched = Schedule.objects.get(id=schedule.id)
+        new_sched.end_date = new_sched.start_date + timedelta(days=14)
+        new_sched.save()
+
+        for shift in data['shifts']:
+            new_shift = Shift()
+            new_shift.schedule_id= schedule.id
+            new_shift.supervisor_id = shift['supervisor']
+            new_shift.type = shift['type']
+            new_shift.save()
+
+            for drivers_assigned in shift['drivers_assigned']:
+                driver = DriversAssigned()
+                driver.shuttle_id = drivers_assigned['shuttle']
+                driver.driver_id = drivers_assigned['driver']
+                driver.shift_id = new_shift.id
+                driver.deployment_type = drivers_assigned['deployment_type']
+                driver.save()
+
+        return Response(data={
+            "start_date": new_sched.start_date,
+            "end_date": new_sched.end_date
+        }, status=status.HTTP_200_OK)
 
 class ActiveScheduleView(APIView):
     @staticmethod
