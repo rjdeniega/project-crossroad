@@ -97,6 +97,7 @@ class ActiveScheduleView(APIView):
             tempdrivers = []
 
             for driver in drivers:
+                driver_object = DriversAssignedSerializer(driver)
                 tempdrivers.append({
                     'id': driver.id,  # id for DriversAssigned object
                     'driver_id': driver.driver.id,  # id for the actual driver
@@ -104,7 +105,8 @@ class ActiveScheduleView(APIView):
                     'shuttle_id': driver.shuttle.id,
                     'shuttle_plate_number': driver.shuttle.plate_number,
                     'shuttle_make': driver.shuttle.make,
-                    # 'deployment_type': driver.deployment_type
+                    'deployment_type': driver.deployment_type,
+                    'driver_object': driver_object.data
                 })
 
             tempshifts.append({
@@ -145,6 +147,7 @@ class ScheduleHistoryView(APIView):
                         'shuttle_id': driver.shuttle.id,
                         'shuttle_plate_number': driver.shuttle.plate_number,
                         'shuttle_make': driver.shuttle.make,
+                        'deployment_type': driver.deployment_type,
                         'driver_object': driver_object.data
                     })
 
@@ -188,8 +191,8 @@ class SpecificScheduleView(APIView):
                     'shuttle_id': driver.shuttle.id,
                     'shuttle_plate_number': driver.shuttle.plate_number,
                     'shuttle_make': driver.shuttle.make,
+                    'deployment_type': driver.deployment_type,
                     'driver_object': driver_object.data
-                    # 'deployment_type': driver.deployment_type
                 })
 
             tempshifts.append({
