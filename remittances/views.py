@@ -46,6 +46,7 @@ class ScheduleView(APIView):
                 "errors": schedule_serializer.errors
             })
 
+
 class CreateSchedule(APIView):
     @staticmethod
     def post(request):
@@ -60,7 +61,7 @@ class CreateSchedule(APIView):
 
         for shift in data['shifts']:
             new_shift = Shift()
-            new_shift.schedule_id= schedule.id
+            new_shift.schedule_id = schedule.id
             new_shift.supervisor_id = shift['supervisor']
             new_shift.type = shift['type']
             new_shift.save()
@@ -77,6 +78,7 @@ class CreateSchedule(APIView):
             "start_date": new_sched.start_date,
             "end_date": new_sched.end_date
         }, status=status.HTTP_200_OK)
+
 
 class ActiveScheduleView(APIView):
     @staticmethod
@@ -209,6 +211,7 @@ class SpecificScheduleView(APIView):
             'shifts': tempshifts
         }, status=status.HTTP_200_OK)
 
+
 class AssignTicketView(APIView):
     @staticmethod
     def post(request):
@@ -224,7 +227,7 @@ class AssignTicketView(APIView):
         assigned_ticket = AssignedTicket()
         assigned_ticket.driver_id = data['driver_id']
         assigned_ticket.range_from = data['range_from']
-        assigned_ticket.compute_range_to(100) # number per bundle
+        assigned_ticket.compute_range_to(100)  # number per bundle
         assigned_ticket.type = ticket_type
         assigned_ticket.save()
 
@@ -239,7 +242,7 @@ class AssignTicketView(APIView):
 class AssignedTicketHistory(APIView):
     @staticmethod
     def get(request):
-        tickets = AssignedTicket.objects.all().order_by('-created') # TODO order by date created
+        tickets = AssignedTicket.objects.all().order_by('-created')  # TODO order by date created
 
         ticket_assignments = []
 
@@ -249,7 +252,8 @@ class AssignedTicketHistory(APIView):
                 "driver_name": ticket.driver.name,
                 "range_from": ticket.range_from,
                 "range_to": ticket.range_to,
-                "date": ticket.created
+                "date": ticket.created,
+                "type":ticket.type
             })
 
         return Response(data={
