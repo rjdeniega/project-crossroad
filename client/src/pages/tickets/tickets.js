@@ -52,7 +52,7 @@ export class TicketsPage extends Component {
     }
 
     fetchTicketHistory = () => {
-        getData('/remittances/remittance_form/driver/' + id).then(data => {
+        getData('/remittances/tickets/').then(data => {
             console.log(data);
             if (!data.error) {
                 console.log(data);
