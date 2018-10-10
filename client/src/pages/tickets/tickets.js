@@ -13,6 +13,7 @@ import './style.css'
 import { money } from 'react-icons-kit/fa/money'
 import { UserAvatar } from "../../components/avatar/avatar"
 import { ic_receipt } from 'react-icons-kit/md/ic_receipt'
+import { getData } from "../../network_requests/general";
 
 const dataSource = [{
     key: '1',
@@ -49,7 +50,19 @@ export class TicketsPage extends Component {
     componentDidMount() {
         this.fetchTicketHistory();
     }
-    
+
+    fetchTicketHistory = () => {
+        getData('/remittances/remittance_form/driver/' + id).then(data => {
+            console.log(data);
+            if (!data.error) {
+                console.log(data);
+            }
+            else {
+                console.log(data);
+            }
+        }).catch(error => console.log(error))
+    }
+
     render() {
         return (
             <div className="body-wrapper">
