@@ -12,10 +12,16 @@ import history from '../../utilities/history'
 import users from '../../images/default.png'
 import Notification from './components/notification/notification'
 import PerfectScrollbar from "@opuscapita/react-perfect-scrollbar";
+import { alignCenter } from 'react-icons-kit/feather';
 
 export class UserAvatar extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            notifications: [],
+        };
+        
+        this.fetchNotifications = this.fetchNotifications.bind(this)
         // Don't call this.setState() here!
         //set user for any children page of App (which is everything)
     }
@@ -28,43 +34,64 @@ export class UserAvatar extends Component {
         history.replace('/sign-in');
     };
 
+    componentDidMount(){
+        this.fetchNotifications()
+    }
 
+    fetchNotifications() {
+        fetch('notifications/' + JSON.parse(localStorage.user_type))
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(!data.error){
+                    this.setState({
+                        notifications: data.notifications
+                    });
+                } else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
     
     render() {
+
+        const {notifications} = this.state;
         const content = (
             <div>
                 <Button className="sign-out" onClick={this.signOut}>Sign-out</Button>
             </div>
         );
         const { username } = JSON.parse(localStorage.user);
-        const notificationContent = (
-            <div className="notification-area">
-                <PerfectScrollbar>
-                    <List itemlayout="horizontal">
+    
+        return <div className="header-icons">
+            <div className="user-full-name"> {username}</div>
+            <Tag className="user-type" color="var(--orange)">
+              OM
+            </Tag>
+            <Popover placement="bottomRight" content={content} title="User Settings" trigger="click">
+              <div className="user-avatar">
+                <Avatar className="avatar-photo" size="large" src={users} />
+              </div>
+            </Popover>
+            <Popover placement="bottomRight" content={notifications.length == 0 ? <div className="notification-area">
+                    <p centered>You have no notifications</p>
+                  </div> : <div className="notification-area">
+                    <PerfectScrollbar>
+                      <List itemlayout="horizontal">
                         <Notification />
                         <Notification />
                         <Notification />
                         <Notification />
-                    </List>
-                </PerfectScrollbar>
-            </div>
-        );
-        return (
-            <div className="header-icons">
-                <div className="user-full-name"> {username}</div>
-                <Tag className="user-type" color="var(--orange)">OM</Tag>
-                <Popover placement="bottomRight" content={content} title="User Settings" trigger="click">
-                    <div className="user-avatar">
-                        <Avatar className="avatar-photo" size="large" src={users}/>
-                    </div>
-                </Popover>
-                <Popover placement="bottomRight" content={notificationContent} title="Notifications" trigger="click">
-                    <Badge count={5} className="notification" size={5}>
-                        <Icon icon={bell} size={25} />
-                    </Badge>
-                </Popover>
-            </div>
-        );
+                      </List>
+                    </PerfectScrollbar>
+                  </div>} title="Notifications" trigger="click">
+              <Badge count={notifications.length} className="notification" size={5}>
+                <Icon icon={bell} size={25} />
+              </Badge>
+            </Popover>
+          </div>;
     }
 }
 

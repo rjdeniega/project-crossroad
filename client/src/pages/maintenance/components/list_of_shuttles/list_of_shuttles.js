@@ -23,7 +23,7 @@ export class ListOfShuttles extends Component {
             this.fetchShuttles()
         }
     }
-
+    
     fetchShuttles() {
         fetch('inventory/shuttles/')
             .then(response => {

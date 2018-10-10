@@ -602,16 +602,16 @@ class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type):
         # user type gotten from localStorage.get('user_type')
-        if user_type == 'Member':
+        if user_type == 'member':
             notifications = NotificationSerializer(Notification.objects.all()
                                                     .filter(type='M'), many=True)
-        elif user_type == 'Supervisor':
+        elif user_type == 'supervisor':
             notifications = NotificationSerializer(Notification.objects.all()
                                                     .filter(type='R'), many=True)
-        elif user_type == 'OM':
+        elif user_type == 'operations_manager':
             notifications = NotificationSerializer(Notification.objects
                                                     .filter(Q(type='I') | Q(type='R')), many=True)
-        elif user_type == 'Clerk':
+        elif user_type == 'clerk':
             notifications = NotificationSerializer(Notification.objects
                                                     .filter(Q(type='I') | Q(type='R')), many=True)
         
