@@ -143,13 +143,13 @@ class AssignedTicket(SoftDeletionModel):
         if not self.id:
             self.created = timezone.now()
         self.modified = timezone.now()
-        return super(Deployment, self).save(*args, **kwargs)
+        return super(AssignedTicket, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.get_type_display() + ": " + str(self.range_from) + " - " + str(self.range_to)
+        return self.get_type_display() + ": " + str(self.range_from)+ " - " + str(self.range_to)
 
     def compute_range_to(self, value):
-        self.range_to = self.range_from + value - 1 # value is per bundle needs to minus 1
+        self.range_to = self.range_from + int(value) - 1 # value is per bundle needs to minus 1
         self.save()
 
 

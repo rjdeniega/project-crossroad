@@ -27,7 +27,13 @@
     /*box-shadow: 0 1px 5px 0 rgba(45, 62, 80, .12);*/
     box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);
     /*box-shadow: 2px 10px 50px -2px rgba(51, 71, 91, 0.12);*/
+    }
 
+.ticket-drivers-list{
+    padding: 20px!important;
+    }
+.ticket-drivers-list .ant-list-item {
+    border: none!important;
     }
 .tickets-panel{
     height: 100%;
@@ -75,3 +81,22 @@
     border: none !important;
 
     }
+/*.ant-list-item {*/
+    /*margin-bottom: 10px;*/
+    /*font-family: Montserrat, sans-serif !important;*/
+    /*font-weight: 600;*/
+    /*border-bottom: none !important;*/
+    /*padding: 15px 15px 5px 15px !important;*/
+    /*width: 100% !important;*/
+
+    /*!*design for floating card css*!*/
+    /*border-radius: 5px;*/
+    /*!*box-shadow: 0 1px 5px 0 rgba(45,62,80,.12);*!*/
+    /*box-shadow: 0 1px 4px 0 rgba(12, 12, 13, 0.1);*/
+
+    /*background: rgba(255, 255, 255, 1) !important;*/
+
+    /*}*/
+/*.list-item:hover {*/
+    /*box-shadow: 0 1px 40px 0 rgba(45,62,80,.12);*/
+    /*}*/

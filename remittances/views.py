@@ -217,25 +217,36 @@ class AssignTicketView(APIView):
     def post(request):
         data = json.loads(request.body)
 
-        if data['type'] == "Main Road":
-            ticket_type = 'M'
-        elif data['type'] == "Kaliwa":
-            ticket_type = 'L'
-        else:
-            ticket_type = 'R'
+        # if data['type'] == "Main Road":
+        #     ticket_type = 'M'
+        # elif data['type'] == "Kaliwa":
+        #     ticket_type = 'L'
+        # else:
+        #     ticket_type = 'R'
 
         assigned_ticket = AssignedTicket()
         assigned_ticket.driver_id = data['driver_id']
         assigned_ticket.range_from = data['range_from']
-        assigned_ticket.compute_range_to(100)  # number per bundle
-        assigned_ticket.type = ticket_type
+        temp_string = int(data['range_from']) + 100 - 1
+        assigned_ticket.range_to = str(temp_string)
+        assigned_ticket.type = data['ticket_type']
         assigned_ticket.save()
 
         saved_data = AssignedTicketSerializer(assigned_ticket)
 
+        print(saved_data)
+        assigned_ticket_object = {
+            "date": datetime.now().date(),
+            "range_to": assigned_ticket.range_to,
+            "range_from": assigned_ticket.range_from,
+            "driver_name": assigned_ticket.driver.name,
+            "driver_id": assigned_ticket.driver.pk,
+            "type": assigned_ticket.type
+        }
+
         return Response(data={
             "message": "Ticket Assigned",
-            "assigned_ticket_object": saved_data.data
+            "assigned_ticket_object": assigned_ticket_object
         }, status=status.HTTP_200_OK)
 
 
