@@ -252,8 +252,8 @@ class AssignedTicketHistory(APIView):
                 "driver_name": ticket.driver.name,
                 "range_from": ticket.range_from,
                 "range_to": ticket.range_to,
-                "date": ticket.created,
-                "type": ticket.type
+                "date": ticket.created.date(),
+                "type": ticket.get_type_display(),
             })
 
         return Response(data={

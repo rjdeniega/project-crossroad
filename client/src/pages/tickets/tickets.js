@@ -35,8 +35,12 @@ const columns = [{
     key: 'date',
 }, {
     title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
+    dataIndex: 'driver_name',
+    key: 'driver_name',
+}, {
+    title: 'Type',
+    dataIndex: 'type',
+    key: 'type',
 }, {
     title: 'Range from',
     dataIndex: 'range_from',
@@ -47,6 +51,9 @@ const columns = [{
     key: 'range_to',
 }];
 export class TicketsPage extends Component {
+    state = {
+        tickets: []
+    }
     componentDidMount() {
         this.fetchTicketHistory();
     }
@@ -56,6 +63,9 @@ export class TicketsPage extends Component {
             console.log(data);
             if (!data.error) {
                 console.log(data);
+                this.setState({
+                    tickets: data.ticket_assignments
+                })
             }
             else {
                 console.log(data);
@@ -83,7 +93,7 @@ export class TicketsPage extends Component {
                             <Table bordered size="medium"
                                    className="tickets-table"
                                    columns={columns}
-                                   dataSource={dataSource}
+                                   dataSource={this.state.tickets}
                             />
                         </div>
                     </div>
