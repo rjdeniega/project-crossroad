@@ -141,7 +141,7 @@ class AssignedTicket(SoftDeletionModel):
         return self.get_type_display() + ": " + str(self.range_from) + " - " + str(self.range_to)
 
     def compute_range_to(self, value):
-        self.range_to = self.range_from + value
+        self.range_to = self.range_from + value - 1 # value is per bundle needs to minus 1
         self.save()
 
 

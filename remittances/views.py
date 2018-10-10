@@ -209,25 +209,31 @@ class SpecificScheduleView(APIView):
             'shifts': tempshifts
         }, status=status.HTTP_200_OK)
 
-
-# Ignore this class for now
-class ShiftView(APIView):
+class AssignTicketView(APIView):
     @staticmethod
-    def get(request):
-        # edit filter later on what is needed
-        shifts = ShiftSerializer(Shift.objects.all(), many=True)
+    def post(request):
+        data = json.loads(request.body)
+
+        if data['type'] == "Main Road":
+            ticket_type = 'M'
+        elif data['type'] == "Kaliwa":
+            ticket_type = 'L'
+        else:
+            ticket_type = 'R'
+
+        assigned_ticket = AssignedTicket()
+        assigned_ticket.driver_id = data['driver_id']
+        assigned_ticket.range_from = data['range_from']
+        assigned_ticket.compute_range_to(100) # number per bundle
+        assigned_ticket.type = ticket_type
+        assigned_ticket.save()
+
+        saved_data = AssignedTicketSerializer(assigned_ticket)
+
         return Response(data={
-            "shifts": shifts.data
+            "message": "Ticket Assigned",
+            "assigned_ticket_object": saved_data.data
         }, status=status.HTTP_200_OK)
-
-    @staticmethod
-    def delete(request, pk):
-        Shift.objects.get(id=pk).delete(user=request.user.username)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @staticmethod
-    def put(request):
-        pass
 
 
 class ShiftIterationView(APIView):

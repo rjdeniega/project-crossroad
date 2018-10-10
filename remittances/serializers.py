@@ -122,7 +122,7 @@ class AssignedTicketSerializer(ModelSerializer):
 
     class Meta:
         model = AssignedTicket
-        exclude = ('deployment',)
+        fields = '__all__'
 
     def validate(self, data):
         if data['range_from']:
