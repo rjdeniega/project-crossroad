@@ -241,7 +241,7 @@ class AssignTicketView(APIView):
             "range_from": assigned_ticket.range_from,
             "driver_name": assigned_ticket.driver.name,
             "driver_id": assigned_ticket.driver.pk,
-            "type": assigned_ticket.type
+            "type": assigned_ticket.get_type_display()
         }
 
         return Response(data={
