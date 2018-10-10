@@ -111,6 +111,7 @@ class ShiftIteration(SoftDeletionModel):
 
 class Deployment(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
+    shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
     route = CharField(max_length=1, choices=ROUTE)
     shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
@@ -131,13 +132,17 @@ class Deployment(SoftDeletionModel):
 
 
 class AssignedTicket(SoftDeletionModel):
-    deployment = ForeignKey(Deployment, related_name="assigned_tickets", on_delete=models.CASCADE)
+    driver = ForeignKey(Driver, on_delete=models.CASCADE)
     range_from = IntegerField(null=True)
     range_to = IntegerField(null=True)
     type = CharField(max_length=1, choices=TICKET_TYPE)
 
     def __str__(self):
         return self.get_type_display() + ": " + str(self.range_from) + " - " + str(self.range_to)
+
+    def compute_range_to(self, value):
+        self.range_to = self.range_from + value
+        self.save()
 
 
 class VoidTicket(SoftDeletionModel):
