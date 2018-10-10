@@ -236,6 +236,27 @@ class AssignTicketView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class AssignedTicketHistory(APIView):
+    @staticmethod
+    def get(request):
+        tickets = AssignedTicket.objects.all().order_by('-created') # TODO order by date created
+
+        ticket_assignments = []
+
+        for ticket in tickets:
+            ticket_assignments.append({
+                "driver_id": ticket.driver.id,
+                "driver_name": ticket.driver.name,
+                "range_from": ticket.range_from,
+                "range_to": ticket.range_to,
+                "date": ticket.created
+            })
+
+        return Response(data={
+            "ticket_assignments": ticket_assignments
+        }, status=status.HTTP_200_OK)
+
+
 class ShiftIterationView(APIView):
     @staticmethod
     def get(request):

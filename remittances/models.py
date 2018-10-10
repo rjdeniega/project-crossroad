@@ -136,6 +136,14 @@ class AssignedTicket(SoftDeletionModel):
     range_from = IntegerField(null=True)
     range_to = IntegerField(null=True)
     type = CharField(max_length=1, choices=TICKET_TYPE)
+    created = models.DateTimeField(editable=False, default=timezone.now())
+    modified = models.DateTimeField(null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        return super(Deployment, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.get_type_display() + ": " + str(self.range_from) + " - " + str(self.range_to)
