@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from django.db.models import Q
 from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -22,13 +22,14 @@ from datetime import timedelta
 import calendar
 
 # Create your views here.
-from core.serializers import UserSerializer, PersonSerializer
+from core.serializers import UserSerializer, PersonSerializer, NotificationSerializer
 from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
 from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
     MemberSerializer, MechanicSerializer, ShareSerializer
 from remittances.models import *
 from remittances.serializers import BeepTransactionSerializer, CarwashTransactionSerializer
 from remittances.views import IterationUtilites
+from core.models import Notification
 
 
 class SignInView(APIView):
@@ -595,4 +596,25 @@ class PassengerCountByDate(APIView):
             "report_items": report_items,
             "am_total": sum([item["am_total"] for item in report_items]),
             "pm_total": sum([item["pm_total"] for item in report_items])
+        }, status=status.HTTP_200_OK)
+
+class NotificationItems(APIView):
+    @staticmethod
+    def get(request, user_type):
+        # user type gotten from localStorage.get('user_type')
+        if user_type == 'Member':
+            notifications = NotificationSerializer(Notification.objects.all()
+                                                    .filter(type='M'), many=True)
+        elif user_type == 'Supervisor':
+            notifications = NotificationSerializer(Notification.objects.all()
+                                                    .filter(type='R'), many=True)
+        elif user_type == 'OM':
+            notifications = NotificationSerializer(Notification.objects
+                                                    .filter(Q(type='I') | Q(type='R')), many=True)
+        elif user_type == 'Clerk':
+            notifications = NotificationSerializer(Notification.objects
+                                                    .filter(Q(type='I') | Q(type='R')), many=True)
+        
+        return Response(data={
+            'notifications': notifications.data
         }, status=status.HTTP_200_OK)

@@ -42,7 +42,8 @@ urlpatterns = [
     path('transaction_report_by_date/', TransactionByDate.as_view()),
     path('shares_by_date/', SharesByDate.as_view()),
     path('passengers_by_date/', PassengerCountByDate.as_view()),
-    path('passengers/', PassengerCount.as_view())
+    path('passengers/', PassengerCount.as_view()),
+    path('notifications/<str:user_type>', NotificationItems.as_view())
 
 ]
 

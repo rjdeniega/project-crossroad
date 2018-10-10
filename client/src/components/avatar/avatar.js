@@ -28,6 +28,8 @@ export class UserAvatar extends Component {
         history.replace('/sign-in');
     };
 
+
+    
     render() {
         const content = (
             <div>
