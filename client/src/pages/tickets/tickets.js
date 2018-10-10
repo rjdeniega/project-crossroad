@@ -8,7 +8,7 @@ import colors from '../../utilities/colorsFonts.css'
 import { Icon } from 'react-icons-kit'
 import { groupOutline } from 'react-icons-kit/typicons/groupOutline'
 import { users } from 'react-icons-kit/feather/'
-import { Table, Button, Avatar, List, Tag, Tabs, TimePicker } from 'antd'
+import { Pagination,Table, Button, Avatar, List, Tag, Tabs, TimePicker } from 'antd'
 import './style.css'
 import { money } from 'react-icons-kit/fa/money'
 import { UserAvatar } from "../../components/avatar/avatar"
@@ -94,7 +94,9 @@ export class TicketsPage extends Component {
                                    className="tickets-table"
                                    columns={columns}
                                    dataSource={this.state.tickets}
-                            />
+                                   pagination={{ pageSize: 50 }}
+                                   scroll={{ y: 400 }}
+                               />
                         </div>
                     </div>
                 </div>
