@@ -9,7 +9,7 @@ remittance_urls = [
     path('schedules/active', ActiveScheduleView.as_view()),
     path('schedules/<int:schedule_id>', SpecificScheduleView.as_view()),
     path('tickets/assign', AssignTicketView.as_view()),
-    path('tickets', AssignedTicketHistory.as_view()),
+    path('tickets/', AssignedTicketHistory.as_view()),
     path('deployments/', DeploymentView.as_view()),
     path('deployments/<int:pk>', DeploymentView.as_view()),
     path('deployments/deployed_drivers/<int:supervisor_id>', DeployedDrivers.as_view()),

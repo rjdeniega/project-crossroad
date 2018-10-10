@@ -51,7 +51,7 @@ export class TicketsPage extends Component {
         this.fetchTicketHistory();
     }
 
-    fetchTicketHistory = () => {
+    fetchTicketHistory(){
         getData('/remittances/tickets/').then(data => {
             console.log(data);
             if (!data.error) {
@@ -60,7 +60,7 @@ export class TicketsPage extends Component {
             else {
                 console.log(data);
             }
-        }).catch(error => console.log(error))
+        }).catch(error => console.log(error.message))
     }
 
     render() {

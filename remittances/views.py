@@ -248,12 +248,12 @@ class AssignedTicketHistory(APIView):
 
         for ticket in tickets:
             ticket_assignments.append({
-                "driver_id": ticket.driver.id,
+                "driver_id": ticket.driver.pk,
                 "driver_name": ticket.driver.name,
                 "range_from": ticket.range_from,
                 "range_to": ticket.range_to,
                 "date": ticket.created,
-                "type":ticket.type
+                "type": ticket.type
             })
 
         return Response(data={
