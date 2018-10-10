@@ -9,6 +9,8 @@ import { NavBar } from "../components/navbar/navbar";
 import { InventoryPage } from "../pages/inventory/inventory";
 import { MaintenancePage } from "../pages/maintenance/maintenance";
 import { ReportsPage } from "../pages/reports/reports";
+import { TicketsPage } from "../pages/tickets/tickets";
+
 import {
   BrowserRouter,
   Redirect,
@@ -184,6 +186,8 @@ export default class App extends Component {
           <Route path="/users" render={() => <UsersPage />} />
           <Route path="/maintenance" render={() => <MaintenancePage />} />
           <Route path="/reports" render={() => <ReportsPage />} />
+          <Route path="/tickets" render={() => <TicketsPage />} />
+
         </Switch>
         {/*render navbar if there is a user and path is not sign-in*/}
         {user && currentPath !== "sign-in" && <NavBar />}

@@ -15,11 +15,13 @@ import {RemittancePage} from '../../pages/remittances/remittances'
 import {InventoryPage} from '../../pages/inventory/inventory'
 import {MaintenancePage} from '../../pages/maintenance/maintenance'
 import {ReportsPage} from '../../pages/reports/reports'
+import {TicketsPage} from '../../pages/tickets/tickets'
 import {money} from 'react-icons-kit/fa/money'
 import {Link, withRouter} from "react-router-dom";
 import {wrench} from 'react-icons-kit/fa/wrench'
 import { MembersPage } from "../../pages/members/members";
 import {fileTextO} from 'react-icons-kit/fa/fileTextO'
+import {ic_receipt} from 'react-icons-kit/md/ic_receipt'
 
 
 
@@ -38,6 +40,13 @@ const TABS = [
         path: '/remittances',
         component: RemittancePage,
         image: money
+    },
+    {
+        name: "Tickets",
+        key: "tickets",
+        path: '/tickets',
+        component: TicketsPage,
+        image: ic_receipt
     },
     {
         name: "Members",
