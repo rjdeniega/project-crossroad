@@ -36,6 +36,7 @@ class Person(SoftDeletionModel):
 
 class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    remaining_tickets = PositiveIntegerField(default=0)
     application_date = DateField()
 
     def __str__(self):
