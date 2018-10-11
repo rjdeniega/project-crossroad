@@ -217,13 +217,6 @@ class AssignTicketView(APIView):
     def post(request):
         data = json.loads(request.body)
 
-        # if data['type'] == "Main Road":
-        #     ticket_type = 'M'
-        # elif data['type'] == "Kaliwa":
-        #     ticket_type = 'L'
-        # else:
-        #     ticket_type = 'R'
-
         assigned_ticket = AssignedTicket()
         assigned_ticket.driver_id = data['driver_id']
         assigned_ticket.range_from = data['range_from']
@@ -231,6 +224,10 @@ class AssignTicketView(APIView):
         assigned_ticket.range_to = str(temp_string)
         assigned_ticket.type = data['ticket_type']
         assigned_ticket.save()
+
+        driver = assigned_ticket.driver
+        driver.remaining_tickets += 100
+        driver.save()
 
         saved_data = AssignedTicketSerializer(assigned_ticket)
 
