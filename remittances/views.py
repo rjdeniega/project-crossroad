@@ -35,7 +35,7 @@ class ScheduleView(APIView):
         data = json.loads(request.body)
         schedule_serializer = ScheduleSerializer(data=data)
         if schedule_serializer.is_valid():
-            schedule = schedule_serializer.create(validated_data=schedule_serializer.validated_data)
+            schedule = schedule_serializer.create(validated_data=schedule_serializer.validated_data, original=data)
             print(schedule_serializer.errors)
             return Response(data={
                 "start_date": schedule.start_date,

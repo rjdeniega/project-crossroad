@@ -64,8 +64,8 @@ export class OMRemittancePage extends Component {
                     <div className="header-bottom">
                         <div className="user-tabs-wrapper">
                             <Tabs className="user-tabs" defaultActiveKey="1" onChange={this.callback}>
-                                <TabPane className="tab-item" tab="Create Shift" key="1"></TabPane>
-                                <TabPane className="tab-item" tab="Past Schedules" key="2"></TabPane>
+                                <TabPane className="tab-item" tab="Create Schedule" key="1"></TabPane>
+                                <TabPane className="tab-item" tab="Schedule History" key="2"></TabPane>
                                 <TabPane className="tab-item" tab="Ticketing" key="3"></TabPane>
                                 <TabPane className="tab-item" tab="Beep™" key="4"></TabPane>
                             </Tabs>

@@ -42,44 +42,47 @@ class ScheduleSerializer(ModelSerializer):
         model = Schedule
         exclude = ('end_date',)
 
-    def create(self, validated_data):
-        shifts_data = validated_data.pop('shifts')
-        schedule = Schedule.objects.create(**validated_data)
-        schedule.end_date = schedule.start_date + timedelta(days=14)  # start_date + 14 days = 15 days (changed to +15 since every 15 days)
+    def create(self, validated_data,original):
+        print(validated_data)
+        print(original)
+        shifts_data = original.pop('shifts')
+        schedule = Schedule.objects.create(**original)
+        date = datetime.strptime(schedule.start_date, "%Y-%m-%d")
+        schedule.end_date = date + timedelta(days=14)  # start_date + 14 days = 15 days (changed to +15 since every 15 days)
         schedule.save()
         new_sched = Schedule.objects.get(id=schedule.id)  # gets django object to be used
-
         for shift_data in shifts_data:
-
             drivers_data = shift_data.pop('drivers_assigned')
-            shift = Shift.objects.create(schedule=new_sched, **shift_data)
-
+            shift_data_dict = {
+                "type": shift_data['type'],
+                "supervisor": Supervisor.objects.get(pk=shift_data['supervisor'])
+            }
+            shift = Shift.objects.create(schedule=new_sched, **shift_data_dict)
             for driver_data in drivers_data:
-                print(driver_data)
-                driver_id = driver_data.pop('driver')
                 shuttle_id = driver_data.pop('shuttle')
+                driver_id = driver_data.pop('driver')
                 deployment_type = driver_data.pop('deployment_type')
 
-                if deployment_type is 'Early':
-                    type = 'E'
-                elif deployment_type is 'Late':
-                    type = 'L'
-                else:
-                    type = 'R'
+                # if deployment_type is 'Early':
+                #     type = 'E'
+                # elif deployment_type is 'Late':
+                #     type = 'L'
+                # else:
+                #     type = 'R'
 
                 DriversAssigned.objects.create(shift=shift,
-                                               deployment_type=type,
-                                               driver=driver_id,
-                                               shuttle=shuttle_id)
+                                               deployment_type=deployment_type,
+                                               driver=Driver.objects.get(pk=driver_id),
+                                               shuttle=Shuttle.objects.get(pk=shuttle_id))
 
         return schedule
 
     # TODO validate that there are am shifts, pm shifts, and mn shifts in the schedule
     def validate(self, data):
         schedules = Schedule.objects.all()
-        for schedule in schedules:
-            if data['start_date'] <= schedule.end_date:
-                raise serializers.ValidationError("start date of schedule is conflicting with other existing schedule")
+        # for schedule in schedules:
+        #     if data['start_date'] <= schedule.end_date:
+        #         raise serializers.ValidationError("start date of schedule is conflicting with other existing schedule")
         return data
 
 

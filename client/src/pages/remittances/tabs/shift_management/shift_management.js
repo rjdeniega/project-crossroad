@@ -114,6 +114,7 @@ export class ShiftManagementPane extends Component {
         const assignment = {
             "driver": this.state.driver_selected,
             "shuttle": this.state.assigned_shuttle,
+            "deployment_type": this.state.deployment_type,
         };
         if (this.state.selected_shift_type == "AM") {
             this.setState({
@@ -385,13 +386,13 @@ export class ShiftManagementPane extends Component {
 
             >
                 {this.state.selected_shift_type == "AM" &&
-                <Select className="user-input"  defaultValue="Please select deployment type">
+                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input"  defaultValue="Please select deployment type">
                     <Option value="E">Early</Option>
                     <Option value="R">Regular</Option>
                 </Select>
                 }
                 {this.state.selected_shift_type == "PM" &&
-                <Select className="user-input" defaultValue="Please select deployment type">
+                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input" defaultValue="Please select deployment type">
                     <Option value="L">Late</Option>
                     <Option value="R">Regular</Option>
                 </Select>

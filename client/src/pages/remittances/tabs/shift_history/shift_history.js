@@ -46,10 +46,12 @@ export class ShiftHistoryPane extends Component {
         supervisors: null,
         shuttles: [],
         visible: false,
+        create_visible: false,
         assigned_shuttle: null,
         driver_selected: null,
         selected_shift_type: null,
         activeSchedule: null,
+
     };
 
     componentDidMount() {
@@ -135,6 +137,11 @@ export class ShiftHistoryPane extends Component {
     showModal = event => {
         this.setState({
             visible: true
+        })
+    };
+    showCreateModal = event => {
+        this.setState({
+            create_visible: true
         })
     };
     handleConfirm = (e) => {
@@ -391,7 +398,9 @@ export class ShiftHistoryPane extends Component {
                 console.log(data);
                 this.setState({
                     am_shift_drivers: data.shifts[0].drivers,
+                    amSupervisor: data.shifts[0].supervisor_name,
                     pm_shift_drivers: data.shifts[1].drivers,
+                    pmSupervisor: data.shifts[1].supervisor_name,
                     activeSchedule: data.id,
                 })
             }
@@ -414,23 +423,10 @@ export class ShiftHistoryPane extends Component {
 //JSX rendering functions
     renderShiftTables = (amSupervisor, pmSupervisor, mnSupervisor) => (
         <div className="history-tables-wrapper">
-            <Modal
-                title="Assign this driver to a shuttle"
-                visible={this.state.visible}
-                onOk={this.handleConfirm}
-                onCancel={this.handleCancel}
-            >
-                <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
-                        defaultValue="Please select shuttle">
-                    {this.state.shuttles.map(item => (
-                        <Option value={item.id}>{item.plate_number}</Option>
-                    ))}
-                </Select>
-            </Modal>
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">AM</div>
-                    <p><b>{this.state.amSupervisor}</b></p>
+                    <p className="supervisor-select"><b>{this.state.amSupervisor}</b></p>
                 </div>
                 <List
                     itemLayout="horizontal"
@@ -449,6 +445,7 @@ export class ShiftHistoryPane extends Component {
             <div className="pm-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">PM</div>
+                    <p className="supervisor-select"><b>{this.state.pmSupervisor}</b></p>
                 </div>
                 <List
                     itemLayout="horizontal"
@@ -498,6 +495,21 @@ export class ShiftHistoryPane extends Component {
             )}
         />
     );
+    renderAddScheduleModal = () => (
+        <Modal
+            title="Assign this driver to a shuttle"
+            visible={this.state.visible}
+            onOk={this.handleConfirm}
+            onCancel={this.handleCancel}
+        >
+            <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
+                    defaultValue="Please select shuttle">
+                {this.state.shuttles.map(item => (
+                    <Option value={item.id}>{item.plate_number}</Option>
+                ))}
+            </Select>
+        </Modal>
+    );
 
     render() {
         return (
@@ -513,9 +525,9 @@ export class ShiftHistoryPane extends Component {
                                 Schedules
                             </div>
                         </div>
-                        <Button className="add-button">Add New</Button>
                         <div className="expiration-label">select schedule to view details</div>
                         {this.renderScheduleList()}
+                        {this.renderAddScheduleModal()}
 
                     </div>
                     <div className="history-pane-content">
