@@ -49,12 +49,11 @@ class ScheduleView(APIView):
 class GetDateSchedule(APIView):
     @staticmethod
     def get(request):
-        schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
-                                           end_date__gte=datetime.now().date()).first()
+        schedule = Schedule.objects.all().order_by("-id").first()
 
         if schedule is None:
             return Response(data={
-                'message': 'No Active Schedule'
+                'message': 'No Previous Schedule'
             }, status=status.HTTP_200_OK)
 
         start_date = schedule.end_date + timedelta(days=1)
