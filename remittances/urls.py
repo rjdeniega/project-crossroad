@@ -7,6 +7,7 @@ remittance_urls = [
     path('schedules/create', CreateSchedule.as_view()),
     path('schedules/history', ScheduleHistoryView.as_view()),
     path('schedules/active', ActiveScheduleView.as_view()),
+    path('schedules/get_date', GetDateSchedule.as_view()),
     path('schedules/<int:schedule_id>', SpecificScheduleView.as_view()),
     path('tickets/assign', AssignTicketView.as_view()),
     path('tickets/', AssignedTicketHistory.as_view()),

@@ -46,6 +46,26 @@ class ScheduleView(APIView):
                 "errors": schedule_serializer.errors
             })
 
+class GetDateSchedule(APIView):
+    @staticmethod
+    def get(request):
+        schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
+                                           end_date__gte=datetime.now().date()).first()
+
+        if schedule is None:
+            return Response(data={
+                'message': 'No Active Schedule'
+            }, status=status.HTTP_200_OK)
+
+        start_date = schedule.end_date + timedelta(days=1)
+        end_date = start_date + timedelta(days=14)
+
+        return Response(data={
+            "expected_start_date": start_date,
+            "expected_end_date": end_date
+        }, status=status.HTTP_200_OK)
+
+
 
 class CreateSchedule(APIView):
     @staticmethod
