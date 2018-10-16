@@ -135,26 +135,16 @@ class AssignedTicketSerializer(ModelSerializer):
 
 
 class DeploymentSerializer(ModelSerializer):
-    assigned_ticket = AssignedTicketSerializer(many=True, write_only=True)  # for writing
-
     class Meta:
         model = Deployment
         exclude = ('shift_iteration',)
 
     def create(self, validated_data, supervisor_id):
-        assigned_tickets_data = validated_data.pop('assigned_ticket')
-
         # get shift_iteration_id
         current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
             '-date').first()
         deployment = Deployment.objects.create(shift_iteration=current_shift_iteration, **validated_data)
 
-        for assigned_ticket_data in assigned_tickets_data:
-            void_tickets_data = assigned_ticket_data.pop('void_ticket')
-            assigned_ticket = AssignedTicket.objects.create(deployment=deployment, **assigned_ticket_data)
-
-            for void_ticket_data in void_tickets_data:
-                VoidTicket.objects.create(assigned_ticket=assigned_ticket, **void_ticket_data)
         return deployment
 
 

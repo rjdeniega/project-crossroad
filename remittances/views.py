@@ -113,6 +113,8 @@ class ActiveScheduleView(APIView):
 
             tempshifts.append({
                 'type': shift.type,
+                'supervisor_id': shift.supervisor.id,
+                'supervisor_name': shift.supervisor.name,
                 'drivers': tempdrivers
             })
 
@@ -358,35 +360,21 @@ class DeploymentView(APIView):
     def post(request):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
-
-        # def should_be_removed(data):
-        #     list = []
-        #     for ctr, assigned_ticket in enumerate(data['assigned_ticket']):
-        #         if assigned_ticket['range_from'] == None and not ctr % 2 == 0:
-        #             list.append(ctr)
-        #
-        #     new_list = sorted(list, reverse=True)
-        #
-        #     return new_list
-        #
-        # invalid_entries = should_be_removed(data)
-        # empty_tickets = []
-        # if invalid_entries is not None:
-        #     for entry in invalid_entries:
-        #         empty_tickets.append(data['assigned_ticket'][entry])
-        #         del data['assigned_ticket'][entry]
-
         deployment_serializer = DeploymentSerializer(data=data)
+
         if deployment_serializer.is_valid():
+
             deployment = deployment_serializer.create(
                 validated_data=deployment_serializer.validated_data,
                 supervisor_id=supervisor_id
             )
+
             serialized_deployment = DeploymentSerializer(deployment)
-            print(serialized_deployment)
+
             return Response(data={
                 'deployment': serialized_deployment.data
             }, status=status.HTTP_200_OK)
+
         else:
             return Response(data={
                 "errors": deployment_serializer.errors
