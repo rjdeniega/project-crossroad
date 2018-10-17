@@ -29,7 +29,6 @@ REPAIR_STATUS = [
 
 
 class Shuttle(SoftDeletionModel):
-
     plate_number = CharField(max_length=6, unique=True)
     make = CharField(max_length=64)
     model = CharField(max_length=64)
