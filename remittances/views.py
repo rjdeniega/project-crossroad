@@ -498,72 +498,45 @@ class TicketUtilities():
     # this function returns a list of assigned tickets w/ their void tickets
     @staticmethod
     def get_tickets_with_void(deployment_id):
-        tickets = AssignedTicket.objects.filter(deployment=deployment_id)
+        deployment = Deployment.objects.get(id=deployment_id)
+        tickets = AssignedTicket.objects.filter(driver=deployment.driver.id)
 
-        final = list()
-
-        a = 'first'
-        b = 'first'
-        c = 'first'
-        a_key_start = '10_peso_start_'
-        a_key_end = '10_peso_end_'
-        b_key_start = '12_peso_start_'
-        b_key_end = '12_peso_end_'
-        c_key_start = '15_peso_start_'
-        c_key_end = '15_peso_end_'
+        final = []
 
         for ticket in tickets:
-            num_of_void = TicketUtilities.get_num_of_void(ticket.id)
-            void_tickets = VoidTicket.objects.filter(assigned_ticket=ticket)
-            void = list()
+            # remove consumed tickets
+            # retrieve highest end ticket for the bundle
+            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id).order_by("-end_ticket").first()
 
-            for void_ticket in void_tickets:
-                void.append({
-                    'ticket_number': void_ticket.ticket_number
-                })
+            if consumed_tickets is not None:
+                # check if all tickets in bundle are consumed
+                if ticket.range_to > consumed_tickets.end_ticket:
+                    voids = []
 
-            if ticket.type == 'A':
-                a_key_start += a
-                a_key_end += a
+                    for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
+                        voids.append({"ticket_number": void_ticket.ticket_number})
 
-                final.append({
-                    'assigned_ticket_id': ticket.id,
-                    a_key_start: ticket.range_from,
-                    a_key_end: ticket.range_to,
-                    'number_of_void': num_of_void,
-                    'void_tickets': void
-                })
-
-                a_key_start = '10_peso_start_'
-                a_key_end = '10_peso_end_'
-                a = 'second'
-
-            elif ticket.type == 'B':
-                b_key_start += b
-                b_key_end += b
-
-                final.append({
-                    'assigned_ticket_id': ticket.id,
-                    b_key_start: ticket.range_from,
-                    b_key_end: ticket.range_to,
-                    'number_of_void': num_of_void,
-                    'void_tickets': void
-                })
-
-                b_key_start = '12_peso_start_'
-                b_key_end = '12_peso_end_'
-                b = 'second'
-
+                    final.append({
+                        "ticket_id": ticket.id,
+                        "driver_id": ticket.driver.id,
+                        "driver_name": ticket.driver.name,
+                        "range_from": ticket.range_from,
+                        "range_to": ticket.range_to,
+                        "voids": voids
+                    })
             else:
-                c_key_start += c
-                c_key_end += c
+                voids = []
+
+                for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
+                    voids.append({"ticket_number": void_ticket.ticket_number})
 
                 final.append({
-                    'assigned_ticket_id': ticket.id,
-                    c_key_start: ticket.range_from,
-                    c_key_end: ticket.range_to,
-                    'number_of_void': num_of_void,
-                    'void_tickets': void
+                    "ticket_id": ticket.id,
+                    "driver_id": ticket.driver.id,
+                    "driver_name": ticket.driver.name,
+                    "range_from": ticket.range_from,
+                    "range_to": ticket.range_to,
+                    "voids": voids
                 })
 
         return final
@@ -682,7 +655,7 @@ class DeploymentDetails(APIView):
         deployment_query = Deployment.objects.get(shift_iteration=shift_iteration, driver=driver_id)
         deployment = DeploymentSerializer(deployment_query)
         assigned_tickets = TicketUtilities.get_tickets_with_void(deployment_query.id)
-        print(assigned_tickets)
+
         return Response(data={
             'deployment_details': deployment.data,
             'assigned_tickets': assigned_tickets,
