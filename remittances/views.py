@@ -294,6 +294,11 @@ class AssignedTicketHistory(APIView):
         ticket_assignments = []
 
         for ticket in tickets:
+
+            number_of_voids = 0
+            for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
+                number_of_voids += 1
+
             ticket_assignments.append({
                 "driver_id": ticket.driver.pk,
                 "driver_name": ticket.driver.name,
@@ -301,6 +306,7 @@ class AssignedTicketHistory(APIView):
                 "range_to": ticket.range_to,
                 "date": ticket.created.date(),
                 "type": ticket.get_type_display(),
+                "number_of_voids": number_of_voids
             })
 
         return Response(data={
