@@ -512,9 +512,10 @@ class TicketUtilities():
                 # check if all tickets in bundle are consumed
                 if ticket.range_to > consumed_tickets.end_ticket:
                     voids = []
-
+                    number_of_voids = 0
                     for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
                         voids.append({"ticket_number": void_ticket.ticket_number})
+                        number_of_voids += 1
 
                     # change range_from to a ticket that hasn't been consumed
                     range_from = consumed_tickets.end_ticket + 1
@@ -526,13 +527,15 @@ class TicketUtilities():
                         "ticket_type": ticket.get_type_display(),
                         "range_from": range_from,
                         "range_to": ticket.range_to,
+                        "number_of_voids": number_of_voids,
                         "voids": voids
                     })
             else:
                 voids = []
-
+                number_of_voids = 0
                 for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
                     voids.append({"ticket_number": void_ticket.ticket_number})
+                    number_of_voids += 1
 
                 final.append({
                     "ticket_id": ticket.id,
@@ -541,6 +544,7 @@ class TicketUtilities():
                     "ticket_type": ticket.get_type_display(),
                     "range_from": ticket.range_from,
                     "range_to": ticket.range_to,
+                    "number_of_voids": number_of_voids,
                     "voids": voids
                 })
 
@@ -704,6 +708,85 @@ class RemittanceFormView(APIView):
     def delete(request, pk):
         RemittanceForm.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class AddRemittanceForm(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        #insert validation
+
+        remittance_form = RemittanceForm()
+        remittance_form.deployment_id = data["deployment"]
+        remittance_form.fuel_cost = float(data["fuel_cost"])
+        remittance_form.fuel_receipt = data["fuel_receipt"]
+        remittance_form.other_cost = float(data["other_cost"])
+
+        # get km_from from shuttle mileage
+        deployment = Deployment.objects.get(id=data["deployment"])
+        shuttle = Shuttle.objects.get(id=deployment.shuttle_id)
+
+        remittance_form.km_from = shuttle.mileage
+        remittance_form.km_to = data["km_to"]
+        shuttle.mileage = data["km_to"]
+        shuttle.save()
+        remittance_form.save()
+
+        # compute total
+        remittance_total = 0
+        for consumed_ticket in data["consumed_ticket"]:
+            assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket["assigned_ticket"])
+            # get range_from
+            previous = ConsumedTicket.objects.filter(assigned_ticket=assigned_ticket.id).order_by("-end_ticket").first()
+
+            new_consumed = ConsumedTicket()
+            new_consumed.remittance_form_id = remittance_form.id
+            new_consumed.assigned_ticket_id = consumed_ticket["assigned_ticket"]
+            new_consumed.end_ticket = consumed_ticket["end_ticket"]
+
+            # get number of voids to subtract to total
+            voided = 0  # number of voided tickets
+            void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
+            void_tickets = [item for item in void_tickets if item.ticket_number <= consumed_ticket.end_ticket]
+            for void_ticket in void_tickets:
+                voided += 1
+
+            # get ticket type to multiply for total
+            if assigned_ticket.type == "A":
+                type = 10
+            elif assigned_ticket.type == "B":
+                type = 13
+            else:
+                type = 15
+
+            # compute total
+            if previous is not None:
+                # another +1 for next ticket
+                total = (int(new_consumed.end_ticket) - previous.end_ticket - voided + 2) * type
+            else:
+                print(int(new_consumed.end_ticket))
+                total = (int(new_consumed.end_ticket) - assigned_ticket.range_from - voided + 1) * type
+
+            new_consumed.total = total
+            new_consumed.save()
+            remittance_total += total
+
+
+        # subtract remittance total to costs accumulated during deployment
+        remittance_form.total = remittance_total - (remittance_form.fuel_cost + remittance_form.other_cost)
+        remittance_form.save()
+
+        # update deployment data to finished
+        deployment = Deployment.objects.get(id=remittance_form.deployment_id)
+        deployment.status = 'F'
+        deployment.end_deployment()
+        deployment.save()
+
+        return Response(data={
+            "message": "Remittance Form Submitted",
+            "remittance_id": remittance_form.id,
+            "remittance_total": remittance_form.total
+        }, status=status.HTTP_200_OK)
 
 
 class ConfirmRemittanceForm(APIView):
