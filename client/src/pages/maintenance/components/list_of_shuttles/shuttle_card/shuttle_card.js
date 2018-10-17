@@ -51,7 +51,7 @@ export class ShuttleCards extends Component {
                                 <Meta title={"Shuttle " + shuttle.id}
                                       description={"Plate Number: " + shuttle.plate_number + "\n" +
                                       "Model: " + shuttle.make + " " + shuttle.model + "\n" +
-                                      "Status: " + checkStatus(shuttle.status)}
+                                      "Mileage: " + shuttle.mileage + "\n"+ "Status: " + checkStatus(shuttle.status)}
                                       style={{ whiteSpace: "pre-wrap" }}/>
                             </Card>
                         </List.Item>

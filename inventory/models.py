@@ -37,6 +37,7 @@ class Shuttle(SoftDeletionModel):
     date_acquired = DateField()
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
+    mileage = PositiveIntegerField()
 
     def save(self, *args, **kwargs):
         if not self.id:

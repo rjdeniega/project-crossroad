@@ -1,15 +1,16 @@
-from django.shortcuts import render
+import json
+from datetime import datetime
 
+from django.shortcuts import render
+from rest_framework import status
 # Create your views here.
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
-from remittances.models import *
 
 from inventory.serializers import *
+from remittances.models import *
+
 from .models import *
-import json
-from datetime import datetime
 
 
 class SpecificItemView(APIView):
@@ -47,7 +48,8 @@ class ItemView(APIView):
         if item_serializer.is_valid():
             # Serializer class has a built in function that creates an object attributed to it
             # I pass the validated data and it creates the object
-            item = item_serializer.create(validated_data=item_serializer.validated_data)
+            item = item_serializer.create(
+                validated_data=item_serializer.validated_data)
             item_movement = ItemMovement(item=item, type='B', quantity=item.quantity,
                                          vendor=data["item_movement"]["vendor"],
                                          unit_price=data["item_movement"]["unit_price"])
@@ -121,7 +123,8 @@ class ShuttlesView(APIView):
         shuttle_serializer = ShuttlesSerializer(data=data)
 
         if shuttle_serializer.is_valid():
-            shuttle = shuttle_serializer.create(validated_data=shuttle_serializer.validated_data)
+            shuttle = shuttle_serializer.create(
+                validated_data=shuttle_serializer.validated_data)
 
             return Response(data={
                 'shuttle_id': shuttle.id
@@ -143,8 +146,8 @@ class RepairProblems(APIView):
         shuttle = Shuttle.objects.get(id=pk)
 
         repairs = RepairSerializer(Repair.objects.all()
-                                        .filter(shuttle=shuttle)
-                                        .order_by("-date_requested"), many=True)
+                                   .filter(shuttle=shuttle)
+                                   .order_by("-date_requested"), many=True)
         return Response(data={
             "repairs": repairs.data
         }, status=status.HTTP_200_OK)
@@ -171,8 +174,10 @@ class ProblemsView(APIView):
         repair = Repair.objects.get(id=pk)
         problems = RepairProblemSerializer(repair.problems.all(), many=True)
         findings = RepairFindingSerializer(repair.findings.all(), many=True)
-        modifications = RepairModificationsSerializer(repair.modifications.all(), many=True)
-        outsourcedItems = OutsourcedItemsSerializer(repair.outsourced_items.all(), many=True)
+        modifications = RepairModificationsSerializer(
+            repair.modifications.all(), many=True)
+        outsourcedItems = OutsourcedItemsSerializer(
+            repair.outsourced_items.all(), many=True)
 
         return Response(data={
             'problems': problems.data,
@@ -186,8 +191,8 @@ class MechanicRepairs(APIView):
     @staticmethod
     def get(request):
         repairs = RepairSerializer(Repair.objects.all()
-                                        .exclude(status='C')
-                                        .order_by('-date_requested'), many=True)
+                                   .exclude(status='C')
+                                   .order_by('-date_requested'), many=True)
 
         return Response(data={
             'repairs': repairs.data
@@ -216,12 +221,12 @@ class MechanicItems(APIView):
             consumable = False
 
         items = ItemSerializer(Item.objects.all()
-                                .filter(consumable=consumable)
-                                .filter(quantity__gte=0), many=True)
+                               .filter(consumable=consumable)
+                               .filter(quantity__gte=0), many=True)
 
         return Response(data={
             'items': items.data
-            }, status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
 
     @staticmethod
     def put(request, pk):
@@ -238,7 +243,7 @@ class MechanicItems(APIView):
         sendRepair = RepairSerializer(repair)
         return Response(data={
             'repair': sendRepair.data
-        },status=status.HTTP_200_OK)
+        }, status=status.HTTP_200_OK)
 
     @staticmethod
     def post(request, pk):
@@ -247,24 +252,29 @@ class MechanicItems(APIView):
 
         item = Item.objects.get(id=data['selectedItem'])
         if(item.consumable == True):
-            rm = RepairModifications(item_used=item, quantity=1, used_up=data['depleted'])
+            rm = RepairModifications(
+                item_used=item, quantity=1, used_up=data['depleted'])
             rm.save()
             repair.modifications.add(rm)
             if(rm.used_up == True):
-                im = ItemMovement(item=item, type='G', quantity=1, repair=repair)
+                im = ItemMovement(item=item, type='G',
+                                  quantity=1, repair=repair)
                 im.save()
                 item.quantity = item.quantity - 1
 
         else:
-            rm = RepairModifications(item_used=item, quantity=data['quantity'], used_up=True)
+            rm = RepairModifications(
+                item_used=item, quantity=data['quantity'], used_up=True)
             rm.save()
             repair.modifications.add(rm)
-            im = ItemMovement(item=item, type='G', quantity=data['quantity'], repair=repair)
+            im = ItemMovement(item=item, type='G',
+                              quantity=data['quantity'], repair=repair)
             im.save()
             item.quantity = item.quantity - data['quantity']
 
         item.save()
-        modifications = RepairModificationsSerializer(repair.modifications.all(), many=True)
+        modifications = RepairModificationsSerializer(
+            repair.modifications.all(), many=True)
         return Response(data={
             'modifications': modifications.data
         }, status=status.HTTP_200_OK)
@@ -278,7 +288,8 @@ class OutsourceModification(APIView):
         repair.labor_fee = data['labor_cost']
         repair.status = 'C'
         for item in data['items']:
-            oi = OutSourcedItems(item=item['item_name'], quantity=item['quantity'], unit_price=item['unit_price'])
+            oi = OutSourcedItems(
+                item=item['item_name'], quantity=item['quantity'], unit_price=item['unit_price'])
             oi.save()
             repair.outsourced_items.add(oi)
 
@@ -293,7 +304,8 @@ class MaintenanceReport(APIView):
         initialMaintenanceCost = 0
         repairs = Repair.objects.all().filter(shuttle=shuttle)
 
-        shuttle_remittance = sum([item.total for item in RemittanceForm.objects.filter(deployment__shift_iteration__shift__drivers_assigned__shuttle=shuttle.id)])
+        shuttle_remittance = sum([item.total for item in RemittanceForm.objects.filter(
+            deployment__shift_iteration__shift__drivers_assigned__shuttle=shuttle.id)])
         print(shuttle_remittance)
 
         for repair in repairs:
