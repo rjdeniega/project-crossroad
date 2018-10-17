@@ -692,29 +692,8 @@ class RemittanceFormView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        remittance_serializer = RemittanceFormSerializer(data=data)
-        if remittance_serializer.is_valid():
-            remittance_form = remittance_serializer.create(validated_data=remittance_serializer.validated_data)
-            print(remittance_form.total)
-            return Response(data={
-                "total": remittance_form.total
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response(data={
-                "errors": remittance_serializer.errors
-            })
 
-    @staticmethod
-    def delete(request, pk):
-        RemittanceForm.objects.get(id=pk).delete(user=request.user.username)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class AddRemittanceForm(APIView):
-    @staticmethod
-    def post(request):
-        data = json.loads(request.body)
-
-        #insert validation
+        # insert validation
 
         remittance_form = RemittanceForm()
         remittance_form.deployment_id = data["deployment"]
@@ -771,7 +750,6 @@ class AddRemittanceForm(APIView):
             new_consumed.save()
             remittance_total += total
 
-
         # subtract remittance total to costs accumulated during deployment
         remittance_form.total = remittance_total - (remittance_form.fuel_cost + remittance_form.other_cost)
         remittance_form.save()
@@ -787,6 +765,12 @@ class AddRemittanceForm(APIView):
             "remittance_id": remittance_form.id,
             "remittance_total": remittance_form.total
         }, status=status.HTTP_200_OK)
+
+
+    @staticmethod
+    def delete(request, pk):
+        RemittanceForm.objects.get(id=pk).delete(user=request.user.username)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ConfirmRemittanceForm(APIView):

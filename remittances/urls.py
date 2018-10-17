@@ -19,7 +19,6 @@ remittance_urls = [
     path('shifts/pending_drivers/<int:supervisor_id>', NonDeployedDrivers.as_view()),
     path('remittance_form/driver/<int:driver_id>', DeploymentDetails.as_view()),
     path('remittance_form/', RemittanceFormView.as_view()),
-    path('remittance_form/add', AddRemittanceForm.as_view()),
     path('remittance_form/confirm', ConfirmRemittanceForm.as_view()),
     path('remittance_form/pending/<int:supervisor_id>', ConfirmRemittanceForm.as_view()),
     path('remittance_form/add_discrepancy/<int:remittance_form_id>', AddDiscrepancy.as_view()),
