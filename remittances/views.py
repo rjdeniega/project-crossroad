@@ -516,11 +516,14 @@ class TicketUtilities():
                     for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
                         voids.append({"ticket_number": void_ticket.ticket_number})
 
+                    # change range_from to a ticket that hasn't been consumed
+                    range_from = consumed_tickets.end_ticket + 1
+
                     final.append({
                         "ticket_id": ticket.id,
                         "driver_id": ticket.driver.id,
                         "driver_name": ticket.driver.name,
-                        "range_from": ticket.range_from,
+                        "range_from": range_from,
                         "range_to": ticket.range_to,
                         "voids": voids
                     })
