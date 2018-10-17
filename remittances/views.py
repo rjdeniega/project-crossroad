@@ -246,9 +246,25 @@ class AssignTicketView(APIView):
         assigned_ticket.type = data['ticket_type']
         assigned_ticket.save()
 
+
         driver = assigned_ticket.driver
         driver.remaining_tickets += 100
         driver.save()
+
+        voids = []
+        number_of_voids = 0
+        for void_ticket in data["void_tickets"]:
+            new_void = VoidTicket()
+            new_void.ticket_number = void_ticket
+            new_void.assigned_ticket_id = assigned_ticket.id
+            new_void.save()
+
+            voids.append({
+                "void_id": new_void.id,
+                "ticket_number": new_void.ticket_number
+            })
+
+            number_of_voids += 1
 
         saved_data = AssignedTicketSerializer(assigned_ticket)
 
@@ -259,7 +275,9 @@ class AssignTicketView(APIView):
             "range_from": assigned_ticket.range_from,
             "driver_name": assigned_ticket.driver.name,
             "driver_id": assigned_ticket.driver.pk,
-            "type": assigned_ticket.get_type_display()
+            "type": assigned_ticket.get_type_display(),
+            "number_of_voids": number_of_voids,
+            "void_tickets": voids
         }
 
         return Response(data={
