@@ -30,7 +30,8 @@ class AddShuttleFormInit extends React.Component{
             make: this.props.make.value,
             model: this.props.model.value,
             date_acquired: this.props.date_acquired.value.format('YYYY-MM-DD'),
-            status: "A"
+            status: "A",
+            mileage: this.props.mileage.value,
         };
 
         postData('inventory/shuttles/', shuttle)
@@ -50,6 +51,7 @@ class AddShuttleFormInit extends React.Component{
         const plateNumberError = isFieldTouched('plate_number') && getFieldError('plate_number');
         const makeError = isFieldTouched('make') && getFieldError('make');
         const modelError = isFieldTouched('model') && getFieldError('model');
+        const mileageError = isFieldTouched('mileage') && getFieldError('mileage');
         const dateAcquiredError = isFieldTouched('date_acquired') && getFieldError('date_acquired');
 
         const formItemLayout = {
@@ -88,6 +90,15 @@ class AddShuttleFormInit extends React.Component{
                             rules: [{required: true,
                                      message: 'Model is required!'}],
                         })(<Input className='model' type='text' placeholder='Model'/>)}
+                    </FormItem>
+                    <FormItem label='Mileage' validateStatus={mileageError ? 'error' : ''}
+                        help={mileageError || ''} {...formItemLayout}>
+                        {getFieldDecorator('mileage', {
+                            rules: [{
+                                required: true,
+                                message: 'Mileage is required!'
+                            }],
+                        })(<Input className='mileage' type='number' placeholder='Mileage' />)}
                     </FormItem>
                     <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error': ''}
                               help={dateAcquiredError || ''} {...formItemLayout}>
@@ -130,6 +141,10 @@ const AddShuttleForm = Form.create({
                 ...props.model,
                 value: props.model.value,
             }),
+            mileage: Form.createFormField({
+                ...props.mileage,
+                value: props.mileage.value,
+            }),
             date_acquired: Form.createFormField({
                 ...props.date_acquired,
                 value: props.date_acquired.value,
@@ -150,6 +165,9 @@ class FinalForm extends Component{
                 value: ''
             },
             model: {
+                value: ''
+            },
+            mileage: {
                 value: ''
             },
             date_acquired: {
