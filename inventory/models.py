@@ -34,7 +34,6 @@ class Shuttle(SoftDeletionModel):
     make = CharField(max_length=64)
     model = CharField(max_length=64)
     status = CharField(max_length=2, choices=SHUTTLE_STATUS)
-    mileage = DecimalField(default=0, max_digits=19, decimal_places=10)
     date_acquired = DateField()
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)

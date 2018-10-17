@@ -14,8 +14,8 @@ TICKET_TYPE = [
 ]
 ROUTE = [
     ('M', 'Main Road'),
-    ('R', 'Kanan'),  # Kanan
-    ('L', 'Kaliwa')  # Kaliwa
+    ('R', 'Right Route'),  # Kanan
+    ('L', 'Left Route')  # Kaliwa
 ]
 
 SHIFT_TYPE = [
@@ -152,14 +152,6 @@ class AssignedTicket(SoftDeletionModel):
         self.range_to = self.range_from + int(value) - 1 # value is per bundle needs to minus 1
         self.save()
 
-    def get_type_name(self):
-        if self.type == "M":
-            return "Main Road"
-        elif self.type == "R":
-            return "Kanan"
-        else:
-            return "Kaliwa"
-
 
 class VoidTicket(SoftDeletionModel):
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
@@ -169,7 +161,6 @@ class VoidTicket(SoftDeletionModel):
 class RemittanceForm(SoftDeletionModel):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     fuel_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
-    fuel_receipt = CharField(max_length=36, null=True)
     other_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     status = CharField(max_length=1, choices=FORM_STATUS, default='P')
     total = DecimalField(default=0, max_digits=19, decimal_places=10)  # income - costs

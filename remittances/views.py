@@ -523,7 +523,6 @@ class TicketUtilities():
                         "ticket_id": ticket.id,
                         "driver_id": ticket.driver.id,
                         "driver_name": ticket.driver.name,
-                        "ticket_type": ticket.get_type_display(),
                         "range_from": range_from,
                         "range_to": ticket.range_to,
                         "voids": voids
@@ -538,7 +537,6 @@ class TicketUtilities():
                     "ticket_id": ticket.id,
                     "driver_id": ticket.driver.id,
                     "driver_name": ticket.driver.name,
-                    "ticket_type": ticket.get_type_display(),
                     "range_from": ticket.range_from,
                     "range_to": ticket.range_to,
                     "voids": voids
