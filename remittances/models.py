@@ -185,6 +185,7 @@ class RemittanceForm(SoftDeletionModel):
 class ConsumedTicket(SoftDeletionModel):
     remittance_form = ForeignKey(RemittanceForm, on_delete=models.CASCADE)
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
+    start_ticket = IntegerField(default=0)
     end_ticket = IntegerField()
     total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
 

@@ -553,81 +553,30 @@ class TicketUtilities():
     # this function returns a summary of ticket details with consumed and total for each batch
     @staticmethod
     def get_consumed_with_assigned(deployment_id):
-        tickets = AssignedTicket.objects.filter(deployment=deployment_id)
+        deployment = Deployment.objects.get(id=deployment_id)
+        remittance_form = RemittanceForm.objects.get(deployment=deployment)
+        consumed_tickets = ConsumedTicket.objects.filter(remittance_form=remittance_form)
 
-        final = list()
+        final = []
 
-        a = 'first'
-        b = 'first'
-        c = 'first'
-        a_key_start = '10_peso_start_'
-        a_key_end = '10_peso_end_'
-        b_key_start = '12_peso_start_'
-        b_key_end = '12_peso_end_'
-        c_key_start = '15_peso_start_'
-        c_key_end = '15_peso_end_'
+        for ticket in consumed_tickets:
+            voids = []
+            number_of_voids = 0
+            for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket.assigned_ticket):
+                # only consider void tickets that are in range of consumed tickets for deployment
+                if void_ticket.ticket_number >= ticket.start_ticket and void_ticket.ticket_number <= ticket.end_ticket:
+                    voids.append({"ticket_number": void_ticket.ticket_number})
+                    number_of_voids += 1
 
-        for ticket in tickets:
-            num_of_void = TicketUtilities.get_num_of_void(ticket.id)
-            void_tickets = VoidTicket.objects.filter(assigned_ticket=ticket)
-            void = list()
-
-            for void_ticket in void_tickets:
-                void.append({
-                    'ticket_number': void_ticket.ticket_number
-                })
-
-            consumed_ticket = ConsumedTicket.objects.get(assigned_ticket=ticket.id)
-
-            if ticket.type == 'A':
-                a_key_start += a
-                a_key_end += a
-
-                final.append({
-                    'assigned_ticket_id': ticket.id,
-                    a_key_start: ticket.range_from,
-                    a_key_end: ticket.range_to,
-                    'number_of_void': num_of_void,
-                    'void_tickets': void,
-                    'consumed_end': consumed_ticket.end_ticket,
-                    'total': consumed_ticket.total
-                })
-
-                a_key_start = '10_peso_start_'
-                a_key_end = '10_peso_end_'
-                a = 'second'
-
-            elif ticket.type == 'B':
-                b_key_start += b
-                b_key_end += b
-
-                final.append({
-                    'assigned_ticket_id': ticket.id,
-                    b_key_start: ticket.range_from,
-                    b_key_end: ticket.range_to,
-                    'number_of_void': num_of_void,
-                    'void_tickets': void,
-                    'consumed_end': consumed_ticket.end_ticket,
-                    'total': consumed_ticket.total
-                })
-
-                b_key_start = '12_peso_start_'
-                b_key_end = '12_peso_end_'
-                b = 'second'
-
-            else:
-                c_key_start += c
-                c_key_end += c
-
-                final.append({
-                    'assigned_ticket_id': ticket.id,
-                    c_key_start: ticket.range_from,
-                    c_key_end: ticket.range_to,
-                    'number_of_void': num_of_void,
-                    'void_tickets': void,
-                    'consumed_end': consumed_ticket.end_ticket,
-                    'total': consumed_ticket.total
-                })
+            final.append({
+                "assigned_ticket_id": ticket.assigned_ticket_id,
+                "start_ticket": ticket.start_ticket,
+                "assigned_range_to": ticket.assigned_ticket.range_to,
+                "consumed_end": ticket.end_ticket,
+                "number_of_void": number_of_voids,
+                "void_tickets": voids,
+                "total": ticket.total
+            })
 
         return final
 
@@ -722,6 +671,11 @@ class RemittanceFormView(APIView):
             new_consumed.remittance_form_id = remittance_form.id
             new_consumed.assigned_ticket_id = consumed_ticket["assigned_ticket"]
             new_consumed.end_ticket = consumed_ticket["end_ticket"]
+
+            if previous is not None:
+                new_consumed.start_ticket = previous.end_ticket + 1
+            else:
+                new_consumed.start_ticket = assigned_ticket.range_from
 
             # get number of voids to subtract to total
             voided = 0  # number of voided tickets
