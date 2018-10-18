@@ -371,6 +371,9 @@ class NonDeployedDrivers(APIView):
             query = query.exclude(driver=driver.driver.id)
 
         non_deployed_drivers = PlannedDriversSerializer(query, many=True)
+        for item in non_deployed_drivers.data:
+            item["driver"]["shuttle_id"] = item["shuttle"]["id"]
+            item["driver"]["shuttle_plate_number"] = item["shuttle"]["plate_number"]
 
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data

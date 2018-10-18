@@ -175,11 +175,11 @@
     font-weight: 500 !important;
     }
 
-.driver-deploy-modal {
-    height: 500px !important;
-    width: 880px ! important;
-    top: 10px !important;
-    }
+/*.driver-deploy-modal {*/
+    /*height: 500px !important;*/
+    /*width: 880px ! important;*/
+    /*top: 10px !important;*/
+    /*}*/
 
 .driver-deploy-modal .ant-modal-body {
     display: grid !important;

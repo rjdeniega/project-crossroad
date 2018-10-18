@@ -275,8 +275,24 @@ export class SupervisorSecondContent extends Component {
         });
     };
     handleDriverSelect = (key) => {
+        getData('remittances/shifts/pending_drivers/' + key).then(data => {
+            if (!data.error) {
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
+                console.log(data);
+                const drivers = data.non_deployed_drivers.map(tuple =>
+                    tuple.driver
+                );
+                console.log(drivers);
+                this.setState({ drivers: drivers });
+            }
+            else {
+                console.log(data.error);
+            }
+        })
         this.setState({
-            driver_selected: key
+            driver_selected: key,
         })
     };
     handleVoidAdd = (e) => {
@@ -396,105 +412,111 @@ export class SupervisorSecondContent extends Component {
                             <Option value="R">Kanan</Option>
                             <Option value="L">Kaliwa</Option>
                         </Select>
+                        <Select onChange={this.handleFormUpdatesListener("shuttle")} className="route-input"
+                                defaultValue={this.state.shuttle}>
+                            <Option value="M">Main Road</Option>
+                            <Option value="R">Kanan</Option>
+                            <Option value="L">Kaliwa</Option>
+                        </Select>
                     </div>
-                    <p><b>10 Peso Tickets</b></p>
-                    <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large"
-                                     onChange={this.handleFormUpdatesListener("ten_from_first")}
-                                     placeholder="simula ng ticket una"/>
-                        <InputNumber className="first-range-to" size="large"
-                                     onChange={this.handleFormUpdatesListener("ten_to_first")}
-                                     placeholder="dulo ng ticket una"/>
-                        <Button size="small" className="first-add-void-button"
-                                onClick={this.showAddVoid10_first}><AntIcon
-                            className="plus-icon" type="plus-circle-o"/>Add
-                            Void</Button>
+                    {/*<p><b>10 Peso Tickets</b></p>*/}
+                    {/*<div className="ticket-range-div">*/}
+                        {/*<InputNumber className="first-range-from" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("ten_from_first")}*/}
+                                     {/*placeholder="simula ng ticket una"/>*/}
+                        {/*<InputNumber className="first-range-to" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("ten_to_first")}*/}
+                                     {/*placeholder="dulo ng ticket una"/>*/}
+                        {/*<Button size="small" className="first-add-void-button"*/}
+                                {/*onClick={this.showAddVoid10_first}><AntIcon*/}
+                            {/*className="plus-icon" type="plus-circle-o"/>Add*/}
+                            {/*Void</Button>*/}
 
-                        <InputNumber className="second-range-from" size="large"
-                                     onChange={this.handleFormUpdatesListener("ten_from_second")}
-                                     placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to" size="large"
-                                     onChange={this.handleFormUpdatesListener("ten_to_second")}
-                                     placeholder="dulo ng ticket"/>
-                        <Button size="small" className="second-add-void-button"
-                                onClick={this.showAddVoid10_second}><AntIcon
-                            className="plus-icon" type="plus-circle-o"/>Add
-                            Void</Button>
+                        {/*<InputNumber className="second-range-from" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("ten_from_second")}*/}
+                                     {/*placeholder="simula ng ticket"/>*/}
+                        {/*<InputNumber className="second-range-to" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("ten_to_second")}*/}
+                                     {/*placeholder="dulo ng ticket"/>*/}
+                        {/*<Button size="small" className="second-add-void-button"*/}
+                                {/*onClick={this.showAddVoid10_second}><AntIcon*/}
+                            {/*className="plus-icon" type="plus-circle-o"/>Add*/}
+                            {/*Void</Button>*/}
 
-                    </div>
-                </div>
-                <div className="driver-deploy-input">
-                    <p><b>12 Peso Tickets</b></p>
-                    <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large"
-                                     onChange={this.handleFormUpdatesListener("twelve_from_first")}
-                                     placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large"
-                                     onChange={this.handleFormUpdatesListener("twelve_to_first")}
-                                     placeholder="dulo ng ticket"/>
-                        <Button size="small" className="first-add-void-button"
-                                onClick={this.showAddVoid12_first}><AntIcon
-                            className="plus-icon" type="plus-circle-o"/> Add
-                            Void</Button>
-                        <InputNumber className="second-range-from" size="large"
-                                     onChange={this.handleFormUpdatesListener("twelve_from_second")}
-                                     placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to" size="large"
-                                     onChange={this.handleFormUpdatesListener("twelve_to_second")}
-                                     placeholder="dulo ng ticket"/>
-                        <Button size="small" className="second-add-void-button"
-                                onClick={this.showAddVoid12_second}><AntIcon
-                            className="plus-icon" type="plus-circle-o"/> Add
-                            Void</Button>
+                    {/*</div>*/}
+                {/*</div>*/}
+                {/*<div className="driver-deploy-input">*/}
+                    {/*<p><b>12 Peso Tickets</b></p>*/}
+                    {/*<div className="ticket-range-div">*/}
+                        {/*<InputNumber className="first-range-from" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("twelve_from_first")}*/}
+                                     {/*placeholder="simula ng ticket"/>*/}
+                        {/*<InputNumber className="first-range-to" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("twelve_to_first")}*/}
+                                     {/*placeholder="dulo ng ticket"/>*/}
+                        {/*<Button size="small" className="first-add-void-button"*/}
+                                {/*onClick={this.showAddVoid12_first}><AntIcon*/}
+                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                            {/*Void</Button>*/}
+                        {/*<InputNumber className="second-range-from" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("twelve_from_second")}*/}
+                                     {/*placeholder="simula ng ticket"/>*/}
+                        {/*<InputNumber className="second-range-to" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("twelve_to_second")}*/}
+                                     {/*placeholder="dulo ng ticket"/>*/}
+                        {/*<Button size="small" className="second-add-void-button"*/}
+                                {/*onClick={this.showAddVoid12_second}><AntIcon*/}
+                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                            {/*Void</Button>*/}
 
-                    </div>
-                </div>
-                <div className="driver-deploy-input">
-                    <p><b>15 Peso Tickets</b></p>
-                    <div className="ticket-range-div">
-                        <InputNumber className="first-range-from" size="large"
-                                     onChange={this.handleFormUpdatesListener("fifteen_from_first")}
-                                     placeholder="simula ng ticket"/>
-                        <InputNumber className="first-range-to" size="large"
-                                     onChange={this.handleFormUpdatesListener("fifteen_to_first")}
-                                     placeholder="dulo ng ticket"/>
-                        <Button size="small" className="first-add-void-button"
-                                onClick={this.showAddVoid15_first}><AntIcon
-                            className="plus-icon" type="plus-circle-o"/> Add
-                            Void</Button>
-                        <InputNumber className="second-range-from" size="large"
-                                     onChange={this.handleFormUpdatesListener("fifteen_from_second")}
-                                     placeholder="simula ng ticket"/>
-                        <InputNumber className="second-range-to" size="large"
-                                     onChange={this.handleFormUpdatesListener("fifteen_to_second")}
-                                     placeholder="dulo ng ticket"/>
-                        <Button size="small" className="second-add-void-button"
-                                onClick={this.showAddVoid15_second}><AntIcon
-                            className="plus-icon" type="plus-circle-o"/> Add
-                            Void</Button>
+                    {/*</div>*/}
+                {/*</div>*/}
+                {/*<div className="driver-deploy-input">*/}
+                    {/*<p><b>15 Peso Tickets</b></p>*/}
+                    {/*<div className="ticket-range-div">*/}
+                        {/*<InputNumber className="first-range-from" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("fifteen_from_first")}*/}
+                                     {/*placeholder="simula ng ticket"/>*/}
+                        {/*<InputNumber className="first-range-to" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("fifteen_to_first")}*/}
+                                     {/*placeholder="dulo ng ticket"/>*/}
+                        {/*<Button size="small" className="first-add-void-button"*/}
+                                {/*onClick={this.showAddVoid15_first}><AntIcon*/}
+                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                            {/*Void</Button>*/}
+                        {/*<InputNumber className="second-range-from" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("fifteen_from_second")}*/}
+                                     {/*placeholder="simula ng ticket"/>*/}
+                        {/*<InputNumber className="second-range-to" size="large"*/}
+                                     {/*onChange={this.handleFormUpdatesListener("fifteen_to_second")}*/}
+                                     {/*placeholder="dulo ng ticket"/>*/}
+                        {/*<Button size="small" className="second-add-void-button"*/}
+                                {/*onClick={this.showAddVoid15_second}><AntIcon*/}
+                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                            {/*Void</Button>*/}
 
-                    </div>
+                    {/*</div>*/}
                 </div>
             </div>
-            <div className="void-tickets">
-                <p><b>Void tickets</b></p>
-                {this.state.void_tickets.length != 0 && <List
-                    className="void-list"
-                    itemLayout="horizontal"
-                    dataSource={this.state.void_tickets}
-                    renderItem={item => (
-                        <List.Item className="void-item">
-                            <List.Item.Meta title={item}/>
-                        </List.Item>
-                    )}
-                />}
-                {this.state.void_tickets < 1 &&
-                <div className="void-empty-state">
-                    {/*<img className="void-empty-img" src={emptyStateImage}/>*/}
-                    <p className="empty-label"> walang void tickets</p>
-                </div>
-                }
-            </div>
+            {/*<div className="void-tickets">*/}
+                {/*<p><b>Void tickets</b></p>*/}
+                {/*{this.state.void_tickets.length != 0 && <List*/}
+                    {/*className="void-list"*/}
+                    {/*itemLayout="horizontal"*/}
+                    {/*dataSource={this.state.void_tickets}*/}
+                    {/*renderItem={item => (*/}
+                        {/*<List.Item className="void-item">*/}
+                            {/*<List.Item.Meta title={item}/>*/}
+                        {/*</List.Item>*/}
+                    {/*)}*/}
+                {/*/>}*/}
+                {/*{this.state.void_tickets < 1 &&*/}
+                {/*<div className="void-empty-state">*/}
+                    {/*/!*<img className="void-empty-img" src={emptyStateImage}/>*!/*/}
+                    {/*<p className="empty-label"> walang void tickets</p>*/}
+                {/*</div>*/}
+                {/*}*/}
+            {/*</div>*/}
         </Modal>
     );
 
