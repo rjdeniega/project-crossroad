@@ -7,7 +7,7 @@ import logo from '../../images/crossroad_logo.png'
 import colors from '../../utilities/colorsFonts.css'
 import { Icon } from 'react-icons-kit'
 import { groupOutline } from 'react-icons-kit/typicons/groupOutline'
-import { message, Select, Input, Modal, Table, Button, Avatar, List, Tag, Tabs, TimePicker } from 'antd'
+import { Icon as AntIcon, message, Select, Input,InputNumber, Modal, Table, Button, Avatar, List, Tag, Tabs, TimePicker } from 'antd'
 import './style.css'
 import { money } from 'react-icons-kit/fa/money'
 import { UserAvatar } from "../../components/avatar/avatar"
@@ -45,6 +45,8 @@ export class TicketsPage extends Component {
         visible: false,
         selectedDriver: null,
         selectedDriverId: null,
+        void_visible: false,
+        void_tickets: [],
     };
 
     componentDidMount() {
@@ -106,7 +108,8 @@ export class TicketsPage extends Component {
         let data = {
             "ticket_type": this.state.ticket_type,
             "range_from": this.state.range_from,
-            "driver_id": this.state.selectedDriverId
+            "driver_id": this.state.selectedDriverId,
+            "void_tickets": this.state.void_tickets
         };
         postData('remittances/tickets/assign', data)
             .then((data) => {
@@ -135,7 +138,7 @@ export class TicketsPage extends Component {
     };
     handleRangeChange = (e) => {
         console.log(e.target.value);
-        this.setState({ range_from: e.target.value})
+        this.setState({ range_from: e.target.value })
     };
 
     handleCancel = (e) => {
@@ -143,7 +146,28 @@ export class TicketsPage extends Component {
         this.setState({
             visible: false,
         });
-    }
+    };
+    showAddVoid = () => {
+        this.setState({
+            void_visible: true,
+        })
+    };
+    handleAddVoidChange = (e) => {
+        if (isNaN(e)) {
+            message.error("Please enter numeric value");
+        }
+        else {
+            this.setState({
+                add_void_value: e
+            }, () => console.log(this.state.add_void_value))
+        }
+    };
+    handleAddVoid = () => {
+        this.setState({
+            void_tickets: [...this.state.void_tickets, this.state.add_void_value],
+            void_visible: false,
+        });
+    };
     renderDriverList = () => (
         <List
             className="ticket-drivers-list"
@@ -176,6 +200,39 @@ export class TicketsPage extends Component {
             <Input onChange={this.handleRangeChange} className="user-input"
                    type="text"
                    placeholder="enter ticket range start"/>
+            <Modal
+                title="Magdagdag ng void"
+                visible={this.state.void_visible}
+                onOk={this.handleAddVoid}
+                onCancel={this.handleVoidCancel}
+            >
+                <InputNumber className="add-void-input" placeholder="Ilagay ang ticket number"
+                             value={this.state.add_void_value}
+                             onChange={this.handleAddVoidChange}/>
+            </Modal>
+            <Button size="small" className="first-add-void-button"
+                                onClick={this.showAddVoid}><AntIcon
+                            className="plus-icon" type="plus-circle-o"/>Add
+                            Void</Button>
+            <div className="void-tickets">
+                <p><b>Void tickets</b></p>
+                {this.state.void_tickets.length != 0 && <List
+                    className="void-list"
+                    itemLayout="horizontal"
+                    dataSource={this.state.void_tickets}
+                    renderItem={item => (
+                        <List.Item className="void-item">
+                            <List.Item.Meta title={item}/>
+                        </List.Item>
+                    )}
+                />}
+                {this.state.void_tickets < 1 &&
+                <div className="void-empty-state">
+                    {/*<img className="void-empty-img" src={emptyStateImage}/>*/}
+                    <p className="empty-label"> walang void tickets</p>
+                </div>
+                }
+            </div>
         </Modal>
     );
 

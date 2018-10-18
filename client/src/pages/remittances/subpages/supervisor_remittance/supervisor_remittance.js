@@ -669,6 +669,7 @@ export class SupervisorLastContent extends Component {
                     <Spin className="user-spinner" indicator={antIcon} size="large"/>
                     }
                 </div>
+                <Button type="primary" onClick={this.props.prev}>Bumalik</Button>
                 <Button type="primary" onClick={() => this.props.endShift(this.state.current_iteration.id)}>Tapusin ang
                     shift</Button>
             </div>
@@ -741,10 +742,10 @@ export class SupervisorRemittancePage extends Component {
         this.setState({ current: 0 });
     };
 
-    prev() {
+    prev = () => {
         const current = this.state.current - 1;
         this.setState({ current });
-    }
+    };
 
     showConfirm = () => {
         confirm({
@@ -772,7 +773,7 @@ export class SupervisorRemittancePage extends Component {
             content: <SupervisorSecondContent next={this.next} updateDrivers={this.updateDeployedDrivers}/>,
         }, {
             title: 'Confirm',
-            content: <SupervisorLastContent endShift={this.endShift}/>,
+            content: <SupervisorLastContent prev= {this.prev} endShift={this.endShift}/>,
         }];
         return (
             <div className="remittance-page-body">
