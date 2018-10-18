@@ -94,11 +94,15 @@ export class TicketsPage extends Component {
     showModal = (id, name) => {
         this.setState({
             selectedDriver: name,
-            selectedDriverId: id
+            selectedDriverId: id,
+            ticket_type: null,
+            range_from: null,
+            void_tickets: [],
+
         }), this.setState({
             visible: true,
         });
-    }
+    };
 
     handleOk = (e) => {
         console.log(e);
@@ -130,7 +134,7 @@ export class TicketsPage extends Component {
                 console.log(error);
                 message.error("Failed to assign tickets")
             });
-    }
+    };
 
     handleSelectChange = (e) => {
         console.log(e);
@@ -151,6 +155,12 @@ export class TicketsPage extends Component {
         this.setState({
             void_visible: true,
         })
+    };
+    handleVoidCancel = (e) => {
+        console.log(e);
+        this.setState({
+            void_visible: false,
+        });
     };
     handleAddVoidChange = (e) => {
         if (isNaN(e)) {
@@ -199,6 +209,7 @@ export class TicketsPage extends Component {
             </Select>
             <Input onChange={this.handleRangeChange} className="user-input"
                    type="text"
+                   value ={this.state.range_from}
                    placeholder="enter ticket range start"/>
             <Modal
                 title="Magdagdag ng void"
