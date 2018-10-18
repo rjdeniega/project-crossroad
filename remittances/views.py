@@ -46,6 +46,7 @@ class ScheduleView(APIView):
                 "errors": schedule_serializer.errors
             })
 
+
 class GetDateSchedule(APIView):
     @staticmethod
     def get(request):
@@ -63,7 +64,6 @@ class GetDateSchedule(APIView):
             "expected_start_date": start_date,
             "expected_end_date": end_date
         }, status=status.HTTP_200_OK)
-
 
 
 class CreateSchedule(APIView):
@@ -246,7 +246,6 @@ class AssignTicketView(APIView):
         assigned_ticket.type = data['ticket_type']
         assigned_ticket.save()
 
-
         driver = assigned_ticket.driver
         driver.remaining_tickets += 100
         driver.save()
@@ -406,6 +405,8 @@ class DeploymentView(APIView):
     def post(request):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
+        print(data["shuttle"])
+        data["shuttle"] = Shuttle.objects.get(plate_number=data["shuttle"]).pk
         deployment_serializer = DeploymentSerializer(data=data)
 
         if deployment_serializer.is_valid():
@@ -617,10 +618,60 @@ class DeploymentDetails(APIView):
         deployment = DeploymentSerializer(deployment_query)
         assigned_tickets = TicketUtilities.get_tickets_with_void(deployment_query.id)
 
+        # I dont want to change front-end too much
+        ten_peso = []
+        twelve_peso = []
+        fifteen_peso = []
+        for item in assigned_tickets:
+            if item["ticket_type"] == "10 Pesos":
+                ten_peso.append(item)
+            elif item["ticket_type"] == "12 Pesos":
+                twelve_peso.append(item)
+            else:
+                fifteen_peso.append(item)
+
+        # get last 2 items of array (most recent ones)
+        ten_peso = DeploymentDetails.get_recent_tickets(ten_peso)
+        twelve_peso = DeploymentDetails.get_recent_tickets(twelve_peso)
+        fifteen_peso = DeploymentDetails.get_recent_tickets(fifteen_peso)
+
+        assigned_tickets = [
+            ten_peso[0],
+            ten_peso[1],
+            twelve_peso[0],
+            twelve_peso[1],
+            fifteen_peso[0],
+            fifteen_peso[1],
+        ]
+
         return Response(data={
             'deployment_details': deployment.data,
             'assigned_tickets': assigned_tickets,
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get_recent_tickets(array):
+        final = []
+
+        try:
+            first = array[-1]
+        except IndexError:
+            first = None
+
+        try:
+            second = array[-2]
+        except IndexError:
+            second = {"ticket_id": first["ticket_id"],
+                      "driver_id": first["driver_id"],
+                      "driver_name": first["driver_name"],
+                      "ticket_type": first["ticket_type"],
+                      "range_from": 0,
+                      "range_to": 0,
+                      "number_of_voids": 0,
+                      "voids": []}
+        final = [first, second]
+
+        return final
 
 
 class RemittanceFormView(APIView):
@@ -644,6 +695,7 @@ class RemittanceFormView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
+        data["fuel_receipt"] = "OR2341"
 
         # insert validation
 
@@ -683,7 +735,7 @@ class RemittanceFormView(APIView):
             # get number of voids to subtract to total
             voided = 0  # number of voided tickets
             void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
-            void_tickets = [item for item in void_tickets if item.ticket_number <= consumed_ticket.end_ticket]
+            void_tickets = [item for item in void_tickets if item.ticket_number <= consumed_ticket["end_ticket"]]
             for void_ticket in void_tickets:
                 voided += 1
 
@@ -722,7 +774,6 @@ class RemittanceFormView(APIView):
             "remittance_id": remittance_form.id,
             "remittance_total": remittance_form.total
         }, status=status.HTTP_200_OK)
-
 
     @staticmethod
     def delete(request, pk):

@@ -120,6 +120,8 @@ export class SupervisorSecondContent extends Component {
         fifteen_to_second: null,
         driver_selected: null,
         route: null,
+        shuttles: [],
+        shuttle: null,
     };
 
     componentDidMount() {
@@ -137,8 +139,11 @@ export class SupervisorSecondContent extends Component {
                 const drivers = data.non_deployed_drivers.map(tuple =>
                     tuple.driver
                 );
+
                 console.log(drivers);
-                this.setState({ drivers: drivers });
+                this.setState({
+                    drivers: drivers,
+                });
             }
             else {
                 console.log(data.error);
@@ -147,6 +152,16 @@ export class SupervisorSecondContent extends Component {
     }
 
     showModal = () => {
+        getData('inventory/shuttles/').then(data => {
+            if(!data.error){
+                this.setState({
+                    shuttles: data.shuttles
+                })
+            }
+            else{
+                console.log(data)
+            }
+        });
         this.setState({
             visible: true,
         });
@@ -207,6 +222,7 @@ export class SupervisorSecondContent extends Component {
             "supervisor": id,
             "driver": this.state.driver_selected,
             "route": this.state.route,
+            "shuttle": this.state.shuttle,
             "assigned_ticket": [
                 {
                     "range_from": this.state.ten_from_first,
@@ -274,25 +290,11 @@ export class SupervisorSecondContent extends Component {
             visible: false,
         });
     };
-    handleDriverSelect = (key) => {
-        getData('remittances/shifts/pending_drivers/' + key).then(data => {
-            if (!data.error) {
-                //for each entry in drivers data, append data as a dictionary in tableData
-                //ant tables accept values {"key": value, "column_name" : "value" } format
-                //I cant just pass the raw array since its a collection of objects
-                console.log(data);
-                const drivers = data.non_deployed_drivers.map(tuple =>
-                    tuple.driver
-                );
-                console.log(drivers);
-                this.setState({ drivers: drivers });
-            }
-            else {
-                console.log(data.error);
-            }
-        })
+    handleDriverSelect = (key, shuttle, plate_number) => {
         this.setState({
             driver_selected: key,
+            shuttle: shuttle,
+            plate_number: plate_number
         })
     };
     handleVoidAdd = (e) => {
@@ -371,7 +373,9 @@ export class SupervisorSecondContent extends Component {
         itemLayout="horizontal"
         dataSource={this.state.drivers}
         renderItem={driver => (
-            <List.Item key={driver.id} onClick={() => this.handleDriverSelect(driver.id)} className="driver-item">
+            <List.Item key={driver.id}
+                       onClick={() => this.handleDriverSelect(driver.id, driver.shuttle_id, driver.shuttle_plate_number)}
+                       className="driver-item">
                 <List.Item.Meta
                     avatar={<Avatar
                         src={userDefault}/>}
@@ -413,109 +417,108 @@ export class SupervisorSecondContent extends Component {
                             <Option value="L">Kaliwa</Option>
                         </Select>
                         <Select onChange={this.handleFormUpdatesListener("shuttle")} className="route-input"
-                                defaultValue={this.state.shuttle}>
-                            <Option value="M">Main Road</Option>
-                            <Option value="R">Kanan</Option>
-                            <Option value="L">Kaliwa</Option>
+                                defaultValue={this.state.plate_number}>
+                            {this.state.shuttles.map(shuttle =>
+                                <Option value={shuttle.plate_number}>{shuttle.plate_number}</Option>)}
                         </Select>
                     </div>
                     {/*<p><b>10 Peso Tickets</b></p>*/}
                     {/*<div className="ticket-range-div">*/}
-                        {/*<InputNumber className="first-range-from" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("ten_from_first")}*/}
-                                     {/*placeholder="simula ng ticket una"/>*/}
-                        {/*<InputNumber className="first-range-to" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("ten_to_first")}*/}
-                                     {/*placeholder="dulo ng ticket una"/>*/}
-                        {/*<Button size="small" className="first-add-void-button"*/}
-                                {/*onClick={this.showAddVoid10_first}><AntIcon*/}
-                            {/*className="plus-icon" type="plus-circle-o"/>Add*/}
-                            {/*Void</Button>*/}
+                    {/*<InputNumber className="first-range-from" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("ten_from_first")}*/}
+                    {/*placeholder="simula ng ticket una"/>*/}
+                    {/*<InputNumber className="first-range-to" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("ten_to_first")}*/}
+                    {/*placeholder="dulo ng ticket una"/>*/}
+                    {/*<Button size="small" className="first-add-void-button"*/}
+                    {/*onClick={this.showAddVoid10_first}><AntIcon*/}
+                    {/*className="plus-icon" type="plus-circle-o"/>Add*/}
+                    {/*Void</Button>*/}
 
-                        {/*<InputNumber className="second-range-from" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("ten_from_second")}*/}
-                                     {/*placeholder="simula ng ticket"/>*/}
-                        {/*<InputNumber className="second-range-to" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("ten_to_second")}*/}
-                                     {/*placeholder="dulo ng ticket"/>*/}
-                        {/*<Button size="small" className="second-add-void-button"*/}
-                                {/*onClick={this.showAddVoid10_second}><AntIcon*/}
-                            {/*className="plus-icon" type="plus-circle-o"/>Add*/}
-                            {/*Void</Button>*/}
+                    {/*<InputNumber className="second-range-from" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("ten_from_second")}*/}
+                    {/*placeholder="simula ng ticket"/>*/}
+                    {/*<InputNumber className="second-range-to" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("ten_to_second")}*/}
+                    {/*placeholder="dulo ng ticket"/>*/}
+                    {/*<Button size="small" className="second-add-void-button"*/}
+                    {/*onClick={this.showAddVoid10_second}><AntIcon*/}
+                    {/*className="plus-icon" type="plus-circle-o"/>Add*/}
+                    {/*Void</Button>*/}
 
                     {/*</div>*/}
-                {/*</div>*/}
-                {/*<div className="driver-deploy-input">*/}
+                    {/*</div>*/}
+                    {/*<div className="driver-deploy-input">*/}
                     {/*<p><b>12 Peso Tickets</b></p>*/}
                     {/*<div className="ticket-range-div">*/}
-                        {/*<InputNumber className="first-range-from" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("twelve_from_first")}*/}
-                                     {/*placeholder="simula ng ticket"/>*/}
-                        {/*<InputNumber className="first-range-to" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("twelve_to_first")}*/}
-                                     {/*placeholder="dulo ng ticket"/>*/}
-                        {/*<Button size="small" className="first-add-void-button"*/}
-                                {/*onClick={this.showAddVoid12_first}><AntIcon*/}
-                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
-                            {/*Void</Button>*/}
-                        {/*<InputNumber className="second-range-from" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("twelve_from_second")}*/}
-                                     {/*placeholder="simula ng ticket"/>*/}
-                        {/*<InputNumber className="second-range-to" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("twelve_to_second")}*/}
-                                     {/*placeholder="dulo ng ticket"/>*/}
-                        {/*<Button size="small" className="second-add-void-button"*/}
-                                {/*onClick={this.showAddVoid12_second}><AntIcon*/}
-                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
-                            {/*Void</Button>*/}
+                    {/*<InputNumber className="first-range-from" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("twelve_from_first")}*/}
+                    {/*placeholder="simula ng ticket"/>*/}
+                    {/*<InputNumber className="first-range-to" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("twelve_to_first")}*/}
+                    {/*placeholder="dulo ng ticket"/>*/}
+                    {/*<Button size="small" className="first-add-void-button"*/}
+                    {/*onClick={this.showAddVoid12_first}><AntIcon*/}
+                    {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                    {/*Void</Button>*/}
+                    {/*<InputNumber className="second-range-from" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("twelve_from_second")}*/}
+                    {/*placeholder="simula ng ticket"/>*/}
+                    {/*<InputNumber className="second-range-to" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("twelve_to_second")}*/}
+                    {/*placeholder="dulo ng ticket"/>*/}
+                    {/*<Button size="small" className="second-add-void-button"*/}
+                    {/*onClick={this.showAddVoid12_second}><AntIcon*/}
+                    {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                    {/*Void</Button>*/}
 
                     {/*</div>*/}
-                {/*</div>*/}
-                {/*<div className="driver-deploy-input">*/}
+                    {/*</div>*/}
+                    {/*<div className="driver-deploy-input">*/}
                     {/*<p><b>15 Peso Tickets</b></p>*/}
                     {/*<div className="ticket-range-div">*/}
-                        {/*<InputNumber className="first-range-from" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("fifteen_from_first")}*/}
-                                     {/*placeholder="simula ng ticket"/>*/}
-                        {/*<InputNumber className="first-range-to" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("fifteen_to_first")}*/}
-                                     {/*placeholder="dulo ng ticket"/>*/}
-                        {/*<Button size="small" className="first-add-void-button"*/}
-                                {/*onClick={this.showAddVoid15_first}><AntIcon*/}
-                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
-                            {/*Void</Button>*/}
-                        {/*<InputNumber className="second-range-from" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("fifteen_from_second")}*/}
-                                     {/*placeholder="simula ng ticket"/>*/}
-                        {/*<InputNumber className="second-range-to" size="large"*/}
-                                     {/*onChange={this.handleFormUpdatesListener("fifteen_to_second")}*/}
-                                     {/*placeholder="dulo ng ticket"/>*/}
-                        {/*<Button size="small" className="second-add-void-button"*/}
-                                {/*onClick={this.showAddVoid15_second}><AntIcon*/}
-                            {/*className="plus-icon" type="plus-circle-o"/> Add*/}
-                            {/*Void</Button>*/}
+                    {/*<InputNumber className="first-range-from" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("fifteen_from_first")}*/}
+                    {/*placeholder="simula ng ticket"/>*/}
+                    {/*<InputNumber className="first-range-to" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("fifteen_to_first")}*/}
+                    {/*placeholder="dulo ng ticket"/>*/}
+                    {/*<Button size="small" className="first-add-void-button"*/}
+                    {/*onClick={this.showAddVoid15_first}><AntIcon*/}
+                    {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                    {/*Void</Button>*/}
+                    {/*<InputNumber className="second-range-from" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("fifteen_from_second")}*/}
+                    {/*placeholder="simula ng ticket"/>*/}
+                    {/*<InputNumber className="second-range-to" size="large"*/}
+                    {/*onChange={this.handleFormUpdatesListener("fifteen_to_second")}*/}
+                    {/*placeholder="dulo ng ticket"/>*/}
+                    {/*<Button size="small" className="second-add-void-button"*/}
+                    {/*onClick={this.showAddVoid15_second}><AntIcon*/}
+                    {/*className="plus-icon" type="plus-circle-o"/> Add*/}
+                    {/*Void</Button>*/}
 
                     {/*</div>*/}
                 </div>
             </div>
             {/*<div className="void-tickets">*/}
-                {/*<p><b>Void tickets</b></p>*/}
-                {/*{this.state.void_tickets.length != 0 && <List*/}
-                    {/*className="void-list"*/}
-                    {/*itemLayout="horizontal"*/}
-                    {/*dataSource={this.state.void_tickets}*/}
-                    {/*renderItem={item => (*/}
-                        {/*<List.Item className="void-item">*/}
-                            {/*<List.Item.Meta title={item}/>*/}
-                        {/*</List.Item>*/}
-                    {/*)}*/}
-                {/*/>}*/}
-                {/*{this.state.void_tickets < 1 &&*/}
-                {/*<div className="void-empty-state">*/}
-                    {/*/!*<img className="void-empty-img" src={emptyStateImage}/>*!/*/}
-                    {/*<p className="empty-label"> walang void tickets</p>*/}
-                {/*</div>*/}
-                {/*}*/}
+            {/*<p><b>Void tickets</b></p>*/}
+            {/*{this.state.void_tickets.length != 0 && <List*/}
+            {/*className="void-list"*/}
+            {/*itemLayout="horizontal"*/}
+            {/*dataSource={this.state.void_tickets}*/}
+            {/*renderItem={item => (*/}
+            {/*<List.Item className="void-item">*/}
+            {/*<List.Item.Meta title={item}/>*/}
+            {/*</List.Item>*/}
+            {/*)}*/}
+            {/*/>}*/}
+            {/*{this.state.void_tickets < 1 &&*/}
+            {/*<div className="void-empty-state">*/}
+            {/*/!*<img className="void-empty-img" src={emptyStateImage}/>*!/*/}
+            {/*<p className="empty-label"> walang void tickets</p>*/}
+            {/*</div>*/}
+            {/*}*/}
             {/*</div>*/}
         </Modal>
     );
@@ -589,18 +592,18 @@ export class SupervisorLastContent extends Component {
 
         this.setState({
             visible: true,
-            ten_peso_start_first: item.assigned_tickets[0]["10_peso_start_first"],
-            ten_peso_start_second: item.assigned_tickets[1]["10_peso_start_second"],
-            twelve_peso_start_first: item.assigned_tickets[2]["12_peso_start_first"],
-            twelve_peso_start_second: item.assigned_tickets[3]["12_peso_start_second"],
-            fifteen_peso_start_first: item.assigned_tickets[4]["15_peso_start_first"],
-            fifteen_peso_start_second: item.assigned_tickets[5]["15_peso_start_firstfirst"],
-            ten_peso_end_first: item.assigned_tickets[0]["10_peso_end_first"],
-            ten_peso_end_second: item.assigned_tickets[1]["10_peso_end_second"],
-            twelve_peso_end_first: item.assigned_tickets[2]["12_peso_end_first"],
-            twelve_peso_end_second: item.assigned_tickets[3]["12_peso_end_second"],
-            fifteen_peso_end_first: item.assigned_tickets[4]["15_peso_end_first"],
-            fifteen_peso_end_second: item.assigned_tickets[5]["15_peso_end_firstfirst"],
+            ten_peso_start_first: item.assigned_tickets[0]["start_ticket"],
+            ten_peso_start_second: item.assigned_tickets[1]["start_ticket"],
+            twelve_peso_start_first: item.assigned_tickets[2]["start_ticket"],
+            twelve_peso_start_second: item.assigned_tickets[3]["start_ticket"],
+            fifteen_peso_start_first: item.assigned_tickets[4]["start_ticket"],
+            fifteen_peso_start_second: item.assigned_tickets[5]["start_ticket"],
+            ten_peso_end_first: item.assigned_tickets[0]["assigned_range_to"],
+            ten_peso_end_second: item.assigned_tickets[1]["assigned_range_to"],
+            twelve_peso_end_first: item.assigned_tickets[2]["assigned_range_to"],
+            twelve_peso_end_second: item.assigned_tickets[3]["assigned_range_to"],
+            fifteen_peso_end_first: item.assigned_tickets[4]["assigned_range_to"],
+            fifteen_peso_end_second: item.assigned_tickets[5]["assigned_range_to"],
             ten_peso_consumed_first: item.assigned_tickets[0]["consumed_end"],
             ten_peso_consumed_second: item.assigned_tickets[1]["consumed_end"],
             twelve_peso_consumed_first: item.assigned_tickets[2]["consumed_end"],
@@ -621,7 +624,7 @@ export class SupervisorLastContent extends Component {
         const data = {
             "discrepancy": this.state.discrepancy
         };
-        postData('/remittances/remittance_form/add_discrepancy/' + this.state.remittance_id,data).then(data => {
+        postData('/remittances/remittance_form/add_discrepancy/' + this.state.remittance_id, data).then(data => {
             console.log(data);
         });
         this.setState({
@@ -795,7 +798,7 @@ export class SupervisorRemittancePage extends Component {
             content: <SupervisorSecondContent next={this.next} updateDrivers={this.updateDeployedDrivers}/>,
         }, {
             title: 'Confirm',
-            content: <SupervisorLastContent prev= {this.prev} endShift={this.endShift}/>,
+            content: <SupervisorLastContent prev={this.prev} endShift={this.endShift}/>,
         }];
         return (
             <div className="remittance-page-body">
