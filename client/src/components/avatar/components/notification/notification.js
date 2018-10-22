@@ -8,12 +8,14 @@ export default class Notification extends Component{
     }
 
     render(){
+        const {title, description} = this.props;
+    
         return(
             <div className="specific-notification">
                 <List.Item>
                     <List.Item.Meta
-                        title="Title Sir"
-                        description="Animo Labs Thesis chuchu huhu"/>
+                        title={title}
+                        description={description}/>
                 </List.Item>
             </div>
         );

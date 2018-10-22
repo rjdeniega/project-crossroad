@@ -80,10 +80,11 @@ export class UserAvatar extends Component {
                   </div> : <div className="notification-area">
                     <PerfectScrollbar>
                       <List itemlayout="horizontal">
-                        <Notification />
-                        <Notification />
-                        <Notification />
-                        <Notification />
+                        {notifications.map(function (d, idx) {
+                            console.log(d)
+                            return (<Notification key={idx} title={d.type} 
+                                    description={d.description}/>)
+                        })}
                       </List>
                     </PerfectScrollbar>
                   </div>} title="Notifications" trigger="click">
