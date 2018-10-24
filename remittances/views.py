@@ -580,6 +580,7 @@ class TicketUtilities():
                 "consumed_end": ticket.end_ticket,
                 "number_of_void": number_of_voids,
                 "void_tickets": voids,
+                "ticket_type": ticket.assigned_ticket.type,
                 "total": ticket.total
             })
 
@@ -653,7 +654,7 @@ class DeploymentDetails(APIView):
     @staticmethod
     def get_recent_tickets(array):
         final = []
-
+        print(f'the array is {array}')
         try:
             first = array[-1]
         except IndexError:
@@ -663,8 +664,39 @@ class DeploymentDetails(APIView):
             second = array[-2]
         except IndexError:
             second = {"ticket_id": first["ticket_id"],
-                      "driver_id": first["driver_id"],
-                      "driver_name": first["driver_name"],
+                      "driver_id": first["driver_id"] if first["driver_id"] else None,
+                      "driver_name": first["driver_name"] if first["driver_name"] else None,
+                      "ticket_type": first["ticket_type"],
+                      "range_from": 0,
+                      "range_to": 0,
+                      "number_of_voids": 0,
+                      "voids": []}
+        final = [first, second]
+        print(array)
+        print(final)
+
+        return final
+
+    def get_recent_tickets_confirm(array):
+        final = []
+        print(f'the array is {array}')
+        try:
+            first = array[-1]
+        except IndexError:
+            first = None
+
+        try:
+            second = array[-2]
+        except IndexError:
+            if first["assigned_ticket_id"] is not None:
+                first["ticket_id"] = first["assigned_ticket_id"]
+
+            first["driver_id"] = None
+            first["driver_name"] = None
+
+            second = {"ticket_id": first["ticket_id"],
+                      "driver_id": first["driver_id"] if first["driver_id"] else None,
+                      "driver_name": first["driver_name"] if first["driver_name"] else None,
                       "ticket_type": first["ticket_type"],
                       "range_from": 0,
                       "range_to": 0,
@@ -803,13 +835,39 @@ class ConfirmRemittanceForm(APIView):
 
             form = ReadRemittanceSerializer(remittance)
             tickets = TicketUtilities.get_consumed_with_assigned(remittance.deployment.id)
+            print(f'the tickets are {tickets}')
+            # I dont want to change front-end too much
+            ten_peso = []
+            twelve_peso = []
+            fifteen_peso = []
+            for item in tickets:
+                if item["ticket_type"] == "A":
+                    ten_peso.append(item)
+                elif item["ticket_type"] == "B":
+                    twelve_peso.append(item)
+                else:
+                    fifteen_peso.append(item)
+
+            # get last 2 items of array (most recent ones)
+            ten_peso = DeploymentDetails.get_recent_tickets_confirm(ten_peso)
+            twelve_peso = DeploymentDetails.get_recent_tickets_confirm(twelve_peso)
+            fifteen_peso = DeploymentDetails.get_recent_tickets_confirm(fifteen_peso)
+
+            assigned_tickets = [
+                ten_peso[0],
+                ten_peso[1],
+                twelve_peso[0],
+                twelve_peso[1],
+                fifteen_peso[0],
+                fifteen_peso[1],
+            ]
 
             unconfirmed_remittances.append({
                 'driver_name': deployment.driver.name,
                 'shift_type': deployment.shift_iteration.shift.type,
                 'route': deployment.route,
                 'remittance_details': form.data,
-                'assigned_tickets': tickets
+                'assigned_tickets': assigned_tickets
             })
 
         return Response(data={
