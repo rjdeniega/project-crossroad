@@ -82,7 +82,7 @@ export class UserAvatar extends Component {
                       <List itemlayout="horizontal">
                         {notifications.map(function (d, idx) {
                             console.log(d)
-                            return (<Notification key={idx} title={d.type} 
+                            return (<Notification title={d.type} 
                                     description={d.description}/>)
                         })}
                       </List>

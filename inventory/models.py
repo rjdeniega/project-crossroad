@@ -27,7 +27,6 @@ REPAIR_STATUS = [
     ('C', 'Completed')
 ]
 
-
 class Shuttle(SoftDeletionModel):
     plate_number = CharField(max_length=6, unique=True)
     make = CharField(max_length=64)
@@ -37,6 +36,7 @@ class Shuttle(SoftDeletionModel):
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     mileage = PositiveIntegerField()
+    route = CharField(max_length=64)
 
     def save(self, *args, **kwargs):
         if not self.id:

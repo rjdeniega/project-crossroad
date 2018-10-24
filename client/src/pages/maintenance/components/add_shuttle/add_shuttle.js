@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Modal, Button, Form, Input, DatePicker, message} from 'antd'
+import {Modal, Button, Form, Input, DatePicker, message, Select} from 'antd'
 import moment from 'moment'
 import './style.css'
 import { postData } from "../../../../network_requests/general";
@@ -32,6 +32,7 @@ class AddShuttleFormInit extends React.Component{
             date_acquired: this.props.date_acquired.value.format('YYYY-MM-DD'),
             status: "A",
             mileage: this.props.mileage.value,
+            route: this.props.route.value,
         };
 
         postData('inventory/shuttles/', shuttle)
@@ -65,59 +66,79 @@ class AddShuttleFormInit extends React.Component{
             },
         };
 
-        return(
-            <div>
-                <Form onChange={this.handleFormChange} onSubmit={this.handleSubmit} hideRequiredMark={true}>
-                    <FormItem label='Plate Number' validateStatus={plateNumberError ? 'error': ''}
-                              help={plateNumberError || ''} {...formItemLayout}>
-                        {getFieldDecorator('plate_number', {
-                            rules: [{required: true,
-                                     message: 'Plate Number is required!'},
-                                    {len: 6,
-                                     message: 'Please input a proper plate number (No hyphen)'}],
-                        })(<Input className='plate_number' type='text' placeholder='AB1234 / ABC123'/>)}
-                    </FormItem>
-                    <FormItem label='Make' validateStatus={makeError ? 'error': ''}
-                              help={makeError || ''} {...formItemLayout}>
-                        {getFieldDecorator('make', {
-                            rules: [{required: true,
-                                     message: 'Make is required!'}]
-                        })(<Input className='make' type='text' placeholder='Make'/>)}
-                    </FormItem>
-                    <FormItem label='Model' validateStatus={modelError ? 'error': ''}
-                              help={modelError || ''} {...formItemLayout}>
-                        {getFieldDecorator('model', {
-                            rules: [{required: true,
-                                     message: 'Model is required!'}],
-                        })(<Input className='model' type='text' placeholder='Model'/>)}
-                    </FormItem>
-                    <FormItem label='Mileage' validateStatus={mileageError ? 'error' : ''}
-                        help={mileageError || ''} {...formItemLayout}>
-                        {getFieldDecorator('mileage', {
-                            rules: [{
-                                required: true,
-                                message: 'Mileage is required!'
-                            }],
-                        })(<Input className='mileage' type='number' placeholder='Mileage' />)}
-                    </FormItem>
-                    <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error': ''}
-                              help={dateAcquiredError || ''} {...formItemLayout}>
-                        {getFieldDecorator('date_acquired', {
-                            rules: [{required: true,
-                                     message: 'Date acquired is required!'}],
-                        })(<DatePicker format={dateFormat}/>)}
-                    </FormItem>
-                    <FormItem wrapperCol={{
-                        xs: {span: 24, offset: 0},
-                        sm: {span: 16, offset: 8},
-                    }}>
-                        <Button type="primary" htmlType='submit' disabled={hasErrors(getFieldsError())}>
-                            Submit
-                        </Button>
-                    </FormItem>
-                </Form>
-            </div>
-        )
+        return <div>
+            <Form onChange={this.handleFormChange} onSubmit={this.handleSubmit} hideRequiredMark={true}>
+              <FormItem label="Plate Number" validateStatus={plateNumberError ? "error" : ""} help={plateNumberError || ""} {...formItemLayout}>
+                {getFieldDecorator("plate_number", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Plate Number is required!"
+                    },
+                    {
+                      len: 6,
+                      message:
+                        "Please input a proper plate number (No hyphen)"
+                    }
+                  ]
+                })(<Input className="plate_number" type="text" placeholder="AB1234 / ABC123" />)}
+              </FormItem>
+              <FormItem label="Make" validateStatus={makeError ? "error" : ""} help={makeError || ""} {...formItemLayout}>
+                {getFieldDecorator("make", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Make is required!"
+                    }
+                  ]
+                })(<Input className="make" type="text" placeholder="Make" />)}
+              </FormItem>
+              <FormItem label="Model" validateStatus={modelError ? "error" : ""} help={modelError || ""} {...formItemLayout}>
+                {getFieldDecorator("model", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Model is required!"
+                    }
+                  ]
+                })(<Input className="model" type="text" placeholder="Model" />)}
+              </FormItem>
+              <FormItem label="Mileage" validateStatus={mileageError ? "error" : ""} help={mileageError || ""} {...formItemLayout}>
+                {getFieldDecorator("mileage", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Mileage is required!"
+                    }
+                  ]
+                })(<Input className="mileage" type="number" placeholder="Mileage" />)}
+              </FormItem>
+              <FormItem label="Route" {...formItemLayout}>
+                <Select defaultValue="Kaliwa" className="route">
+                  <Select.Option value="Kaliwa">Kaliwa</Select.Option>
+                  <Select.Option value="Kanan">Kanan</Select.Option>
+                  <Select.Option value="Main Road">
+                    Main Road
+                  </Select.Option>
+                </Select>
+              </FormItem>
+              <FormItem label="Date Acquired" validateStatus={dateAcquiredError ? "error" : ""} help={dateAcquiredError || ""} {...formItemLayout}>
+                {getFieldDecorator("date_acquired", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Date acquired is required!"
+                    }
+                  ]
+                })(<DatePicker format={dateFormat} />)}
+              </FormItem>
+              <FormItem wrapperCol={{ xs: { span: 24, offset: 0 }, sm: { span: 16, offset: 8 } }}>
+                <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
+                  Submit
+                </Button>
+              </FormItem>
+            </Form>
+          </div>;
     }
 }
 
@@ -145,6 +166,10 @@ const AddShuttleForm = Form.create({
                 ...props.mileage,
                 value: props.mileage.value,
             }),
+            route: Form.createFormField({
+                ...props.route,
+                value: props.route.value,
+            }),
             date_acquired: Form.createFormField({
                 ...props.date_acquired,
                 value: props.date_acquired.value,
@@ -168,6 +193,9 @@ class FinalForm extends Component{
                 value: ''
             },
             mileage: {
+                value: ''
+            },
+            route: {
                 value: ''
             },
             date_acquired: {
