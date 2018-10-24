@@ -48,6 +48,7 @@ export class ShiftManagementPane extends Component {
         assigned_shuttle: null,
         driver_selected: null,
         selected_shift_type: null,
+        currentSched: null,
     };
 
     componentDidMount() {
@@ -56,8 +57,33 @@ export class ShiftManagementPane extends Component {
         }
         this.fetchDrivers();
         this.fetchSupervisors();
-        this.fetchShuttles()
+        this.fetchShuttles();
+        this.fetchCurrentSched();
 
+    }
+
+    fetchCurrentSched() {
+        return getData('remittances/schedules/get_date').then(data => {
+            if (!data["error"]) {
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
+                const tableData = [];
+                //append drivers with their ids as key
+                console.log(data);
+                if (data["expected_start_date"]) {
+                    this.setState({
+                        startDateObject: moment(data["expected_start_date"]),
+                        startDate: moment(data["expected_start_date"]).format('YYYY-MM-DD'),
+                        endDateObject: moment(data["expected_end_date"]),
+                        currentSched:  moment(data["expected_start_date"])
+                    })
+                }
+            }
+            else {
+                console.log(data["error"]);
+            }
+        });
     }
 
     fetchDrivers() {
@@ -264,12 +290,12 @@ export class ShiftManagementPane extends Component {
         const endDateObject = moment(date).add(15, 'days');
         const startDateString = moment(date).format('YYYY-MM-DD');
 
-        console.log(date);
         console.log(dateString);
+        console.log(date);
 
         this.setState({
             startDate: startDateString,
-            startDateObject: moment(date),
+            startDateObject: moment(date).format('YYYY-MM-DD'),
             endDate: endDateString,
             endDateObject: endDateObject
         }, () => {
@@ -386,13 +412,15 @@ export class ShiftManagementPane extends Component {
 
             >
                 {this.state.selected_shift_type == "AM" &&
-                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input"  defaultValue="Please select deployment type">
+                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input"
+                        defaultValue="Please select deployment type">
                     <Option value="E">Early</Option>
                     <Option value="R">Regular</Option>
                 </Select>
                 }
                 {this.state.selected_shift_type == "PM" &&
-                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input" defaultValue="Please select deployment type">
+                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input"
+                        defaultValue="Please select deployment type">
                     <Option value="L">Late</Option>
                     <Option value="R">Regular</Option>
                 </Select>
@@ -462,13 +490,24 @@ export class ShiftManagementPane extends Component {
                         <div className="expiration-label">expiring in 7 days</div>
 
                         <div className="date-grid">
+                            {this.state.currentSched &&
                             <DatePicker
                                 className="date-picker"
+                                disabled
                                 format="YYYY-MM-DD"
                                 value={this.state.startDateObject}
                                 placeholder="Start Date"
-                                onChange={() => this.handleDateChange()}
+                                onChange={(date,dateString) => this.handleDateChange(date,dateString)}
                             />
+                            }
+                            {!this.state.currentSched &&
+                                <DatePicker
+                                className="date-picker"
+                                format="YYYY-MM-DD"
+                                placeholder="Start Date"
+                                onChange={(date,dateString) => this.handleDateChange(date,dateString)}
+                            />
+                            }
                             <DatePicker
                                 className="date-picker"
                                 disabled

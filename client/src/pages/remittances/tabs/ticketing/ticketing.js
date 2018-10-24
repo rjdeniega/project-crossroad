@@ -96,18 +96,18 @@ export class TicketingPane extends Component {
         const selected = [];
         details.map(form => {
             const props = {
-                ten_peso_start_first: form.ticket_specifics[0]["10_peso_start_first"],
-                ten_peso_start_second: form.ticket_specifics[1]["10_peso_start_second"],
-                twelve_peso_start_first: form.ticket_specifics[2]["12_peso_start_first"],
-                twelve_peso_start_second: form.ticket_specifics[3]["12_peso_start_second"],
-                fifteen_peso_start_first: form.ticket_specifics[4]["15_peso_start_first"],
-                fifteen_peso_start_second: form.ticket_specifics[5]["15_peso_start_firstfirst"],
-                ten_peso_end_first: form.ticket_specifics[0]["10_peso_end_first"],
-                ten_peso_end_second: form.ticket_specifics[1]["10_peso_end_second"],
-                twelve_peso_end_first: form.ticket_specifics[2]["12_peso_end_first"],
-                twelve_peso_end_second: form.ticket_specifics[3]["12_peso_end_second"],
-                fifteen_peso_end_first: form.ticket_specifics[4]["15_peso_end_first"],
-                fifteen_peso_end_second: form.ticket_specifics[5]["15_peso_end_firstfirst"],
+                ten_peso_start_first: form.ticket_specifics[0]["start_ticket"],
+                ten_peso_start_second: form.ticket_specifics[1]["start_ticket"],
+                twelve_peso_start_first: form.ticket_specifics[2]["start_ticket"],
+                twelve_peso_start_second: form.ticket_specifics[3]["start_ticket"],
+                fifteen_peso_start_first: form.ticket_specifics[4]["start_ticket"],
+                fifteen_peso_start_second: form.ticket_specifics[5]["start_ticket"],
+                ten_peso_end_first: form.ticket_specifics[0]["assigned_range_to"],
+                ten_peso_end_second: form.ticket_specifics[1]["assigned_range_to"],
+                twelve_peso_end_first: form.ticket_specifics[2]["assigned_range_to"],
+                twelve_peso_end_second: form.ticket_specifics[3]["assigned_range_to"],
+                fifteen_peso_end_first: form.ticket_specifics[4]["assigned_range_to"],
+                fifteen_peso_end_second: form.ticket_specifics[5]["assigned_range_to"],
                 ten_peso_consumed_first: form.ticket_specifics[0]["consumed_end"],
                 ten_peso_consumed_second: form.ticket_specifics[1]["consumed_end"],
                 twelve_peso_consumed_first: form.ticket_specifics[2]["consumed_end"],
@@ -124,7 +124,8 @@ export class TicketingPane extends Component {
             array.push(
                 <div key={form.deployment_id}>
                     <RemittanceForm className="remittance-form" {...props}/>
-                    <Input className="discrepancy-row" disabled={true} placeholder={"discrepancies: " + props.discrepancy + "Php"}/>
+                    <Input className="discrepancy-row" disabled={true}
+                           placeholder={"discrepancies: " + props.discrepancy + "Php"}/>
                 </div>
             );
             selected.push(form)
@@ -180,7 +181,7 @@ export class TicketingPane extends Component {
                     </ButtonGroup>
                     <Divider orientation="left">Filters</Divider>
                     {/*<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista*/}
-                        {/*probare, quae sunt a te dicta? Refert tamen, quo modo.</p>*/}
+                    {/*probare, quae sunt a te dicta? Refert tamen, quo modo.</p>*/}
                 </div>
                 <Modal
                     className="ticketing-modal"

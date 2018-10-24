@@ -13,6 +13,7 @@ import moment from 'moment';
 import { Select, Table, Avatar, Dropdown, Menu, message, List } from 'antd';
 import { Icon as AntIcon } from 'antd';
 import { getData, postData } from "../../../../network_requests/general";
+import ReactToPrint from "react-to-print";
 
 const Option = Select.Option;
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
@@ -37,12 +38,6 @@ export class ShiftHistoryPane extends Component {
         am_shift_drivers: [],
         pm_shift_drivers: [],
         mn_shift_drivers: [],
-        am_shift_supervisor: "select AM supervisor",
-        am_shift_supervisor_key: null,
-        pm_shift_supervisor: "select PM supervisor",
-        pm_shift_supervisor_key: null,
-        mn_shift_supervisor: "select Midnight supervisor",
-        mn_shift_supervisor_key: null,
         supervisors: null,
         shuttles: [],
         visible: false,
@@ -139,39 +134,7 @@ export class ShiftHistoryPane extends Component {
             visible: true
         })
     };
-    showCreateModal = event => {
-        this.setState({
-            create_visible: true
-        })
-    };
-    handleConfirm = (e) => {
-        const assignment = {
-            "driver": this.state.driver_selected,
-            "shuttle": this.state.assigned_shuttle,
-        };
-        if (this.state.selected_shift_type == "AM") {
-            this.setState({
-                am_shift_drivers: [...this.state.am_shift_drivers, assignment]
-            }, () => console.log(this.state.am_shift_drivers));
-        }
-        else if (this.state.selected_shift_type == "PM") {
-            this.setState({
-                pm_shift_drivers: [...this.state.pm_shift_drivers, assignment]
-            }, () => {
-                console.log(this.state.pm_shift_drivers);
-            });
-        }
-        else if (this.state.selected_shift_type == "MN") {
-            this.setState({
-                mn_shift_drivers: [...this.state.mn_shift_drivers, assignment]
-            }, () => {
-                console.log(this.state.mn_shift_drivers);
-            });
-        }
-        this.setState({
-            visible: false,
-        });
-    };
+
     handleCancel = (e) => {
         console.log(e);
         this.setState({
@@ -187,89 +150,6 @@ export class ShiftHistoryPane extends Component {
         this.setState({
             ...state
         });
-    };
-
-    // rowSelection object indicates the need for row selection
-    isChecked = false;
-    amRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            // get the last selected item
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-            this.state.am_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true;
-                    console.log("checked became true")
-                }
-            });
-            console.log(this.isChecked);
-            if (!this.isChecked) {
-                this.setState({
-                    driver_selected: current,
-                    selected_shift_type: "AM"
-                }, () => console.log(this.state.driver_selected));
-
-                this.showModal();
-            }
-            else {
-                let index = this.state.am_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.am_shift_drivers.splice(index);
-                this.setState({
-                    am_shift_drivers: array
-                }, console.log(this.state.am_shift_drivers))
-            }
-        },
-    };
-    pmRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-            //check if item is already checked
-            this.state.pm_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true
-                }
-            });
-            if (!this.isChecked) {
-                this.setState({
-                    driver_selected: current,
-                    selected_shift_type: "PM"
-                });
-                this.showModal();
-            }
-            else {
-                let index = this.state.pm_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.pm_shift_drivers.splice(index);
-                this.setState({
-                    pm_shift_drivers: array
-                }, console.log(this.state.pm_shift_drivers))
-            }
-        },
-    };
-    mnRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-
-            //check if item is already checked
-            this.state.mn_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true
-                }
-            });
-            if (!this.isChecked) {
-                this.setState({
-                    driver_selected: current,
-                    selected_shift_type: "MN"
-                });
-                this.showModal();
-            }
-            else {
-                console.log("entered here");
-                let index = this.state.mn_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.mn_shift_drivers.splice(index);
-                this.setState({
-                    mn_shift_drivers: array
-                }, console.log(this.state.mn_shift_drivers))
-            }
-        },
     };
 
     //normal action handlers
@@ -421,8 +301,16 @@ export class ShiftHistoryPane extends Component {
     );
 
 //JSX rendering functions
+
     renderShiftTables = (amSupervisor, pmSupervisor, mnSupervisor) => (
         <div className="history-tables-wrapper">
+            <Fragment>
+                <ReactToPrint
+                    trigger={() => <Button onClick="">Print</Button>}
+                    content={() => this.componentRef}
+                />
+                <ShiftPrint schedules={this.state} ref={el => (this.componentRef = el)}/>
+            </Fragment>
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">AM</div>
@@ -556,5 +444,26 @@ export class ShiftHistoryPane extends Component {
                 </div>
             </div>
         )
+    }
+}
+export class ShiftPrint extends Component {
+    render() {
+        return (
+            <table>
+                <thead>
+                <th>Shift</th>
+                <th>Driver</th>
+                <th>Shuttle</th>
+                </thead>
+                <tbody>
+                {this.props.schedules.am_shift_drivers.map(item =>
+                    <tr>
+                        <td>{item.driver_name}</td>
+                        <td>{item.shuttle}</td>
+                    </tr>
+                )}
+                </tbody>
+            </table>
+        );
     }
 }

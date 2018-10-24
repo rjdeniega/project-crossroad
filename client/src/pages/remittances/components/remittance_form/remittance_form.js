@@ -101,7 +101,7 @@ export class RemittanceForm extends Component {
             "consumed_ticket": [
                 {
                     "assigned_ticket": this.props.ten_peso_first_id,
-                    "end_ticket": this.state.ten_end_final_first,
+                    "end_ticket": this.state.ten_end_final_first ? this.state.ten_end_final_first : 0,
                 },
                 {
                     "assigned_ticket": this.props.ten_peso_second_id,
@@ -109,7 +109,7 @@ export class RemittanceForm extends Component {
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_first_id,
-                    "end_ticket": this.state.twelve_end_final_first
+                    "end_ticket": this.state.twelve_end_final_first ? this.state.twelve_end_final_first : 0
                 },
                 {
                     "assigned_ticket": this.props.twelve_peso_second_id,
@@ -117,7 +117,7 @@ export class RemittanceForm extends Component {
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_first_id,
-                    "end_ticket": this.state.fifteen_end_final_first
+                    "end_ticket": this.state.fifteen_end_final_first ? this.state.fifteen_end_final_first : 0
                 },
                 {
                     "assigned_ticket": this.props.fifteen_peso_second_id,

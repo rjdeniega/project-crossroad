@@ -406,7 +406,7 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
         print(data["shuttle"])
-        data["shuttle"] = Shuttle.objects.get(plate_number=data["shuttle"]).pk
+        data["shuttle"] = Shuttle.objects.get(pk=data["shuttle"]).pk
         deployment_serializer = DeploymentSerializer(data=data)
 
         if deployment_serializer.is_valid():
@@ -558,6 +558,7 @@ class TicketUtilities():
     @staticmethod
     def get_consumed_with_assigned(deployment_id):
         deployment = Deployment.objects.get(id=deployment_id)
+        print(deployment.pk)
         remittance_form = RemittanceForm.objects.get(deployment=deployment)
         consumed_tickets = ConsumedTicket.objects.filter(remittance_form=remittance_form)
 
@@ -670,6 +671,8 @@ class DeploymentDetails(APIView):
                       "number_of_voids": 0,
                       "voids": []}
         final = [first, second]
+        print(array)
+        print(final)
 
         return final
 
@@ -720,44 +723,47 @@ class RemittanceFormView(APIView):
         for consumed_ticket in data["consumed_ticket"]:
             assigned_ticket = AssignedTicket.objects.get(id=consumed_ticket["assigned_ticket"])
             # get range_from
-            previous = ConsumedTicket.objects.filter(assigned_ticket=assigned_ticket.id).order_by("-end_ticket").first()
+            previous = ConsumedTicket.objects.filter(assigned_ticket=assigned_ticket.id).order_by(
+                "-end_ticket").first()
 
             new_consumed = ConsumedTicket()
             new_consumed.remittance_form_id = remittance_form.id
             new_consumed.assigned_ticket_id = consumed_ticket["assigned_ticket"]
             new_consumed.end_ticket = consumed_ticket["end_ticket"]
 
-            if previous is not None:
-                new_consumed.start_ticket = previous.end_ticket + 1
-            else:
-                new_consumed.start_ticket = assigned_ticket.range_from
+            if assigned_ticket.range_from is not None:
+                if previous is not None:
+                    new_consumed.start_ticket = previous.end_ticket + 1
+                else:
+                    new_consumed.start_ticket = assigned_ticket.range_from
 
-            # get number of voids to subtract to total
-            voided = 0  # number of voided tickets
-            void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
-            void_tickets = [item for item in void_tickets if item.ticket_number <= consumed_ticket["end_ticket"]]
-            for void_ticket in void_tickets:
-                voided += 1
+                    # get number of voids to subtract to total
+                voided = 0  # number of voided tickets
+                void_tickets = VoidTicket.objects.filter(assigned_ticket=assigned_ticket.id)
+                void_tickets = [item for item in void_tickets if item.ticket_number <= consumed_ticket["end_ticket"]]
+                for void_ticket in void_tickets:
+                    voided += 1
 
-            # get ticket type to multiply for total
-            if assigned_ticket.type == "A":
-                type = 10
-            elif assigned_ticket.type == "B":
-                type = 13
-            else:
-                type = 15
+                # get ticket type to multiply for total
+                if assigned_ticket.type == "A":
+                    type = 10
+                elif assigned_ticket.type == "B":
+                    type = 13
+                else:
+                    type = 15
 
-            # compute total
-            if previous is not None:
-                # another +1 for next ticket
-                total = (int(new_consumed.end_ticket) - previous.end_ticket - voided + 2) * type
-            else:
-                print(int(new_consumed.end_ticket))
-                total = (int(new_consumed.end_ticket) - assigned_ticket.range_from - voided + 1) * type
+                    # compute total
+                if new_consumed.end_ticket != 0:
+                    if previous is not None:
+                        # another +1 for next ticket
+                        total = (int(new_consumed.end_ticket) - previous.end_ticket - voided + 2) * type
+                    else:
+                        print(int(new_consumed.end_ticket))
+                        total = (int(new_consumed.end_ticket) - assigned_ticket.range_from - voided + 1) * type
 
-            new_consumed.total = total
-            new_consumed.save()
-            remittance_total += total
+                new_consumed.total = total
+                new_consumed.save()
+                remittance_total += total
 
         # subtract remittance total to costs accumulated during deployment
         remittance_form.total = remittance_total - (remittance_form.fuel_cost + remittance_form.other_cost)
