@@ -584,7 +584,34 @@ class TicketUtilities():
                 "total": ticket.total
             })
 
-        return final
+        print(f'the tickets are {final}')
+        # I dont want to change front-end too much
+        ten_peso = []
+        twelve_peso = []
+        fifteen_peso = []
+        for item in final:
+            if item["ticket_type"] == "A":
+                ten_peso.append(item)
+            elif item["ticket_type"] == "B":
+                twelve_peso.append(item)
+            else:
+                fifteen_peso.append(item)
+
+        # get last 2 items of array (most recent ones)
+        ten_peso = DeploymentDetails.get_recent_tickets_confirm(ten_peso)
+        twelve_peso = DeploymentDetails.get_recent_tickets_confirm(twelve_peso)
+        fifteen_peso = DeploymentDetails.get_recent_tickets_confirm(fifteen_peso)
+
+        assigned_tickets = [
+            ten_peso[0],
+            ten_peso[1],
+            twelve_peso[0],
+            twelve_peso[1],
+            fifteen_peso[0],
+            fifteen_peso[1],
+        ]
+
+        return assigned_tickets
 
     # this function returns all the deployment details w/ remittances for the shift iteration
     @staticmethod
@@ -835,39 +862,13 @@ class ConfirmRemittanceForm(APIView):
 
             form = ReadRemittanceSerializer(remittance)
             tickets = TicketUtilities.get_consumed_with_assigned(remittance.deployment.id)
-            print(f'the tickets are {tickets}')
-            # I dont want to change front-end too much
-            ten_peso = []
-            twelve_peso = []
-            fifteen_peso = []
-            for item in tickets:
-                if item["ticket_type"] == "A":
-                    ten_peso.append(item)
-                elif item["ticket_type"] == "B":
-                    twelve_peso.append(item)
-                else:
-                    fifteen_peso.append(item)
-
-            # get last 2 items of array (most recent ones)
-            ten_peso = DeploymentDetails.get_recent_tickets_confirm(ten_peso)
-            twelve_peso = DeploymentDetails.get_recent_tickets_confirm(twelve_peso)
-            fifteen_peso = DeploymentDetails.get_recent_tickets_confirm(fifteen_peso)
-
-            assigned_tickets = [
-                ten_peso[0],
-                ten_peso[1],
-                twelve_peso[0],
-                twelve_peso[1],
-                fifteen_peso[0],
-                fifteen_peso[1],
-            ]
 
             unconfirmed_remittances.append({
                 'driver_name': deployment.driver.name,
                 'shift_type': deployment.shift_iteration.shift.type,
                 'route': deployment.route,
                 'remittance_details': form.data,
-                'assigned_tickets': assigned_tickets
+                'assigned_tickets': tickets
             })
 
         return Response(data={
