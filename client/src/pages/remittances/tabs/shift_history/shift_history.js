@@ -304,13 +304,13 @@ export class ShiftHistoryPane extends Component {
 
     renderShiftTables = (amSupervisor, pmSupervisor, mnSupervisor) => (
         <div className="history-tables-wrapper">
-            <Fragment>
-                <ReactToPrint
-                    trigger={() => <Button onClick="">Print</Button>}
-                    content={() => this.componentRef}
-                />
-                <ShiftPrint schedules={this.state} ref={el => (this.componentRef = el)}/>
-            </Fragment>
+            {/*<Fragment>*/}
+                {/*<ReactToPrint*/}
+                    {/*trigger={() => <Button onClick="">Print</Button>}*/}
+                    {/*content={() => this.componentRef}*/}
+                {/*/>*/}
+                {/*<ShiftPrint schedules={this.state} ref={el => (this.componentRef = el)}/>*/}
+            {/*</Fragment>*/}
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">AM</div>
