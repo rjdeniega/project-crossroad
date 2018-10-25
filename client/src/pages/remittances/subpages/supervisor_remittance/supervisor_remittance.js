@@ -461,7 +461,7 @@ export class SupervisorSecondContent extends Component {
                             <Option value="L">Kaliwa</Option>
                         </Select>
                         <Select onChange={this.handleFormUpdatesListener("shuttle")} className="route-input"
-                                defaultValue={this.state.plate_number}>
+                                value={this.state.plate_number}>
                             {this.state.shuttles.map(shuttle =>
                                 <Option value={shuttle.plate_number}>{shuttle.plate_number}</Option>)}
                         </Select>
