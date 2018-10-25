@@ -95,6 +95,7 @@ export class SupervisorSecondContent extends Component {
     state = {
         visible: false,
         drivers: null,
+        sub_drivers: null,
         add_void_type: null,
         void_visible: false,
         void_tickets: [],
@@ -125,7 +126,8 @@ export class SupervisorSecondContent extends Component {
     };
 
     componentDidMount() {
-        this.fetchDrivers()
+        this.fetchDrivers();
+        this.fetchSubDrivers();
     }
 
     fetchDrivers() {
@@ -150,6 +152,28 @@ export class SupervisorSecondContent extends Component {
             }
         });
     }
+    fetchSubDrivers() {
+        const { id } = JSON.parse(localStorage.user_staff);
+        return getData('remittances/shifts/sub_drivers/' + id).then(data => {
+            if (!data.error) {
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
+                console.log(data);
+                const sub_drivers = data.sub_drivers.map(tuple =>
+                    tuple.driver
+                );
+                console.log(sub_drivers);
+                this.setState({
+                    sub_drivers: sub_drivers,
+                });
+            }
+            else {
+                console.log(data.error);
+            }
+        });
+    }
+
 
     showModal = () => {
         getData('inventory/shuttles/').then(data => {
@@ -388,6 +412,26 @@ export class SupervisorSecondContent extends Component {
             </List.Item>
         )}
     />);
+    renderSubList = () => ( <List
+        className="driver-list"
+        itemLayout="horizontal"
+        dataSource={this.state.sub_drivers}
+        renderItem={driver => (
+            <List.Item key={driver.id}
+                       onClick={() => this.handleDriverSelect(driver.id, driver.shuttle_id, driver.shuttle_plate_number)}
+                       className="driver-item">
+                <List.Item.Meta
+                    avatar={<Avatar
+                        src={userDefault}/>}
+                    title={<a href="https://ant.design">{driver.name}</a>}
+                />
+                <div>
+                    <Button className="deploy-button" type="ghost"
+                            onClick={this.showModal}>Deploy</Button>
+                </div>
+            </List.Item>
+        )}
+    />);
     renderDeploymentModal = () => (
         <Modal
             className="driver-deploy-modal"
@@ -396,16 +440,16 @@ export class SupervisorSecondContent extends Component {
             onOk={this.handleDeploy}
             onCancel={this.handleCancel}
         >
-            <Modal
-                title={this.state.add_void_label}
-                visible={this.state.void_visible}
-                onOk={this.handleVoidAdd}
-                onCancel={this.handleVoidCancel}
-            >
-                <InputNumber className="add-void-input" placeholder="Ilagay ang ticket number"
-                             value={this.state.add_void_value}
-                             onChange={this.handleAddVoidChange}/>
-            </Modal>
+            {/*<Modal*/}
+                {/*title={this.state.add_void_label}*/}
+                {/*visible={this.state.void_visible}*/}
+                {/*onOk={this.handleVoidAdd}*/}
+                {/*onCancel={this.handleVoidCancel}*/}
+            {/*>*/}
+                {/*<InputNumber className="add-void-input" placeholder="Ilagay ang ticket number"*/}
+                             {/*value={this.state.add_void_value}*/}
+                             {/*onChange={this.handleAddVoidChange}/>*/}
+            {/*</Modal>*/}
             <div className="ticket-div">
                 <div className="driver-deploy-input">
                     <div className="route-div">
@@ -524,8 +568,8 @@ export class SupervisorSecondContent extends Component {
     );
 
     render() {
-        const { drivers } = this.state;
-        const isLoading = drivers === null;
+        const { drivers,sub_drivers } = this.state;
+        const isLoading = drivers === null && sub_drivers === null;
         return (
             <div className="rem-second-content">
                 {this.renderDeploymentModal()}
@@ -535,6 +579,7 @@ export class SupervisorSecondContent extends Component {
                 </div>
                 <div className="driver-list-wrapper">
                     {drivers && this.renderDriversList()}
+                    {sub_drivers && this.renderSubList()}
                     {isLoading &&
                     <Spin className="user-spinner" indicator={antIcon} size="large"/>
                     }
@@ -736,6 +781,7 @@ export class SupervisorRemittancePage extends Component {
                 console.log(data)
             }
         }).catch(error => console.log(error))
+
     };
     updateDeployedDrivers = () => {
         this.getDeployedDrivers()

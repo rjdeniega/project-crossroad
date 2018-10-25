@@ -406,7 +406,10 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         supervisor_id = data.pop('supervisor')
         print(data["shuttle"])
-        data["shuttle"] = Shuttle.objects.get(pk=data["shuttle"]).pk
+        try:
+            data["shuttle"] = Shuttle.objects.get(pk=data["shuttle"]).pk
+        except:
+            data["shuttle"] = Shuttle.objects.get(plate_number=data["shuttle"]).pk
         deployment_serializer = DeploymentSerializer(data=data)
 
         if deployment_serializer.is_valid():
