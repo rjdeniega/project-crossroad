@@ -598,6 +598,74 @@ class PassengerCountByDate(APIView):
             "pm_total": sum([item["pm_total"] for item in report_items])
         }, status=status.HTTP_200_OK)
 
+class RemittanceVersusFuelReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date + timedelta(days=6) #for one week
+        temp_start = start_date
+
+        rows = []
+        grand_total = 0
+        grand_fuel_total = 0
+
+        while temp_start <= end_date:
+            shift_iterations = ShiftIteration.objects.filter(date=temp_start)
+
+            shifts = []
+
+            total_remit_day_without_fuel = 0
+            total_fuel_for_day = 0
+
+            for shift in shift_iterations:
+                remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift)
+
+                total_remittance = 0
+                total_fuel = 0
+
+                for remittance in remittances:
+                    total_remittance += remittance.total
+                    total_fuel += remittance.fuel_cost
+
+                shift.append({
+                    "type": shift.shift.type,
+                    "remittance": total_remittance,
+                    "fuel": total_fuel,
+                    "remittance_minus_fuel": total_remittance - total_fuel
+                })
+
+                total_remit_day_without_fuel += total_remittance
+                total_fuel_for_day += total_fuel
+
+            rows.append({
+                "date": temp_start,
+                "shifts": shifts,
+                "total_remit_day_without_fuel": total_remit_day_without_fuel,
+                "total_fuel_for_day": total_fuel_for_day,
+                "total_minus_fuel": total_remit_day_without_fuel - total_fuel_for_day
+            })
+
+            # totals
+            grand_total += total_remit_day_without_fuel
+            grand_fuel_total += total_fuel_for_day
+
+            temp_start = temp_start + timedelta(days=1)
+
+
+        return Response(data={
+            "start_date": start_date,
+            "end_date": end_date,
+            "grand_remit_total": grand_total,
+            "grand_fuel_total": grand_fuel_total,
+            "grand_remit_minus_fuel": grand_total - grand_fuel_total,
+            "rows": rows
+        }, status=status.HTTP_200_OK)
+
+
 class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type):

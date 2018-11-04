@@ -80,22 +80,22 @@ class ScheduleSerializer(ModelSerializer):
     # TODO validate that there are am shifts, pm shifts, and mn shifts in the schedule
     def validate(self, data):
         schedules = Schedule.objects.all()
-        # for schedule in schedules:
-        #      if data['start_date'] <= schedule.end_date:
-        #          raise serializers.ValidationError("start date of schedule is conflicting with other existing schedule")
-        #
-        # for shift in data['shifts']:
-        #     drivers = 0
-        #     for driver in shift['drivers_assigned']:
-        #         drivers += 1
-        #
-        #     if shift['type'] == "A":
-        #         shift_type = "AM Shift"
-        #     else:
-        #         shift_type = "PM Shift"
-        #
-        #     if drivers is not 7:
-        #         raise serializers.ValidationError("Drivers Assigned for " + shift_type + " is not 7")
+        for schedule in schedules:
+             if data['start_date'] <= schedule.end_date:
+                 raise serializers.ValidationError("start date of schedule is conflicting with other existing schedule")
+
+        for shift in data['shifts']:
+            drivers = 0
+            for driver in shift['drivers_assigned']:
+                drivers += 1
+
+            if shift['type'] == "A":
+                shift_type = "AM Shift"
+            else:
+                shift_type = "PM Shift"
+
+            if drivers is not 7:
+                raise serializers.ValidationError("Drivers Assigned for " + shift_type + " is not 7")
 
         return data
 
