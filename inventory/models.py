@@ -1,13 +1,13 @@
+import json
+
 from django.db import models
+# Create your models here.
+from django.db.models import (BooleanField, CharField, DateField, DecimalField,
+                              ForeignKey, IntegerField, ManyToManyField,
+                              PositiveIntegerField, TextField)
 from django.utils import timezone
 
-# Create your models here.
-from django.db.models import ForeignKey
-from django.db.models import CharField, PositiveIntegerField, DateField, IntegerField, TextField, DecimalField, BooleanField
-from django.db.models import ManyToManyField
-
 from core.models import SoftDeletionModel
-import json
 
 MOVEMENT_TYPE = [
     ('G', 'Get'),
