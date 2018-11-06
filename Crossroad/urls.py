@@ -44,6 +44,7 @@ urlpatterns = [
     path('passengers_by_date/', PassengerCountByDate.as_view()),
     path('passengers/', PassengerCount.as_view()),
     path('notifications/<str:user_type>', NotificationItems.as_view()),
+    path('notifications/mark/<int:pk>', ChangeNotificationStatus.as_view()),
     path('remittance_versus_fuel/', RemittanceVersusFuelReport.as_view())
 
 ]

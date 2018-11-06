@@ -83,7 +83,7 @@ export class UserAvatar extends Component {
                         {notifications.map(function (d, idx) {
                             console.log(d)
                             return (<Notification key={idx} title={d.type} 
-                                    description={d.description}/>)
+                                    description={d.description} isRead={d.is_read} id={d.id}/>)
                         })}
                       </List>
                     </PerfectScrollbar>

@@ -1,35 +1,39 @@
-from datetime import datetime
-from django.db.models import Q
-from django.core import serializers
-from django.http import JsonResponse
-from django.shortcuts import render
+import calendar
+import json
+from datetime import datetime, timedelta
+
 import rest_framework
 from django.contrib.auth import authenticate, login
-from django.shortcuts import get_object_or_404
-from django.views import View
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-import json
 from django.contrib.auth.models import User
-from rest_framework import status
+from django.core import serializers
+from django.db.models import Q
 from django.forms.models import model_to_dict
-from members.models import *
-from datetime import timedelta
-import calendar
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, render
+from django.views import View
+from rest_framework import status
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import (api_view, authentication_classes,
+                                       permission_classes)
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-# Create your views here.
-from core.serializers import UserSerializer, PersonSerializer, NotificationSerializer
-from members.models import Person, Driver, Supervisor, OperationsManager, Clerk
-from members.serializers import DriverSerializer, SupervisorSerializer, OperationsManagerSerializer, ClerkSerializer, \
-    MemberSerializer, MechanicSerializer, ShareSerializer
-from remittances.models import *
-from remittances.serializers import BeepTransactionSerializer, CarwashTransactionSerializer
-from remittances.views import IterationUtilites
 from core.models import Notification
+# Create your views here.
+from core.serializers import (NotificationSerializer, PersonSerializer,
+                              UserSerializer)
+from members.models import *
+from members.models import Clerk, Driver, OperationsManager, Person, Supervisor
+from members.serializers import (ClerkSerializer, DriverSerializer,
+                                 MechanicSerializer, MemberSerializer,
+                                 OperationsManagerSerializer, ShareSerializer,
+                                 SupervisorSerializer)
+from remittances.models import *
+from remittances.serializers import (BeepTransactionSerializer,
+                                     CarwashTransactionSerializer)
+from remittances.views import IterationUtilites
 
 
 class SignInView(APIView):
@@ -686,3 +690,15 @@ class NotificationItems(APIView):
         return Response(data={
             'notifications': notifications.data
         }, status=status.HTTP_200_OK)
+
+class ChangeNotificationStatus(APIView):
+    @staticmethod
+    def put(request, pk):
+        notification = Notification.objects.get(id=pk)
+        if notification.is_read == True:
+            notification.is_read = False
+        else:
+            notification.is_read = True
+
+        notification.save()
+        return Response(status=status.HTTP_200_OK)
