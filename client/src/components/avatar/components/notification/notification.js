@@ -40,15 +40,21 @@ export default class Notification extends Component {
         <List.Item
           actions={[
             isRead === true ? (
-              <Icon
-                icon={ic_markunread}
-                onClick={() => this.markRead(isRead, id)}
-              />
+              <div>
+                Mark as unread &nbsp;
+                <Icon
+                  icon={ic_markunread}
+                  onClick={() => this.markRead(isRead, id)}
+                />
+              </div>
             ) : (
-              <Icon
-                icon={ic_drafts}
-                onClick={() => this.markRead(isRead, id)}
-              />
+              <div>
+                Mark as read &nbsp;
+                <Icon
+                  icon={ic_drafts}
+                  onClick={() => this.markRead(isRead, id)}
+                />
+              </div>
             )
           ]}
         >
