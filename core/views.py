@@ -677,23 +677,33 @@ class NotificationItems(APIView):
         if user_type == 'member':
             notifications = NotificationSerializer(Notification.objects.all()
                                                     .filter(type='M'), many=True)
+            unread = NotificationSerializer(Notification.objects.all()
+                                             .filter(type='M').filter(is_read=False), many=True)
         elif user_type == 'supervisor':
             notifications = NotificationSerializer(Notification.objects.all()
                                                     .filter(type='R'), many=True)
+            undread = NotificationSerializer(Notification.objects.all()
+                                             .filter(type='R').filter(is_read=False), many=True)
         elif user_type == 'operations_manager':
             notifications = NotificationSerializer(Notification.objects
                                                     .filter(Q(type='I') | Q(type='R')), many=True)
+            unread = NotificationSerializer(Notification.objects
+                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
         elif user_type == 'clerk':
             notifications = NotificationSerializer(Notification.objects
                                                     .filter(Q(type='I') | Q(type='R')), many=True)
+            unread = NotificationSerializer(Notification.objects
+                                                    .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
+
         
         return Response(data={
-            'notifications': notifications.data
+            'notifications': notifications.data,
+            'unread': unread.data,
         }, status=status.HTTP_200_OK)
 
 class ChangeNotificationStatus(APIView):
     @staticmethod
-    def put(request, pk):
+    def post(request, pk):
         notification = Notification.objects.get(id=pk)
         if notification.is_read == True:
             notification.is_read = False
@@ -701,4 +711,4 @@ class ChangeNotificationStatus(APIView):
             notification.is_read = True
 
         notification.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_204_NO_CONTENT)

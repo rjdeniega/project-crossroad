@@ -6,9 +6,9 @@ import { ic_markunread } from "react-icons-kit/md/ic_markunread";
 import "./style.css";
 
 function checkNotif(title) {
-  if (title == "I") {
+  if (title === "I") {
     return "Inventory";
-  } else if (title == "R") {
+  } else if (title === "R") {
     return "Remittances";
   } else {
     return "Members";
@@ -20,15 +20,17 @@ export default class Notification extends Component {
     super(props);
   }
 
-    markRead = (isRead, id) => {
-    if (isRead == true) {
+  markRead = (isRead, id) => {
+    if (isRead === true) {
       message.success("Marked as unread");
     } else {
       message.success("Marked as read");
     }
 
-
-  }
+    fetch("notifications/mark/" + id, { method: "POST" }).then(response => {
+      return response;
+    });
+  };
 
   render() {
     const { title, description, isRead, id } = this.props;
@@ -37,10 +39,16 @@ export default class Notification extends Component {
       <div className="specific-notification">
         <List.Item
           actions={[
-            isRead == true ? (
-              <Icon icon={ic_markunread} onClick={() => this.markRead(isRead, id)} />
+            isRead === true ? (
+              <Icon
+                icon={ic_markunread}
+                onClick={() => this.markRead(isRead, id)}
+              />
             ) : (
-              <Icon icon={ic_drafts} onClick={() => this.markRead(isRead, id)} />
+              <Icon
+                icon={ic_drafts}
+                onClick={() => this.markRead(isRead, id)}
+              />
             )
           ]}
         >

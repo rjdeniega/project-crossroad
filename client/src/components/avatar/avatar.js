@@ -19,6 +19,7 @@ export class UserAvatar extends Component {
         super(props);
         this.state = {
             notifications: [],
+            unread: []
         };
         
         this.fetchNotifications = this.fetchNotifications.bind(this)
@@ -47,7 +48,8 @@ export class UserAvatar extends Component {
             .then(data => {
                 if(!data.error){
                     this.setState({
-                        notifications: data.notifications
+                        notifications: data.notifications,
+                        unread: data.unread
                     });
                 } else {
                     console.log(data.error)
@@ -57,7 +59,7 @@ export class UserAvatar extends Component {
     
     render() {
 
-        const {notifications} = this.state;
+        const {notifications, unread} = this.state;
         const content = (
             <div>
                 <Button className="sign-out" onClick={this.signOut}>Sign-out</Button>
@@ -88,7 +90,7 @@ export class UserAvatar extends Component {
                       </List>
                     </PerfectScrollbar>
                   </div>} title="Notifications" trigger="click">
-              <Badge count={notifications.length} className="notification" size={5}>
+              <Badge count={unread.length} className="notification" size={5}>
                 <Icon icon={bell} size={25} />
               </Badge>
             </Popover>
