@@ -20,6 +20,7 @@ import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { RemittanceReport } from './content/remittance_report/remittance_report'
 import { SharesReport } from './content/shares_report/shares_report'
 import { TransactionReport } from './content/transactions_report/transactions_report'
+import { RemittanceSummary } from './content/remittance_summary/remittance_summary'
 import { PassengerCount } from './content/passenger_count/passenger_count'
 import {MaintenanceReport  } from './content/maintenance_report/maintenance_report'
 
@@ -33,6 +34,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view remittances for a time period',
     'icon': money,
     'content': <RemittanceReport/>
+},{
+    'title': 'AM PM Remittance Report',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <RemittanceSummary/>
 },{
     'title': 'Passenger Count',
     'description': 'view beep and ticketing passenger count',
