@@ -690,6 +690,141 @@ class RemittanceVersusFuelReport(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class TicketCountReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date + timedelta(days=6) #for one week
+        temp_start = start_date
+
+        rows = []
+        am_total = 0,
+        pm_total = 0,
+        day_counter = 0
+
+        while temp_start <= end_date:
+            shuttles = Shuttle.objects.all()
+
+            shuttle_data = []
+
+            day_am_total = 0
+            day_pm_total = 0
+
+            for shuttle in shuttles:
+                am_count = 0
+                pm_count = 0
+
+                shiftiterations = ShiftIteration.objects.filter(date=temp_start)
+
+                for shiftiteration in shiftiterations:
+                    consumed_tickets = ConsumedTicket.objects.filter(remittance_form__deployment__shift_iteration=shiftiteration)
+
+                    for consumed_ticket in consumed_tickets:
+
+                        if shiftiteration.shift.type is 'A':
+
+                            if consumed_ticket.assigned_ticket.type is 'A':
+                                am_count += consumed_ticket.total / 10
+                            elif consumed_ticket.assigned_ticket.type is 'B':
+                                am_count += consumed_ticket.total / 12
+                            else:
+                                am_count += consumed_ticket.total / 15
+
+                        else:
+
+                            if consumed_ticket.assigned_ticket.type is 'A':
+                                pm_count += consumed_ticket.total / 10
+                            elif consumed_ticket.assigned_ticket.type is 'B':
+                                pm_count += consumed_ticket.total / 12
+                            else:
+                                pm_count += consumed_ticket.total / 15
+
+                shuttle_data.append({
+                    "shuttle_number": shuttle.id,
+                    "am_count": am_count,
+                    "pm_count": pm_count
+                })
+
+                day_am_total += am_count
+                day_pm_total += pm_count
+
+            rows.append({
+                "date": temp_start,
+                "day": calendar.day_name[temp_start.weekday()],
+                "total_count": day_pm_total + day_am_total
+            })
+
+            am_total += day_am_total
+            pm_total += day_pm_total
+
+            day_counter += 1
+            temp_start = temp_start + timedelta(days=1)
+
+
+        shuttle_totals = []
+
+        for shuttle in Shuttle.objects.all():
+            temp_start = start_date
+
+            shuttle_am_total = 0
+            shuttle_pm_total = 0
+
+            while temp_start <= end_date:
+
+                am_count = 0
+                pm_count = 0
+
+                for shiftiteration in ShiftIteration.objects.filter(date=temp_start):
+                    consumed_tickets = ConsumedTicket.objects.filter(remittance_form__deployment__shift_iteration=shiftiteration)
+
+                    for consumed_ticket in consumed_tickets:
+
+                        if shiftiteration.shift.type is 'A':
+
+                            if consumed_ticket.assigned_ticket.type is 'A':
+                                am_count += consumed_ticket.total / 10
+                            elif consumed_ticket.assigned_ticket.type is 'B':
+                                am_count += consumed_ticket.total / 12
+                            else:
+                                am_count += consumed_ticket.total / 15
+
+                        else:
+
+                            if consumed_ticket.assigned_ticket.type is 'A':
+                                pm_count += consumed_ticket.total / 10
+                            elif consumed_ticket.assigned_ticket.type is 'B':
+                                pm_count += consumed_ticket.total / 12
+                            else:
+                                pm_count += consumed_ticket.total / 15
+
+                shuttle_am_total += am_count
+                shuttle_pm_total += pm_count
+
+                temp_start = temp_start + timedelta(days=1)
+
+            shuttle_totals.append({
+                "shuttle_number": shuttle.id,
+                "shuttle_am_total": shuttle_am_total,
+                "shuttle_pm_total": shuttle_pm_total
+            })
+
+        return Response(data={
+            "start_date": start_date,
+            "end_date": end_date,
+            "am_total": am_total,
+            "pm_total": pm_total,
+            "am_average": am_total / day_counter,
+            "pm_average": pm_total / day_counter,
+            "grand_total": am_total + pm_total,
+            "grand_average": (am_total + pm_total) / day_counter,
+            "rows": rows,
+            "shuttle_totals": shuttle_totals
+        }, status=status.HTTP_200_OK)
+
 class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type):
