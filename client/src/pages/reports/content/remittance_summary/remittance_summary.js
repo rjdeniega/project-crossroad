@@ -10,7 +10,7 @@ import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
 import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
-import { getData } from '../../../../network_requests/general'
+import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
@@ -23,58 +23,130 @@ const Option = Select.Option;
 
 class ComponentToPrint extends React.Component {
     render() {
+        const { data } = this.props
         return (
             <div className="container">
                 <div className="report-labels">
-                    Report for AY 10-20
+                    {this.props.data &&
+                    <Fragment>
+                        {this.props.data.end_date &&
+                        <p> Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        }
+                    </Fragment>
+                    }
                 </div>
                 <div className="report-body">
-                    <table>
+                    <table cellSpacing="50" cellPadding="3px">
                         <thead>
-                        <th>column 1</th>
-                        <th>column 2</th>
-                        <th>column 3</th>
+                        <th>Date</th>
+                        <th>Shift</th>
+                        <th>Actual Remittances</th>
+                        <th>Total Per Day</th>
+                        <th>Fuel</th>
+                        <th>Total after Fuel</th>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>data 1</td>
-                            <td>data 2</td>
-                            <td>data 3</td>
-                        </tr>
-                        <tr>
-                            <td>data 1</td>
-                            <td>data 2</td>
-                            <td>data 3</td>
-                        </tr>
-                        <tr>
-                            <td>data 1</td>
-                            <td>data 2</td>
-                            <td>data 3</td>
-                        </tr>
+                        {this.props.data &&
+                        <Fragment>
+                            {this.props.data.rows.map(item => (
+                                <Fragment>
+                                    <tr>
+                                        <td>{item.date}</td>
+                                    </tr>
+                                    {item.shifts.map((item,index) => (
+                                        <Fragment>
+                                            <tr>
+                                                <td></td>
+                                                <td>{item.type}</td>
+                                                <td>{item.remittance}</td>
+                                                {(item.type == "A" || item.type == "AM") &&
+                                                <td></td>
+                                                }
+                                                {(item.type == "P" || item.type == "PM") &&
+                                                <td><b>{item.total_per_day}</b></td>
+                                                }
+                                                <td>{item.fuel}</td>
+                                                <td><b>{item.remittance_minus_fuel}</b></td>
+                                            </tr>
+                                            {index%10 == 0 &&
+                                                <p style="page-break-before: always"> </p>
+                                            }
+                                        </Fragment>
+                                    ))}
+                                </Fragment>
+                            ))}
+                            <tr>
+                                <td><div>&nbsp;</div></td>
+                                <td><div>&nbsp;</div></td>
+                                <td><div>&nbsp;</div></td>
+                                <td><div>&nbsp;</div></td>
+                                <td><div>&nbsp;</div></td>
+                                <td><div>&nbsp;</div></td>
+                            </tr>
+                            <tr>
+                                <td><b> Grand Total </b></td>
+                                <td className="total-line"></td>
+                                <td className="total-line"><b>{this.props.data.grand_remit_total}</b></td>
+                                <td className="total-line"><b>{this.props.data.grand_remit_total}</b></td>
+                                <td className="total-line"><b>{this.props.data.grand_fuel_total}</b></td>
+                                <td className="total-line"><b>{this.props.data.grand_remit_minus_fuel}</b></td>
+                            </tr>
+                        </Fragment>
+                        }
                         </tbody>
                     </table>
+                    <p className="end-label">END OF REPORT</p>
                 </div>
             </div>
         );
     }
 }
-
 export class RemittanceSummary extends Component {
     state = {};
 
     componentDidMount() {
     }
 
+    fetchTransactions() {
+        let data = {
+            "start_date": this.state.start_date,
+            "end_date": this.state.end_date,
+        };
+        postData('/remittance_versus_fuel/', data).then(data => {
+            console.log(data);
+            if (!data.error) {
+                this.setState({
+                    data: data
+                })
+            }
+        });
+    }
+
+    handleStartDateChange = (date, dateString) => {
+        this.setState({
+            start_date_object: date,
+            start_date: dateString
+        }, () => this.fetchTransactions())
+    };
+    handleEndDateChange = (date, dateString) => {
+        this.setState({
+            end_date_object: date,
+            end_date: dateString
+        }, () => this.fetchTransactions())
+    };
+
 
     render() {
         return (
             <div className="report-body">
+                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}
                         content={() => this.componentRef}
                     />
-                    <ComponentToPrint ref={el => (this.componentRef = el)}/>
+                    <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>
                 </div>
             </div>
         );

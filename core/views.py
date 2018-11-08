@@ -607,6 +607,7 @@ class RemittanceVersusFuelReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        print(request.data)
         if "end_date" in request.data:
             end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
         else:
@@ -635,9 +636,15 @@ class RemittanceVersusFuelReport(APIView):
                     total_remittance += remittance.total
                     total_fuel += remittance.fuel_cost
 
-                shift.append({
+                if len(shifts) == 1:
+                    total_per_day = shifts[0]["remittance"] + total_remittance
+                else:
+                    total_per_day = total_remittance
+
+                shifts.append({
                     "type": shift.shift.type,
                     "remittance": total_remittance,
+                    "total_per_day": total_per_day,
                     "fuel": total_fuel,
                     "remittance_minus_fuel": total_remittance - total_fuel
                 })
@@ -645,8 +652,22 @@ class RemittanceVersusFuelReport(APIView):
                 total_remit_day_without_fuel += total_remittance
                 total_fuel_for_day += total_fuel
 
+            if len(shifts) == 0:
+                shifts = [{
+                    "type": "AM",
+                    "total_per_day": 0,
+                    "remittance": 0,
+                    "fuel": 0,
+                    "remittance_minus_fuel": 0
+                }, {
+                    "type": "PM",
+                    "total_per_day": 0,
+                    "remittance": 0,
+                    "fuel": 0,
+                    "remittance_minus_fuel": 0
+                }]
             rows.append({
-                "date": temp_start,
+                "date": temp_start.date(),
                 "shifts": shifts,
                 "total_remit_day_without_fuel": total_remit_day_without_fuel,
                 "total_fuel_for_day": total_fuel_for_day,
@@ -659,10 +680,9 @@ class RemittanceVersusFuelReport(APIView):
 
             temp_start = temp_start + timedelta(days=1)
 
-
         return Response(data={
-            "start_date": start_date,
-            "end_date": end_date,
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
             "grand_remit_total": grand_total,
             "grand_fuel_total": grand_fuel_total,
             "grand_remit_minus_fuel": grand_total - grand_fuel_total,
