@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Modal, Button, Form, Input, DatePicker, message} from 'antd'
+import {Modal, Button, Form, Input, DatePicker, message, Select} from 'antd'
 import moment from 'moment'
 import './style.css'
 import { postData } from "../../../../network_requests/general";
@@ -32,6 +32,7 @@ class AddShuttleFormInit extends React.Component{
             date_acquired: this.props.date_acquired.value.format('YYYY-MM-DD'),
             status: "A",
             mileage: this.props.mileage.value,
+            route: this.props.route.value,
         };
 
         postData('inventory/shuttles/', shuttle)
@@ -100,6 +101,13 @@ class AddShuttleFormInit extends React.Component{
                             }],
                         })(<Input className='mileage' type='number' placeholder='Mileage' />)}
                     </FormItem>
+                    <FormItem label='Route' {...formItemLayout}>
+                            <Select defaultValue="Main Road">
+                                <Select.Option value="Main Road">Main Road</Select.Option>
+                                <Select.Option value="Kaliwa">Kaliwa</Select.Option>
+                                <Select.Option value="Kanan">Kanan</Select.Option>
+                            </Select>
+                    </FormItem>
                     <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error': ''}
                               help={dateAcquiredError || ''} {...formItemLayout}>
                         {getFieldDecorator('date_acquired', {
@@ -145,6 +153,10 @@ const AddShuttleForm = Form.create({
                 ...props.mileage,
                 value: props.mileage.value,
             }),
+            route: Form.createFormField({
+                ...props.route,
+                value: props.route.value
+            }),
             date_acquired: Form.createFormField({
                 ...props.date_acquired,
                 value: props.date_acquired.value,
@@ -168,6 +180,9 @@ class FinalForm extends Component{
                 value: ''
             },
             mileage: {
+                value: ''
+            },
+            route: {
                 value: ''
             },
             date_acquired: {

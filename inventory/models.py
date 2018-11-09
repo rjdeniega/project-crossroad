@@ -3,8 +3,8 @@ import json
 from django.db import models
 # Create your models here.
 from django.db.models import (BooleanField, CharField, DateField, DecimalField,
-                              ForeignKey, IntegerField, ManyToManyField,
-                              PositiveIntegerField, TextField)
+                              FileField, ForeignKey, IntegerField,
+                              ManyToManyField, PositiveIntegerField, TextField)
 from django.utils import timezone
 
 from core.models import SoftDeletionModel
@@ -37,6 +37,7 @@ class Shuttle(SoftDeletionModel):
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     mileage = PositiveIntegerField()
+    route = CharField(max_length=64)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -58,6 +59,7 @@ class Item(SoftDeletionModel):
     average_price = DecimalField(max_digits=10, decimal_places=2)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
+
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -118,6 +120,7 @@ class ItemMovement(SoftDeletionModel):
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
+    receipt = FileField(default='client/src/images/default.png', null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
