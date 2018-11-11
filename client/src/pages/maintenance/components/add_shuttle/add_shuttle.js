@@ -102,7 +102,7 @@ class AddShuttleFormInit extends React.Component{
                         })(<Input className='mileage' type='number' placeholder='Mileage' />)}
                     </FormItem>
                     <FormItem label='Route' {...formItemLayout}>
-                            <Select defaultValue="Main Road">
+                            <Select defaultValue="Main Road" className="route">
                                 <Select.Option value="Main Road">Main Road</Select.Option>
                                 <Select.Option value="Kaliwa">Kaliwa</Select.Option>
                                 <Select.Option value="Kanan">Kanan</Select.Option>

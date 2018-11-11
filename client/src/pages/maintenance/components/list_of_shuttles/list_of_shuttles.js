@@ -17,12 +17,6 @@ export class ListOfShuttles extends Component {
     componentDidMount() {
         this.fetchShuttles()
     }
-
-    componentDidUpdate() {
-        if (this.state.shuttles.length > 0) {
-            this.fetchShuttles()
-        }
-    }
     
     fetchShuttles() {
         fetch('inventory/shuttles/')
