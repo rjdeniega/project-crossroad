@@ -1,53 +1,67 @@
-.transaction-report-body{
-    width: auto!important;
+.transaction-report-body {
+    width: auto !important;
     display: grid;
     grid-template-columns: 30% 70%;
     }
-.report-modal-container{
+
+.report-modal-container {
     height: 100%;
     width: 100%;
     }
-.container{
-    height:100%;
+
+.container {
+    height: 100%;
     width: 100%;
     display: flex;
     justify-content: center;
     flex-direction: column;
     }
-.report-labels{
-    height:10%;
+
+.report-labels {
+    height: 10%;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     }
-.report-body{
+
+.report-body {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     }
 
-thead{
+thead {
     padding: 5px;
     text-align: center;
     /*border: 3px solid black;*/
     }
-td{
+
+td {
     text-align: center;
     }
-table{
+
+table {
     margin-top: 20px;
     margin-left: 40px;
     margin-right: 70px;
     border-spacing: 10px;
     }
-.total-line{
+
+.total-line {
     border-top: 1px solid black;
     margin-top: 50px;
     }
-.end-label{
+
+.end-label {
     font-weight: bold;
     justify-self: center;
     align-self: center;
+    }
+
+@media print {
+    .page-break {
+        page-break-before: always
+        }
     }

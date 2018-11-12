@@ -48,15 +48,15 @@ class ComponentToPrint extends React.Component {
                         <tbody>
                         {this.props.data &&
                         <Fragment>
-                            {this.props.data.rows.map(item => (
+                            {this.props.data.rows.map((item,index) => (
                                 <Fragment>
                                     <tr>
                                         <td>{item.date}</td>
                                     </tr>
-                                    {item.shifts.map((item,index) => (
+                                    {item.shifts.map((item) => (
                                         <Fragment>
                                             <tr>
-                                                <td></td>
+                                                <td>{index}</td>
                                                 <td>{item.type}</td>
                                                 <td>{item.remittance}</td>
                                                 {(item.type == "A" || item.type == "AM") &&
@@ -68,9 +68,10 @@ class ComponentToPrint extends React.Component {
                                                 <td>{item.fuel}</td>
                                                 <td><b>{item.remittance_minus_fuel}</b></td>
                                             </tr>
-                                            {index%10 == 0 &&
-                                                <p style="page-break-before: always"> </p>
-                                            }
+                                            {/*{index%11 == 0 &&*/}
+                                                {/*<p className="page-break"></p>*/}
+                                            {/*}*/}
+
                                         </Fragment>
                                     ))}
                                 </Fragment>

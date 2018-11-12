@@ -94,8 +94,8 @@ class ScheduleSerializer(ModelSerializer):
             else:
                 shift_type = "PM Shift"
 
-            if drivers is not 7:
-                raise serializers.ValidationError("Drivers Assigned for " + shift_type + " is not 7")
+            # if drivers is not 7:
+            #     raise serializers.ValidationError("Drivers Assigned for " + shift_type + " is not 7")
 
         return data
 
