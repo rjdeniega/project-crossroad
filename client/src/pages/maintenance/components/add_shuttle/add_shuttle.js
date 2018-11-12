@@ -12,6 +12,7 @@ function hasErrors(fieldsError){
     return Object.keys(fieldsError).some(field => fieldsError[field])
 }
 
+
 class AddShuttleFormInit extends React.Component{
     constructor(props){
         super(props);
@@ -34,6 +35,8 @@ class AddShuttleFormInit extends React.Component{
             mileage: this.props.mileage.value,
             route: this.props.route.value,
         };
+
+        console.log(shuttle);
 
         postData('inventory/shuttles/', shuttle)
             .then(response=> {
@@ -102,18 +105,18 @@ class AddShuttleFormInit extends React.Component{
                         })(<Input className='mileage' type='number' placeholder='Mileage' />)}
                     </FormItem>
                     <FormItem label='Route' {...formItemLayout}>
-                            <Select defaultValue="Main Road" className="route">
-                                <Select.Option value="Main Road">Main Road</Select.Option>
-                                <Select.Option value="Kaliwa">Kaliwa</Select.Option>
-                                <Select.Option value="Kanan">Kanan</Select.Option>
-                            </Select>
+                        {getFieldDecorator('route')(<Select className="route">
+                            <Select.Option value="Main Road" selected>Main Road</Select.Option>
+                            <Select.Option value="Kaliwa">Kaliwa</Select.Option>
+                            <Select.Option value="Kanan">Kanan</Select.Option>
+                        </Select>)}
                     </FormItem>
                     <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error': ''}
                               help={dateAcquiredError || ''} {...formItemLayout}>
                         {getFieldDecorator('date_acquired', {
                             rules: [{required: true,
                                      message: 'Date acquired is required!'}],
-                        })(<DatePicker format={dateFormat}/>)}
+                        })(<DatePicker format={dateFormat} className="date_acquired"/>)}
                     </FormItem>
                     <FormItem wrapperCol={{
                         xs: {span: 24, offset: 0},
