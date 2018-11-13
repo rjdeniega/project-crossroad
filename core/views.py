@@ -775,6 +775,82 @@ class TicketCountReport(APIView):
             "shuttles": rows
         }, status=status.HTTP_200_OK)
 
+
+class SupervisorWeeklyReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        supervisor = Supervisor.objects.get(id=data["supervisor_id"]) # requests supervisor id
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = start_date + timedelta(days=6)  # for one week
+
+        temp_start = start_date
+
+        rows = []
+        total_deployed_drivers = 0
+        total_remittances = 0
+
+        while temp_start <= end_date:
+            shift_iterations = ShiftIteration.objects.filter(shift__supervisor=supervisor, date=temp_start)
+
+            for shift_iteration in shift_iterations:
+                number_of_drivers = 0
+                daily_remittance = 0
+
+                deployed_drivers = []
+
+                for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
+
+                    deployed_drivers.append({
+                        "driver_id": deployment.driver.id,
+                        "driver_name": deployment.driver.name
+                    })
+
+                    for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
+                        daily_remittance += consumed_ticket.total
+                    number_of_drivers += 1
+
+                absent_drivers = []
+
+                for drivers_assigned in DriversAssigned.objects.filter(shift=shift_iteration.shift):
+                    absent = True
+                    for deployed_driver in deployed_drivers:
+                        if deployed_driver["driver_id"] == drivers_assigned.driver_id:
+                            absent = False
+
+                    if absent:
+                        absent_drivers.append({
+                            "driver_id": drivers_assigned.driver_id,
+                            "driver_name": drivers_assigned.driver.name
+                        })
+
+                rows.append({
+                    "day": calendar.day_name[temp_start.weekday()],
+                    "date": temp_start,
+                    "shift": shift_iteration.shift.get_type_display(),
+                    "number_of_drivers": number_of_drivers,
+                    "daily_remittance": daily_remittance,
+                    "deployed_drivers": deployed_drivers,
+                    "absent_drivers": absent_drivers,
+                    "remarks": shift_iteration.remarks
+                })
+
+                total_deployed_drivers += number_of_drivers
+                total_remittances += daily_remittance
+
+            temp_start = temp_start + timedelta(days=1)
+
+        return Response(data={
+            "start_date": start_date,
+            "end_date": end_date,
+            "supervisor_id": supervisor.id,
+            "supervisor_name": supervisor.name,
+            "total_remittances": total_remittances,
+            "total_deployed_drivers": total_deployed_drivers,
+            "rows": rows
+        }, status=status.HTTP_200_OK)
+
+
 class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type):
