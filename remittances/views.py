@@ -823,7 +823,7 @@ class RemittanceFormView(APIView):
                 if assigned_ticket.type == "A":
                     type = 10
                 elif assigned_ticket.type == "B":
-                    type = 13
+                    type = 12
                 else:
                     type = 15
 
