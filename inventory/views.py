@@ -37,14 +37,20 @@ class ItemView(APIView):
     @staticmethod
     def post(request):
         # extracts the body from the request
-        data = json.loads(request.body)
-        print(request.body)
-
         receipt = request.FILES.get('receipt')
+        itemData = {
+            "name": request.POST.get('name'),
+            "description": request.POST.get('description'),
+            "brand": request.POST.get('brand'),
+            "quantity": request.POST.get('quantity'),
+            "average_price": request.POST.get('average_price'),
+            "consumable": request.POST.get('consumable'),
+        }
         print(receipt)
+        print(itemData)
         # transforms JSON into python object
         # please read serializers.py Items serializer
-        item_serializer = ItemSerializer(data=data["item"])
+        item_serializer = ItemSerializer(data=itemData)
         print(item_serializer.is_valid())
 
         if item_serializer.is_valid():
@@ -53,13 +59,13 @@ class ItemView(APIView):
             item = item_serializer.create(
                 validated_data=item_serializer.validated_data)
             item_movement = ItemMovement(item=item, type='B', quantity=item.quantity,
-                                         vendor=data["item_movement"]["vendor"],
-                                         unit_price=data["item_movement"]["unit_price"], 
+                                         vendor=request.POST.get('vendor'),
+                                         unit_price=request.POST.get('unite_price'), 
                                          receipt=receipt)
             item_movement.save()
             return Response(data={
-                'item_name': item.name
-            }, status=status.HTTP_200_OK)
+                "item_name": item.name
+            }, status=200)
         else:
             return Response(data={
                 "errors": item_serializer.errors
