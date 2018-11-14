@@ -14,6 +14,7 @@ remittance_urls = [
     path('deployments/', DeploymentView.as_view()),
     path('deployments/<int:pk>', DeploymentView.as_view()),
     path('deployments/deployed_drivers/<int:supervisor_id>', DeployedDrivers.as_view()),
+    path('shifts/remarks', ShiftRemarks.as_view()),
     path('shifts/assigned_drivers/<int:supervisor_id>', PlannedDrivers.as_view()),
     path('shifts/sub_drivers/<int:supervisor_id>', SubDrivers.as_view()),
     path('shifts/pending_drivers/<int:supervisor_id>', NonDeployedDrivers.as_view()),
