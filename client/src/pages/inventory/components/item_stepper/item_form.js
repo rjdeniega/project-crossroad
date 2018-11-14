@@ -3,7 +3,7 @@
  */
 import React, {Component} from "react"
 import '../../../../utilities/colorsFonts.css'
-import {Form, Input, Button, message, InputNumber, Checkbox} from 'antd'
+import {Form, Input, Button, message, InputNumber, Checkbox, Upload, Icon} from 'antd'
 import './style.css'
 import { postData } from "../../../../network_requests/general";
 
@@ -20,6 +20,7 @@ class ExtendedForm extends React.Component{
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             consumable: false,
+            receipt: null
         }
     }
 
@@ -28,9 +29,14 @@ class ExtendedForm extends React.Component{
 
     }
 
-
     componentDidMount(){
         this.props.form.validateFields();
+    }
+
+    handleFileChange = (e) => {
+        this.setState({
+            receipt: e.target.files[0]
+        })
     }
 
     handleSubmit(e){
@@ -42,11 +48,13 @@ class ExtendedForm extends React.Component{
             quantity: this.props.quantity.value,
             average_price: this.props.unit_price.value,
             consumable: this.state.consumable,
+
             };
 
         let item_movement = {
             vendor: this.props.vendor.value,
             unit_price: this.props.unit_price.value,
+            receipt: this.state.receipt
         };
 
         let data = {
@@ -72,98 +80,85 @@ class ExtendedForm extends React.Component{
         const vendorError = isFieldTouched('vendor') && getFieldError('vendor');
         const unitpriceError = isFieldTouched('unit_price') && getFieldError('unit_price');
         const quantityError = isFieldTouched('quantity') && getFieldError('quantity');
-        return (
-            <div className='item-form'>
-                <Form hideRequiredMark={true} onChange={this.handleFormChange} onSubmit={this.handleSubmit}>
-                    <FormItem label="Item Name" className='item-name-label'
-                              validateStatus={nameError ? 'error' : ''}
-                              help={nameError || ''}>
-                        {getFieldDecorator('name',{
-                            rules: [{
-                                required: true,
-                                message: 'Please input name',
-                            }]
-                        })(
-                            <Input autoFocus='true' className='item-name' type="text" placeholder="Item Name"/>
-                        )}
-                    </FormItem>
-                    <FormItem label="Item Description" className='item-description-label'
-                              validateStatus={descriptionError ? 'error' : ''}
-                              help={descriptionError || ''}>
-                        {getFieldDecorator('description',{
-                            rules: [{
-                                required: true,
-                                message: 'Please input description',
-                            }]
-                        })(
-                            <Input className='item-name' type="text" placeholder="Item Description"/>
-                        )}
-                    </FormItem>
-                    <FormItem className='brand-label' label='Brand'
-                              validateStatus={brandError ? 'error' : ''}
-                              help={brandError || ''}>
-                        {getFieldDecorator('brand',{
-                            rules: [{
-                                required: true,
-                                message: 'Please input brand',
-                            }]
-                        })(
-                            <Input className='brand' type="text" placeholder="Brand"/>
-                        )}
-                    </FormItem>
-                    <FormItem className='vendor-label' label='Vendor'
-                              validateStatus={vendorError ? 'error' : ''}
-                              help={vendorError || ''}>
-                        {getFieldDecorator('vendor',{
-                            rules: [{
-                                required: true,
-                                message: 'Please input vendor',
-                            }]
-                        })(
-                            <Input className='vendor' type="text" placeholder="Vendor"/>
-                        )}
-                    </FormItem>
-                    <FormItem className='unit-price-label' label='Unit Price'
-                              validateStatus={unitpriceError ? 'error' :''}
-                              help={unitpriceError || ''}>
-                        {getFieldDecorator('unit_price',{
-                            rules: [{
-                                required: true,
-                                message: 'Please input unit price',
-                            }]
-                        })(
-                            <InputNumber className='unit_price' type='text' placeholder="Unit Price"
-                                     formatter={value => `₱ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                     parser={value => value.replace(/₱\s?|(,*)/g, '')}/>
-                        )}
-                    </FormItem>
-                    <FormItem className='quantity-label' label='Initial Quantity'
-                              validateStatus={quantityError ? 'error' : ''}
-                              help={quantityError || ''}>
-                        {getFieldDecorator('quantity',{
-                            rules: [{
-                                required: true,
-                                message: 'Please input quantity',
-                            }]
-                        })(
-                            <InputNumber className='quantity' type="text" placeholder="Initial Quantity"
-                                    formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
-                        )}
-                    </FormItem>
-                    <FormItem className='consumable-label'>
-                        {getFieldDecorator('consumable', {
-                            valuePropName: 'checked',
-                        })(
-                            <Checkbox className='consumable' onChange={this.toggleChecked}>Consumable</Checkbox>
-                        )}
-                    </FormItem>
-                    <FormItem>
-                        <Button type='primary' htmlType='submit' className='item_submit'
-                                disabled={hasErrors(getFieldsError())}>Submit</Button>
-                    </FormItem>
-                </Form>
-            </div>
-        );
+        return <div className="item-form">
+            <Form hideRequiredMark={true} onChange={this.handleFormChange} onSubmit={this.handleSubmit}>
+              <FormItem label="Item Name" className="item-name-label" validateStatus={nameError ? "error" : ""} help={nameError || ""}>
+                {getFieldDecorator("name", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Please input name"
+                    }
+                  ]
+                })(<Input autoFocus="true" className="item-name" type="text" placeholder="Item Name" />)}
+              </FormItem>
+              <FormItem label="Item Description" className="item-description-label" validateStatus={descriptionError ? "error" : ""} help={descriptionError || ""}>
+                {getFieldDecorator("description", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Please input description"
+                    }
+                  ]
+                })(<Input className="item-name" type="text" placeholder="Item Description" />)}
+              </FormItem>
+              <FormItem className="brand-label" label="Brand" validateStatus={brandError ? "error" : ""} help={brandError || ""}>
+                {getFieldDecorator("brand", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Please input brand"
+                    }
+                  ]
+                })(<Input className="brand" type="text" placeholder="Brand" />)}
+              </FormItem>
+              <FormItem className="vendor-label" label="Vendor" validateStatus={vendorError ? "error" : ""} help={vendorError || ""}>
+                {getFieldDecorator("vendor", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Please input vendor"
+                    }
+                  ]
+                })(<Input className="vendor" type="text" placeholder="Vendor" />)}
+              </FormItem>
+              <FormItem className="unit-price-label" label="Unit Price" validateStatus={unitpriceError ? "error" : ""} help={unitpriceError || ""}>
+                {getFieldDecorator("unit_price", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Please input unit price"
+                    }
+                  ]
+                })(<InputNumber className="unit_price" type="text" placeholder="Unit Price" formatter={value => `₱ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} parser={value => value.replace(/₱\s?|(,*)/g, "")} />)}
+              </FormItem>
+              <FormItem className="quantity-label" label="Initial Quantity" validateStatus={quantityError ? "error" : ""} help={quantityError || ""}>
+                {getFieldDecorator("quantity", {
+                  rules: [
+                    {
+                      required: true,
+                      message: "Please input quantity"
+                    }
+                  ]
+                })(<InputNumber className="quantity" type="text" placeholder="Initial Quantity" formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")} />)}
+              </FormItem>
+              <FormItem className="receipt" label="Receipt">
+                    <Input type="file" placeholder="select image" onChange={this.handleFileChange} />
+              </FormItem>
+              <FormItem className="consumable-label">
+                {getFieldDecorator("consumable", {
+                  valuePropName: "checked"
+                })(<Checkbox className="consumable" onChange={this.toggleChecked}>
+                    Consumable
+                  </Checkbox>)}
+              </FormItem>
+              <FormItem>
+                <Button type="primary" htmlType="submit" className="item_submit" disabled={hasErrors(getFieldsError())}>
+                  Submit
+                </Button>
+              </FormItem>
+            </Form>
+          </div>;
     }
 }
 

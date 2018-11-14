@@ -440,10 +440,10 @@ class EditableTable extends React.Component {
         this.setState({isLoading: true});
         this.fetchItems()
     }
-
+    /* 
     componentDidUpdate(){
         this.fetchItems()
-    }
+    } */
 
     fetchItems(){
         fetch('inventory/items/')
