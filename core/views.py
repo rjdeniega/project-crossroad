@@ -752,7 +752,8 @@ class TicketCountReport(APIView):
 
                 days.append({
                     "date": temp_start,
-                    "am_count" : am_count,
+                    "day": calendar.day_name[temp_start.weekday()],
+                    "am_count": am_count,
                     "pm_count": pm_count
                 })
                 am_total += am_count
