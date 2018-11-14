@@ -650,6 +650,33 @@ class TicketUtilities():
         return final
 
 
+class ShiftRemarks(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        shift_iteration = RemittanceUtilities.get_shift_iteration_sup(supervisor_id=supervisor_id)
+
+        if shift_iteration.remarks is not None:
+            return Response(data={
+                "remarks": shift_iteration.remarks
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "remarks": "No Remarks"
+            }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        shift_iteration = RemittanceUtilities.get_shift_iteration_sup(supervisor_id=data['supervisor'])
+        shift_iteration.remarks = data['remarks']
+        shift_iteration.save()
+
+        return Response(data = {
+            "shift_iteration_id": shift_iteration.id,
+            "remarks": shift_iteration.remarks
+        }, status=status.HTTP_200_OK)
+
+
 class DeploymentDetails(APIView):
     # to get deployment data of the driver for today
     # this expects that a driver could only be deployed once a day
