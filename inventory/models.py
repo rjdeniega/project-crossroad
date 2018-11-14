@@ -26,6 +26,11 @@ REPAIR_STATUS = [
     ('IP', 'In Progress'),
     ('C', 'Completed')
 ]
+ROUTE = [
+    ('M', 'Main Road'),
+    ('R', 'Right Route'),  # Kanan
+    ('L', 'Left Route')  # Kaliwa
+]
 
 
 class Shuttle(SoftDeletionModel):
@@ -37,7 +42,7 @@ class Shuttle(SoftDeletionModel):
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     mileage = PositiveIntegerField()
-    route = CharField(max_length=64)
+    route = CharField(max_length=1, choices=ROUTE)
 
     def save(self, *args, **kwargs):
         if not self.id:
