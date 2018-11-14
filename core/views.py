@@ -602,6 +602,7 @@ class PassengerCountByDate(APIView):
             "pm_total": sum([item["pm_total"] for item in report_items])
         }, status=status.HTTP_200_OK)
 
+
 class RemittanceVersusFuelReport(APIView):
     @staticmethod
     def post(request):
@@ -611,7 +612,7 @@ class RemittanceVersusFuelReport(APIView):
         if "end_date" in request.data:
             end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
         else:
-            end_date = start_date + timedelta(days=6) #for one week
+            end_date = start_date + timedelta(days=6)  # for one week
         temp_start = start_date
 
         rows = []
@@ -695,16 +696,16 @@ class TicketCountReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        end_date = start_date + timedelta(days=30) #for one week
-        temp_start = start_date
+        end_date = start_date + timedelta(days=30)  # for one week
 
         rows = []
-        grand_am_total = 0,
+        grand_am_total = 0
         grand_pm_total = 0
 
         shuttles = Shuttle.objects.all()
 
         for shuttle in shuttles:
+            temp_start = start_date
             days = []
 
             # total count for the month
@@ -722,22 +723,31 @@ class TicketCountReport(APIView):
                     consumed_tickets = ConsumedTicket.objects.filter(remittance_form__deployment=deployment)
 
                     for consumed_ticket in consumed_tickets:
-                        if deployment.shiftiteration.shift.type is 'A':
+                        if deployment.shift_iteration.shift.type is 'A':
 
                             if consumed_ticket.assigned_ticket.type is 'A':
+                                print(consumed_ticket.total)
                                 am_count += consumed_ticket.total / 10
                             elif consumed_ticket.assigned_ticket.type is 'B':
+                                print(consumed_ticket.total)
                                 am_count += consumed_ticket.total / 12
                             else:
+                                print(consumed_ticket.total)
                                 am_count += consumed_ticket.total / 15
 
                         else:
 
                             if consumed_ticket.assigned_ticket.type is 'A':
+                                print("A")
+                                print(consumed_ticket.total)
                                 pm_count += consumed_ticket.total / 10
                             elif consumed_ticket.assigned_ticket.type is 'B':
+                                print("B")
+                                print(consumed_ticket.total)
                                 pm_count += consumed_ticket.total / 12
                             else:
+                                print("C")
+                                print(consumed_ticket.total)
                                 pm_count += consumed_ticket.total / 15
 
                 days.append({
@@ -746,7 +756,6 @@ class TicketCountReport(APIView):
                     "am_count": am_count,
                     "pm_count": pm_count
                 })
-
                 am_total += am_count
                 pm_total += pm_count
 
@@ -760,9 +769,8 @@ class TicketCountReport(APIView):
                 "pm_total": pm_total,
                 "days": days
             })
-
-            grand_am_total += am_total
-            grand_pm_total += pm_total
+            grand_am_total = grand_am_total + am_total
+            grand_pm_total += grand_pm_total + pm_total
 
         return Response(data={
             "start_date": start_date,
@@ -781,7 +789,7 @@ class SupervisorWeeklyReport(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        supervisor = Supervisor.objects.get(id=data["supervisor_id"]) # requests supervisor id
+        supervisor = Supervisor.objects.get(id=data["supervisor_id"])  # requests supervisor id
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
         end_date = start_date + timedelta(days=6)  # for one week
 
@@ -858,30 +866,30 @@ class NotificationItems(APIView):
         # user type gotten from localStorage.get('user_type')
         if user_type == 'member':
             notifications = NotificationSerializer(Notification.objects.all()
-                                                    .filter(type='M'), many=True)
+                                                   .filter(type='M'), many=True)
             unread = NotificationSerializer(Notification.objects.all()
-                                             .filter(type='M').filter(is_read=False), many=True)
+                                            .filter(type='M').filter(is_read=False), many=True)
         elif user_type == 'supervisor':
             notifications = NotificationSerializer(Notification.objects.all()
-                                                    .filter(type='R'), many=True)
+                                                   .filter(type='R'), many=True)
             unread = NotificationSerializer(Notification.objects.all()
-                                             .filter(type='R').filter(is_read=False), many=True)
+                                            .filter(type='R').filter(is_read=False), many=True)
         elif user_type == 'operations_manager':
             notifications = NotificationSerializer(Notification.objects
-                                                    .filter(Q(type='I') | Q(type='R')), many=True)
+                                                   .filter(Q(type='I') | Q(type='R')), many=True)
             unread = NotificationSerializer(Notification.objects
                                             .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
         elif user_type == 'clerk':
             notifications = NotificationSerializer(Notification.objects
-                                                    .filter(Q(type='I') | Q(type='R')), many=True)
+                                                   .filter(Q(type='I') | Q(type='R')), many=True)
             unread = NotificationSerializer(Notification.objects
-                                                    .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
+                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
 
-        
         return Response(data={
             'notifications': notifications.data,
             'unread': unread.data,
         }, status=status.HTTP_200_OK)
+
 
 class ChangeNotificationStatus(APIView):
     @staticmethod
