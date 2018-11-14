@@ -5,7 +5,7 @@ import React, {Component} from "react"
 import '../../../../utilities/colorsFonts.css'
 import {Form, Input, Button, message, InputNumber, Checkbox, Upload, Icon} from 'antd'
 import './style.css'
-import { postData } from "../../../../network_requests/general";
+import { postDataWithImage } from "../../../../network_requests/general";
 
 const FormItem = Form.Item;
 
@@ -37,6 +37,8 @@ class ExtendedForm extends React.Component{
         this.setState({
             receipt: e.target.files[0]
         })
+
+        console.log(this.state.receipt)
     }
 
     handleSubmit(e){
@@ -54,19 +56,19 @@ class ExtendedForm extends React.Component{
         let item_movement = {
             vendor: this.props.vendor.value,
             unit_price: this.props.unit_price.value,
-            receipt: this.state.receipt
         };
 
         let data = {
             item: item,
-            item_movement: item_movement
+            item_movement: item_movement,
+            receipt: this.state.receipt
         };
 
-        postData('inventory/items/', data).then(response => {
-            if(!response.error) {
-                message.success(response.item_name + " was added");
+        postDataWithImage('inventory/items/', data).then(data => {
+            if(!data.error) {
+                message.success(data.item_name + " was added");
             }else{
-                console.log(response.error);
+                console.log(data.error);
             }
         });
         this.props.handleOk();

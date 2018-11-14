@@ -40,6 +40,8 @@ class ItemView(APIView):
         data = json.loads(request.body)
         print(request.body)
 
+        receipt = request.FILES.get('receipt')
+        print(receipt)
         # transforms JSON into python object
         # please read serializers.py Items serializer
         item_serializer = ItemSerializer(data=data["item"])
@@ -52,7 +54,8 @@ class ItemView(APIView):
                 validated_data=item_serializer.validated_data)
             item_movement = ItemMovement(item=item, type='B', quantity=item.quantity,
                                          vendor=data["item_movement"]["vendor"],
-                                         unit_price=data["item_movement"]["unit_price"])
+                                         unit_price=data["item_movement"]["unit_price"], 
+                                         receipt=receipt)
             item_movement.save()
             return Response(data={
                 'item_name': item.name
