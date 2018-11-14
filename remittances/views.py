@@ -483,6 +483,18 @@ class RemittanceUtilities():
                     return shift
         return None
 
+    @staticmethod
+    def get_recent_shift_iteration_of_driver(driver_id):
+        shift_iterations = ShiftIteration.objects.all().order_by("-date")
+
+        for shift_iteration in shift_iterations:
+            deployments = Deployment.objects.filter(shift_iteration=shift_iteration)
+
+            for deployment in deployments:
+                if deployment.driver.id == driver_id:
+                    return shift_iteration.id
+
+        return None
 
 class TicketUtilities():
     @staticmethod
@@ -644,8 +656,9 @@ class DeploymentDetails(APIView):
     # change the algorithm if the driver could be deployed more than once
     @staticmethod
     def get(request, driver_id):
-        shift = RemittanceUtilities.get_shift_of_driver(driver_id)
-        shift_iteration = RemittanceUtilities.get_shift_iteration(shift.id)
+        # shift = RemittanceUtilities.get_shift_of_driver(driver_id)
+        # shift_iteration = RemittanceUtilities.get_shift_iteration(shift.id)
+        shift_iteration = RemittanceUtilities.get_recent_shift_iteration_of_driver(driver_id)
         deployment_query = Deployment.objects.get(shift_iteration=shift_iteration, driver=driver_id)
         deployment = DeploymentSerializer(deployment_query)
         assigned_tickets = TicketUtilities.get_tickets_with_void(deployment_query.id)
