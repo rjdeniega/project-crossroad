@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-
+from dateutil.relativedelta import relativedelta
 from django.shortcuts import render
 from rest_framework import status
 # Create your views here.
@@ -60,7 +60,8 @@ class ItemView(APIView):
                 validated_data=item_serializer.validated_data)
             item_movement = ItemMovement(item=item, type='B', quantity=item.quantity,
                                          vendor=request.POST.get('vendor'),
-                                         unit_price=request.POST.get('unite_price'), 
+                                         unit_price=request.POST.get(
+                                             'unite_price'),
                                          receipt=receipt)
             item_movement.save()
             return Response(data={
@@ -333,3 +334,46 @@ class MaintenanceReport(APIView):
         return Response(data={
             'maintenance_cost': initialMaintenanceCost
         }, status=status.HTTP_200_OK)
+
+
+class MaintenanceSchedule(APIView):
+    @staticmethod
+    def post(request, pk):
+        data = json.loads(request.body)
+        shuttle = Shuttle.objects.get(id=pk)
+        print(shuttle)
+        shuttle.maintenance_sched = data['date']
+        print(data['date'])
+        shuttle.save()
+        print(shuttle.maintenance_sched)
+        
+        return Response(data={
+            'shuttle_id': shuttle.id
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get(request, pk):
+        if Repair.objects.filter(shuttle=pk).filter(
+            maintenance=True).exists():
+            repair_date = Repair.objects.filter(shuttle=pk).filter(
+                maintenance=True).latest('end_date')
+            days = repair_date - datetime.now().date()
+            date = repair_date + relativedelta(months=+3)
+            return Response(data={
+                'days': days.days,
+                'date': date,
+                'previous': repair_date
+            })
+            print("nice")
+        else:
+            shuttle = Shuttle.objects.get(id=pk)
+            print(shuttle.maintenance_sched - datetime.now().date())
+            days = shuttle.maintenance_sched - datetime.now().date()
+            print(days.days)
+            print(datetime.now())
+            print(datetime.now() + relativedelta(months=+3))
+            return Response(data={
+                'days': days.days,
+                'date': shuttle.maintenance_sched,
+                'previous': ''
+            }, status=status.HTTP_200_OK)

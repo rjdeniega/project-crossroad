@@ -43,6 +43,7 @@ class Shuttle(SoftDeletionModel):
     modified = models.DateTimeField(null=True)
     mileage = PositiveIntegerField()
     route = CharField(max_length=1, choices=ROUTE)
+    maintenance_sched = DateField(null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -114,6 +115,7 @@ class Repair(SoftDeletionModel):
     findings = ManyToManyField(RepairFinding)
     modifications = ManyToManyField(RepairModifications)
     outsourced_items = ManyToManyField(OutSourcedItems)
+    maintenance = BooleanField(default=False)
 
 
 class ItemMovement(SoftDeletionModel):

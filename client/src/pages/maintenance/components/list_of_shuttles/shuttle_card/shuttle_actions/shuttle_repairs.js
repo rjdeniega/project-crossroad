@@ -6,6 +6,7 @@ import { wrench } from "react-icons-kit/fa/wrench";
 import { iosListOutline } from "react-icons-kit/ionicons/iosListOutline";
 import { RepairForm } from "./repair_tabs/repair_form";
 import { RepairsTable } from "./repair_tabs/repair_list";
+import {Maintenance} from "./repair_tabs/maintenance";
 
 export class Repairs extends Component {
   constructor(props) {
@@ -36,9 +37,12 @@ export class Repairs extends Component {
     if (e.key === "1") {
       content = 1;
       width = 1100;
-    } else {
+    } else if (e.key === "2") {
       content = 2;
       width = 650;
+    } else {
+      content = 3;
+      width = 700;
     }
     this.setState({
       currentPage: content,
@@ -52,6 +56,14 @@ export class Repairs extends Component {
       modalWidth: 1100
     });
   }
+
+  reloadMaintenance(){
+    this.setState({
+      currentPage: 3,
+      modalWidth: 700
+    })
+  }
+
   renderCurrentPage = () => {
     const { currentPage } = this.state;
     switch (currentPage) {
@@ -64,6 +76,10 @@ export class Repairs extends Component {
             shuttle={this.props.shuttle}
           />
         );
+      case 3:
+        return (
+          <Maintenance reloadMaintenance={this.reloadMaintenance.bind(this)} shuttle={this.props.shuttle}/>
+        )
       default:
         return <RepairsTable shuttle={this.state.shuttle} />;
     }

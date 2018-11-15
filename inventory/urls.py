@@ -14,11 +14,14 @@ inventory_urls = [
     path('shuttles/<int:pk>', ShuttlesView.as_view()),
     path('shuttles/repairs/<int:pk>', RepairProblems.as_view()),
     path('shuttles/repairs/specific/<int:pk>', ProblemsView.as_view()),
+    path('shuttles/setmaintenance/<int:pk>', MaintenanceSchedule.as_view()),
+    path('shuttles/latestmaintenance/<int:pk>', MaintenanceSchedule.as_view()),
     path('mechanic/repairs', MechanicRepairs.as_view()),
     path('mechanic/repairs/<int:pk>', MechanicRepairs.as_view()),
     path('mechanic/items/<int:consume>', MechanicItems.as_view()),
     path('mechanic/items/add/<int:pk>', MechanicItems.as_view()),
     path('finalize/<int:pk>', OutsourceModification.as_view()),
+    
 
     # Maintenance Report
     path('report/<int:pk>', MaintenanceReport.as_view())
