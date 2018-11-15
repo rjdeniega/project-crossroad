@@ -668,6 +668,7 @@ class ShiftRemarks(APIView):
     def post(request):
         data = json.loads(request.body)
         shift_iteration = RemittanceUtilities.get_shift_iteration_sup(supervisor_id=data['supervisor'])
+        print(data['remarks'])
         shift_iteration.remarks = data['remarks']
         shift_iteration.save()
 

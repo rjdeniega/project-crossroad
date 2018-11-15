@@ -761,17 +761,29 @@ export class SupervisorRemittancePage extends Component {
         });
     }
     handleChange = (event) => {
+        console.log(event.target.value);
         this.setState({
-            remark: event
+            remark: event.target.value
         })
     };
 
     handleOk = (e) => {
-        console.log(this.state.remark);
+        const { id } = JSON.parse(localStorage.user_staff);
+        let data = {
+            "remarks": this.state.remark,
+            "supervisor": id
+        };
+        postData('remittances/shifts/remarks', data)
+            .then((data) => {
+                console.log(data)
+            })
+            .catch(error => console.log(error));
+
         this.setState({
             visible: false,
         });
-    }
+        this.updateRemarks()
+    };
 
     handleCancel = (e) => {
         console.log(e);
@@ -787,10 +799,29 @@ export class SupervisorRemittancePage extends Component {
         //         current: parseInt(localStorage.remittance_page)
         //     })
         // }
+        this.getRemarks()
         this.getDeployedDrivers()
     }
 
+    getRemarks = () => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        const data = {
+            "supervisor": id
+        };
+        getData('remittances/shifts/remarks/' + id).then(data => {
+            console.log(data);
+            if (!data.error) {
+                console.log(data);
+                this.setState({
+                    remarks: data.remarks
+                })
+            }
+            else {
+                console.log(data)
+            }
+        }).catch(error => console.log(error))
 
+    };
     getDeployedDrivers = () => {
         const { id } = JSON.parse(localStorage.user_staff);
         const data = {
@@ -812,6 +843,9 @@ export class SupervisorRemittancePage extends Component {
     };
     updateDeployedDrivers = () => {
         this.getDeployedDrivers()
+    };
+    updateRemarks = () => {
+        this.getRemarks()
     };
 
     next = () => {
@@ -925,27 +959,13 @@ export class SupervisorRemittancePage extends Component {
                         />
                     </div>
                     <div className="sv-history">
-                        <Divider orientation="left">My Past Transactions</Divider>
-                        <List
-                            className="deployed-list"
-                            itemLayout="horizontal"
-                            dataSource={this.state.deployed_drivers}
-                            renderItem={item => (
-                                <List.Item key={item.key} className="deploy-list-item">
-                                    <List.Item.Meta
-                                        avatar={<Avatar
-                                            src={users}/>}
-                                        title={<p className="deployed-drivers-list-title">{item.driver_name}</p>}
-                                    />
-                                    <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>
-                                </List.Item>
-                            )}
-                        />
+                        <Divider orientation="left">Shift Remarks</Divider>
+                        <TextArea columns ={4} value={this.state.remarks}/>
                         {this.state.current == 0 &&
-                            <Button disabled onClick={this.showModal}>Add Remark</Button>
+                        <Button disabled onClick={this.showModal}>Add Remark</Button>
                         }
                         {this.state.current != 0 &&
-                            <Button onClick={this.showModal}>Add Remark</Button>
+                        <Button onClick={this.showModal}>Add Remark</Button>
                         }
                         <Modal
                             title="Basic Modal"
@@ -958,7 +978,6 @@ export class SupervisorRemittancePage extends Component {
                     </div>
                 </div>
             </div>
-
         );
     }
 }
