@@ -696,7 +696,7 @@ class TicketCountReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        end_date = start_date + timedelta(days=30)  # for one week
+        end_date = start_date + timedelta(days=30)  # for one month
 
         rows = []
         grand_am_total = 0
@@ -783,6 +783,114 @@ class TicketCountReport(APIView):
             "grand_average": (grand_am_total + grand_pm_total) / 30,
             "shuttles": rows
         }, status=status.HTTP_200_OK)
+
+
+class TicketTypePerDayReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = start_date + timedelta(days=6)  # for one week
+
+        temp_start = start_date
+
+        days = []
+        grand_total = 0
+        grand_am_total = 0
+        grand_pm_total = 0
+        grand_ten_total = 0
+        grand_twelve_total = 0
+        grand_fifteen_total = 0
+
+        while temp_start <= end_date:
+            deployments = Deployment.objects.filter(shift_iteration__date=temp_start)
+
+            # counts for the day
+            am_count = 0
+            pm_count = 0
+            am_ten = 0
+            am_twelve = 0
+            am_fifteen = 0
+            pm_ten = 0
+            pm_twelve = 0
+            pm_fifteen = 0
+
+            for deployment in deployments:
+                consumed_tickets = ConsumedTicket.objects.filter(remittance_form__deployment=deployment)
+
+                for consumed_ticket in consumed_tickets:
+                    if deployment.shift_iteration.shift.type is 'A':
+
+                        if consumed_ticket.assigned_ticket.type is 'A':
+                            print(consumed_ticket.total)
+                            am_count += consumed_ticket.total / 10
+                            am_ten += am_count
+
+                        elif consumed_ticket.assigned_ticket.type is 'B':
+                            print(consumed_ticket.total)
+                            am_count += consumed_ticket.total / 12
+                            am_twelve += am_count
+
+                        else:
+                            print(consumed_ticket.total)
+                            am_count += consumed_ticket.total / 15
+                            am_fifteen += am_count
+
+                    else:
+
+                        if consumed_ticket.assigned_ticket.type is 'A':
+                            print("A")
+                            print(consumed_ticket.total)
+                            pm_count += consumed_ticket.total / 10
+                            pm_ten += pm_count
+
+                        elif consumed_ticket.assigned_ticket.type is 'B':
+                            print("B")
+                            print(consumed_ticket.total)
+                            pm_count += consumed_ticket.total / 12
+                            pm_twelve += pm_count
+
+                        else:
+                            print("C")
+                            print(consumed_ticket.total)
+                            pm_count += consumed_ticket.total / 15
+                            pm_fifteen += pm_count
+
+            days.append({
+                "date": temp_start,
+                "am_total": am_count,
+                "pm_total": pm_count,
+                "am_ten": am_ten,
+                "am_twelve": am_twelve,
+                "am_fifteen": am_fifteen,
+                "pm_ten": pm_ten,
+                "pm_twelve": pm_twelve,
+                "pm_fifteen": pm_fifteen
+            })
+
+            grand_am_total += am_count
+            grand_pm_total += pm_count
+            grand_ten_total += am_ten + pm_ten
+            grand_twelve_total += am_twelve + pm_twelve
+            grand_fifteen_total += am_fifteen + pm_fifteen
+
+            temp_start = temp_start + timedelta(days=1)
+
+        grand_total = grand_ten_total + grand_twelve_total + grand_fifteen_total
+
+        return Response(data={
+            "start_date": start_date,
+            "end_date": end_date,
+            "grand_total": grand_total,
+            "grand_am_total": grand_am_total,
+            "grand_pm_total": grand_pm_total,
+            "grand_ten_total": grand_ten_total,
+            "grand_twelve_total": grand_twelve_total,
+            "grand_fifteen_total": grand_fifteen_total,
+            "days": days
+        }, status=status.HTTP_200_OK)
+
+
 
 
 class SupervisorWeeklyReport(APIView):
