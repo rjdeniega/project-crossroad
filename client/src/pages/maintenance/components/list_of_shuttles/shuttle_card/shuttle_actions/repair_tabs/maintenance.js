@@ -39,10 +39,12 @@ class MaintenanceHistory extends Component {
           <b>Maintenance Schedule: </b>
           {date}
         </p>
-        <br />
+        <br/>
         {days > 0
           ? days + " days left before maintenance schedule"
           : (days * -1) + " days behind maintenance schedule!"}
+          <br/><br/>
+          <Button type="primary">Request Maintenace</Button>
       </div>
     );
   }
