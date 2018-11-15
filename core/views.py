@@ -893,7 +893,7 @@ class TicketTypePerShuttle(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        date = datetime.strptime(data["date"], '%Y-%m-%d')
+        date = datetime.strptime(data["start_date"], '%Y-%m-%d')
 
         rows = []
         grand_am_total = 0
@@ -1042,7 +1042,7 @@ class SupervisorWeeklyReport(APIView):
 
                 rows.append({
                     "day": calendar.day_name[temp_start.weekday()],
-                    "date": temp_start,
+                    "date": temp_start.date(),
                     "shift": shift_iteration.shift.get_type_display(),
                     "number_of_drivers": number_of_drivers,
                     "daily_remittance": daily_remittance,
@@ -1057,8 +1057,8 @@ class SupervisorWeeklyReport(APIView):
             temp_start = temp_start + timedelta(days=1)
 
         return Response(data={
-            "start_date": start_date,
-            "end_date": end_date,
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
             "supervisor_id": supervisor.id,
             "supervisor_name": supervisor.name,
             "total_remittances": total_remittances,

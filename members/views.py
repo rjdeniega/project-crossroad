@@ -173,6 +173,27 @@ class MemberView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class SpecificMemberView(APIView):
+    @staticmethod
+    def get(request, member_id):
+        member = MemberSerializer(Member.objects.get(id=member_id))
+        try:
+            id_card = IDCards.objects.get(member=Member.objects.get(pk=member_id))
+        except ObjectDoesNotExist:
+            id_card = None
+
+        if id_card is not None:
+            card_number = id_card.can
+        else:
+            card_number = None
+
+        member.data["card_number"] = card_number
+
+        return Response(data={
+            "member": member.data
+        }, status=status.HTTP_200_OK)
+
+
 class ProspectView(APIView):
     @staticmethod
     def get(request):

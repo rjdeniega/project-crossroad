@@ -303,66 +303,13 @@ export class ShiftHistoryPane extends Component {
 //JSX rendering functions
 
     renderShiftTables = (amSupervisor, pmSupervisor, mnSupervisor) => (
-        <div className="history-tables-wrapper">
-            {/*<Fragment>*/}
-                {/*<ReactToPrint*/}
-                    {/*trigger={() => <Button onClick="">Print</Button>}*/}
-                    {/*content={() => this.componentRef}*/}
-                {/*/>*/}
-                {/*<ShiftPrint schedules={this.state} ref={el => (this.componentRef = el)}/>*/}
-            {/*</Fragment>*/}
-            <div className="am-shift-pane">
-                <div className="shifts-label-div">
-                    <div className="tab-label-type">AM</div>
-                    <p className="supervisor-select"><b>{this.state.amSupervisor}</b></p>
-                </div>
-                <List
-                    itemLayout="horizontal"
-                    dataSource={this.state.am_shift_drivers}
-                    renderItem={item => (
-                        <List.Item>
-                            <List.Item.Meta
-                                avatar={<Avatar src={item.driver_photo ? item.driver_photo : users}/>}
-                                title={<b>{item.driver_name}</b>}
-                                description={item.shuttle_plate_number + "-" + item.deployment_type}
-                            />
-                        </List.Item>
-                    )}
-                />
-            </div>
-            <div className="pm-shift-pane">
-                <div className="shifts-label-div">
-                    <div className="tab-label-type">PM</div>
-                    <p className="supervisor-select"><b>{this.state.pmSupervisor}</b></p>
-                </div>
-                <List
-                    itemLayout="horizontal"
-                    dataSource={this.state.pm_shift_drivers}
-                    renderItem={item => (
-                        <List.Item>
-                            <List.Item.Meta
-                                avatar={<Avatar src={item.driver_photo ? item.driver_photo : users}/>}
-                                title={<b>{item.driver_name}</b>}
-                                description={item.shuttle_plate_number + "-" + item.deployment_type}
-                            />
-                        </List.Item>
-                    )}
-                />
-
-            </div>
-            {/*<div className="mn-shift-pane">*/}
-            {/*<div className="shifts-label-div">*/}
-            {/*<div className="tab-label-type">Midnight</div>*/}
-            {/*<Dropdown overlay={this.supervisors("MN")}>*/}
-            {/*<Button className="supervisor-select" style={{ marginLeft: 8 }}>*/}
-            {/*{this.state.mn_shift_supervisor}<AntIcon type="down"/>*/}
-            {/*</Button>*/}
-            {/*</Dropdown>*/}
-            {/*</div>*/}
-            {/*<Table showHeader={false} rowSelection={this.mnRowSelection} pagination={false} columns={columns}*/}
-            {/*dataSource={this.state.drivers}/>,*/}
-            {/*</div>*/}
-        </div>
+        <Fragment>
+            <ReactToPrint
+                trigger={() => <a href="#">Print this out!</a>}
+                content={() => this.componentRef}
+            />
+            <ShiftPrint data={this.state} ref={el => (this.componentRef = el)}/>
+        </Fragment>
     );
     renderScheduleList = () => (
         <List
@@ -449,21 +396,59 @@ export class ShiftHistoryPane extends Component {
 export class ShiftPrint extends Component {
     render() {
         return (
-            <table>
-                <thead>
-                <th>Shift</th>
-                <th>Driver</th>
-                <th>Shuttle</th>
-                </thead>
-                <tbody>
-                {this.props.schedules.am_shift_drivers.map(item =>
-                    <tr>
-                        <td>{item.driver_name}</td>
-                        <td>{item.shuttle}</td>
-                    </tr>
-                )}
-                </tbody>
-            </table>
+            <div className="history-tables-wrapper">
+                <div className="am-shift-pane">
+                    <div className="shifts-label-div">
+                        <div className="tab-label-type">AM</div>
+                        <p className="supervisor-select"><b>{this.props.data.amSupervisor}</b></p>
+                    </div>
+                    <List
+                        itemLayout="horizontal"
+                        dataSource={this.props.data.am_shift_drivers}
+                        renderItem={item => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    avatar={<Avatar src={item.driver_photo ? item.driver_photo : users}/>}
+                                    title={<b>{item.driver_name}</b>}
+                                    description={item.shuttle_plate_number + "-" + item.deployment_type}
+                                />
+                            </List.Item>
+                        )}
+                    />
+                </div>
+                <div className="pm-shift-pane">
+                    <div className="shifts-label-div">
+                        <div className="tab-label-type">PM</div>
+                        <p className="supervisor-select"><b>{this.props.data.pmSupervisor}</b></p>
+                    </div>
+                    <List
+                        itemLayout="horizontal"
+                        dataSource={this.props.data.pm_shift_drivers}
+                        renderItem={item => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    avatar={<Avatar src={item.driver_photo ? item.driver_photo : users}/>}
+                                    title={<b>{item.driver_name}</b>}
+                                    description={item.shuttle_plate_number + "-" + item.deployment_type}
+                                />
+                            </List.Item>
+                        )}
+                    />
+
+                </div>
+                {/*<div className="mn-shift-pane">*/}
+                {/*<div className="shifts-label-div">*/}
+                {/*<div className="tab-label-type">Midnight</div>*/}
+                {/*<Dropdown overlay={this.supervisors("MN")}>*/}
+                {/*<Button className="supervisor-select" style={{ marginLeft: 8 }}>*/}
+                {/*{this.state.mn_shift_supervisor}<AntIcon type="down"/>*/}
+                {/*</Button>*/}
+                {/*</Dropdown>*/}
+                {/*</div>*/}
+                {/*<Table showHeader={false} rowSelection={this.mnRowSelection} pagination={false} columns={columns}*/}
+                {/*dataSource={this.state.drivers}/>,*/}
+                {/*</div>*/}
+            </div>
         );
     }
 }

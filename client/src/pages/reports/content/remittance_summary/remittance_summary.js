@@ -30,7 +30,7 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p> Remittance Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
                         }
                     </Fragment>
                     }
@@ -56,7 +56,7 @@ class ComponentToPrint extends React.Component {
                                     {item.shifts.map((item) => (
                                         <Fragment>
                                             <tr>
-                                                <td>{index}</td>
+                                                <td></td>
                                                 <td>{item.type}</td>
                                                 <td>{item.remittance}</td>
                                                 {(item.type == "A" || item.type == "AM") &&

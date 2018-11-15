@@ -1,0 +1,29 @@
+.container {
+    height: 70% !important;
+    }
+
+.member-profile-container {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    width: 100%;
+
+    }
+
+.profile-container {
+    grid-column: 1/2;
+    }
+
+.table-container {
+    grid-column: 2/3;
+    grid-row: 1/2;
+    }
+
+.shares-container {
+    grid-column: 2/3;
+    grid-row: 2/3;
+    }
+
+.tables {
+    display: grid;
+    grid-template-rows: 40% 60%
+    }

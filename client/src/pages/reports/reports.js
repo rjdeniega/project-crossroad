@@ -22,6 +22,8 @@ import { SharesReport } from './content/shares_report/shares_report'
 import { TransactionReport } from './content/transactions_report/transactions_report'
 import { RemittanceSummary } from './content/remittance_summary/remittance_summary'
 import { TicketReport } from './content/ticket_reports/ticket_reports'
+import { TicketShuttleBreakdown } from './content/ticket_breakdown_shuttle/ticket_breakdown_shuttle'
+import { WeeklySupervisorReport } from './content/weekly_supervisor_report/weekly_supervisor_report'
 import { PassengerCount } from './content/passenger_count/passenger_count'
 import {MaintenanceReport  } from './content/maintenance_report/maintenance_report'
 
@@ -45,6 +47,16 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <TicketReport/>
+},{
+    'title': 'Ticket Breakdown per Shuttle',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <TicketShuttleBreakdown/>
+},{
+    'title': 'Supervisor Report',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <WeeklySupervisorReport/>
 },{
     'title': 'Passenger Count',
     'description': 'view beep and ticketing passenger count',
