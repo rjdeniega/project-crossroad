@@ -48,6 +48,7 @@ urlpatterns = [
     path('remittance_versus_fuel/', RemittanceVersusFuelReport.as_view()),
     path('tickets_count_report/', TicketCountReport.as_view()),
     path('ticket_type_per_day/', TicketTypePerDayReport.as_view()),
+    path('ticket_type_per_shuttle/', TicketTypePerShuttle.as_view())
 
 ]
 
