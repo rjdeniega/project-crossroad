@@ -45,6 +45,7 @@ const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const Step = Steps.Step;
 const ButtonGroup = Button.Group;
+const { TextArea } = Input;
 const FormItem = Form.Item;
 const antIcon = <AntIcon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)' }} icon="spin"/>;
 
@@ -152,6 +153,7 @@ export class SupervisorSecondContent extends Component {
             }
         });
     }
+
     fetchSubDrivers() {
         const { id } = JSON.parse(localStorage.user_staff);
         return getData('remittances/shifts/sub_drivers/' + id).then(data => {
@@ -177,12 +179,12 @@ export class SupervisorSecondContent extends Component {
 
     showModal = () => {
         getData('inventory/shuttles/').then(data => {
-            if(!data.error){
+            if (!data.error) {
                 this.setState({
                     shuttles: data.shuttles
                 })
             }
-            else{
+            else {
                 console.log(data)
             }
         });
@@ -441,14 +443,14 @@ export class SupervisorSecondContent extends Component {
             onCancel={this.handleCancel}
         >
             {/*<Modal*/}
-                {/*title={this.state.add_void_label}*/}
-                {/*visible={this.state.void_visible}*/}
-                {/*onOk={this.handleVoidAdd}*/}
-                {/*onCancel={this.handleVoidCancel}*/}
+            {/*title={this.state.add_void_label}*/}
+            {/*visible={this.state.void_visible}*/}
+            {/*onOk={this.handleVoidAdd}*/}
+            {/*onCancel={this.handleVoidCancel}*/}
             {/*>*/}
-                {/*<InputNumber className="add-void-input" placeholder="Ilagay ang ticket number"*/}
-                             {/*value={this.state.add_void_value}*/}
-                             {/*onChange={this.handleAddVoidChange}/>*/}
+            {/*<InputNumber className="add-void-input" placeholder="Ilagay ang ticket number"*/}
+            {/*value={this.state.add_void_value}*/}
+            {/*onChange={this.handleAddVoidChange}/>*/}
             {/*</Modal>*/}
             <div className="ticket-div">
                 <div className="driver-deploy-input">
@@ -568,7 +570,7 @@ export class SupervisorSecondContent extends Component {
     );
 
     render() {
-        const { drivers,sub_drivers } = this.state;
+        const { drivers, sub_drivers } = this.state;
         const isLoading = drivers === null && sub_drivers === null;
         return (
             <div className="rem-second-content">
@@ -751,7 +753,32 @@ export class SupervisorRemittancePage extends Component {
     state = {
         current: 0,
         deployed_drivers: [],
+        visible: false,
     };
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    }
+    handleChange = (event) => {
+        this.setState({
+            remark: event
+        })
+    };
+
+    handleOk = (e) => {
+        console.log(this.state.remark);
+        this.setState({
+            visible: false,
+        });
+    }
+
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+        });
+    }
 
     componentDidMount() {
         //persist the page
@@ -817,6 +844,7 @@ export class SupervisorRemittancePage extends Component {
         const current = this.state.current - 1;
         this.setState({ current });
     };
+
 
     showConfirm = () => {
         confirm({
@@ -898,8 +926,35 @@ export class SupervisorRemittancePage extends Component {
                     </div>
                     <div className="sv-history">
                         <Divider orientation="left">My Past Transactions</Divider>
-                        <img className="empty-image" src={emptyStateImage}/>
-                        <p>Under Construction</p>
+                        <List
+                            className="deployed-list"
+                            itemLayout="horizontal"
+                            dataSource={this.state.deployed_drivers}
+                            renderItem={item => (
+                                <List.Item key={item.key} className="deploy-list-item">
+                                    <List.Item.Meta
+                                        avatar={<Avatar
+                                            src={users}/>}
+                                        title={<p className="deployed-drivers-list-title">{item.driver_name}</p>}
+                                    />
+                                    <Button size="small" className="undeploy-button" icon="close">Undeploy</Button>
+                                </List.Item>
+                            )}
+                        />
+                        {this.state.current == 0 &&
+                            <Button disabled onClick={this.showModal}>Add Remark</Button>
+                        }
+                        {this.state.current != 0 &&
+                            <Button onClick={this.showModal}>Add Remark</Button>
+                        }
+                        <Modal
+                            title="Basic Modal"
+                            visible={this.state.visible}
+                            onOk={this.handleOk}
+                            onCancel={this.handleCancel}
+                        >
+                            <TextArea rows={4} onChange={this.handleChange}/>
+                        </Modal>
                     </div>
                 </div>
             </div>

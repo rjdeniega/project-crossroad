@@ -20,6 +20,35 @@ const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
 class ComponentToPrint extends React.Component {
+    state = {
+        day1: 0,
+        day2: 0,
+        day3: 0,
+        day4: 0,
+        day5: 0,
+        day6: 0,
+        day7: 0,
+    }
+
+    computeTotal = (index) => {
+        if (this.props.data) {
+            let value = 0;
+            this.props.data.shuttles.map(shuttle => {
+                value += shuttle.days[index].am_count + shuttle.days[index].pm_count
+            });
+            return value
+        }
+    };
+
+    computeGrandTotal = (startindex, endindex) => {
+        let grand_total = 0;
+        while (startindex <= endindex) {
+            grand_total += this.computeTotal(startindex)
+            startindex++;
+        }
+        return grand_total;
+    }
+
     render() {
         const { data } = this.props
         return (
@@ -34,18 +63,22 @@ class ComponentToPrint extends React.Component {
                     }
                 </div>
                 <div className="report-body">
+                    {this.props.data &&
                     <table cellSpacing="50" cellPadding="3px">
+                        {this.props.data &&
                         <thead>
                         <th>Shuttle #</th>
                         <th>Shift #</th>
-                        <th>Monday</th>
-                        <th>Tuesday</th>
-                        <th>Wednesday</th>
-                        <th>Thursday</th>
-                        <th>Friday</th>
-                        <th>Saturday</th>
-                        <th>Sunday</th>
+                        <th>{this.props.data.shuttles[0].days[0].day}</th>
+                        <th>{this.props.data.shuttles[0].days[1].day}</th>
+                        <th>{this.props.data.shuttles[0].days[2].day}</th>
+                        <th>{this.props.data.shuttles[0].days[3].day}</th>
+                        <th>{this.props.data.shuttles[0].days[4].day}</th>
+                        <th>{this.props.data.shuttles[0].days[5].day}</th>
+                        <th>{this.props.data.shuttles[0].days[6].day}</th>
+                        <th>Total</th>
                         </thead>
+                        }
                         <tbody>
                         {this.props.data &&
                         <Fragment>
@@ -80,6 +113,17 @@ class ComponentToPrint extends React.Component {
                                         <td>
                                             {item.days[6].am_count}
                                         </td>
+                                        <td>
+                                            {
+                                                item.days[0].am_count +
+                                                item.days[1].am_count +
+                                                item.days[2].am_count +
+                                                item.days[3].am_count +
+                                                item.days[4].am_count +
+                                                item.days[5].am_count +
+                                                item.days[6].am_count
+                                            }
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td></td>
@@ -108,14 +152,70 @@ class ComponentToPrint extends React.Component {
                                         <td>
                                             {item.days[6].pm_count}
                                         </td>
-
+                                        <td>
+                                            {
+                                                item.days[0].pm_count +
+                                                item.days[1].pm_count +
+                                                item.days[2].pm_count +
+                                                item.days[3].pm_count +
+                                                item.days[4].pm_count +
+                                                item.days[5].pm_count +
+                                                item.days[6].pm_count
+                                            }
+                                        </td>
                                     </tr>
                                 </Fragment>
                             ))}
                         </Fragment>
                         }
+                        <tr>
+                            <td><b> Grand Total </b></td>
+                            <td className="total-line"></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeTotal(0)}
+                                </td>
+                            </b></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeTotal(1)}
+                                </td>
+                            </b></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeTotal(2)}
+                                </td>
+                            </b></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeTotal(3)}
+                                </td>
+                            </b></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeTotal(4)}
+                                </td>
+                            </b></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeTotal(5)}
+                                </td>
+                            </b></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeTotal(6)}
+                                </td>
+                            </b></td>
+                            <td className="total-line"><b>
+                                <td>
+                                    {this.computeGrandTotal(0,6)}
+                                </td>
+                            </b></td>
+
+                        </tr>
                         </tbody>
                     </table>
+                    }
                     <p className="end-label">END OF REPORT</p>
                 </div>
             </div>
