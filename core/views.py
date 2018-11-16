@@ -823,17 +823,17 @@ class TicketTypePerDayReport(APIView):
                         if consumed_ticket.assigned_ticket.type is 'A':
                             print(consumed_ticket.total)
                             am_count += consumed_ticket.total / 10
-                            am_ten += am_count
+                            am_ten += consumed_ticket.total / 10
 
                         elif consumed_ticket.assigned_ticket.type is 'B':
                             print(consumed_ticket.total)
                             am_count += consumed_ticket.total / 12
-                            am_twelve += am_count
+                            am_twelve += consumed_ticket.total / 12
 
                         else:
                             print(consumed_ticket.total)
                             am_count += consumed_ticket.total / 15
-                            am_fifteen += am_count
+                            am_fifteen += consumed_ticket.total / 15
 
                     else:
 
@@ -841,19 +841,19 @@ class TicketTypePerDayReport(APIView):
                             print("A")
                             print(consumed_ticket.total)
                             pm_count += consumed_ticket.total / 10
-                            pm_ten += pm_count
+                            pm_ten += consumed_ticket.total / 10
 
                         elif consumed_ticket.assigned_ticket.type is 'B':
                             print("B")
                             print(consumed_ticket.total)
                             pm_count += consumed_ticket.total / 12
-                            pm_twelve += pm_count
+                            pm_twelve += consumed_ticket.total / 12
 
                         else:
                             print("C")
                             print(consumed_ticket.total)
                             pm_count += consumed_ticket.total / 15
-                            pm_fifteen += pm_count
+                            pm_fifteen += consumed_ticket.total / 15
 
             days.append({
                 "date": temp_start.date(),
