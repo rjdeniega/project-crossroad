@@ -925,38 +925,38 @@ class TicketTypePerShuttle(APIView):
 
                         if consumed_ticket.assigned_ticket.type is 'A':
                             print(consumed_ticket.total)
+                            am_ten += consumed_ticket.total / 10
                             am_count += consumed_ticket.total / 10
-                            am_ten += am_count
 
                         elif consumed_ticket.assigned_ticket.type is 'B':
                             print(consumed_ticket.total)
+                            am_twelve += consumed_ticket.total / 12
                             am_count += consumed_ticket.total / 12
-                            am_twelve += am_count
 
                         else:
                             print(consumed_ticket.total)
+                            am_fifteen += consumed_ticket.total / 15
                             am_count += consumed_ticket.total / 15
-                            am_fifteen += am_count
 
                     else:
 
                         if consumed_ticket.assigned_ticket.type is 'A':
                             print("A")
                             print(consumed_ticket.total)
+                            pm_ten += consumed_ticket.total / 10
                             pm_count += consumed_ticket.total / 10
-                            pm_ten += pm_count
 
                         elif consumed_ticket.assigned_ticket.type is 'B':
                             print("B")
                             print(consumed_ticket.total)
+                            pm_twelve += consumed_ticket.total / 12
                             pm_count += consumed_ticket.total / 12
-                            pm_twelve += pm_count
 
                         else:
                             print("C")
                             print(consumed_ticket.total)
                             pm_count += consumed_ticket.total / 15
-                            pm_fifteen += pm_count
+                            pm_fifteen += consumed_ticket.total / 15
 
             rows.append({
                 "shuttle_id": shuttle.id,
