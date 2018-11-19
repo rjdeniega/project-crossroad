@@ -392,6 +392,29 @@ class SubDrivers(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class SpecificDriver(APIView):
+    @staticmethod
+    def get(request, driver_id, supervisor_id):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        shift = Shift.objects.get(schedule=active_sched, supervisor_id=supervisor_id)
+        driver_assigned = DriversAssigned.objects.get(shift=shift, driver_id=driver_id)
+
+        if driver_assigned.shuttle.status is 'UM':
+            is_under_maintenance = True
+        else:
+            is_under_maintenance = False
+
+        return Response(data={
+            "shuttle_id": driver_assigned.shuttle.id,
+            "shuttle_make": driver_assigned.shuttle.make,
+            "driver_name": driver_assigned.driver.name,
+            "driver_id": driver_assigned.driver.id,
+            "is_under_maintenance": is_under_maintenance,
+            "tickets": TicketUtilities.get_assigned_with_void_of_driver(driver_id)
+        }, status=status.HTTP_200_OK)
+
+
+
 class DeploymentView(APIView):
     @staticmethod
     def get(request):
@@ -527,6 +550,61 @@ class TicketUtilities():
     def get_tickets_with_void(deployment_id):
         deployment = Deployment.objects.get(id=deployment_id)
         tickets = AssignedTicket.objects.filter(driver=deployment.driver.id)
+
+        final = []
+
+        for ticket in tickets:
+            # remove consumed tickets
+            # retrieve highest end ticket for the bundle
+            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id).order_by("-end_ticket").first()
+
+            if consumed_tickets is not None:
+                # check if all tickets in bundle are consumed
+                if ticket.range_to > consumed_tickets.end_ticket:
+                    voids = []
+                    number_of_voids = 0
+                    for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
+                        voids.append({"ticket_number": void_ticket.ticket_number})
+                        number_of_voids += 1
+
+                    # change range_from to a ticket that hasn't been consumed
+                    range_from = consumed_tickets.end_ticket + 1
+
+                    final.append({
+                        "ticket_id": ticket.id,
+                        "driver_id": ticket.driver.id,
+                        "driver_name": ticket.driver.name,
+                        "ticket_type": ticket.get_type_display(),
+                        "range_from": range_from,
+                        "range_to": ticket.range_to,
+                        "number_of_voids": number_of_voids,
+                        "voids": voids
+                    })
+            else:
+                voids = []
+                number_of_voids = 0
+                for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
+                    voids.append({"ticket_number": void_ticket.ticket_number})
+                    number_of_voids += 1
+
+                final.append({
+                    "ticket_id": ticket.id,
+                    "driver_id": ticket.driver.id,
+                    "driver_name": ticket.driver.name,
+                    "ticket_type": ticket.get_type_display(),
+                    "range_from": ticket.range_from,
+                    "range_to": ticket.range_to,
+                    "number_of_voids": number_of_voids,
+                    "voids": voids
+                })
+
+        return final
+
+
+    #this function returns current ticket details of the said driver
+    @staticmethod
+    def get_assigned_with_void_of_driver(driver_id):
+        tickets = AssignedTicket.objects.filter(driver=driver_id)
 
         final = []
 
