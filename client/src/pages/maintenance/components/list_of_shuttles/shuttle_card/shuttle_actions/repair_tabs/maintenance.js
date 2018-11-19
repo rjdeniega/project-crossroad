@@ -34,17 +34,25 @@ class MaintenanceHistory extends Component {
     return (
       <div>
         <br />
-        {previous === "" ? "" : (<p><b>Previous Maintenance: </b>{previous}</p>)}
+        {previous === "" ? (
+          ""
+        ) : (
+          <p>
+            <b>Previous Maintenance: </b>
+            {previous}
+          </p>
+        )}
         <p>
           <b>Maintenance Schedule: </b>
           {date}
         </p>
-        <br/>
+        <br />
         {days > 0
           ? days + " days left before maintenance schedule"
-          : (days * -1) + " days behind maintenance schedule!"}
-          <br/><br/>
-          <Button type="primary">Request Maintenace</Button>
+          : days * -1 + " days behind maintenance schedule!"}
+        <br />
+        <br />
+        <Button type="primary">Request Maintenance</Button>
       </div>
     );
   }

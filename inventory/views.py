@@ -166,7 +166,8 @@ class RepairProblems(APIView):
     def post(request, pk):
         data = json.loads(request.body)
         shuttle = Shuttle.objects.get(id=pk)
-
+        shuttle.status = "UM"
+        shuttle.save()
         repair = Repair(shuttle=shuttle, date_requested=data['date_reported'],
                         status='NS')
         repair.save()
@@ -242,6 +243,10 @@ class MechanicItems(APIView):
     def put(request, pk):
         repair = Repair.objects.get(id=pk)
         data = json.loads(request.body)
+
+        shuttle = Shuttle.objects.get(id=repair.shuttle.id)
+        shuttle.status = "A"
+        shuttle.save()
         if data['action'] == 'complete':
             repair.status = 'C'
             repair.end_date = datetime.now().date()
@@ -363,8 +368,7 @@ class MaintenanceSchedule(APIView):
                 'days': days.days,
                 'date': date,
                 'previous': repair_date
-            })
-            print("nice")
+            }, status=status.HTTP_200_OK)
         else:
             shuttle = Shuttle.objects.get(id=pk)
             print(shuttle.maintenance_sched - datetime.now().date())
