@@ -18,7 +18,8 @@ MOVEMENT_TYPE = [
 SHUTTLE_STATUS = [
     ('A', 'Available'),
     ('NM', 'Needs Maintenance'),
-    ('UM', 'Under Maintenance')
+    ('UM', 'Under Maintenance'),
+    ('B', 'Back-up')
 ]
 
 REPAIR_STATUS = [
