@@ -1088,7 +1088,8 @@ class AccumulatedSharesReport(APIView):
                 shares_bought = 0
                 shares = Share.objects.filter(
                     date_of_update__year=data['year'],
-                    date_of_update__month=month
+                    date_of_update__month=month,
+                    member_id=member.id
                 )
 
                 for share in shares:
