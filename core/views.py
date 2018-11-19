@@ -992,6 +992,7 @@ class TicketTypePerShuttle(APIView):
 
 
 
+
 class SupervisorWeeklyReport(APIView):
     @staticmethod
     def post(request):
@@ -1065,6 +1066,65 @@ class SupervisorWeeklyReport(APIView):
             "total_deployed_drivers": total_deployed_drivers,
             "rows": rows
         }, status=status.HTTP_200_OK)
+
+
+class AccumulatedSharesReport(APIView):
+    @staticmethod
+    def get(request):
+        data = json.loads(request.body)
+        members = Member.objects.all().order_by('name')
+
+        rows = []
+
+        for member in members:
+            month = 1
+
+            prior_shares = ShareUtilities(member.id, data['year'])
+
+            array = []
+            accumulated_shares = 0
+
+            while month <= 12:
+                shares_bought = 0
+                shares = Share.objects.filter(
+                    date_of_update__year=data['year'],
+                    date_of_update__month=month,
+                    member_id=member.id
+                )
+
+                for share in shares:
+                    shares_bought += share.value
+                    accumulated_shares += share.value
+
+
+                array.append({
+                    "month": calendar.month_name[month],
+                    "added_amount": shares_bought
+                })
+                month += 1
+
+            rows.append({
+                "name": member.name,
+                "prior_shares": prior_shares,
+                "accumulated_shares": accumulated_shares,
+                "total_shares": prior_shares + accumulated_shares,
+                "months": array
+            })
+
+        return Response(data={
+            "year": data["year"],
+            "members": rows
+        }, status=status.HTTP_200_OK)
+
+
+class ShareUtilities(APIView):
+    @staticmethod
+    def get_prior_shares(member_id, year):
+        shares = Share.objects.filter(date_of_update__lte=year, member_id=member_id)
+        total = 0
+        for share in shares:
+            total += share.value
+        return total
 
 
 class NotificationItems(APIView):

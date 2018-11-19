@@ -433,14 +433,33 @@ class DeploymentView(APIView):
         # VALIDATIONS
         current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor_id=data['supervisor']).order_by(
             '-date').first()
-        driver_assigned = DriversAssigned.objects.get(
-            shift_id=current_shift_iteration.shift,
-            driver_id=data['driver']
-        )
 
-        if driver_assigned.shuttle.status is 'UM':
-            error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
-            is_valid = False
+        if DeploymentView.is_in_shift(data['driver'], current_shift_iteration.shift.id):
+            driver_assigned = DriversAssigned.objects.get(
+                shift_id=current_shift_iteration.shift,
+                driver_id=data['driver']
+            )
+
+            if driver_assigned.shuttle.status is 'UM':
+                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+                is_valid = False
+
+        else:
+            active_sched = RemittanceUtilities.get_active_schedule()
+            shifts = Shift.objects.filter(schedule=active_sched)
+
+            for shift in shifts:
+                if shift.id != current_shift_iteration.shift.id:
+                    other_shift = shift
+
+            driver_assigned = DriversAssigned.objects.get(
+                shift_id=other_shift.id,
+                driver_id=data['driver']
+            )
+
+            if driver_assigned.shuttle.status == 'UM':
+                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+                is_valid = False
 
         # CREATE DEPLOYMENT
         if is_valid:
@@ -466,6 +485,14 @@ class DeploymentView(APIView):
     def delete(request, pk):
         Deployment.objects.get(id=pk).delete(user=request.user.username)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @staticmethod
+    def is_in_shift(driver_id, shift_id):
+        drivers = DriversAssigned.objects.filter(shift=shift_id)
+        for driver in drivers:
+            if driver.driver.id == driver_id:
+                return True
+        return False
 
 
 class DeployedDrivers(APIView):

@@ -49,8 +49,8 @@ urlpatterns = [
     path('tickets_count_report/', TicketCountReport.as_view()),
     path('ticket_type_per_day/', TicketTypePerDayReport.as_view()),
     path('ticket_type_per_shuttle/', TicketTypePerShuttle.as_view()),
-    path('supervisor_weekly_report/', SupervisorWeeklyReport.as_view())
-
+    path('supervisor_weekly_report/', SupervisorWeeklyReport.as_view()),
+    path('accumulated_shares_report/', AccumulatedSharesReport.as_view())
 ]
 
 if settings.DEBUG:
