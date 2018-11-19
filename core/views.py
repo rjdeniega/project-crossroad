@@ -992,6 +992,7 @@ class TicketTypePerShuttle(APIView):
 
 
 
+
 class SupervisorWeeklyReport(APIView):
     @staticmethod
     def post(request):

@@ -252,8 +252,6 @@ class MemberSharesView(APIView):
             "receipt": body["receipt"],
         }
         share_serializer = ShareSerializer(data=data)
-        print(share_serializer.is_valid())
-        print(share_serializer.errors)
 
         if share_serializer.is_valid():
             share = share_serializer.create(validated_data=share_serializer.validated_data)
@@ -261,7 +259,7 @@ class MemberSharesView(APIView):
             return Response(data={
                 "errors": share_serializer.errors
             }, status=400)
-        print(ShareSerializer(share).data)
+
         return Response(data={
             "share": ShareSerializer(share).data,
         }, status=status.HTTP_200_OK)
