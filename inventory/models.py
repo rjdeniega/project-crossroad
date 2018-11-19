@@ -30,7 +30,8 @@ REPAIR_STATUS = [
 ROUTE = [
     ('M', 'Main Road'),
     ('R', 'Right Route'),  # Kanan
-    ('L', 'Left Route')  # Kaliwa
+    ('L', 'Left Route'),  # Kaliwa
+    ('B', 'Back-up')
 ]
 
 
