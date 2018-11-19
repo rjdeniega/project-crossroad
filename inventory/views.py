@@ -11,6 +11,7 @@ from inventory.serializers import *
 from remittances.models import *
 
 from .models import *
+from core.models import Notification
 
 
 class SpecificItemView(APIView):
@@ -168,8 +169,11 @@ class RepairProblems(APIView):
         shuttle = Shuttle.objects.get(id=pk)
         shuttle.status = "UM"
         shuttle.save()
+        message = 'Shuttle ' + str(pk) + ' is has undergone maintenance'
+        notification = Notification(type='N', description=message)
+        notification.save()
         repair = Repair(shuttle=shuttle, date_requested=data['date_reported'],
-                        status='NS')
+                        status='IP')
         repair.save()
         for problem in data['problems']:
             rp = RepairProblem(description=problem)
@@ -360,15 +364,29 @@ class MaintenanceSchedule(APIView):
     def get(request, pk):
         if Repair.objects.filter(shuttle=pk).filter(
             maintenance=True).exists():
-            repair_date = Repair.objects.filter(shuttle=pk).filter(
-                maintenance=True).latest('end_date')
-            days = repair_date - datetime.now().date()
-            date = repair_date + relativedelta(months=+3)
-            return Response(data={
-                'days': days.days,
-                'date': date,
-                'previous': repair_date
-            }, status=status.HTTP_200_OK)
+            ip = Repair.objects.filter(shuttle=pk).filter(
+                maintenance=True).latest('id')
+            print(ip.status)
+            if ip.status == "IP":
+                print("nice")
+                return Response(data={
+                    'days': "",
+                    'date': "",
+                    'previous': "",
+                    'ip': ip.status
+                }, status=status.HTTP_200_OK)
+            else:
+                repair_date = Repair.objects.filter(shuttle=pk).filter(
+                    maintenance=True).latest('id')
+                
+                days = repair_date.end_date - datetime.now().date()
+                date = repair_date.end_date + relativedelta(months=+3)
+                return Response(data={
+                    'days': days.days,
+                    'date': date,
+                    'previous': repair_date,
+                    'ip': "",
+                }, status=status.HTTP_200_OK)
         else:
             shuttle = Shuttle.objects.get(id=pk)
             print(shuttle.maintenance_sched - datetime.now().date())
@@ -379,7 +397,8 @@ class MaintenanceSchedule(APIView):
             return Response(data={
                 'days': days.days,
                 'date': shuttle.maintenance_sched,
-                'previous': ''
+                'previous': '',
+                'ip': '',
             }, status=status.HTTP_200_OK)
 
 
@@ -389,12 +408,15 @@ class StartMaintenance(APIView):
         shuttle = Shuttle.objects.get(id=pk)
         shuttle.status = "UM"
         shuttle.save()
+        message = 'Shuttle ' + str(pk) + ' is has undergone maintenance'
+        notification = Notification(
+            type='N', description=message)
+        notification.save()
         repair = Repair(shuttle=shuttle, date_requested=datetime.now(),
-                        status='NS')
+                        status='IP', maintenance=True)
         repair.save()
         rp = RepairProblem(description="Preventive Maintenance")
         rp.save()
         repair.problems.add(rp)
-
 
         return Response(status=status.HTTP_204_NO_CONTENT)

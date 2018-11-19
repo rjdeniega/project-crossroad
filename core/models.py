@@ -83,6 +83,7 @@ class Notification(SoftDeletionModel):
     type = CharField(max_length=1, choices=NOTIFICATION_TYPE)
     description = CharField(max_length=255)
     is_read = BooleanField(default=False)
+    created = models.DateTimeField(editable=False, null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:

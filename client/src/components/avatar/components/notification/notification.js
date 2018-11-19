@@ -10,8 +10,10 @@ function checkNotif(title) {
     return "Inventory";
   } else if (title === "R") {
     return "Remittances";
-  } else {
+  } else if (title === "M"){
     return "Members";
+  } else {
+    return "Maintenance";
   }
 }
 

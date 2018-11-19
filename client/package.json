@@ -14,7 +14,10 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "react-table": "^6.8.6",
-    "react-to-print": "^2.0.0-alpha-4"
+    "react-to-print": "^2.0.0-alpha-4",
+    "react-chartjs": "latest",
+    "react-charts": "latest",
+    "react-charts": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

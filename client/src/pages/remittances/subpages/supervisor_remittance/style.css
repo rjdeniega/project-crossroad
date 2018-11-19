@@ -393,6 +393,16 @@
     min-width: 300px!important;
     top: 70px!important;
     }
+.tickets-deployment-div{
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    }
+.error-message{
+    font-size: 2em;
+    color: #c5311e;
+    }
 
 /*change step active color*/
 /*.rem-step .ant-steps-item-process .ant-steps-item-icon{*/

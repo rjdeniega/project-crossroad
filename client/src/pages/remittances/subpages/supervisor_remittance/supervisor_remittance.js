@@ -188,9 +188,12 @@ export class SupervisorSecondContent extends Component {
                 console.log(data)
             }
         });
+
+
         this.setState({
             visible: true,
         });
+
     };
     showAddVoid10_first = () => {
         this.setState({
@@ -317,10 +320,27 @@ export class SupervisorSecondContent extends Component {
         });
     };
     handleDriverSelect = (key, shuttle, plate_number) => {
+        const { id } = JSON.parse(localStorage.user_staff);
+
         this.setState({
             driver_selected: key,
             shuttle: shuttle,
             plate_number: plate_number
+        }, () => {
+            getData('remittances/deployments/' + id + "/" + this.state.driver_selected).then(data => {
+                if (!data.error) {
+                    console.log(data);
+                    this.setState({
+                        current_shuttle: data.shuttle_plate_number,
+                        is_under_maintenance: data.is_under_maintenance,
+                        route: data.route,
+                        tickets: data.tickets
+                    })
+                }
+                else {
+                    console.log(data)
+                }
+            });
         })
     };
     handleVoidAdd = (e) => {
@@ -389,6 +409,7 @@ export class SupervisorSecondContent extends Component {
         // this function is to handle drop-downs
         const state = { ...this.state };
         state[fieldName] = value;
+        console.log(fieldName)
         console.log(state[fieldName]);
         this.setState({
             ...state
@@ -457,17 +478,37 @@ export class SupervisorSecondContent extends Component {
                     <div className="route-div">
                         <p><b>Route: </b></p>
                         <Select onChange={this.handleFormUpdatesListener("route")} className="route-input"
-                                defaultValue="Pumili ng ruta">
-                            <Option value="M">Main Road</Option>
-                            <Option value="R">Kanan</Option>
-                            <Option value="L">Kaliwa</Option>
+                                value={this.state.route}>
                         </Select>
-                        <Select onChange={this.handleFormUpdatesListener("shuttle")} className="route-input"
+                        {!this.state.is_under_maintenance &&
+                        <Select disabled onChange={this.handleFormUpdatesListener("shuttle")} className="route-input"
+                                value={this.state.current_shuttle}>
+                        </Select>
+                        }
+                        {this.state.is_under_maintenance &&
+                        <Select onChange={this.handleFormUpdatesListener("plate_number")} className="route-input"
                                 value={this.state.plate_number}>
-                            {this.state.shuttles.map(shuttle =>
-                                <Option value={shuttle.plate_number}>{shuttle.plate_number}</Option>)}
+                            { this.state.shuttles.map(shuttle =>
+                                <Option value={shuttle.plate_number}>{shuttle.plate_number}</Option>)
+                            }
                         </Select>
+                        }
                     </div>
+
+                    {this.state.tickets &&
+                    <div className="tickets-div">
+                        <p><b>10 Peso Ticket (1)</b>: {this.state.tickets[0].range_from} - {this.state.tickets[0].range_to}</p>
+                        <p><b>10 Peso Ticket (2)</b>: {this.state.tickets[1].range_from} - {this.state.tickets[1].range_to}</p>
+                        <p><b>12 Peso Ticket (1)</b>: {this.state.tickets[2].range_from} - {this.state.tickets[2].range_to}</p>
+                        <p><b>12 Peso Ticket (2)</b>: {this.state.tickets[3].range_from} - {this.state.tickets[3].range_to}</p>
+                        <p><b>15 Peso Ticket (1)</b>: {this.state.tickets[4].range_from} - {this.state.tickets[4].range_to}</p>
+                        <p><b>15 Peso Ticket (2)</b>: {this.state.tickets[5].range_from} - {this.state.tickets[5].range_to}</p>
+                    </div>
+                    }
+                    {this.state.is_under_maintenance &&
+                    <p className="error-message">{this.state.current_shuttle} is under maintenance. Please select new shuttle </p>
+                    }
+
                     {/*<p><b>10 Peso Tickets</b></p>*/}
                     {/*<div className="ticket-range-div">*/}
                     {/*<InputNumber className="first-range-from" size="large"*/}
@@ -960,7 +1001,7 @@ export class SupervisorRemittancePage extends Component {
                     </div>
                     <div className="sv-history">
                         <Divider orientation="left">Shift Remarks</Divider>
-                        <TextArea columns ={4} value={this.state.remarks}/>
+                        <TextArea columns={4} value={this.state.remarks}/>
                         {this.state.current == 0 &&
                         <Button disabled onClick={this.showModal}>Add Remark</Button>
                         }

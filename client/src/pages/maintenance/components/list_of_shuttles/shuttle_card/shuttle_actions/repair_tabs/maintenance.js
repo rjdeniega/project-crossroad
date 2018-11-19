@@ -9,7 +9,8 @@ class MaintenanceHistory extends Component {
     this.state = {
       days: "",
       date: "",
-      previous: ""
+      previous: "",
+      ip: ""
     };
   }
 
@@ -21,7 +22,8 @@ class MaintenanceHistory extends Component {
           this.setState({
             days: data.days,
             date: data.date,
-            previous: data.previous
+            previous: data.previous,
+            ip: data.ip
           });
         } else {
           console.log(data.error);
@@ -29,8 +31,16 @@ class MaintenanceHistory extends Component {
       });
   }
 
+  startMaintenance = id => {
+    postData("inventory/shuttles/startmaintenance/" + id).then(
+      response => response
+    );
+    message.success("Maintenance has started");
+  };
+
   render() {
-    let { date, days, previous } = this.state;
+    let { date, days, previous, ip } = this.state;
+    let { shuttle_id } = this.props;
     return (
       <div>
         <br />
@@ -46,13 +56,24 @@ class MaintenanceHistory extends Component {
           <b>Maintenance Schedule: </b>
           {date}
         </p>
+        {ip == "IP" ? (
+          <div>Maintenance in progress</div>
+        ) : (
+          <div>
+            {days > 0
+              ? days + " days left before maintenance schedule"
+              : days * -1 + " days behind maintenance schedule!"}
+            <br />
+            <br />
+            <Button
+              type="primary"
+              onClick={() => this.startMaintenance(shuttle_id)}
+            >
+              Start Maintenance
+            </Button>
+          </div>
+        )}
         <br />
-        {days > 0
-          ? days + " days left before maintenance schedule"
-          : days * -1 + " days behind maintenance schedule!"}
-        <br />
-        <br />
-        <Button type="primary">Request Maintenance</Button>
       </div>
     );
   }
