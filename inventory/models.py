@@ -18,7 +18,8 @@ MOVEMENT_TYPE = [
 SHUTTLE_STATUS = [
     ('A', 'Available'),
     ('NM', 'Needs Maintenance'),
-    ('UM', 'Under Maintenance')
+    ('UM', 'Under Maintenance'),
+    ('B', 'Back-up')
 ]
 
 REPAIR_STATUS = [
@@ -29,7 +30,8 @@ REPAIR_STATUS = [
 ROUTE = [
     ('M', 'Main Road'),
     ('R', 'Right Route'),  # Kanan
-    ('L', 'Left Route')  # Kaliwa
+    ('L', 'Left Route'),  # Kaliwa
+    ('B', 'Back-up')
 ]
 
 

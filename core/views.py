@@ -1077,8 +1077,8 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='M').filter(is_read=False), many=True)
         elif user_type == 'supervisor':
-            notifications = NotificationSerializer(Notification.objects.all()
-                                                   .filter(type='R'), many=True)
+            notifications = NotificationSerializer(Notification.objects
+                                                   .filter(Q(type='R') | Q(type='N')), many=True)
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='R').filter(is_read=False), many=True)
         elif user_type == 'operations_manager':

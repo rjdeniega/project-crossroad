@@ -109,6 +109,7 @@ class AddShuttleFormInit extends React.Component{
                             <Select.Option value="Main Road" selected>Main Road</Select.Option>
                             <Select.Option value="Kaliwa">Kaliwa</Select.Option>
                             <Select.Option value="Kanan">Kanan</Select.Option>
+                            <Select.Option value="Back-up">Back-up</Select.Option>
                         </Select>)}
                     </FormItem>
                     <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error': ''}
