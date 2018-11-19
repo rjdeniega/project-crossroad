@@ -407,6 +407,7 @@ class SpecificDriver(APIView):
         return Response(data={
             "shuttle_id": driver_assigned.shuttle.id,
             "shuttle_make": driver_assigned.shuttle.make,
+            "shuttle_plate_number": driver_assigned.shuttle.plate_number,
             "driver_name": driver_assigned.driver.name,
             "driver_id": driver_assigned.driver.id,
             "is_under_maintenance": is_under_maintenance,
