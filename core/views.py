@@ -1073,24 +1073,29 @@ class NotificationItems(APIView):
         # user type gotten from localStorage.get('user_type')
         if user_type == 'member':
             notifications = NotificationSerializer(Notification.objects.all()
-                                                   .filter(type='M'), many=True)
+                                                   .filter(type='M').order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects.all()
-                                            .filter(type='M').filter(is_read=False), many=True)
+                                            .filter(type='M').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'supervisor':
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='R') | Q(type='N')), many=True)
+                                                   .filter(Q(type='R') | Q(type='N')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects.all()
-                                            .filter(type='R').filter(is_read=False), many=True)
+                                            .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')), many=True)
+                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
-                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
+                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'clerk':
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')), many=True)
+                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
-                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
+                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by('-created'), many=True)
+        elif user_type == 'mechanic':
+            notifications = NotificationSerializer(Notification.objects
+                                                   .filter(Q(type='I') | Q(type='N')).order_by('-created'), many=True)
+            unread = NotificationSerializer(Notification.objects
+                                            .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by('-created'), many=True)
 
         return Response(data={
             'notifications': notifications.data,
