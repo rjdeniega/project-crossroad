@@ -21,11 +21,14 @@ import { RemittanceReport } from './content/remittance_report/remittance_report'
 import { SharesReport } from './content/shares_report/shares_report'
 import { TransactionReport } from './content/transactions_report/transactions_report'
 import { RemittanceSummary } from './content/remittance_summary/remittance_summary'
+import { RemittanceChart} from './content/remittance_chart/remittance_chart'
 import { TicketReport } from './content/ticket_reports/ticket_reports'
 import { TicketShuttleBreakdown } from './content/ticket_breakdown_shuttle/ticket_breakdown_shuttle'
 import { WeeklySupervisorReport } from './content/weekly_supervisor_report/weekly_supervisor_report'
 import { PassengerCount } from './content/passenger_count/passenger_count'
 import {MaintenanceReport  } from './content/maintenance_report/maintenance_report'
+import {SharesAccumulationReport  } from './content/shares_accumulation/shares_accumulation'
+
 
 
 
@@ -42,6 +45,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <RemittanceSummary/>
+},{
+    'title': 'Remittance Chart',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <RemittanceChart/>
 },{
     'title': 'Tickets Report',
     'description': 'view beep and ticketing passenger count',
@@ -80,6 +88,11 @@ const MEMBER_CARDS = [{
     'description': 'View transactions of members over a period of time',
     'icon': driversLicenseO,
     'content': <TransactionReport/>
+},{
+    'title': 'Shares Accumulation Report',
+    'description': 'View transactions of members over a period of time',
+    'icon': driversLicenseO,
+    'content': <SharesAccumulationReport/>
 },];
 export class ReportsPage extends Component {
     state = {
