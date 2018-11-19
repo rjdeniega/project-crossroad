@@ -118,7 +118,7 @@ class Deployment(SoftDeletionModel):
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
     # start_time = DateTimeField(default=datetime.now(), editable=False)
     # end_time = DateTimeField(null=True)
-    created = models.DateTimeField(editable=False)
+    created = models.DateTimeField(editable=False, default=timezone.now)
     modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):
@@ -137,7 +137,7 @@ class AssignedTicket(SoftDeletionModel):
     range_from = IntegerField(null=True)
     range_to = IntegerField(null=True)
     type = CharField(max_length=1, choices=TICKET_TYPE)
-    created = models.DateTimeField(editable=False, default=timezone.now())
+    created = models.DateTimeField(editable=False, default=timezone.now)
     modified = models.DateTimeField(null=True)
 
     def save(self, *args, **kwargs):

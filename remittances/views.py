@@ -404,19 +404,27 @@ class DeploymentView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        supervisor_id = data.pop('supervisor')
-        print(data["shuttle"])
-        try:
-            data["shuttle"] = Shuttle.objects.get(pk=data["shuttle"]).pk
-        except:
-            data["shuttle"] = Shuttle.objects.get(plate_number=data["shuttle"]).pk
-        deployment_serializer = DeploymentSerializer(data=data)
+        is_valid = True
 
-        if deployment_serializer.is_valid():
+        # VALIDATIONS
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor_id=data['supervisor']).order_by(
+            '-date').first()
+        driver_assigned = DriversAssigned.objects.get(
+            shift_id=current_shift_iteration.shift,
+            driver_id=data['driver']
+        )
 
-            deployment = deployment_serializer.create(
-                validated_data=deployment_serializer.validated_data,
-                supervisor_id=supervisor_id
+        if driver_assigned.shuttle.status is 'UM':
+            error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+            is_valid = False
+
+        # CREATE DEPLOYMENT
+        if is_valid:
+            deployment = Deployment.objects.create(
+                driver_id=data['driver'],
+                shuttle_id=data['shuttle'],
+                route=driver_assigned.shuttle.route,
+                shift_iteration_id=current_shift_iteration.id
             )
 
             serialized_deployment = DeploymentSerializer(deployment)
@@ -427,7 +435,7 @@ class DeploymentView(APIView):
 
         else:
             return Response(data={
-                "errors": deployment_serializer.errors
+                "errors": error_message
             }, status=status.HTTP_400_BAD_REQUEST)
 
     @staticmethod

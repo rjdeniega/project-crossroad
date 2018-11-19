@@ -151,15 +151,37 @@ class AssignedTicketSerializer(ModelSerializer):
 class DeploymentSerializer(ModelSerializer):
     class Meta:
         model = Deployment
-        exclude = ('shift_iteration',)
+        exclude = ('shift_iteration', 'route')
 
-    def create(self, validated_data, supervisor_id):
+    def create(self, validated_data, supervisor_id, driver_id):
         # get shift_iteration_id
         current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
             '-date').first()
-        deployment = Deployment.objects.create(shift_iteration=current_shift_iteration, **validated_data)
+        drivers_assigned = DriversAssigned.objects.get(shift=current_shift_iteration.shift, driver_id=driver_id)
+        deployment = Deployment.objects.create(
+            shift_iteration=current_shift_iteration,
+            driver=driver_id,
+            route=drivers_assigned.shuttle.route,
+            **validated_data
+        )
 
         return deployment
+
+    def validate(self, data):
+        # check if shuttle is currently unavailable
+        print(data['supervisor'])
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor_id=data['supervisor']).order_by(
+            '-date').first()
+        driver_assigned = DriversAssigned.objects.get(shift=current_shift_iteration.shift, driver_id=data['driver'])
+
+        if driver_assigned.shuttle.status is 'UM':
+            error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+            raise serializers.ValidationError(error_message)
+
+        return data
+
+
+
 
 
 class GetDeploymentSerializer(ModelSerializer):
