@@ -389,12 +389,12 @@ class StartMaintenance(APIView):
         shuttle = Shuttle.objects.get(id=pk)
         shuttle.status = "UM"
         shuttle.save()
-        repair = Repair(shuttle=shuttle, date_requested=datetime.now(),
+        repair = Repair(shuttle=shuttle, date_requested=data['date_reported'],
                         status='NS')
         repair.save()
-        rp = RepairProblem(description="Preventive Maintenance")
-        rp.save()
-        repair.problems.add(rp)
-
+        for problem in data['problems']:
+            rp = RepairProblem(description=problem)
+            rp.save()
+            repair.problems.add(rp)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
