@@ -992,6 +992,7 @@ class TicketTypePerShuttle(APIView):
 
 
 
+
 class SupervisorWeeklyReport(APIView):
     @staticmethod
     def post(request):
@@ -1067,30 +1068,94 @@ class SupervisorWeeklyReport(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class AccumulatedSharesReport(APIView):
+    @staticmethod
+    def get(request):
+        data = json.loads(request.body)
+        members = Member.objects.all().order_by('name')
+
+        rows = []
+
+        for member in members:
+            month = 1
+
+            prior_shares = ShareUtilities(member.id, data['year'])
+
+            array = []
+            accumulated_shares = 0
+
+            while month <= 12:
+                shares_bought = 0
+                shares = Share.objects.filter(
+                    date_of_update__year=data['year'],
+                    date_of_update__month=month,
+                    member_id=member.id
+                )
+
+                for share in shares:
+                    shares_bought += share.value
+                    accumulated_shares += share.value
+
+
+                array.append({
+                    "month": calendar.month_name[month],
+                    "added_amount": shares_bought
+                })
+                month += 1
+
+            rows.append({
+                "name": member.name,
+                "prior_shares": prior_shares,
+                "accumulated_shares": accumulated_shares,
+                "total_shares": prior_shares + accumulated_shares,
+                "months": array
+            })
+
+        return Response(data={
+            "year": data["year"],
+            "members": rows
+        }, status=status.HTTP_200_OK)
+
+
+class ShareUtilities(APIView):
+    @staticmethod
+    def get_prior_shares(member_id, year):
+        shares = Share.objects.filter(date_of_update__lte=year, member_id=member_id)
+        total = 0
+        for share in shares:
+            total += share.value
+        return total
+
+
 class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type):
         # user type gotten from localStorage.get('user_type')
         if user_type == 'member':
             notifications = NotificationSerializer(Notification.objects.all()
-                                                   .filter(type='M'), many=True)
+                                                   .filter(type='M').order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects.all()
-                                            .filter(type='M').filter(is_read=False), many=True)
+                                            .filter(type='M').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'supervisor':
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='R') | Q(type='N')), many=True)
+                                                   .filter(Q(type='R') | Q(type='N')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects.all()
-                                            .filter(type='R').filter(is_read=False), many=True)
+                                            .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')), many=True)
+                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
-                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
+                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'clerk':
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')), many=True)
+                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
-                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False), many=True)
+                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by('-created'), many=True)
+        elif user_type == 'mechanic':
+            notifications = NotificationSerializer(Notification.objects
+                                                   .filter(Q(type='I') | Q(type='N')).order_by('-created'), many=True)
+            unread = NotificationSerializer(Notification.objects
+                                            .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by('-created'), many=True)
 
         return Response(data={
             'notifications': notifications.data,
