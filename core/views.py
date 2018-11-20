@@ -1129,6 +1129,66 @@ class ShareUtilities(APIView):
         return total
 
 
+class ShuttleCostVRevenueReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+
+        rows = []
+        total_remittance = 0
+        total_cost = 0
+
+        for shuttle in Shuttle.objects.all():
+            initialMaintenanceCost = 0
+
+            shuttle_remittance = sum([item.total for item in RemittanceForm.objects.filter(
+                deployment__shuttle=shuttle.id,
+                deployment__shift_iteration__date__gte=start_date
+            )])
+
+            repairs = Repair.objects.filter(
+                shuttle=shuttle,
+                date_requested__gte=start_date
+            )
+
+            for repair in repairs:
+                if (repair.labor_fee):
+                    initialMaintenanceCost = initialMaintenanceCost + repair.labor_fee
+
+                for modification in repair.modifications.all():
+                    item = Item.objects.get(id=modification.item_used.id)
+                    amount = item.average_price * modification.quantity
+                    initialMaintenanceCost = initialMaintenanceCost + amount
+
+                for outsourced in repair.outsourced_items.all():
+                    amount = outsourced.quantity * outsourced.unit_price
+                    initialMaintenanceCost = initialMaintenanceCost + amount
+
+            rows.append({
+                "shuttle_id": shuttle.id,
+                "shuttle_plate_number": shuttle.plate_number,
+                "shuttle_make": shuttle.make,
+                "revenue": shuttle_remittance,
+                "cost": initialMaintenanceCost,
+                "value": shuttle_remittance - initialMaintenanceCost
+            })
+            
+            total_remittance += shuttle_remittance
+            total_cost += initialMaintenanceCost
+
+        return Response(data={
+            "start_date": start_date,
+            "total_remittance": total_remittance,
+            "total_costs": total_cost,
+            "grand_total": total_remittance - total_cost
+            "shuttles": rows
+        }, status=status.HTTP_200_OK)
+
+
+
+
+
 class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type):
