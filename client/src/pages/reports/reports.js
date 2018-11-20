@@ -29,6 +29,8 @@ import { PassengerCount } from './content/passenger_count/passenger_count'
 import {MaintenanceReport  } from './content/maintenance_report/maintenance_report'
 import {SharesAccumulationReport  } from './content/shares_accumulation/shares_accumulation'
 import {ShuttleIncome  } from './content/shuttle_income/shuttle_income'
+import {TicketPerDay } from './content/ticket_per_day/ticket_per_day'
+
 
 
 
@@ -62,6 +64,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <TicketShuttleBreakdown/>
+},{
+    'title': 'Ticket Per Day',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <TicketPerDay/>
 },{
     'title': 'Supervisor Report',
     'description': 'view beep and ticketing passenger count',
