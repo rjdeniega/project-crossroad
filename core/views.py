@@ -1070,7 +1070,7 @@ class SupervisorWeeklyReport(APIView):
 
 class AccumulatedSharesReport(APIView):
     @staticmethod
-    def get(request):
+    def post(request):
         data = json.loads(request.body)
         members = Member.objects.all().order_by('name')
 
@@ -1078,8 +1078,8 @@ class AccumulatedSharesReport(APIView):
 
         for member in members:
             month = 1
-
-            prior_shares = ShareUtilities(member.id, data['year'])
+            print(data)
+            prior_shares = ShareUtilities.get_prior_shares(member.id, str(data))
 
             array = []
             accumulated_shares = 0
@@ -1087,7 +1087,7 @@ class AccumulatedSharesReport(APIView):
             while month <= 12:
                 shares_bought = 0
                 shares = Share.objects.filter(
-                    date_of_update__year=data['year'],
+                    date_of_update__year=data,
                     date_of_update__month=month,
                     member_id=member.id
                 )
@@ -1112,7 +1112,7 @@ class AccumulatedSharesReport(APIView):
             })
 
         return Response(data={
-            "year": data["year"],
+            "year": data,
             "members": rows
         }, status=status.HTTP_200_OK)
 
