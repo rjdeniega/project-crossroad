@@ -35,6 +35,62 @@ const Option = Select.Option;
 
 
 const antIcon = <Icon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)' }} spin/>;
+const share_columns = [{
+    title: 'Date of Update',
+    dataIndex: 'date_of_update',
+    key: 'date_of_update',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    )
+}, {
+    title: 'Share Value',
+    dataIndex: 'value',
+    key: 'value',
+    render: (text) => (
+        <div className="rem-status">
+            {parseInt(text)}
+        </div>
+    ),
+}, {
+    title: 'Peso value',
+    dataIndex: 'peso_value',
+    key: 'peso_value',
+    render: (text) => (
+        <div className="rem-status">
+            <p><b>Php {parseInt(text)}</b></p>
+        </div>
+    ),
+}];
+const columns = [{
+    title: 'Date',
+    dataIndex: 'shift_date',
+    key: 'shift_date',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    )
+}, {
+    title: 'Card Number',
+    dataIndex: 'card_number',
+    key: 'card_number',
+    render: (text) => (
+        <div className="rem-status">
+            {text}
+        </div>
+    ),
+}, {
+    title: 'Transaction Cost',
+    dataIndex: 'total',
+    key: 'total',
+    render: (text) => (
+        <div className="rem-status">
+            <p><b>Php {parseInt(text)}</b></p>
+        </div>
+    ),
+}];
 const carwash_columns = [{
     title: 'Date',
     dataIndex: 'date',
@@ -67,6 +123,7 @@ export class ProfilePage extends Component {
     state = {
         users: null,
         visible: false,
+        transactions_visible: false,
         name: null,
         address: null,
 
@@ -74,6 +131,8 @@ export class ProfilePage extends Component {
 
     componentDidMount() {
         this.fetchMember()
+        this.fetchMemberShares()
+        this.fetchMemberTransactions()
 
     }
 
@@ -87,13 +146,51 @@ export class ProfilePage extends Component {
         console.log(e);
         this.setState({
             visible: false,
+            transactions_visible: false,
         });
     };
+
     showModal = () => {
         this.setState({
             visible: true,
         });
     };
+    showTransactions = () => {
+        this.setState({
+            transactions_visible: true,
+        });
+    };
+
+    fetchMemberShares() {
+        const { id } = JSON.parse(localStorage.user_staff);
+        getData('/members/shares/' + id).then(data => {
+            console.log(data);
+            this.setState({
+                shares: data.shares,
+                total_shares: data.total_shares,
+                total_peso_value: data.total_peso_value,
+            })
+        });
+    }
+
+    fetchMemberTransactions() {
+        const { id } = JSON.parse(localStorage.user_staff);
+        getData('/members/transactions/' + id).then(data => {
+            console.log(data.transactions);
+            this.setState({
+                transactions: data.transactions,
+                total_transactions: data.total_transactions
+            })
+        });
+        getData('/remittances/get_carwash_transaction/' + id).then(data => {
+            console.log(data);
+            this.setState({
+                carwash_transactions: data.carwash_transactions,
+                total_carwash_transactions: parseInt(data.carwash_transaction_total),
+            })
+        });
+    }
+
     handleFormChange = fieldName => event => {
         return this.handleSelectChange(fieldName)(event.target.value);
         //this is asynchronous, it does not execute in order
@@ -366,19 +463,43 @@ export class ProfilePage extends Component {
                                 </div>
                             </div>
                             <div className="tables">
-                                <div className="table-container">
-                                    <div className="tab-label">
-                                        Carwash transactions
-                                    </div>
-                                    <p> total transaction cost: <b>{this.state.total_carwash_transactions} </b></p>
-                                    <Table bordered size="medium"
-                                           className="remittance-table"
-                                           columns={carwash_columns}
-                                           dataSource={this.state.carwash_transactions}
+                                <Modal
+                                    className="add-user-modal"
+                                    title="Transactions"
+                                    visible={this.state.transactions_visible}
+                                    onOk={this.handleOk}
+                                    onCancel={this.handleCancel}
+                                    footer={null}
+                                >
+                                    <div className="table-container">
+                                        <div className="tab-label">
+                                            Carwash transactions
+                                        </div>
+                                        <p> total transaction cost: <b>{this.state.total_carwash_transactions} </b></p>
+                                        <Table bordered size="medium"
+                                               className="remittance-table"
+                                               columns={carwash_columns}
+                                               dataSource={this.state.carwash_transactions}
 
-                                    />
-                                </div>
+                                        />
+                                        <div className="beep-container">
+                                            <div className="tab-label">
+                                                Beep transactions
+                                            </div>
+                                            <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
+                                            <Table bordered size="medium"
+                                                   className="remittance-table"
+                                                   columns={columns}
+                                                   dataSource={this.state.transactions}
+
+                                            />
+                                        </div>
+                                    </div>
+
+                                </Modal>
+
                                 <div className="shares-container">
+                                    <Button onClick={this.showTransactions}> View Transactions </Button>
                                     <div className="tab-label">
                                         Shares
                                     </div>
@@ -386,11 +507,12 @@ export class ProfilePage extends Component {
                                     <p> total shares (in Php): <b>Php {this.state.total_peso_value}</b></p>
 
                                     <Table bordered size="medium"
-                                           className="remittance-table"
-                                           columns={this.share_columns}
+                                           className="remittance-table profile-shares-table"
+                                           columns={share_columns}
                                            dataSource={this.state.shares}
                                     />
                                 </div>
+
                             </div>
                         </div>
                     </Fragment>

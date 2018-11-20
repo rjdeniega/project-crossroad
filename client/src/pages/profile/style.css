@@ -23,7 +23,14 @@
     grid-row: 2/3;
     }
 
+.beep-container {
+    grid-column: 2/3;
+    }
+
 .tables {
     display: grid;
-    grid-template-rows: 40% 60%
+    grid-template-rows: 10% 50% 50%
+    }
+.profile-shares-table{
+    height: 200px!important;
     }
