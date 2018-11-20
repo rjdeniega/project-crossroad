@@ -184,13 +184,66 @@ class SpecificMemberView(APIView):
 
         if id_card is not None:
             card_number = id_card.can
+            member.data["card_number"] = card_number
         else:
             card_number = None
 
-        member.data["card_number"] = card_number
+        response = member.data
+        response["card_number"] = card_number
 
         return Response(data={
-            "member": member.data
+            "member": response
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, member_id):
+        # member_data = {
+        #     "name": request.POST.get('name'),
+        #     "email": request.POST.get('email'),
+        #     "sex": request.POST.get('sex'),
+        #     "address": request.POST.get('address'),
+        #     "contact_no": request.POST.get('contact_no'),
+        #     "tin_number": request.POST.get('tin_number'),
+        #     "religion": request.POST.get('religion'),
+        #     "occupation": request.POST.get('occupation'),
+        #     "no_of_dependents": request.POST.get('no_of_dependents'),
+        #     "annual_income": request.POST.get('annual_income'),
+        #     "civil_status": request.POST.get('civil_status'),
+        #     "educational_attainment": request.POST.get('civil_status'),
+        # }
+        data = json.loads(request.body)
+        member_data = {
+            "name": data['name'],
+            "email": data['email'],
+            "sex": data['sex'],
+            "address": data['address'],
+            "contact_no": data['contact_no'],
+            "tin_number": data['tin_number'],
+            "religion": data['religion'],
+            "occupation": data['occupation'],
+            "no_of_dependents": data['no_of_dependents'],
+            "annual_income": data['annual_income'],
+            "civil_status": data['civil_status'],
+            "educational_attainment": data['educational_attainment'],
+        }
+        print(member_data)
+        member = Member.objects.get(pk=member_id)
+        member.name = member_data["name"]
+        member.email = member_data["email"]
+        member.sex = member_data["sex"]
+        member.address = member_data["address"]
+        member.contact_no = member_data["contact_no"]
+        member.tin_number = member_data["tin_number"]
+        member.religion = member_data["religion"]
+        member.occupation = member_data["occupation"]
+        member.no_of_dependents = member_data["no_of_dependents"]
+        member.annual_income = member_data["annual_income"]
+        member.civil_status = member_data["civil_status"]
+        member.educational_attainment = member_data["educational_attainment"]
+        member.save()
+
+        return Response(data={
+            "member": MemberSerializer(member).data
         }, status=status.HTTP_200_OK)
 
 
