@@ -875,7 +875,6 @@ class TicketTypePerDayReport(APIView):
 
             temp_start = temp_start + timedelta(days=1)
 
-
         return Response(data={
             "start_date": start_date.date(),
             "end_date": end_date.date(),
@@ -905,7 +904,7 @@ class TicketTypePerShuttle(APIView):
         shuttles = Shuttle.objects.all()
 
         for shuttle in shuttles:
-            deployments = Deployment.objects.filter(shuttle_id=shuttle.id ,shift_iteration__date=date)
+            deployments = Deployment.objects.filter(shuttle_id=shuttle.id, shift_iteration__date=date)
 
             # counts for the day
             am_count = 0
@@ -990,9 +989,6 @@ class TicketTypePerShuttle(APIView):
         }, status=status.HTTP_200_OK)
 
 
-
-
-
 class SupervisorWeeklyReport(APIView):
     @staticmethod
     def post(request):
@@ -1071,15 +1067,19 @@ class SupervisorWeeklyReport(APIView):
 class AccumulatedSharesReport(APIView):
     @staticmethod
     def post(request):
+        print(request.body)
         data = json.loads(request.body)
         members = Member.objects.all().order_by('name')
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
 
         rows = []
 
         for member in members:
             month = 1
-            print(data)
-            prior_shares = ShareUtilities.get_prior_shares(member.id, str(data))
+
+            temp_date = start_date
+
+            prior_shares = ShareUtilities.get_prior_shares(member.id, temp_date)
 
             array = []
             accumulated_shares = 0
@@ -1087,7 +1087,7 @@ class AccumulatedSharesReport(APIView):
             while month <= 12:
                 shares_bought = 0
                 shares = Share.objects.filter(
-                    date_of_update__year=data,
+                    date_of_update__year=temp_date.year,
                     date_of_update__month=month,
                     member_id=member.id
                 )
@@ -1095,7 +1095,6 @@ class AccumulatedSharesReport(APIView):
                 for share in shares:
                     shares_bought += share.value
                     accumulated_shares += share.value
-
 
                 array.append({
                     "month": calendar.month_name[month],
@@ -1111,16 +1110,30 @@ class AccumulatedSharesReport(APIView):
                 "months": array
             })
 
+        months_sum = []
+        for i in range(0, 12):
+            months_sum.append(sum(item['months'][i]['added_amount'] for item in rows))
+
+        acc_total = sum(item['accumulated_shares'] for item in rows)
+        prev_total = sum(item['prior_shares'] for item in rows)
+        grand_total = sum(item['total_shares'] for item in rows)
+
+
         return Response(data={
-            "year": data,
-            "members": rows
+            "year": start_date.year,
+            "members": rows,
+            "months_sum": months_sum,
+            "acc_total": acc_total,
+            "prev_total": acc_total,
+            "grand_total": grand_total
+
         }, status=status.HTTP_200_OK)
 
 
 class ShareUtilities(APIView):
     @staticmethod
-    def get_prior_shares(member_id, year):
-        shares = Share.objects.filter(date_of_update__lte=year, member_id=member_id)
+    def get_prior_shares(member_id, date):
+        shares = Share.objects.filter(date_of_update__lt=date, member_id=member_id)
         total = 0
         for share in shares:
             total += share.value
@@ -1145,17 +1158,20 @@ class NotificationItems(APIView):
             notifications = NotificationSerializer(Notification.objects
                                                    .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
-                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by('-created'), many=True)
+                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
+                '-created'), many=True)
         elif user_type == 'clerk':
             notifications = NotificationSerializer(Notification.objects
                                                    .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
-                                            .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by('-created'), many=True)
+                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
+                '-created'), many=True)
         elif user_type == 'mechanic':
             notifications = NotificationSerializer(Notification.objects
                                                    .filter(Q(type='I') | Q(type='N')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
-                                            .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by('-created'), many=True)
+                .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by(
+                '-created'), many=True)
 
         return Response(data={
             'notifications': notifications.data,

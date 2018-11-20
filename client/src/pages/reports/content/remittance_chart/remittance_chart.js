@@ -19,7 +19,8 @@ import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
-import { Chart } from "react-charts";
+import { Line } from 'react-chartjs-2';
+
 
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
@@ -31,53 +32,32 @@ class ComponentToPrint extends React.Component {
     }
 
     render() {
-        const options = {
-            animationEnabled: true,
-            exportEnabled: true,
-            theme: "light2", // "light1", "dark1", "dark2"
-            title: {
-                text: "Bounce Rate by Week of Year"
-            },
-            axisY: {
-                title: "Bounce Rate",
-                includeZero: false,
-                suffix: "%"
-            },
-            axisX: {
-                title: "Week of Year",
-                prefix: "W",
-                interval: 2
-            },
-            data: [{
-                type: "line",
-                toolTipContent: "Week {x}: {y}%",
-                dataPoints: [
-                    { x: 1, y: 64 },
-                    { x: 2, y: 61 },
-                    { x: 3, y: 64 },
-                    { x: 4, y: 62 },
-                    { x: 5, y: 64 },
-                    { x: 6, y: 60 },
-                    { x: 7, y: 58 },
-                    { x: 8, y: 59 },
-                    { x: 9, y: 53 },
-                    { x: 10, y: 54 },
-                    { x: 11, y: 61 },
-                    { x: 12, y: 60 },
-                    { x: 13, y: 55 },
-                    { x: 14, y: 60 },
-                    { x: 15, y: 56 },
-                    { x: 16, y: 60 },
-                    { x: 17, y: 59.5 },
-                    { x: 18, y: 63 },
-                    { x: 19, y: 58 },
-                    { x: 20, y: 54 },
-                    { x: 21, y: 59 },
-                    { x: 22, y: 64 },
-                    { x: 23, y: 59 }
-                ]
-            }]
-        }
+        const data = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', "November", "December"],
+            datasets: [
+                {
+                    label: 'My First dataset',
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'rgba(75,192,192,0.4)',
+                    borderColor: 'rgba(75,192,192,1)',
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'rgba(75,192,192,1)',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                    pointHoverBorderColor: 'rgba(220,220,220,1)',
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: [65, 59, 80, 81, 56, 55, 40, 2, 3, 4, 5, 1]
+                }
+            ]
+        };
         return (
             <div className="container">
                 <div className="report-labels">
@@ -90,9 +70,8 @@ class ComponentToPrint extends React.Component {
                     }
                 </div>
                 <div className="report-body">
-                    <div className="chart-wrapper">
-
-                    </div>
+                    {/*<div className="chart-wrapper">*/}
+                    <Line data={data}/>
                 </div>
             </div>
         );

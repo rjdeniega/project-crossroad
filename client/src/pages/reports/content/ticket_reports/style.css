@@ -65,3 +65,7 @@ td {
         page-break-before: always
         }
     }
+.week-label{
+    justify-self: center;
+    align-self: center
+    }
