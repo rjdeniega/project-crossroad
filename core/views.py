@@ -1070,7 +1070,7 @@ class SupervisorWeeklyReport(APIView):
 
 class AccumulatedSharesReport(APIView):
     @staticmethod
-    def get(request):
+    def post(request):
         data = json.loads(request.body)
         members = Member.objects.all().order_by('name')
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
