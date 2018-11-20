@@ -7,6 +7,9 @@ from django.db.models import (BooleanField, CharField, DateField, DecimalField,
                               ManyToManyField, PositiveIntegerField, TextField)
 from django.utils import timezone
 
+from django.db.models.aggregates import Count
+from random import randint
+
 from core.models import SoftDeletionModel
 
 MOVEMENT_TYPE = [
@@ -56,6 +59,11 @@ class Shuttle(SoftDeletionModel):
 
     def __str__(self):
         return f"{self.id} - {self.make} - {self.model}"
+
+    def random(self):
+        count = self.aggregate(count=Count('id'))['count']
+        random_index = randint(0, count - 1)
+        return self.all()[random_index]
 
 
 class Item(SoftDeletionModel):

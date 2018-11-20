@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from core.models import SoftDeletionModel
 from django.db.models import *
+from django.db.models.aggregates import Count
+from random import randint
 
 # Create your models here.
 
@@ -33,6 +35,10 @@ class Person(SoftDeletionModel):
     sex = CharField(max_length=1, choices=SEX)
     photo = FileField(default='client/src/images/default.png', null=True)
 
+    def random(self):
+        count = self.aggregate(count=Count('id'))['count']
+        random_index = randint(0, count - 1)
+        return self.all()[random_index]
 
 class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
@@ -41,6 +47,11 @@ class Driver(Person):
 
     def __str__(self):
         return self.name
+
+    def random(self):
+        count = self.aggregate(count=Count('id'))['count']
+        random_index = randint(0, count - 1)
+        return self.all()[random_index]
 
 
 class Clerk(Person):
