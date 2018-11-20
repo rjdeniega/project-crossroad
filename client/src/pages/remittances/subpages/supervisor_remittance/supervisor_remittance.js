@@ -419,6 +419,7 @@ export class SupervisorSecondContent extends Component {
         className="driver-list"
         itemLayout="horizontal"
         dataSource={this.state.drivers}
+        header = {<p><b>Assigned Drivers</b> </p>}
         renderItem={driver => (
             <List.Item key={driver.id}
                        onClick={() => this.handleDriverSelect(driver.id, driver.shuttle_id, driver.shuttle_plate_number)}
@@ -438,6 +439,7 @@ export class SupervisorSecondContent extends Component {
     renderSubList = () => ( <List
         className="driver-list"
         itemLayout="horizontal"
+        header = {<p><b>Sub Drivers</b> </p>}
         dataSource={this.state.sub_drivers}
         renderItem={driver => (
             <List.Item key={driver.id}
@@ -497,16 +499,23 @@ export class SupervisorSecondContent extends Component {
 
                     {this.state.tickets &&
                     <div className="tickets-div">
-                        <p><b>10 Peso Ticket (1)</b>: {this.state.tickets[0].range_from} - {this.state.tickets[0].range_to}</p>
-                        <p><b>10 Peso Ticket (2)</b>: {this.state.tickets[1].range_from} - {this.state.tickets[1].range_to}</p>
-                        <p><b>12 Peso Ticket (1)</b>: {this.state.tickets[2].range_from} - {this.state.tickets[2].range_to}</p>
-                        <p><b>12 Peso Ticket (2)</b>: {this.state.tickets[3].range_from} - {this.state.tickets[3].range_to}</p>
-                        <p><b>15 Peso Ticket (1)</b>: {this.state.tickets[4].range_from} - {this.state.tickets[4].range_to}</p>
-                        <p><b>15 Peso Ticket (2)</b>: {this.state.tickets[5].range_from} - {this.state.tickets[5].range_to}</p>
+                        <p><b>10 Peso Ticket (1)</b>: {this.state.tickets[0].range_from}
+                            - {this.state.tickets[0].range_to}</p>
+                        <p><b>10 Peso Ticket (2)</b>: {this.state.tickets[1].range_from}
+                            - {this.state.tickets[1].range_to}</p>
+                        <p><b>12 Peso Ticket (1)</b>: {this.state.tickets[2].range_from}
+                            - {this.state.tickets[2].range_to}</p>
+                        <p><b>12 Peso Ticket (2)</b>: {this.state.tickets[3].range_from}
+                            - {this.state.tickets[3].range_to}</p>
+                        <p><b>15 Peso Ticket (1)</b>: {this.state.tickets[4].range_from}
+                            - {this.state.tickets[4].range_to}</p>
+                        <p><b>15 Peso Ticket (2)</b>: {this.state.tickets[5].range_from}
+                            - {this.state.tickets[5].range_to}</p>
                     </div>
                     }
                     {this.state.is_under_maintenance &&
-                    <p className="error-message">{this.state.current_shuttle} is under maintenance. Please select new shuttle </p>
+                    <p className="error-message">{this.state.current_shuttle} is under maintenance. Please select new
+                        shuttle </p>
                     }
 
                     {/*<p><b>10 Peso Tickets</b></p>*/}
@@ -620,6 +629,7 @@ export class SupervisorSecondContent extends Component {
                     <Icon icon={clockO} size={30}/>
                     <p> Mag-Deploy ng Drivers </p>
                 </div>
+
                 <div className="driver-list-wrapper">
                     {drivers && this.renderDriversList()}
                     {sub_drivers && this.renderSubList()}
@@ -736,6 +746,7 @@ export class SupervisorLastContent extends Component {
     renderDriversList = () => ( <List
         className="driver-list"
         itemLayout="horizontal"
+        title="Assigned Drivers"
         dataSource={this.state.remittances}
         renderItem={item => (
             <List.Item onClick={this.showModal(item)} className="driver-item">

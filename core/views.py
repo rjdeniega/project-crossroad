@@ -634,7 +634,7 @@ class RemittanceVersusFuelReport(APIView):
                 total_fuel = 0
 
                 for remittance in remittances:
-                    total_remittance += remittance.total
+                    total_remittance += (remittance.total + remittance.fuel_cost)
                     total_fuel += remittance.fuel_cost
 
                 if len(shifts) == 1:
@@ -643,7 +643,7 @@ class RemittanceVersusFuelReport(APIView):
                     total_per_day = total_remittance
 
                 shifts.append({
-                    "type": shift.shift.type,
+                    "type": shift.shift.get_type_display(),
                     "remittance": total_remittance,
                     "total_per_day": total_per_day,
                     "fuel": total_fuel,
@@ -1118,7 +1118,6 @@ class AccumulatedSharesReport(APIView):
         prev_total = sum(item['prior_shares'] for item in rows)
         grand_total = sum(item['total_shares'] for item in rows)
 
-
         return Response(data={
             "year": start_date.year,
             "members": rows,
@@ -1149,11 +1148,17 @@ class ShuttleCostVRevenueReport(APIView):
         rows = []
         total_remittance = 0
         total_cost = 0
+        total_fuel = 0
 
         for shuttle in Shuttle.objects.all():
             initialMaintenanceCost = 0
 
-            shuttle_remittance = sum([item.total for item in RemittanceForm.objects.filter(
+            shuttle_remittance = sum([(item.total + item.fuel_cost) for item in RemittanceForm.objects.filter(
+                deployment__shuttle=shuttle.id,
+                deployment__shift_iteration__date__gte=start_date
+            )])
+
+            shuttle_fuel_cost = sum([item.fuel_cost for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
                 deployment__shift_iteration__date__gte=start_date
             )])
@@ -1181,23 +1186,23 @@ class ShuttleCostVRevenueReport(APIView):
                 "shuttle_plate_number": shuttle.plate_number,
                 "shuttle_make": shuttle.make,
                 "revenue": shuttle_remittance,
+                "fuel_cost": shuttle_fuel_cost,
                 "cost": initialMaintenanceCost,
-                "value": shuttle_remittance - initialMaintenanceCost
+                "value": shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost
             })
 
             total_remittance += shuttle_remittance
+            total_fuel += shuttle_fuel_cost
             total_cost += initialMaintenanceCost
 
         return Response(data={
             "start_date": start_date,
             "total_remittance": total_remittance,
             "total_costs": total_cost,
-            "grand_total": total_remittance - total_cost,
+            "total_fuel": total_fuel,
+            "grand_total": total_remittance - total_fuel - total_cost,
             "shuttles": rows
         }, status=status.HTTP_200_OK)
-
-
-
 
 
 class NotificationItems(APIView):

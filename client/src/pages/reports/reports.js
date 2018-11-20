@@ -28,6 +28,8 @@ import { WeeklySupervisorReport } from './content/weekly_supervisor_report/weekl
 import { PassengerCount } from './content/passenger_count/passenger_count'
 import {MaintenanceReport  } from './content/maintenance_report/maintenance_report'
 import {SharesAccumulationReport  } from './content/shares_accumulation/shares_accumulation'
+import {ShuttleIncome  } from './content/shuttle_income/shuttle_income'
+
 
 
 
@@ -36,12 +38,12 @@ import {SharesAccumulationReport  } from './content/shares_accumulation/shares_a
 
 const { Meta } = Card;
 const REMITTANCE_CARDS = [{
-    'title': 'Remittance Report',
+    'title': 'Remittance Queries',
     'description': 'view remittances for a time period',
     'icon': money,
     'content': <RemittanceReport/>
 },{
-    'title': 'AM PM Remittance Report',
+    'title': 'Remittance Report',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <RemittanceSummary/>
@@ -66,7 +68,7 @@ const REMITTANCE_CARDS = [{
     'icon': money,
     'content': <WeeklySupervisorReport/>
 },{
-    'title': 'Passenger Count',
+    'title': 'Passenger Queries',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <PassengerCount/>
@@ -76,6 +78,11 @@ const MAINTENANCE_CARDS = [{
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
     'content': <MaintenanceReport/>
+},{
+    'title': 'Shuttle Net Income',
+    'description': 'view maintenance cost per shuttle',
+    'icon': wrench,
+    'content': <ShuttleIncome/>
 }];
 const MEMBER_CARDS = [{
     'title': 'Shares Report',

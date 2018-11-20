@@ -19,8 +19,8 @@ ROUTE = [
 ]
 
 SHIFT_TYPE = [
-    ('A', 'AM Shift'),
-    ('P', 'PM Shift'),
+    ('A', 'AM'),
+    ('P', 'PM'),
 ]
 
 DRIVER_DEPLOYMENT_TYPE = [
