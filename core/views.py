@@ -1173,7 +1173,7 @@ class ShuttleCostVRevenueReport(APIView):
                 "cost": initialMaintenanceCost,
                 "value": shuttle_remittance - initialMaintenanceCost
             })
-            
+
             total_remittance += shuttle_remittance
             total_cost += initialMaintenanceCost
 
@@ -1181,7 +1181,7 @@ class ShuttleCostVRevenueReport(APIView):
             "start_date": start_date,
             "total_remittance": total_remittance,
             "total_costs": total_cost,
-            "grand_total": total_remittance - total_cost
+            "grand_total": total_remittance - total_cost,
             "shuttles": rows
         }, status=status.HTTP_200_OK)
 
