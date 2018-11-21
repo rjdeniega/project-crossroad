@@ -129,3 +129,70 @@ class PopulateDatabase():
                      consumable=False,
                      average_price=1300)
         item3.save()
+
+        itemMovement3 = ItemMovement(item=item3,
+                                     type="B",
+                                     quantity=9,
+                                     vendor="Ace Hardware",
+                                     unit_price=1300)
+        itemMovement3.save()
+
+        item4 = Item(name="Radiator Coolant",
+                     description="Total Hi-concentrate Radiator Coolant",
+                     quantity=6,
+                     brand="Total",
+                     consumable=True,
+                     average_price=230)
+        item4.save()
+
+        itemMovement4 = ItemMovement(item=item4,
+                                     type="B",
+                                     quantity=6,
+                                     vendor="Total",
+                                     unit_price=230)
+        itemMovement4.save()
+
+        item5 = Item(name="Engine Oil",
+                     description="Synthetic Performance Gasoline Oil",
+                     quantity=5,
+                     brand="Apex",
+                     consumable=True,
+                     average_price=455)
+        item5.save()
+
+        itemMovement5 = ItemMovement(item=item5,
+                                     type="B",
+                                     quantity=5,
+                                     vendor="Shell",
+                                     unit_price=455)
+        itemMovement5.save()
+
+        item6 = Item(name="Tire Valve Cap",
+                     description="For Tires",
+                     quantity=16,
+                     brand="OEM",
+                     consumable=False,
+                     average_price=25)
+        item6.save()
+
+        itemMovement6 = ItemMovement(item=item6,
+                                     type="B",
+                                     quantity=16,
+                                     vendor="Ace Hardware",
+                                     unit_price=25)
+        itemMovement6.save()
+
+        item7 = Item(name="Tire",
+                     description="Tires for L300",
+                     quantity=6,
+                     brand="Thunderer",
+                     consumable=False,
+                     average_price=2860)
+        item7.save()
+
+        itemMovement7 = ItemMovement(item=item7,
+                                     type="B",
+                                     quantity=6,
+                                     vendor="Goodyear",
+                                     unit_price=2860)
+        itemMovement7.save()
