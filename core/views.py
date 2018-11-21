@@ -1002,6 +1002,8 @@ class SupervisorWeeklyReport(APIView):
         rows = []
         total_deployed_drivers = 0
         total_remittances = 0
+        total_costs = 0
+        total_income = 0
 
         while temp_start <= end_date:
             shift_iterations = ShiftIteration.objects.filter(shift__supervisor=supervisor, date=temp_start)
@@ -1009,6 +1011,8 @@ class SupervisorWeeklyReport(APIView):
             for shift_iteration in shift_iterations:
                 number_of_drivers = 0
                 daily_remittance = 0
+                daily_cost = 0
+                daily_income = 0
 
                 deployed_drivers = []
 
@@ -1021,6 +1025,9 @@ class SupervisorWeeklyReport(APIView):
 
                     for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
                         daily_remittance += consumed_ticket.total
+                    for remittance in RemittanceForm.objects.filter(deployment=deployment):
+                        daily_cost += remittance.fuel_cost + remittance.other_cost
+                        daily_income += remittance.total
                     number_of_drivers += 1
 
                 absent_drivers = []
@@ -1043,6 +1050,8 @@ class SupervisorWeeklyReport(APIView):
                     "shift": shift_iteration.shift.get_type_display(),
                     "number_of_drivers": number_of_drivers,
                     "daily_remittance": daily_remittance,
+                    "daily_cost": daily_cost,
+                    "daily_income": daily_income,
                     "deployed_drivers": deployed_drivers,
                     "absent_drivers": absent_drivers,
                     "remarks": shift_iteration.remarks
@@ -1050,6 +1059,8 @@ class SupervisorWeeklyReport(APIView):
 
                 total_deployed_drivers += number_of_drivers
                 total_remittances += daily_remittance
+                total_costs += daily_cost
+                total_income += daily_income
 
             temp_start = temp_start + timedelta(days=1)
 
@@ -1059,6 +1070,8 @@ class SupervisorWeeklyReport(APIView):
             "supervisor_id": supervisor.id,
             "supervisor_name": supervisor.name,
             "total_remittances": total_remittances,
+            "total_costs": total_costs,
+            "total_income": total_income,
             "total_deployed_drivers": total_deployed_drivers,
             "rows": rows
         }, status=status.HTTP_200_OK)
