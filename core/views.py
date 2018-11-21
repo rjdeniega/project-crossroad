@@ -1087,6 +1087,7 @@ class AccumulatedSharesReport(APIView):
             while month <= 12:
                 shares_bought = 0
                 shares = Share.objects.filter(
+                    date_of_update__gt=start_date,
                     date_of_update__year=temp_date.year,
                     date_of_update__month=month,
                     member_id=member.id
@@ -1123,7 +1124,7 @@ class AccumulatedSharesReport(APIView):
             "members": rows,
             "months_sum": months_sum,
             "acc_total": acc_total,
-            "prev_total": acc_total,
+            "prev_total": prev_total,
             "grand_total": grand_total
 
         }, status=status.HTTP_200_OK)
