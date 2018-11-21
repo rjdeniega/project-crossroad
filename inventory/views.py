@@ -291,7 +291,14 @@ class MechanicItems(APIView):
             im.save()
             item.quantity = item.quantity - data['quantity']
 
+
+
         item.save()
+
+        if item.quantity < 5:
+            notification = Notification(
+                type='I', description=item.name + " is low on stock")
+            notification.save()
         modifications = RepairModificationsSerializer(
             repair.modifications.all(), many=True)
         return Response(data={
