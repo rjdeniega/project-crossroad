@@ -1015,6 +1015,7 @@ class TicketTypePerShuttle(APIView):
                 "shuttle_id": shuttle.id,
                 "shuttle_make": shuttle.make,
                 "shuttle_model": shuttle.model,
+                "shuttle_route": shuttle.route,
                 "am_total": am_count,
                 "pm_total": pm_count,
                 "am_ten": am_ten,
