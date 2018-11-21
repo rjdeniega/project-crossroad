@@ -1,0 +1,33 @@
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@opuscapita/react-perfect-scrollbar": "^3.0.3",
+    "antd": "latest",
+    "moment": "latest",
+    "rc-form": "latest",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-icons-kit": "latest",
+    "react-native": "latest",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "1.1.4",
+    "react-table": "^6.8.6",
+    "react-to-print": "^2.0.0-alpha-4",
+    "react-chartjs": "latest",
+    "react-charts": "latest",
+    "react-charts": "latest"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "theme": {
+    "primary-color": "47798A",
+    "font-family": "Montserrat"
+  },
+  "proxy": "http://localhost:9000/"
+}
