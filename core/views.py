@@ -1066,12 +1066,8 @@ class SupervisorWeeklyReport(APIView):
 
 class AccumulatedSharesReport(APIView):
     @staticmethod
-<<<<<<< HEAD
     def post(request):
         print(request.body)
-=======
-    def get(request):
->>>>>>> parent of 9712ca5... set-up shares accumulation report
         data = json.loads(request.body)
         members = Member.objects.all().order_by('name')
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
@@ -1081,13 +1077,9 @@ class AccumulatedSharesReport(APIView):
         for member in members:
             month = 1
 
-<<<<<<< HEAD
             temp_date = start_date
 
             prior_shares = ShareUtilities.get_prior_shares(member.id, temp_date)
-=======
-            prior_shares = ShareUtilities(member.id, data['year'])
->>>>>>> parent of 9712ca5... set-up shares accumulation report
 
             array = []
             accumulated_shares = 0
@@ -1095,11 +1087,7 @@ class AccumulatedSharesReport(APIView):
             while month <= 12:
                 shares_bought = 0
                 shares = Share.objects.filter(
-<<<<<<< HEAD
                     date_of_update__year=temp_date.year,
-=======
-                    date_of_update__year=data['year'],
->>>>>>> parent of 9712ca5... set-up shares accumulation report
                     date_of_update__month=month,
                     member_id=member.id
                 )
@@ -1131,7 +1119,6 @@ class AccumulatedSharesReport(APIView):
         grand_total = sum(item['total_shares'] for item in rows)
 
         return Response(data={
-<<<<<<< HEAD
             "year": start_date.year,
             "members": rows,
             "months_sum": months_sum,
@@ -1139,10 +1126,6 @@ class AccumulatedSharesReport(APIView):
             "prev_total": acc_total,
             "grand_total": grand_total
 
-=======
-            "year": data["year"],
-            "members": rows
->>>>>>> parent of 9712ca5... set-up shares accumulation report
         }, status=status.HTTP_200_OK)
 
 
