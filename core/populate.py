@@ -281,3 +281,21 @@ class PopulateDatabase():
                            mileage=500,
                            route="B")
         shuttle9.save()
+
+    @staticmethod
+    def populate_repairs():
+        repair1 = Repair(shuttle=Shuttle.objects.get(pk=1),
+                         date_requested=datetime.strptime('15112018', "%d%m%Y").date(),
+                         start_date=datetime.strptime('16112018', "%d%m%Y").date(),
+                         end_date=datetime.strptime('17112018', "%d%m%Y").date(),
+                         status="C",
+                         maintenance=True)
+        repair1.save()
+        item1 = Item.objects.get(pk=1)
+        rp1 = RepairProblem(description="Maintenance")
+        rp1.save()
+        itemMovement1 = ItemMovement(item=item1,
+                                     type="G",
+                                     quantity="1",
+                                     repair=repair1)
+        itemMovement1.save()
