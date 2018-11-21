@@ -299,3 +299,5 @@ class PopulateDatabase():
                                      quantity="1",
                                      repair=repair1)
         itemMovement1.save()
+        repair1.problems.add(rp1)
+        repair1.modifications.add(itemMovement1)
