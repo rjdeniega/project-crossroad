@@ -516,6 +516,82 @@ class MemberTransactionByReport(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class PatronageRefund(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        surplus = int(data['surplus'])
+        print(surplus)
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = None
+
+        report_items = []
+        for member in Member.objects.all():
+            member_data = MemberSerializer(member).data
+            try:
+                id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
+            except ObjectDoesNotExist:
+                report_items.append({
+                    "member": MemberSerializer(member).data,
+                    "transactions": None,
+                    "total_transactions": 0
+                })
+                id_card = None
+
+            if id_card is not None:
+                member_data["id_card"] = id_card.can
+                transactions = BeepTransaction.objects.filter(card_number=id_card.can)
+                carwash_transactions = [item for item in
+                                        CarwashTransaction.objects.all() if item.member == member]
+                if end_date is not None:
+                    transactions = [item for item in transactions if
+                                    start_date.date() <= item.shift.date <= end_date.date()]
+                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+                                            start_date.date() <= item.date <= end_date.date()]
+                else:
+                    transactions = [item for item in transactions if start_date.date() == item.shift.date]
+                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+                                            start_date.date() == item.date]
+
+                serialized_transactions = BeepTransactionSerializer(transactions, many=True)
+                for item in serialized_transactions.data:
+                    item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+
+                rate_of_refund = (sum([item.total for item in transactions]) + sum(
+                        [item.total for item in carwash_transactions]))/surplus if surplus != 0 else 0
+                report_items.append({
+                    "date":start_date,
+                    "member": member_data,
+                    "member_card": IDCardSerializer(IDCards.objects.get(member=member)).data,
+                    "no_of_beep": len(transactions),
+                    "no_of_carwash": len(carwash_transactions),
+                    "beep_total": sum([item.total for item in transactions]),
+                    "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
+                    "carwash_total": sum([item.total for item in carwash_transactions]),
+                    "beep_transactions": serialized_transactions.data,
+                    "carwash_transactions": carwash_transactions,
+                    "total_transactions": sum([item.total for item in transactions]) + sum(
+                        [item.total for item in carwash_transactions]),
+                    "rate_of_refund": rate_of_refund*100,
+                    "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
+                        [item.total for item in carwash_transactions])),
+                    "patronage_refund": (rate_of_refund / 100) * sum([item.total for item in transactions]) + sum(
+                        [item.total for item in carwash_transactions]),
+                })
+        return Response(data={
+            "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
+            "no_of_carwash_total": sum(item['no_of_carwash'] for item in report_items),
+            "beep_grand_total": "{0:,.2f}".format(sum(item['beep_total'] for item in report_items)),
+            "carwash_grand_total": "{0:,.2f}".format(sum(item['carwash_total'] for item in report_items)),
+            "grand_total": "{0:,.2f}".format(sum(item['total_transactions'] for item in report_items)),
+            "report_items": report_items
+        }, status=status.HTTP_200_OK)
+
+
 class SharesByDate(APIView):
     @staticmethod
     def post(request):
@@ -707,13 +783,14 @@ class RemittanceVersusFuelReport(APIView):
                     total_fuel += remittance.fuel_cost
 
                 if len(shifts) == 1:
-                    total_per_day = shifts[0]["remittance"] + total_remittance
+                    total_per_day = shifts[0]["remittance_value"] + total_remittance
                 else:
                     total_per_day = total_remittance
 
                 shifts.append({
                     "type": shift.shift.get_type_display(),
                     "remittance": "{0:,.2f}".format(total_remittance),
+                    "remittance_value": total_remittance,
                     "total_per_day": "{0:,.2f}".format(total_per_day),
                     "fuel": "{0:,.2f}".format(total_fuel),
                     "remittance_minus_fuel": "{0:,.2f}".format(total_remittance - total_fuel)
@@ -811,7 +888,7 @@ class BeepTickets(APIView):
                     total_fuel += remittance.fuel_cost
 
                 if len(shifts) == 1:
-                    total_per_day = shifts[0]["remittance"] + total_remittance
+                    total_per_day = shifts[0]["remittance_value"] + total_remittance
                 else:
                     total_per_day = total_remittance
 
@@ -827,6 +904,7 @@ class BeepTickets(APIView):
                     "beep_total_value": beep_total,
                     "beep_ticket_total_value": beep_total + total_remittance - total_fuel,
                     "remittance": "{0:,.2f}".format(total_remittance),
+                    "remittance_value": total_remittance,
                     "total_per_day": "{0:,.2f}".format(total_per_day),
                     "fuel": "{0:,.2f}".format(total_fuel),
                     "remittance_minus_fuel": "{0:,.2f}".format(total_remittance - total_fuel),

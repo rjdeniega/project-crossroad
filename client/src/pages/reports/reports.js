@@ -32,6 +32,8 @@ import {ShuttleIncome  } from './content/shuttle_income/shuttle_income'
 import {TicketPerDay } from './content/ticket_per_day/ticket_per_day'
 import {MemberTransactions} from './content/member_transactions/member_transactions'
 import {BeepTickets} from './content/beep_tickets/beep_tickets'
+import {PatronageRefund} from './content/patronage_refund/patronage_refund'
+
 
 
 
@@ -121,6 +123,11 @@ const MEMBER_CARDS = [{
     'description': 'View transactions of members over a period of time',
     'icon': driversLicenseO,
     'content': <MemberTransactions/>
+},{
+    'title': 'Patronage Refund',
+    'description': 'View transactions of members over a period of time',
+    'icon': driversLicenseO,
+    'content': <PatronageRefund/>
 },];
 export class ReportsPage extends Component {
     state = {

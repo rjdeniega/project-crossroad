@@ -479,7 +479,7 @@ export class SupervisorSecondContent extends Component {
                 <div className="driver-deploy-input">
                     <div className="route-div">
                         <p><b>Route: </b></p>
-                        <Select onChange={this.handleFormUpdatesListener("route")} className="route-input"
+                        <Select disabled onChange={this.handleFormUpdatesListener("route")} className="route-input"
                                 value={this.state.route}>
                         </Select>
                         {!this.state.is_under_maintenance &&
