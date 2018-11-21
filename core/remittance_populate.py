@@ -13,6 +13,24 @@ class PopulateRemittances():
         while current_date <= new_end_date:
             sched = pop.create_schedule(current_date, current_date)
 
+            temp_date = current_date
+
+            while temp_date < current_date + timedelta(days=15):
+                #create deployments
+                ctr = 0
+                # there are twice the deployments in a day
+                while ctr < 2:
+                    if ctr == 0:
+                        shift = Shift.objects.get(schedule=sched, type='A')
+                    else:
+                        shift = Shift.objects.get(schedule=sched, type='P')
+
+                    shift_iteration = pop.start_shift_iteration(temp_date, shift)
+
+                    ctr += 1
+
+                temp_date = temp_date + timedelta(days=1)
+
             current_date = current_date + timedelta(days=15)
 
     @staticmethod
@@ -26,7 +44,7 @@ class PopulateRemittances():
 
         # create shifts for every schedule
         shifts = ['A', 'P']
-        
+
         supervisor_ids = [1, 2, 3]
         driver_ids_odd = [4, 5, 6, 7, 8, 9, 10]
         driver_ids_even = [11, 12, 13, 14, 15, 16, 17]
@@ -49,6 +67,8 @@ class PopulateRemittances():
             )
             ctr += 1
 
+        return schedule
+
     @staticmethod
     def create_shift(schedule, supervisor, type, current_date, drivers):
         shift = Shift.objects.create(
@@ -68,3 +88,10 @@ class PopulateRemittances():
                 shift=shift,
                 shuttle_id=shuttle_ids[ctr]
             )
+
+    @staticmethod
+    def start_shift_iteration(date, shift):
+        return ShiftIteration.objects.create(
+            date=date,
+            shift=shift
+        )
