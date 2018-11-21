@@ -1,4 +1,5 @@
 from datetime import timedelta
+from datetime import datetime
 from remittances.models import *
 from members.models import *
 from inventory.models import *
@@ -196,3 +197,87 @@ class PopulateDatabase():
                                      vendor="Goodyear",
                                      unit_price=2860)
         itemMovement7.save()
+
+    @staticmethod
+    def populate_shuttle():
+        shuttle1 = Shuttle(plate_number="WGV636",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="M")
+        shuttle1.save()
+        shuttle2 = Shuttle(plate_number="XLZ502",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="M")
+        shuttle2.save()
+        shuttle3 = Shuttle(plate_number="UF7087",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="M")
+        shuttle3.save()
+        shuttle4 = Shuttle(plate_number="AB5225",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="L")
+        shuttle4.save()
+        shuttle5 = Shuttle(plate_number="UF6862",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="L")
+        shuttle5.save()
+        shuttle6 = Shuttle(plate_number="VO5030",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="R")
+        shuttle6.save()
+        shuttle7 = Shuttle(plate_number="WD5363",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="R")
+        shuttle7.save()
+        shuttle8 = Shuttle(plate_number="YR8953",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="B")
+        shuttle8.save()
+        shuttle9 = Shuttle(plate_number="DS2110",
+                           make="Toyota",
+                           model="L300",
+                           status="A",
+                           date_acquired=datetime.strptime(
+                               '24052016', "%d%m%Y").date(),
+                           mileage=500,
+                           route="B")
+        shuttle9.save()
