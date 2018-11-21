@@ -725,32 +725,32 @@ class RemittanceVersusFuelReport(APIView):
             if len(shifts) == 0:
                 shifts = [{
                     "type": "AM",
-                    "total_per_day": 0,
-                    "remittance": 0,
-                    "fuel": 0,
-                    "remittance_minus_fuel": 0
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0)
                 }, {
                     "type": "PM",
-                    "total_per_day": 0,
-                    "remittance": 0,
-                    "fuel": 0,
-                    "remittance_minus_fuel": 0
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0)
                 }]
             elif len(shifts) == 1 and shifts[0]['type'] == "AM":
                 shifts.append({
                     "type": "PM",
-                    "total_per_day": 0,
-                    "remittance": 0,
-                    "fuel": 0,
-                    "remittance_minus_fuel": 0
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0)
                 })
             elif len(shifts) == 1 and shifts[0]['type'] == "PM":
                 shifts = [{
                     "type": "AM",
-                    "total_per_day": 0,
-                    "remittance": 0,
-                    "fuel": 0,
-                    "remittance_minus_fuel": 0
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0)
                 }, shifts[0]]
             rows.append({
                 "date": temp_start.date(),
@@ -769,6 +769,157 @@ class RemittanceVersusFuelReport(APIView):
         return Response(data={
             "start_date": start_date.date(),
             "end_date": end_date.date(),
+            "grand_remit_total": "{0:,.2f}".format(grand_total),
+            "grand_fuel_total": "{0:,.2f}".format(grand_fuel_total),
+            "grand_remit_minus_fuel": "{0:,.2f}".format(grand_total - grand_fuel_total),
+            "rows": rows
+        }, status=status.HTTP_200_OK)
+
+
+class BeepTickets(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        print(request.data)
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date + timedelta(days=6)  # for one week
+        temp_start = start_date
+
+        rows = []
+        grand_total = 0
+        grand_fuel_total = 0
+
+        while temp_start <= end_date:
+            shift_iterations = ShiftIteration.objects.filter(date=temp_start)
+
+            shifts = []
+
+            total_remit_day_without_fuel = 0
+            total_fuel_for_day = 0
+
+            for shift in shift_iterations:
+                remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift)
+
+                total_remittance = 0
+                total_fuel = 0
+
+                for remittance in remittances:
+                    total_remittance += (remittance.total + remittance.fuel_cost)
+                    total_fuel += remittance.fuel_cost
+
+                if len(shifts) == 1:
+                    total_per_day = shifts[0]["remittance"] + total_remittance
+                else:
+                    total_per_day = total_remittance
+
+                try:
+                    beep_shift = BeepShift.objects.filter(date=temp_start.date())
+                    beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
+                except ObjectDoesNotExist:
+                    beep_shift = []
+                beep_total = sum([item.total for item in BeepTransaction.objects.all() if item.shift == beep_shift])
+                shifts.append({
+                    "type": shift.shift.get_type_display(),
+                    "beep_total": "{0:,.2f}".format(beep_total),
+                    "beep_total_value": beep_total,
+                    "beep_ticket_total_value": beep_total + total_remittance - total_fuel,
+                    "remittance": "{0:,.2f}".format(total_remittance),
+                    "total_per_day": "{0:,.2f}".format(total_per_day),
+                    "fuel": "{0:,.2f}".format(total_fuel),
+                    "remittance_minus_fuel": "{0:,.2f}".format(total_remittance - total_fuel),
+                    "beep_ticket_total": "{0:,.2f}".format(beep_total + total_remittance - total_fuel)
+                })
+
+                total_remit_day_without_fuel += total_remittance
+                total_fuel_for_day += total_fuel
+
+            try:
+                am_beep = [item for item in BeepTransaction.objects.all() if
+                           item.shift.date == temp_start.date() and item.shift.type == 'A']
+                pm_beep = [item for item in BeepTransaction.objects.all() if
+                           item.shift.date == temp_start.date() and item.shift.type == 'P']
+                print(am_beep)
+                print(pm_beep)
+
+            except ObjectDoesNotExist:
+                am_beep = []
+                pm_beep = []
+
+            am_beep_shift = sum([item.total for item in am_beep])
+            pm_beep_shift = sum([item.total for item in pm_beep])
+
+            if len(shifts) == 0:
+                shifts = [{
+                    "type": "AM",
+                    "beep_total": "{0:,.2f}".format(am_beep_shift),
+                    "beep_total_value": am_beep_shift,
+                    "beep_ticket_total_value": am_beep_shift,
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0),
+                    "beep_ticket_total": "{0:,.2f}".format(am_beep_shift)
+                }, {
+                    "type": "PM",
+                    "beep_total": "{0:,.2f}".format(pm_beep_shift),
+                    "beep_total_value": pm_beep_shift,
+                    "beep_ticket_total_value": pm_beep_shift,
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0),
+                    "beep_ticket_total": "{0:,.2f}".format(pm_beep_shift)
+                }]
+            elif len(shifts) == 1 and shifts[0]['type'] == "AM":
+                shifts.append({
+                    "type": "PM",
+                    "beep_total": "{0:,.2f}".format(pm_beep_shift),
+                    "beep_total_value": pm_beep_shift,
+                    "beep_ticket_total_value": pm_beep_shift,
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0),
+                    "beep_ticket_total": "{0:,.2f}".format(pm_beep_shift)
+                })
+            elif len(shifts) == 1 and shifts[0]['type'] == "PM":
+                shifts = [{
+                    "type": "AM",
+                    "beep_total": "{0:,.2f}".format(am_beep_shift),
+                    "beep_total_value": am_beep_shift,
+                    "beep_ticket_total_value": am_beep_shift,
+                    "total_per_day": "{0:,.2f}".format(0),
+                    "remittance": "{0:,.2f}".format(0),
+                    "fuel": "{0:,.2f}".format(0),
+                    "remittance_minus_fuel": "{0:,.2f}".format(0),
+                    "beep_ticket_total_value": "{0:,.2f}".format(am_beep_shift)
+                }, shifts[0]]
+            rows.append({
+                "date": temp_start.date(),
+                "shifts": shifts,
+                "total_remit_day_without_fuel": "{0:,.2f}".format(total_remit_day_without_fuel),
+                "total_fuel_for_day": "{0:,.2f}".format(total_fuel_for_day),
+                "total_minus_fuel": "{0:,.2f}".format(total_remit_day_without_fuel - total_fuel_for_day),
+            })
+
+            # totals
+            grand_total += total_remit_day_without_fuel
+            grand_fuel_total += total_fuel_for_day
+
+            temp_start = temp_start + timedelta(days=1)
+            beep_total = 0
+            for item in rows:
+                total = sum([x['beep_total_value'] for x in item['shifts']])
+                beep_total += total
+
+        return Response(data={
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
+            "beep_grand_total": "{0:,.2f}".format(beep_total),
+            "grandest_total": "{0:,.2f}".format(beep_total + grand_total - grand_fuel_total),
             "grand_remit_total": "{0:,.2f}".format(grand_total),
             "grand_fuel_total": "{0:,.2f}".format(grand_fuel_total),
             "grand_remit_minus_fuel": "{0:,.2f}".format(grand_total - grand_fuel_total),

@@ -33,7 +33,7 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Remittance Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p> Beep + Ticket Remittance Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
                         }
                     </Fragment>
                     }
@@ -47,11 +47,13 @@ class ComponentToPrint extends React.Component {
                         <th>Total Per Day</th>
                         <th>Fuel</th>
                         <th>Total after Fuel</th>
+                        <th>Beep Remittance</th>
+                        <th>Total</th>
                         </thead>
                         <tbody>
                         {this.props.data &&
                         <Fragment>
-                            {this.props.data.rows.map((item,index) => (
+                            {this.props.data.rows.map((item, index) => (
                                 <Fragment>
                                     <tr>
                                         <td>{item.date}</td>
@@ -63,16 +65,22 @@ class ComponentToPrint extends React.Component {
                                                 <td>{item.type}</td>
                                                 <td>{item.remittance}</td>
                                                 {(item.type == "A" || item.type == "AM") &&
-                                                <td></td>
+                                                <Fragment>
+                                                    <td></td>
+                                                </Fragment>
                                                 }
                                                 {(item.type == "P" || item.type == "PM") &&
-                                                <td><b>{item.total_per_day}</b></td>
+                                                <Fragment>
+                                                    <td><b>{item.total_per_day}</b></td>
+                                                </Fragment>
                                                 }
                                                 <td>{item.fuel}</td>
                                                 <td><b>{item.remittance_minus_fuel}</b></td>
+                                                <td>{item.beep_total}</td>
+                                                <td><b>{item.beep_ticket_total}</b></td>
                                             </tr>
                                             {/*{index%11 == 0 &&*/}
-                                                {/*<p className="page-break"></p>*/}
+                                            {/*<p className="page-break"></p>*/}
                                             {/*}*/}
 
                                         </Fragment>
@@ -80,12 +88,24 @@ class ComponentToPrint extends React.Component {
                                 </Fragment>
                             ))}
                             <tr>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
                             </tr>
                             <tr>
 
@@ -95,6 +115,10 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line"><b>{this.props.data.grand_remit_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.grand_fuel_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.grand_remit_minus_fuel}</b></td>
+                                <td className="total-line"><b>{this.props.data.beep_grand_total}</b></td>
+                                <td className="total-line"><b>{this.props.data.grandest_total}</b></td>
+
+
                             </tr>
                         </Fragment>
                         }
@@ -117,7 +141,7 @@ export class BeepTickets extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        postData('/remittance_versus_fuel/', data).then(data => {
+        postData('/beep_tickets/', data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({

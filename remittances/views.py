@@ -399,11 +399,12 @@ class SpecificDriver(APIView):
         shift = Shift.objects.get(schedule=active_sched, supervisor_id=supervisor_id)
         driver_assigned = DriversAssigned.objects.get(shift=shift, driver_id=driver_id)
 
-        if driver_assigned.shuttle.status is 'UM':
+        print(driver_assigned.shuttle.status)
+        if driver_assigned.shuttle.status == 'UM':
             is_under_maintenance = True
         else:
             is_under_maintenance = False
-
+        print(is_under_maintenance)
         return Response(data={
             "shuttle_id": driver_assigned.shuttle.id,
             "shuttle_make": driver_assigned.shuttle.make,
