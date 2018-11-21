@@ -691,6 +691,60 @@ class RemittanceVersusFuelReport(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class RemittancePerRouteReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = start_date + timedelta(days=6) # for one week
+
+        temp_start = start_date
+
+        rows = []
+        kaliwa_total = 0
+        kanan_total = 0
+        main_road_total = 0
+
+        while temp_start <= end_date:
+            remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=temp_start)
+
+            kaliwa_count = 0
+            kanan_count = 0
+            main_road_count = 0
+
+            for remittance in remittances:
+                if remittance.deployment.route is 'L':
+                    kaliwa_count += remittance.total + remittance.fuel_cost + remittance.other_cost
+                elif remittance.deployment.route is 'R':
+                    kanan_count += remittance.total + remittance.fuel_cost + remittance.other_cost
+                else:
+                    main_road_count += remittance.total + remittance.fuel_cost + remittance.other_cost
+
+            rows.append({
+                "date": temp_start,
+                "day": calendar.day_name[temp_start.weekday()],
+                "kaliwa": "{0:,.2f}".format(kaliwa_count),
+                "kanan": "{0:,.2f}".format(kanan_count),
+                "main_road": "{0:,.2f}".format(main_road_count),
+            })
+
+            kaliwa_total += kaliwa_count
+            kanan_total += kanan_count
+            main_road_total += main_road_count
+
+            temp_start = temp_start + timedelta(days=1)
+
+        return Response(data={
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
+            "kaliwa_total": "{0:,.2f}".format(kaliwa_total),
+            "kanan_total": "{0:,.2f}".format(kanan_total),
+            "main_road_total": "{0:,.2f}".format(main_road_total),
+            "days": rows
+        }, status=status.HTTP_200_OK)
+
+
+
 class TicketCountReport(APIView):
     @staticmethod
     def post(request):

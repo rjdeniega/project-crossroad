@@ -51,7 +51,8 @@ urlpatterns = [
     path('ticket_type_per_shuttle/', TicketTypePerShuttle.as_view()),
     path('supervisor_weekly_report/', SupervisorWeeklyReport.as_view()),
     path('accumulated_shares_report/', AccumulatedSharesReport.as_view()),
-    path('shuttle_net_income_report/', ShuttleCostVRevenueReport.as_view())
+    path('shuttle_net_income_report/', ShuttleCostVRevenueReport.as_view()),
+    path('remittance_per_route_report/', RemittancePerRouteReport.as_view())
 ]
 
 if settings.DEBUG:
