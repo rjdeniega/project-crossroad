@@ -35,6 +35,10 @@ class Person(SoftDeletionModel):
     sex = CharField(max_length=1, choices=SEX)
     photo = FileField(default='client/src/images/default.png', null=True)
 
+    def __str__(self):
+        return self.name
+
+
     def random(self):
         count = self.aggregate(count=Count('id'))['count']
         random_index = randint(0, count - 1)
@@ -44,9 +48,6 @@ class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     remaining_tickets = PositiveIntegerField(default=0)
     application_date = DateField()
-
-    def __str__(self):
-        return self.name
 
     def random(self):
         count = self.aggregate(count=Count('id'))['count']
