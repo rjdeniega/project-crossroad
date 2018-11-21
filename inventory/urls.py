@@ -17,6 +17,7 @@ inventory_urls = [
     path('shuttles/setmaintenance/<int:pk>', MaintenanceSchedule.as_view()),
     path('shuttles/latestmaintenance/<int:pk>', MaintenanceSchedule.as_view()),
     path('shuttles/startmaintenance/<int:pk>', StartMaintenance.as_view()),
+    path('shuttles/maintenance_report/', ShuttleMaintenanceFrequency.as_view()),
     path('mechanic/repairs', MechanicRepairs.as_view()),
     path('mechanic/repairs/<int:pk>', MechanicRepairs.as_view()),
     path('mechanic/items/<int:consume>', MechanicItems.as_view()),
