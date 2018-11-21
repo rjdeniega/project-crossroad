@@ -644,10 +644,10 @@ class RemittanceVersusFuelReport(APIView):
 
                 shifts.append({
                     "type": shift.shift.get_type_display(),
-                    "remittance": total_remittance,
-                    "total_per_day": total_per_day,
-                    "fuel": total_fuel,
-                    "remittance_minus_fuel": total_remittance - total_fuel
+                    "remittance": "{0:,.2f}".format(total_remittance),
+                    "total_per_day": "{0:,.2f}".format(total_per_day),
+                    "fuel": "{0:,.2f}".format(total_fuel),
+                    "remittance_minus_fuel": "{0:,.2f}".format(total_remittance - total_fuel)
                 })
 
                 total_remit_day_without_fuel += total_remittance
@@ -670,9 +670,9 @@ class RemittanceVersusFuelReport(APIView):
             rows.append({
                 "date": temp_start.date(),
                 "shifts": shifts,
-                "total_remit_day_without_fuel": total_remit_day_without_fuel,
-                "total_fuel_for_day": total_fuel_for_day,
-                "total_minus_fuel": total_remit_day_without_fuel - total_fuel_for_day
+                "total_remit_day_without_fuel": "{0:,.2f}".format(total_remit_day_without_fuel),
+                "total_fuel_for_day": "{0:,.2f}".format(total_fuel_for_day),
+                "total_minus_fuel": "{0:,.2f}".format(total_remit_day_without_fuel - total_fuel_for_day)
             })
 
             # totals
@@ -684,9 +684,9 @@ class RemittanceVersusFuelReport(APIView):
         return Response(data={
             "start_date": start_date.date(),
             "end_date": end_date.date(),
-            "grand_remit_total": grand_total,
-            "grand_fuel_total": grand_fuel_total,
-            "grand_remit_minus_fuel": grand_total - grand_fuel_total,
+            "grand_remit_total": "{0:,.2f}".format(grand_total),
+            "grand_fuel_total": "{0:,.2f}".format(grand_fuel_total),
+            "grand_remit_minus_fuel": "{0:,.2f}".format(grand_total - grand_fuel_total),
             "rows": rows
         }, status=status.HTTP_200_OK)
 
