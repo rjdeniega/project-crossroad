@@ -87,3 +87,9 @@ class ShareCertificateSerializer(ModelSerializer):
     class Meta:
         model = ShareCertificate
         fields = '__all__'
+
+
+class IDCardsSerializer(ModelSerializer):
+    class Meta:
+        model = IDCards
+        fields = '__all__'

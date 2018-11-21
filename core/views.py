@@ -29,7 +29,7 @@ from members.models import Clerk, Driver, OperationsManager, Person, Supervisor
 from members.serializers import (ClerkSerializer, DriverSerializer,
                                  MechanicSerializer, MemberSerializer,
                                  OperationsManagerSerializer, ShareSerializer,
-                                 SupervisorSerializer)
+                                 SupervisorSerializer, IDCardSerializer)
 from remittances.models import *
 from remittances.serializers import (BeepTransactionSerializer,
                                      CarwashTransactionSerializer)
@@ -492,16 +492,26 @@ class MemberTransactionByReport(APIView):
 
                 report_items.append({
                     "member": member_data,
+                    "member_card": IDCardSerializer(IDCards.objects.get(member=member)).data,
                     "no_of_beep": len(transactions),
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
+                    "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
                     "carwash_total": sum([item.total for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions])
+                        [item.total for item in carwash_transactions]),
+                    "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
+                        [item.total for item in carwash_transactions]))
                 })
         return Response(data={
+            "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
+            "no_of_carwash_total": sum(item['no_of_carwash'] for item in report_items),
+            "beep_grand_total": "{0:,.2f}".format(sum(item['beep_total'] for item in report_items)),
+            "carwash_grand_total": "{0:,.2f}".format(sum(item['carwash_total'] for item in report_items)),
+            "grand_total": "{0:,.2f}".format(sum(item['total_transactions'] for item in report_items)),
             "report_items": report_items
         }, status=status.HTTP_200_OK)
 
@@ -863,7 +873,7 @@ class TicketCountReport(APIView):
                                 pm_count += consumed_ticket.total / 15
 
                 days.append({
-                    "date": temp_start,
+                    "date": temp_start.date(),
                     "day": calendar.day_name[temp_start.weekday()],
                     "am_count": am_count,
                     "pm_count": pm_count

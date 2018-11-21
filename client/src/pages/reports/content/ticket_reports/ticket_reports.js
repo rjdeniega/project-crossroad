@@ -70,7 +70,7 @@ class ComponentToPrint extends React.Component {
                             {this.props.data &&
                             <thead>
                             <th>Shuttle #</th>
-                            <th>Shift #</th>
+                            <th>Shift</th>
                             <th>{this.props.data.shuttles[0].days[0].day}</th>
                             <th>{this.props.data.shuttles[0].days[1].day}</th>
                             <th>{this.props.data.shuttles[0].days[2].day}</th>
@@ -84,6 +84,17 @@ class ComponentToPrint extends React.Component {
                             <tbody>
                             {this.props.data &&
                             <Fragment>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>{this.props.data.shuttles[0].days[0].date}</td>
+                                    <td>{this.props.data.shuttles[0].days[1].date}</td>
+                                    <td>{this.props.data.shuttles[0].days[2].date}</td>
+                                    <td>{this.props.data.shuttles[0].days[3].date}</td>
+                                    <td>{this.props.data.shuttles[0].days[4].date}</td>
+                                    <td>{this.props.data.shuttles[0].days[5].date}</td>
+                                    <td>{this.props.data.shuttles[0].days[6].date}</td>
+                                </tr>
                                 {this.props.data.shuttles.map((item, index) => (
                                     <Fragment>
                                         <tr>
