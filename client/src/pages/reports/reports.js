@@ -30,6 +30,8 @@ import {MaintenanceReport  } from './content/maintenance_report/maintenance_repo
 import {SharesAccumulationReport  } from './content/shares_accumulation/shares_accumulation'
 import {ShuttleIncome  } from './content/shuttle_income/shuttle_income'
 import {TicketPerDay } from './content/ticket_per_day/ticket_per_day'
+import {MemberTransactions} from './content/member_transactions/member_transactions'
+
 
 
 
@@ -107,6 +109,11 @@ const MEMBER_CARDS = [{
     'description': 'View transactions of members over a period of time',
     'icon': driversLicenseO,
     'content': <SharesAccumulationReport/>
+},{
+    'title': 'Member Transactions',
+    'description': 'View transactions of members over a period of time',
+    'icon': driversLicenseO,
+    'content': <MemberTransactions/>
 },];
 export class ReportsPage extends Component {
     state = {

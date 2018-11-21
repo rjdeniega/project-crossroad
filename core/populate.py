@@ -294,9 +294,10 @@ class PopulateDatabase():
         item1 = Item.objects.get(pk=1)
         rp1 = RepairProblem(description="Maintenance")
         rp1.save()
-        rm1 = RepairModification(item_used=item1,
+        rm1 = RepairModifications(item_used=item1,
                                  quantity=1,
                                  used_up=False)
+        rm1.save()
         itemMovement1 = ItemMovement(item=item1,
                                      type="G",
                                      quantity="1",

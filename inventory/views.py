@@ -232,7 +232,7 @@ class MechanicItems(APIView):
     @staticmethod
     def get(request, consume):
         consumable = True
-        if(consume == 1):
+        if (consume == 1):
             consumable = False
 
         items = ItemSerializer(Item.objects.all()
@@ -270,12 +270,12 @@ class MechanicItems(APIView):
         data = json.loads(request.body)
 
         item = Item.objects.get(id=data['selectedItem'])
-        if(item.consumable == True):
+        if (item.consumable == True):
             rm = RepairModifications(
                 item_used=item, quantity=1, used_up=data['depleted'])
             rm.save()
             repair.modifications.add(rm)
-            if(rm.used_up == True):
+            if (rm.used_up == True):
                 im = ItemMovement(item=item, type='G',
                                   quantity=1, repair=repair)
                 im.save()
@@ -290,8 +290,6 @@ class MechanicItems(APIView):
                               quantity=data['quantity'], repair=repair)
             im.save()
             item.quantity = item.quantity - data['quantity']
-
-
 
         item.save()
 
@@ -335,7 +333,7 @@ class MaintenanceReport(APIView):
         print(shuttle_remittance)
 
         for repair in repairs:
-            if(repair.labor_fee):
+            if (repair.labor_fee):
                 initialMaintenanceCost = initialMaintenanceCost + repair.labor_fee
 
             for modification in repair.modifications.all():
@@ -362,7 +360,7 @@ class MaintenanceSchedule(APIView):
         print(data['date'])
         shuttle.save()
         print(shuttle.maintenance_sched)
-        
+
         return Response(data={
             'shuttle_id': shuttle.id
         }, status=status.HTTP_200_OK)
@@ -370,7 +368,7 @@ class MaintenanceSchedule(APIView):
     @staticmethod
     def get(request, pk):
         if Repair.objects.filter(shuttle=pk).filter(
-            maintenance=True).exists():
+                maintenance=True).exists():
             ip = Repair.objects.filter(shuttle=pk).filter(
                 maintenance=True).latest('id')
             print(ip.status)
@@ -385,7 +383,7 @@ class MaintenanceSchedule(APIView):
             else:
                 repair_date = Repair.objects.filter(shuttle=pk).filter(
                     maintenance=True).latest('id')
-                
+
                 days = repair_date.end_date - datetime.now().date()
                 date = repair_date.end_date + relativedelta(months=+3)
                 return Response(data={
@@ -445,21 +443,28 @@ class ShuttleMaintenanceFrequency(APIView):
                     maintenanceCost = maintenanceCost + repair.labor_fee
 
                 for item in OutSourcedItems.objects.all().filter(repair=repair.id):
-                     maintenanceCost = maintenanceCost + (item.unit_price * item.quantity)
+                    maintenanceCost = maintenanceCost + (item.unit_price * item.quantity)
 
                 for item_used in RepairModifications.objects.all().filter(repair=repair.id):
-                    item = Item.objects.filter(id=item_used.item_used)
+                    item = Item.objects.get(id=item_used.pk)
                     maintenanceCost = maintenanceCost + (item_used.quantity * item.average_price)
-                    
-            
+
             rows.append({
                 "shuttle": shuttle.id,
                 "year_purchased": shuttle.date_acquired,
                 "number_of_maintenance": maintenanceTimes,
                 "mileage": shuttle.mileage,
                 "maintenance_cost": "{0:,.2f}".format(maintenanceCost),
+                "maintenance_cost_value": maintenanceCost,
+                "average_cost_value": (maintenanceCost / maintenanceTimes) if maintenanceTimes > 0 else 0,
+                "average_cost": "{0:,.2f}".format(maintenanceCost / maintenanceTimes) if maintenanceTimes > 0 else 0
             })
+
+        total_maintenance_cost = "{0:,.2f}".format(sum([item['maintenance_cost_value'] for item in rows]))
+        total_average_maintenance_cost = "{0:,.2f}".format(sum([item['average_cost_value'] for item in rows]) / len(rows))
 
         return Response(data={
             "rows": rows,
+            "total_maintenance_cost": total_maintenance_cost,
+            "total_average_maintenance_cost": total_average_maintenance_cost,
         }, status=status.HTTP_200_OK)

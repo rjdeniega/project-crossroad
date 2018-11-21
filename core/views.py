@@ -447,6 +447,65 @@ class TransactionByDate(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class MemberTransactionByReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = None
+
+        report_items = []
+        for member in Member.objects.all():
+            member_data = MemberSerializer(member).data
+            try:
+                id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
+            except ObjectDoesNotExist:
+                report_items.append({
+                    "member": MemberSerializer(member).data,
+                    "transactions": None,
+                    "total_transactions": 0
+                })
+                id_card = None
+
+            if id_card is not None:
+                member_data["id_card"] = id_card.can
+                transactions = BeepTransaction.objects.filter(card_number=id_card.can)
+                carwash_transactions = [item for item in
+                                        CarwashTransaction.objects.all() if item.member == member]
+                if end_date is not None:
+                    transactions = [item for item in transactions if
+                                    start_date.date() <= item.shift.date <= end_date.date()]
+                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+                                            start_date.date() <= item.date <= end_date.date()]
+                else:
+
+                    transactions = [item for item in transactions if start_date.date() == item.shift.date]
+                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+                                            start_date.date() == item.date]
+
+                serialized_transactions = BeepTransactionSerializer(transactions, many=True)
+                for item in serialized_transactions.data:
+                    item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+
+                report_items.append({
+                    "member": member_data,
+                    "no_of_beep": len(transactions),
+                    "no_of_carwash": len(carwash_transactions),
+                    "beep_total": sum([item.total for item in transactions]),
+                    "carwash_total": sum([item.total for item in carwash_transactions]),
+                    "beep_transactions": serialized_transactions.data,
+                    "carwash_transactions": carwash_transactions,
+                    "total_transactions": sum([item.total for item in transactions]) + sum(
+                        [item.total for item in carwash_transactions])
+                })
+        return Response(data={
+            "report_items": report_items
+        }, status=status.HTTP_200_OK)
+
+
 class SharesByDate(APIView):
     @staticmethod
     def post(request):
@@ -696,7 +755,7 @@ class RemittancePerRouteReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        end_date = start_date + timedelta(days=6) # for one week
+        end_date = start_date + timedelta(days=6)  # for one week
 
         temp_start = start_date
 
@@ -742,7 +801,6 @@ class RemittancePerRouteReport(APIView):
             "main_road_total": "{0:,.2f}".format(main_road_total),
             "days": rows
         }, status=status.HTTP_200_OK)
-
 
 
 class TicketCountReport(APIView):

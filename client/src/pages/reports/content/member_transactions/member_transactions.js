@@ -1,4 +1,7 @@
 /**
+ * Created by JasonDeniega on 22/11/2018.
+ */
+/**
  * Created by JasonDeniega on 21/11/2018.
  */
 /**
@@ -41,35 +44,29 @@ class ComponentToPrint extends React.Component {
                 <div className="report-body">
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
-                        <th>Shuttle #</th>
-                        <th>Acquired</th>
-                        <th>Mileage</th>
-                        <th>M. Frequency</th>
-                        <th>M. Cost</th>
-                        <th>Ave. M. Cost</th>
+                        <th>Member ID</th>
+                        <th>Name</th>
+                        <th># of Beep</th>
+                        <th>Beep Total</th>
+                        <th># of Carwash</th>
+                        <th>Carwash Total</th>
+                        <th>Total</th>
                         </thead>
                         <tbody>
                         {this.props.data &&
                         <Fragment>
-                            {this.props.data.rows.map((item, index) => (
+                            {this.props.data.report_items.map((item, index) => (
                                 <Fragment>
                                     <tr>
-                                        <td>{item.shuttle}</td>
-                                        <td>{item.year_purchased}</td>
-                                        <td>{item.mileage}</td>
-                                        <td>{item.number_of_maintenance}</td>
-                                        <td>{item.maintenance_cost}</td>
-                                        <td>{item.average_cost}</td>
                                     </tr>
                                 </Fragment>
                             ))}
                             <tr>
                                 <td><b> Grand Total </b></td>
-                                <td className="total-line"><b></b></td>
-                                 <td className="total-line"><b></b></td>
-                                 <td className="total-line"><b></b></td>
-                                 <td className="total-line"><b>{this.props.data.total_maintenance_cost}</b></td>
-                                 <td className="total-line"><b>{this.props.data.total_average_maintenance_cost}</b></td>
+                                {/*<td className="total-line"><b>{this.props.data.total_remittance}</b></td>*/}
+                                {/*<td className="total-line"><b>{this.props.data.total_fuel}</b></td>*/}
+                                {/*<td className="total-line"><b>{this.props.data.total_costs}</b></td>*/}
+                                {/*<td className="total-line"><b>{this.props.data.grand_total}</b></td>*/}
                             </tr>
                         </Fragment>
                         }
@@ -81,18 +78,10 @@ class ComponentToPrint extends React.Component {
         );
     }
 }
-export class MaintenanceReport extends Component {
+export class MemberTransactions extends Component {
     state = {};
 
     componentDidMount() {
-         getData('/inventory/shuttles/maintenance_report').then(data => {
-            console.log(data);
-            if (!data.error) {
-                this.setState({
-                    data: data
-                })
-            }
-        });
     }
 
     fetchTransactions() {
@@ -100,7 +89,7 @@ export class MaintenanceReport extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        getData('/inventory/shuttles/maintenance_report').then(data => {
+        postData('/member_transaction_report/', data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({
@@ -127,6 +116,8 @@ export class MaintenanceReport extends Component {
     render() {
         return (
             <div className="report-body">
+                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}
