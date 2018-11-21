@@ -420,3 +420,39 @@ class StartMaintenance(APIView):
         repair.problems.add(rp)
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class ShuttleMaintenanceFrequency(APIView):
+    @staticmethod
+    def get(request):
+        rows = []
+
+        shuttles = Shuttle.objects.all()
+
+        for shuttle in shuttles:
+            maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C").count()
+            maintenanceCost = 0
+
+            for repair in Repair.objects.all().filter(shuttle=shuttle.id):
+                if repair.labor_fee:
+                    maintenanceCost = maintenanceCost + repair.labor_fee
+
+                for item in OutSourcedItems.objects.all().filter(repair=repair.id):
+                     maintenanceCost = maintenanceCost + (item.unit_price * item.quantity)
+
+                for item_used in RepairModifications.objects.all().filter(repair=repair.id):
+                    item = Item.objects.filter(id=item_used.item_used)
+                    maintenanceCost = maintenanceCost + (item_used.quantity * item.average_price)
+                    
+            
+            rows.append({
+                "shuttle": shuttle.id,
+                "year_purchased": shuttle.date_acquired,
+                "number_of_maintenance": maintenanceTimes,
+                "mileage": shuttle.mileage,
+                "maintenance_cost": "{0:,.2f}".format(maintenanceCost),
+            })
+
+        return Response(data={
+            "rows": rows,
+        }, status=status.HTTP_200_OK)

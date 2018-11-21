@@ -1,6 +1,8 @@
 from datetime import timedelta
 from remittances.models import *
 from members.models import *
+from inventory.models import *
+
 
 class PopulateDatabase():
     @staticmethod
@@ -11,7 +13,6 @@ class PopulateDatabase():
 
         while current_date <= end_date:
             sched = pop.create_schedule(current_date, current_date)
-
 
     @staticmethod
     def create_schedule(start_date, current_date):
@@ -43,7 +44,6 @@ class PopulateDatabase():
                 supervisor=supervisor,
                 drivers_assigned=drivers_assigned
             )
-
 
     @staticmethod
     def create_shift(schedule, supervisor, type, current_date, drivers_assigned):
@@ -83,7 +83,6 @@ class PopulateDatabase():
 
         return drivers_assigned
 
-
     @staticmethod
     def assign_driver(shift, shuttle, deployment_type, driver):
         return DriversAssigned.objects.create(
@@ -92,3 +91,41 @@ class PopulateDatabase():
             shift=shift,
             shuttle=shuttle
         )
+
+    @staticmethod
+    def populate_inventory():
+        item = Item(name="Windshield Wiper",
+                    description="Windshield wiper for Toyota L300",
+                    quantity=6,
+                    brand="Vew Clear",
+                    consumable=False,
+                    average_price=150)
+        item.save()
+        itemMovement = ItemMovement(item=item,
+                                    type="B",
+                                    quantity=6,
+                                    vendor="Lazada",
+                                    unit_price=150)
+        itemMovement.save()
+
+        item2 = Item(name="Signal Lightbulb",
+                    description="Can be used for brake light or turn signal lights",
+                    quantity=10,
+                    brand="TTW",
+                    consumable=False,
+                    average_price=250)
+        item2.save()
+        itemMovement2 = ItemMovement(item=item2,
+                                    type="B",
+                                    quantity=10,
+                                    vendor="Ace Hardware",
+                                    unit_price=250)
+        itemMovement2.save()
+
+        item3 = Item(name="Front Brake Pads",
+                     description="Pair of brake pads for Mitsubishi L300",
+                     quantity=9,
+                     brand="Akebono",
+                     consumable=False,
+                     average_price=1300)
+        item3.save()
