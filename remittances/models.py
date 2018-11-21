@@ -101,7 +101,7 @@ class DriversAssigned(SoftDeletionModel):
 
 class ShiftIteration(SoftDeletionModel):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
-    date = DateField(auto_now_add=True)
+    date = DateField(default=timezone.now)
     status = CharField(max_length=1, choices=ITERATION_STATUS, default='O')
     remarks = CharField(max_length=64, null=True)
 
