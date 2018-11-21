@@ -312,23 +312,25 @@ export class ShiftHistoryPane extends Component {
         </Fragment>
     );
     renderScheduleList = () => (
-        <List
-            className="sched-list"
-            itemLayout="horizontal"
-            dataSource={(() => {
-                console.log(this.state.schedules);
-                return this.state.schedules;
-            })()}
-            renderItem={item => (
-                <List.Item className="list-item" onClick={() => this.handleSelectSchedule(item.id)}
-                >
-                    <List.Item.Meta
-                        title={<p className="list-title">{item.start_date} - {item.end_date}</p>}
-                    />
-                    <AntIcon type="check-circle" className="status-icon"/>
-                </List.Item>
-            )}
-        />
+        <div className="sched-wrapper">
+            <List
+                className="sched-list"
+                itemLayout="horizontal"
+                dataSource={(() => {
+                    console.log(this.state.schedules);
+                    return this.state.schedules;
+                })()}
+                renderItem={item => (
+                    <List.Item className="list-item" onClick={() => this.handleSelectSchedule(item.id)}
+                    >
+                        <List.Item.Meta
+                            title={<p className="list-title">{item.start_date} - {item.end_date}</p>}
+                        />
+                        <AntIcon type="check-circle" className="status-icon"/>
+                    </List.Item>
+                )}
+            />
+        </div>
     );
     renderAddScheduleModal = () => (
         <Modal

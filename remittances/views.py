@@ -407,6 +407,7 @@ class SpecificDriver(APIView):
         return Response(data={
             "shuttle_id": driver_assigned.shuttle.id,
             "shuttle_make": driver_assigned.shuttle.make,
+            "route": driver_assigned.shuttle.get_route_display(),
             "shuttle_plate_number": driver_assigned.shuttle.plate_number,
             "driver_name": driver_assigned.driver.name,
             "driver_id": driver_assigned.driver.id,
@@ -463,6 +464,7 @@ class DeploymentView(APIView):
 
         # CREATE DEPLOYMENT
         if is_valid:
+            print(driver_assigned.shuttle)
             deployment = Deployment.objects.create(
                 driver_id=data['driver'],
                 shuttle_id=data['shuttle'],
