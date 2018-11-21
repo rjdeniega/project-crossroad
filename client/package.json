@@ -8,16 +8,15 @@
     "moment": "latest",
     "rc-form": "latest",
     "react": "^16.4.1",
+    "react-chartjs": "latest",
+    "react-charts": "latest",
     "react-dom": "^16.4.1",
     "react-icons-kit": "latest",
-    "react-native": "latest",
+    "react-native": "^0.57.5",
     "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.4",
     "react-table": "^6.8.6",
-    "react-to-print": "^2.0.0-alpha-4",
-    "react-chartjs": "latest",
-    "react-charts": "latest",
-    "react-charts": "latest"
+    "react-to-print": "^2.0.0-alpha-4"
   },
   "scripts": {
     "start": "react-scripts start",
