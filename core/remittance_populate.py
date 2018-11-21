@@ -14,7 +14,10 @@ class PopulateRemittances():
 
             temp_date = current_date
 
-            while temp_date < current_date + timedelta(days=15) and temp_date <= new_end_date:
+            while temp_date < current_date + timedelta(days=15):
+                if temp_date > new_end_date:
+                    break
+
                 #create deployments
                 ctr = 0
                 # there are twice the deployments in a day
