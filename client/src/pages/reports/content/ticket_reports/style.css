@@ -69,3 +69,7 @@ td {
     justify-self: center;
     align-self: center
     }
+.report-date-label{
+    font-size: 10px;
+    font-weight: bold;
+    }

@@ -87,13 +87,13 @@ class ComponentToPrint extends React.Component {
                                 <tr>
                                     <td></td>
                                     <td></td>
-                                    <td>{this.props.data.shuttles[0].days[0].date}</td>
-                                    <td>{this.props.data.shuttles[0].days[1].date}</td>
-                                    <td>{this.props.data.shuttles[0].days[2].date}</td>
-                                    <td>{this.props.data.shuttles[0].days[3].date}</td>
-                                    <td>{this.props.data.shuttles[0].days[4].date}</td>
-                                    <td>{this.props.data.shuttles[0].days[5].date}</td>
-                                    <td>{this.props.data.shuttles[0].days[6].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[0].days[0].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[0].days[1].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[0].days[2].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[0].days[3].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[0].days[4].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[0].days[5].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[0].days[6].date}</td>
                                 </tr>
                                 {this.props.data.shuttles.map((item, index) => (
                                     <Fragment>
@@ -248,6 +248,17 @@ class ComponentToPrint extends React.Component {
                             <tbody>
                             {this.props.data &&
                             <Fragment>
+                                 <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td className="report-date-label">{this.props.data.shuttles[7].days[0].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[8].days[1].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[9].days[2].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[10].days[3].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[11].days[4].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[12].days[5].date}</td>
+                                    <td className="report-date-label">{this.props.data.shuttles[13].days[6].date}</td>
+                                </tr>
                                 {this.props.data.shuttles.map((item, index) => (
                                     <Fragment>
                                         <tr>

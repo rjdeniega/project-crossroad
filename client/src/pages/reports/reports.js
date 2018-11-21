@@ -31,6 +31,8 @@ import {SharesAccumulationReport  } from './content/shares_accumulation/shares_a
 import {ShuttleIncome  } from './content/shuttle_income/shuttle_income'
 import {TicketPerDay } from './content/ticket_per_day/ticket_per_day'
 import {MemberTransactions} from './content/member_transactions/member_transactions'
+import {BeepTickets} from './content/beep_tickets/beep_tickets'
+
 
 
 
@@ -81,6 +83,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <PassengerCount/>
+},{
+    'title': 'Beep + Tickets',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <BeepTickets/>
 }];
 const MAINTENANCE_CARDS = [{
     'title': 'Maintenance Report',
@@ -100,7 +107,7 @@ const MEMBER_CARDS = [{
     'content': <SharesReport/>
 },
 {
-    'title': 'Transaction Report',
+    'title': 'Transaction Queries',
     'description': 'View transactions of members over a period of time',
     'icon': driversLicenseO,
     'content': <TransactionReport/>

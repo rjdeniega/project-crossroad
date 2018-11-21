@@ -69,9 +69,9 @@ export class UserAvatar extends Component {
     
         return <div className="header-icons">
             <div className="user-full-name"> {username}</div>
-            <Tag className="user-type" color="var(--orange)">
-              OM
-            </Tag>
+            {/*<Tag className="user-type" color="var(--orange)">*/}
+              {/*OM*/}
+            {/*</Tag>*/}
             <Popover placement="bottomRight" content={content} title="User Settings" trigger="click">
               <div className="user-avatar">
                 <Avatar className="avatar-photo" size="large" src={users} />

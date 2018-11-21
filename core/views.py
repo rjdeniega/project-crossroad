@@ -736,6 +736,22 @@ class RemittanceVersusFuelReport(APIView):
                     "fuel": 0,
                     "remittance_minus_fuel": 0
                 }]
+            elif len(shifts) == 1 and shifts[0]['type'] == "AM":
+                shifts.append({
+                    "type": "PM",
+                    "total_per_day": 0,
+                    "remittance": 0,
+                    "fuel": 0,
+                    "remittance_minus_fuel": 0
+                })
+            elif len(shifts) == 1 and shifts[0]['type'] == "PM":
+                shifts = [{
+                    "type": "AM",
+                    "total_per_day": 0,
+                    "remittance": 0,
+                    "fuel": 0,
+                    "remittance_minus_fuel": 0
+                }, shifts[0]]
             rows.append({
                 "date": temp_start.date(),
                 "shifts": shifts,
