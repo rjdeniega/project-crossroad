@@ -405,6 +405,32 @@ class SpecificDriver(APIView):
         else:
             is_under_maintenance = False
         print(is_under_maintenance)
+        # I dont want to change front-end too much
+        ten_peso = []
+        twelve_peso = []
+        fifteen_peso = []
+        for item in TicketUtilities.get_assigned_with_void_of_driver(driver_id):
+            if item["ticket_type"] == "10 Pesos":
+                ten_peso.append(item)
+            elif item["ticket_type"] == "12 Pesos":
+                twelve_peso.append(item)
+            else:
+                fifteen_peso.append(item)
+
+        # get last 2 items of array (most recent ones)
+        ten_peso = DeploymentDetails.get_recent_tickets(ten_peso)
+        twelve_peso = DeploymentDetails.get_recent_tickets(twelve_peso)
+        fifteen_peso = DeploymentDetails.get_recent_tickets(fifteen_peso)
+
+        assigned_tickets = [
+            ten_peso[0],
+            ten_peso[1],
+            twelve_peso[0],
+            twelve_peso[1],
+            fifteen_peso[0],
+            fifteen_peso[1],
+        ]
+
         return Response(data={
             "shuttle_id": driver_assigned.shuttle.id,
             "shuttle_make": driver_assigned.shuttle.make,
@@ -413,16 +439,14 @@ class SpecificDriver(APIView):
             "driver_name": driver_assigned.driver.name,
             "driver_id": driver_assigned.driver.id,
             "is_under_maintenance": is_under_maintenance,
-            "tickets": TicketUtilities.get_assigned_with_void_of_driver(driver_id)
+            "tickets": assigned_tickets
         }, status=status.HTTP_200_OK)
-
 
 
 class DeploymentView(APIView):
     @staticmethod
     def get(request):
         deployments = GetDeploymentSerializer(Deployment.objects.all(), many=True)
-
         return Response(data={
             "deployments": deployments.data,
         }, status=status.HTTP_200_OK)
@@ -558,6 +582,7 @@ class RemittanceUtilities():
 
         return None
 
+
 class TicketUtilities():
     @staticmethod
     def get_num_of_void(assigned_ticket_id):
@@ -631,8 +656,7 @@ class TicketUtilities():
 
         return final
 
-
-    #this function returns current ticket details of the said driver
+    # this function returns current ticket details of the said driver
     @staticmethod
     def get_assigned_with_void_of_driver(driver_id):
         tickets = AssignedTicket.objects.filter(driver=driver_id)
@@ -789,7 +813,7 @@ class ShiftRemarks(APIView):
         shift_iteration.remarks = data['remarks']
         shift_iteration.save()
 
-        return Response(data = {
+        return Response(data={
             "shift_iteration_id": shift_iteration.id,
             "remarks": shift_iteration.remarks
         }, status=status.HTTP_200_OK)
@@ -890,6 +914,7 @@ class DeploymentDetails(APIView):
             fifteen_peso[0],
             fifteen_peso[1],
         ]
+        print(assigned_tickets)
 
         return Response(data={
             'deployment_details': deployment.data,
@@ -922,9 +947,54 @@ class DeploymentDetails(APIView):
 
         return final
 
-    def get_recent_tickets_confirm(array):
+    @staticmethod
+    def get_recent_tickets(array):
         final = []
         print(f'the array is {array}')
+        try:
+            first = array[-1]
+        except IndexError:
+            first = None
+
+        try:
+            second = array[-2]
+        except IndexError:
+            second = {"ticket_id": first["ticket_id"],
+                      "driver_id": first["driver_id"] if first["driver_id"] else None,
+                      "driver_name": first["driver_name"] if first["driver_name"] else None,
+                      "ticket_type": first["ticket_type"],
+                      "range_from": 0,
+                      "range_to": 0,
+                      "number_of_voids": 0,
+                      "voids": []}
+        final = [first, second]
+        print(array)
+        print(final)
+
+        return final
+
+    def get_recent_tickets_confirm(array):
+        final = []
+        if len(array) == 0:
+            return [
+                {"ticket_id": None,
+                 "driver_id": None,
+                 "driver_name": None,
+                 "ticket_type": 'A',
+                 "range_from": 0,
+                 "range_to": 0,
+                 "number_of_voids": 0,
+                 "voids": [],
+                 }, {"ticket_id": None,
+                     "driver_id": None,
+                     "driver_name": None,
+                     "ticket_type": 'A',
+                     "range_from": 0,
+                     "range_to": 0,
+                     "number_of_voids": 0,
+                     "voids": [],
+                     }, ]
+            print(f'the array is {array}')
         try:
             first = array[-1]
         except IndexError:

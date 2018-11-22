@@ -43,7 +43,7 @@ class ComponentToPrint extends React.Component {
                         <thead>
                         <th>Date</th>
                         <th>Shift</th>
-                        <th>Actual Remittances</th>
+                        <th>Ticket Remittances</th>
                         <th>Total Per Day</th>
                         <th>Fuel</th>
                         <th>Total after Fuel</th>

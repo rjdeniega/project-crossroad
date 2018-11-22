@@ -230,167 +230,167 @@ class ComponentToPrint extends React.Component {
                         </table>
                         {/*second table*/}
                         <p className="week-label"><b>Week 2</b></p>
-                        <table cellSpacing="50" cellPadding="3px">
-                            {this.props.data &&
-                            <thead>
-                            <th>Shuttle #</th>
-                            <th>Shift #</th>
-                            <th>{this.props.data.shuttles[0].days[7].day}</th>
-                            <th>{this.props.data.shuttles[0].days[8].day}</th>
-                            <th>{this.props.data.shuttles[0].days[9].day}</th>
-                            <th>{this.props.data.shuttles[0].days[10].day}</th>
-                            <th>{this.props.data.shuttles[0].days[11].day}</th>
-                            <th>{this.props.data.shuttles[0].days[12].day}</th>
-                            <th>{this.props.data.shuttles[0].days[13].day}</th>
-                            <th>Total</th>
-                            </thead>
-                            }
-                            <tbody>
-                            {this.props.data &&
-                            <Fragment>
-                                 <tr>
-                                    <td></td>
-                                    <td></td>
-                                    <td className="report-date-label">{this.props.data.shuttles[7].days[0].date}</td>
-                                    <td className="report-date-label">{this.props.data.shuttles[8].days[1].date}</td>
-                                    <td className="report-date-label">{this.props.data.shuttles[9].days[2].date}</td>
-                                    <td className="report-date-label">{this.props.data.shuttles[10].days[3].date}</td>
-                                    <td className="report-date-label">{this.props.data.shuttles[11].days[4].date}</td>
-                                    <td className="report-date-label">{this.props.data.shuttles[12].days[5].date}</td>
-                                    <td className="report-date-label">{this.props.data.shuttles[13].days[6].date}</td>
-                                </tr>
-                                {this.props.data.shuttles.map((item, index) => (
-                                    <Fragment>
-                                        <tr>
-                                            <td>{item.shuttle_number}</td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                AM
-                                            </td>
-                                            <td>
-                                                {item.days[7].am_count}
-                                            </td>
-                                            <td>
-                                                {item.days[8].am_count}
-                                            </td>
-                                            <td>
-                                                {item.days[9].am_count}
-                                            </td>
-                                            <td>
-                                                {item.days[10].am_count}
-                                            </td>
-                                            <td>
-                                                {item.days[11].am_count}
-                                            </td>
-                                            <td>
-                                                {item.days[12].am_count}
-                                            </td>
-                                            <td>
-                                                {item.days[13].am_count}
-                                            </td>
-                                            <td>
-                                                {
-                                                    item.days[7].am_count +
-                                                    item.days[8].am_count +
-                                                    item.days[9].am_count +
-                                                    item.days[10].am_count +
-                                                    item.days[11].am_count +
-                                                    item.days[12].am_count +
-                                                    item.days[13].am_count
-                                                }
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                PM
-                                            </td>
+                        {/*<table cellSpacing="50" cellPadding="3px">*/}
+                            {/*{this.props.data &&*/}
+                            {/*<thead>*/}
+                            {/*<th>Shuttle #</th>*/}
+                            {/*<th>Shift #</th>*/}
+                            {/*<th>{this.props.data.shuttles[0].days[7].day}</th>*/}
+                            {/*<th>{this.props.data.shuttles[0].days[8].day}</th>*/}
+                            {/*<th>{this.props.data.shuttles[0].days[9].day}</th>*/}
+                            {/*<th>{this.props.data.shuttles[0].days[10].day}</th>*/}
+                            {/*<th>{this.props.data.shuttles[0].days[11].day}</th>*/}
+                            {/*<th>{this.props.data.shuttles[0].days[12].day}</th>*/}
+                            {/*<th>{this.props.data.shuttles[0].days[13].day}</th>*/}
+                            {/*<th>Total</th>*/}
+                            {/*</thead>*/}
+                            {/*}*/}
+                            {/*<tbody>*/}
+                            {/*{this.props.data &&*/}
+                            {/*<Fragment>*/}
+                                 {/*<tr>*/}
+                                    {/*<td></td>*/}
+                                    {/*<td></td>*/}
+                                    {/*<td className="report-date-label">{this.props.data.shuttles[7].days[0].date}</td>*/}
+                                    {/*<td className="report-date-label">{this.props.data.shuttles[8].days[1].date}</td>*/}
+                                    {/*<td className="report-date-label">{this.props.data.shuttles[9].days[2].date}</td>*/}
+                                    {/*<td className="report-date-label">{this.props.data.shuttles[10].days[3].date}</td>*/}
+                                    {/*<td className="report-date-label">{this.props.data.shuttles[11].days[4].date}</td>*/}
+                                    {/*<td className="report-date-label">{this.props.data.shuttles[12].days[5].date}</td>*/}
+                                    {/*<td className="report-date-label">{this.props.data.shuttles[13].days[6].date}</td>*/}
+                                {/*</tr>*/}
+                                {/*{this.props.data.shuttles.map((item, index) => (*/}
+                                    {/*<Fragment>*/}
+                                        {/*<tr>*/}
+                                            {/*<td>{item.shuttle_number}</td>*/}
+                                        {/*</tr>*/}
+                                        {/*<tr>*/}
+                                            {/*<td></td>*/}
+                                            {/*<td>*/}
+                                                {/*AM*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[7].am_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[8].am_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[9].am_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[10].am_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[11].am_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[12].am_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[13].am_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{*/}
+                                                    {/*item.days[7].am_count +*/}
+                                                    {/*item.days[8].am_count +*/}
+                                                    {/*item.days[9].am_count +*/}
+                                                    {/*item.days[10].am_count +*/}
+                                                    {/*item.days[11].am_count +*/}
+                                                    {/*item.days[12].am_count +*/}
+                                                    {/*item.days[13].am_count*/}
+                                                {/*}*/}
+                                            {/*</td>*/}
+                                        {/*</tr>*/}
+                                        {/*<tr>*/}
+                                            {/*<td></td>*/}
+                                            {/*<td>*/}
+                                                {/*PM*/}
+                                            {/*</td>*/}
 
-                                            <td>
-                                                {item.days[7].pm_count}
-                                            </td>
-                                            <td>
-                                                {item.days[8].pm_count}
-                                            </td>
-                                            <td>
-                                                {item.days[9].pm_count}
-                                            </td>
-                                            <td>
-                                                {item.days[10].pm_count}
-                                            </td>
-                                            <td>
-                                                {item.days[11].pm_count}
-                                            </td>
-                                            <td>
-                                                {item.days[12].pm_count}
-                                            </td>
-                                            <td>
-                                                {item.days[13].pm_count}
-                                            </td>
-                                            <td>
-                                                {
-                                                    item.days[7].pm_count +
-                                                    item.days[8].pm_count +
-                                                    item.days[9].pm_count +
-                                                    item.days[10].pm_count +
-                                                    item.days[11].pm_count +
-                                                    item.days[12].pm_count +
-                                                    item.days[13].pm_count
-                                                }
-                                            </td>
-                                        </tr>
-                                    </Fragment>
-                                ))}
-                            </Fragment>
-                            }
-                            <tr>
-                                <td><b> Grand Total </b></td>
-                                <td className="total-line"></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeTotal(7)}
-                                    </td>
-                                </b></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeTotal(8)}
-                                    </td>
-                                </b></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeTotal(9)}
-                                    </td>
-                                </b></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeTotal(10)}
-                                    </td>
-                                </b></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeTotal(11)}
-                                    </td>
-                                </b></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeTotal(12)}
-                                    </td>
-                                </b></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeTotal(13)}
-                                    </td>
-                                </b></td>
-                                <td className="total-line"><b>
-                                    <td>
-                                        {this.computeGrandTotal(7, 13)}
-                                    </td>
-                                </b></td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                            {/*<td>*/}
+                                                {/*{item.days[7].pm_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[8].pm_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[9].pm_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[10].pm_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[11].pm_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[12].pm_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{item.days[13].pm_count}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                                {/*{*/}
+                                                    {/*item.days[7].pm_count +*/}
+                                                    {/*item.days[8].pm_count +*/}
+                                                    {/*item.days[9].pm_count +*/}
+                                                    {/*item.days[10].pm_count +*/}
+                                                    {/*item.days[11].pm_count +*/}
+                                                    {/*item.days[12].pm_count +*/}
+                                                    {/*item.days[13].pm_count*/}
+                                                {/*}*/}
+                                            {/*</td>*/}
+                                        {/*</tr>*/}
+                                    {/*</Fragment>*/}
+                                {/*))}*/}
+                            {/*</Fragment>*/}
+                            {/*}*/}
+                            {/*<tr>*/}
+                                {/*<td><b> Grand Total </b></td>*/}
+                                {/*<td className="total-line"></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeTotal(7)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeTotal(8)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeTotal(9)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeTotal(10)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeTotal(11)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeTotal(12)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeTotal(13)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                                {/*<td className="total-line"><b>*/}
+                                    {/*<td>*/}
+                                        {/*{this.computeGrandTotal(7, 13)}*/}
+                                    {/*</td>*/}
+                                {/*</b></td>*/}
+                            {/*</tr>*/}
+                            {/*</tbody>*/}
+                        {/*</table>*/}
                     </Fragment>
                     }
                     <p className="end-label">END OF REPORT</p>

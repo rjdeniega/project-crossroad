@@ -96,12 +96,12 @@ export class TicketingPane extends Component {
         const selected = [];
         details.map(form => {
             const props = {
-                ten_peso_start_first: form.ticket_specifics[0]["start_ticket"],
-                ten_peso_start_second: form.ticket_specifics[1]["start_ticket"],
-                twelve_peso_start_first: form.ticket_specifics[2]["start_ticket"],
-                twelve_peso_start_second: form.ticket_specifics[3]["start_ticket"],
-                fifteen_peso_start_first: form.ticket_specifics[4]["start_ticket"],
-                fifteen_peso_start_second: form.ticket_specifics[5]["start_ticket"],
+                ten_peso_start_first: form.ticket_specifics[0]["consumed_end"]==0? null : form.ticket_specifics[0]["start_ticket"],
+                ten_peso_start_second: form.ticket_specifics[1]["consumed_end"]==0? null :form.ticket_specifics[1]["start_ticket"],
+                twelve_peso_start_first: form.ticket_specifics[2]["consumed_end"]==0? null :form.ticket_specifics[2]["start_ticket"],
+                twelve_peso_start_second: form.ticket_specifics[3]["consumed_end"]==0? null :form.ticket_specifics[3]["start_ticket"],
+                fifteen_peso_start_first: form.ticket_specifics[4]["consumed_end"]==0? null :form.ticket_specifics[4]["start_ticket"],
+                fifteen_peso_start_second: form.ticket_specifics[5]["consumed_end"]==0? null :form.ticket_specifics[5]["start_ticket"],
                 ten_peso_end_first: form.ticket_specifics[0]["assigned_range_to"],
                 ten_peso_end_second: form.ticket_specifics[1]["assigned_range_to"],
                 twelve_peso_end_first: form.ticket_specifics[2]["assigned_range_to"],

@@ -197,12 +197,12 @@ export class RemittanceForm extends Component {
             })
         }
 
-        const first_ten_sum_final = isNaN(first_ten_sum) || first_ten_sum < 0 ? 0 : first_ten_sum;
-        const second_ten_sum_final = isNaN(second_ten_sum) || second_ten_sum < 0 ? 0 : second_ten_sum;
-        const first_twelve_sum_final = isNaN(first_twelve_sum) || first_twelve_sum < 0 ? 0 : first_twelve_sum;
-        const second_twelve_sum_final = isNaN(second_twelve_sum) || second_twelve_sum < 0 ? 0 : second_twelve_sum;
-        const first_fifteen_sum_final = isNaN(first_fifteen_sum) || first_fifteen_sum < 0 ? 0 : first_fifteen_sum;
-        const second_fifteen_sum_final = isNaN(second_fifteen_sum) || second_fifteen_sum < 0 ? 0 : second_fifteen_sum;
+        const first_ten_sum_final = isNaN(first_ten_sum) || first_ten_sum <= 0 ? 0 : first_ten_sum;
+        const second_ten_sum_final = isNaN(second_ten_sum) || second_ten_sum <= 0 ? 0 : second_ten_sum;
+        const first_twelve_sum_final = isNaN(first_twelve_sum) || first_twelve_sum <= 0 ? 0 : first_twelve_sum;
+        const second_twelve_sum_final = isNaN(second_twelve_sum) || second_twelve_sum <= 0 ? 0 : second_twelve_sum;
+        const first_fifteen_sum_final = isNaN(first_fifteen_sum) || first_fifteen_sum <= 0 ? 0 : first_fifteen_sum;
+        const second_fifteen_sum_final = isNaN(second_fifteen_sum) || second_fifteen_sum <= 0 ? 0 : second_fifteen_sum;
         const fuel = this.state.fuel ? this.state.fuel : 0;
         const others = this.state.others ? this.state.others : 0;
         this.setState({
@@ -214,7 +214,7 @@ export class RemittanceForm extends Component {
 
     calculateQuantity = (first, second) => {
         const quantity = parseInt(first) - parseInt(second) + 1;
-        return isNaN(quantity) || quantity < 0 ? 0 : quantity
+        return isNaN(quantity) || quantity <= 0 ? 0 : quantity
     };
     showModal = () => {
         this.setState({

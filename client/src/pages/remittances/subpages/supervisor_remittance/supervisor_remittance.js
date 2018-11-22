@@ -409,7 +409,7 @@ export class SupervisorSecondContent extends Component {
         // this function is to handle drop-downs
         const state = { ...this.state };
         state[fieldName] = value;
-        console.log(fieldName)
+        console.log(fieldName);
         console.log(state[fieldName]);
         this.setState({
             ...state
@@ -499,6 +499,7 @@ export class SupervisorSecondContent extends Component {
 
                     {this.state.tickets &&
                     <div className="tickets-div">
+                        <Fragment>
                         <p><b>10 Peso Ticket (1)</b>: {this.state.tickets[0].range_from}
                             - {this.state.tickets[0].range_to}</p>
                         <p><b>10 Peso Ticket (2)</b>: {this.state.tickets[1].range_from}
@@ -511,6 +512,7 @@ export class SupervisorSecondContent extends Component {
                             - {this.state.tickets[4].range_to}</p>
                         <p><b>15 Peso Ticket (2)</b>: {this.state.tickets[5].range_from}
                             - {this.state.tickets[5].range_to}</p>
+                        </Fragment>
                     </div>
                     }
                     {this.state.is_under_maintenance &&
@@ -690,11 +692,11 @@ export class SupervisorLastContent extends Component {
 
         this.setState({
             visible: true,
-            ten_peso_start_first: item.assigned_tickets[0]["start_ticket"],
-            ten_peso_start_second: item.assigned_tickets[1]["start_ticket"],
-            twelve_peso_start_first: item.assigned_tickets[2]["start_ticket"],
-            twelve_peso_start_second: item.assigned_tickets[3]["start_ticket"],
-            fifteen_peso_start_first: item.assigned_tickets[4]["start_ticket"],
+            ten_peso_start_first: item.assigned_tickets[0]["consumed_end"] == 0 ? null :item.assigned_tickets[0]["start_ticket"],
+            ten_peso_start_second: item.assigned_tickets[1]["consumed_end"] == 0 ? null : item.assigned_tickets[1]["start_ticket"],
+            twelve_peso_start_first: item.assigned_tickets[2]["consumed_end"] == 0 ? null : item.assigned_tickets[2]["start_ticket"],
+            twelve_peso_start_second: item.assigned_tickets[3]["consumed_end"] == 0 ? null : item.assigned_tickets[3]["start_ticket"],
+            fifteen_peso_start_first: item.assigned_tickets[4]["consumed_end"] == 0 ? null : item.assigned_tickets[4]["start_ticket"],
             fifteen_peso_start_second: item.assigned_tickets[5]["start_ticket"],
             ten_peso_end_first: item.assigned_tickets[0]["assigned_range_to"],
             ten_peso_end_second: item.assigned_tickets[1]["assigned_range_to"],
