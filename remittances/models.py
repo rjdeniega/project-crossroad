@@ -182,6 +182,14 @@ class RemittanceForm(SoftDeletionModel):
         self.status = 'C'  # set status to confirmed
         self.save()
 
+    def get_remittances_only(self):
+        costs = 0
+        if self.fuel_cost is not None:
+            costs += self.fuel_cost
+        if self.other_cost is not None:
+            costs += self.other_cost
+        return self.total + costs
+
 
 class ConsumedTicket(SoftDeletionModel):
     remittance_form = ForeignKey(RemittanceForm, on_delete=models.CASCADE)

@@ -1495,17 +1495,20 @@ class SupervisorWeeklyReport(APIView):
                 deployed_drivers = []
 
                 for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
-
-                    deployed_drivers.append({
-                        "driver_id": deployment.driver.id,
-                        "driver_name": deployment.driver.name
-                    })
-
+                    driver_remit = 0
                     for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
                         daily_remittance += consumed_ticket.total
+                        driver_remit += consumed_ticket.total
                     for remittance in RemittanceForm.objects.filter(deployment=deployment):
                         daily_cost += remittance.fuel_cost + remittance.other_cost
                         daily_income += remittance.total
+
+                    deployed_drivers.append({
+                        "driver_id": deployment.driver.id,
+                        "driver_name": deployment.driver.name,
+                        "remittance": "{0:,.2f}".format(driver_remit)
+                    })
+
                     number_of_drivers += 1
 
                 absent_drivers = []
@@ -1527,9 +1530,9 @@ class SupervisorWeeklyReport(APIView):
                     "date": temp_start.date(),
                     "shift": shift_iteration.shift.get_type_display(),
                     "number_of_drivers": number_of_drivers,
-                    "daily_remittance": daily_remittance,
-                    "daily_cost": daily_cost,
-                    "daily_income": daily_income,
+                    "daily_remittance": "{0:,.2f}".format(daily_remittance),
+                    "daily_cost": "{0:,.2f}".format(daily_cost),
+                    "daily_income": "{0:,.2f}".format(daily_income),
                     "deployed_drivers": deployed_drivers,
                     "absent_drivers": absent_drivers,
                     "remarks": shift_iteration.remarks
@@ -1548,8 +1551,8 @@ class SupervisorWeeklyReport(APIView):
             "supervisor_id": supervisor.id,
             "supervisor_name": supervisor.name,
             "total_remittances": total_remittances,
-            "total_costs": total_costs,
-            "total_income": total_income,
+            "total_costs": "{0:,.2f}".format(total_costs),
+            "total_income": "{0:,.2f}".format(total_income),
             "total_deployed_drivers": total_deployed_drivers,
             "rows": rows
         }, status=status.HTTP_200_OK)
@@ -1636,6 +1639,7 @@ class ShuttleCostVRevenueReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = datetime.strptime(data["end_date"], '%Y-%m-%d')
 
         rows = []
         total_remittance = 0
@@ -1647,17 +1651,20 @@ class ShuttleCostVRevenueReport(APIView):
 
             shuttle_remittance = sum([(item.total + item.fuel_cost) for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
-                deployment__shift_iteration__date__gte=start_date
+                deployment__shift_iteration__date__gte=start_date,
+                deployment__shift_iteration__date__lte=end_date,
             )])
 
             shuttle_fuel_cost = sum([item.fuel_cost for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
-                deployment__shift_iteration__date__gte=start_date
+                deployment__shift_iteration__date__gte=start_date,
+                deployment__shift_iteration__date__lte=end_date,
             )])
 
             repairs = Repair.objects.filter(
                 shuttle=shuttle,
-                date_requested__gte=start_date
+                date_requested__gte=start_date,
+                date_requested__lte=end_date
             )
 
             for repair in repairs:
@@ -1691,6 +1698,7 @@ class ShuttleCostVRevenueReport(APIView):
             "shuttle_maintenance_costs": [(item['cost'] + item['fuel_cost']) for item in rows],
             "shuttle_revenues": [item['revenue'] for item in rows],
             "start_date": start_date,
+            "end_date": end_date,
             "total_remittance": total_remittance,
             "total_costs": total_cost,
             "total_fuel": total_fuel,
@@ -1698,6 +1706,49 @@ class ShuttleCostVRevenueReport(APIView):
             "shuttles": rows
         }, status=status.HTTP_200_OK)
 
+
+class RemittanceForTheMonth(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+
+        year = date.year
+        month = date.month
+        num_days = calendar.monthrange(year, month)[1]
+
+        days = [datetime(year, month, day) for day in range(1, num_days+1)]
+
+        values = []
+        new_days = []
+        rem = RemittanceForTheMonth()
+
+        for day in days:
+            value = rem.get_remittance_total(day) + rem.get_beep_total(day)
+            values.append(value)
+            new_days.append(day.date())
+
+
+        return Response(data={
+            "days": new_days,
+            "values": values
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get_remittance_total(date):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date)
+        total = 0
+        for remittance in remittances:
+            total += remittance.get_remittances_only()
+        return total
+
+    @staticmethod
+    def get_beep_total(date):
+        beeps = BeepTransaction.objects.filter(shift__date=date)
+        total = 0
+        for beep in beeps:
+            total += beep.total
+        return total
 
 class NotificationItems(APIView):
     @staticmethod

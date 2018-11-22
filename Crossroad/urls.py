@@ -56,7 +56,8 @@ urlpatterns = [
     path('remittance_per_route_report/', RemittancePerRouteReport.as_view()),
     path('member_transaction_report/', MemberTransactionByReport.as_view()),
     path('beep_tickets/', BeepTickets.as_view()),
-    path('patronage_refund/', PatronageRefund.as_view())
+    path('patronage_refund/', PatronageRefund.as_view()),
+    path('remittance_for_the_month/', RemittanceForTheMonth.as_view()),
 
 ]
 
