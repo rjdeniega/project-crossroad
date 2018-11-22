@@ -1529,6 +1529,7 @@ class ShuttleCostVRevenueReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = datetime.strptime(data["end_date"], '%Y-%m-%d')
 
         rows = []
         total_remittance = 0
@@ -1540,17 +1541,20 @@ class ShuttleCostVRevenueReport(APIView):
 
             shuttle_remittance = sum([(item.total + item.fuel_cost) for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
-                deployment__shift_iteration__date__gte=start_date
+                deployment__shift_iteration__date__gte=start_date,
+                deployment__shift_iteration__date__lte=end_date,
             )])
 
             shuttle_fuel_cost = sum([item.fuel_cost for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
-                deployment__shift_iteration__date__gte=start_date
+                deployment__shift_iteration__date__gte=start_date,
+                deployment__shift_iteration__date__lte=end_date,
             )])
 
             repairs = Repair.objects.filter(
                 shuttle=shuttle,
-                date_requested__gte=start_date
+                date_requested__gte=start_date,
+                date_requested__lte=end_date
             )
 
             for repair in repairs:
@@ -1582,6 +1586,7 @@ class ShuttleCostVRevenueReport(APIView):
 
         return Response(data={
             "start_date": start_date,
+            "end_date": end_date,
             "total_remittance": total_remittance,
             "total_costs": total_cost,
             "total_fuel": total_fuel,
