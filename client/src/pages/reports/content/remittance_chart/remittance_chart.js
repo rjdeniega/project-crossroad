@@ -31,12 +31,13 @@ class ComponentToPrint extends React.Component {
         console.log(this.props.data)
     }
 
-    render() {
+    renderChart = () => {
+        console.log(this.props.data);
         const data = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', "November", "December"],
+            labels: this.props.data.days,
             datasets: [
                 {
-                    label: 'My First dataset',
+                    label: "",
                     fill: false,
                     lineTension: 0.1,
                     backgroundColor: 'rgba(75,192,192,0.4)',
@@ -54,10 +55,20 @@ class ComponentToPrint extends React.Component {
                     pointHoverBorderWidth: 2,
                     pointRadius: 1,
                     pointHitRadius: 10,
-                    data: [65, 59, 80, 81, 56, 55, 40, 2, 3, 4, 5, 1]
+                    data: this.props.data.values,
                 }
             ]
         };
+        return <Line data={data} options={{
+            title: {
+                display: true,
+                text: "Remittance Trend for" + this.props.data.days[0] + " to " + this.props.data.days[29]
+            }}}/>
+        
+    }
+
+
+    render() {
         return (
             <div className="container">
                 <div className="report-labels">
@@ -71,7 +82,9 @@ class ComponentToPrint extends React.Component {
                 </div>
                 <div className="report-body">
                     {/*<div className="chart-wrapper">*/}
-                    <Line data={data}/>
+                    {this.props.data &&
+                        this.renderChart()
+                    }
                 </div>
             </div>
         );
