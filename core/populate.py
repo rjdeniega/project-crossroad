@@ -97,7 +97,7 @@ class PopulateDatabase():
     def populate_inventory():
         item = Item(name="Windshield Wiper",
                     description="Windshield wiper for Toyota L300",
-                    quantity=6,
+                    quantity=4,
                     brand="Vew Clear",
                     consumable=False,
                     average_price=150)
@@ -111,7 +111,7 @@ class PopulateDatabase():
 
         item2 = Item(name="Signal Lightbulb",
                     description="Can be used for brake light or turn signal lights",
-                    quantity=10,
+                    quantity=8,
                     brand="TTW",
                     consumable=False,
                     average_price=250)
@@ -125,7 +125,7 @@ class PopulateDatabase():
 
         item3 = Item(name="Front Brake Pads",
                      description="Pair of brake pads for Mitsubishi L300",
-                     quantity=9,
+                     quantity=5,
                      brand="Akebono",
                      consumable=False,
                      average_price=1300)
@@ -170,7 +170,7 @@ class PopulateDatabase():
 
         item6 = Item(name="Tire Valve Cap",
                      description="For Tires",
-                     quantity=16,
+                     quantity=14,
                      brand="OEM",
                      consumable=False,
                      average_price=25)
@@ -185,7 +185,7 @@ class PopulateDatabase():
 
         item7 = Item(name="Tire",
                      description="Tires for L300",
-                     quantity=6,
+                     quantity=4,
                      brand="Thunderer",
                      consumable=False,
                      average_price=2860)
@@ -434,6 +434,29 @@ class PopulateDatabase():
         itemMovement6.save()
         repair6.problems.add(rp6)
         repair6.modifications.add(rm6)
+
+
+        shuttle4Repair = Repair(shuttle=Shuttle.objects.get(pk=4),
+                                date_requested=datetime.strptime(
+                                '17112018', "%d%m%Y").date(),
+                                start_date=datetime.strptime(
+                                '17112018', "%d%m%Y").date(),
+                                end_date=datetime.strptime(
+                                '19112018', "%d%m%Y").date(),
+                                status="C",
+                                maintenance=False,
+                                labor_fee=4000)
+
+        shuttle4Repair.save()
+        s4rp = RepairProblem(description="Engine Failure")
+        s4rp.save()
+        outsourced_item1 = OutSourcedItems(item="Engine",
+                                           quantity=1,
+                                           labor_fee=15000)
+        outsourced_item1.save()
+        shuttle4Repair.problems.add(s4rp)
+        shuttle4Repair.outsourced_items.add(outsourced_item1)
+
 
 
         ## Shuttle 5
