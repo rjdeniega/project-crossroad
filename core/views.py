@@ -1587,6 +1587,49 @@ class ShuttleCostVRevenueReport(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class RemittanceForTheMonth(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+
+        year = date.year
+        month = date.month
+        num_days = calendar.monthrange(year, month)[1]
+
+        days = [datetime(year, month, day) for day in range(1, num_days+1)]
+
+        values = []
+        new_days = []
+        rem = RemittanceForTheMonth()
+
+        for day in days:
+            value = rem.get_remittance_total(day) + rem.get_beep_total(day)
+            values.append(value)
+            new_days.append(day.date())
+
+
+        return Response(data={
+            "days": new_days,
+            "values": values
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get_remittance_total(date):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date)
+        total = 0
+        for remittance in remittances:
+            total += remittance.get_remittances_only()
+        return total
+
+    @staticmethod
+    def get_beep_total(date):
+        beeps = BeepTransaction.objects.filter(shift__date=date)
+        total = 0
+        for beep in beeps:
+            total += beep.total
+        return total
+
 class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type):
