@@ -1385,17 +1385,20 @@ class SupervisorWeeklyReport(APIView):
                 deployed_drivers = []
 
                 for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
-
-                    deployed_drivers.append({
-                        "driver_id": deployment.driver.id,
-                        "driver_name": deployment.driver.name
-                    })
-
+                    driver_remit = 0
                     for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
                         daily_remittance += consumed_ticket.total
+                        driver_remit += consumed_ticket.total
                     for remittance in RemittanceForm.objects.filter(deployment=deployment):
                         daily_cost += remittance.fuel_cost + remittance.other_cost
                         daily_income += remittance.total
+
+                    deployed_drivers.append({
+                        "driver_id": deployment.driver.id,
+                        "driver_name": deployment.driver.name,
+                        "remittance": "{0:,.2f}".format(driver_remit)
+                    })
+
                     number_of_drivers += 1
 
                 absent_drivers = []
@@ -1417,9 +1420,9 @@ class SupervisorWeeklyReport(APIView):
                     "date": temp_start.date(),
                     "shift": shift_iteration.shift.get_type_display(),
                     "number_of_drivers": number_of_drivers,
-                    "daily_remittance": daily_remittance,
-                    "daily_cost": daily_cost,
-                    "daily_income": daily_income,
+                    "daily_remittance": "{0:,.2f}".format(daily_remittance),
+                    "daily_cost": "{0:,.2f}".format(daily_cost),
+                    "daily_income": "{0:,.2f}".format(daily_income),
                     "deployed_drivers": deployed_drivers,
                     "absent_drivers": absent_drivers,
                     "remarks": shift_iteration.remarks
@@ -1438,8 +1441,8 @@ class SupervisorWeeklyReport(APIView):
             "supervisor_id": supervisor.id,
             "supervisor_name": supervisor.name,
             "total_remittances": total_remittances,
-            "total_costs": total_costs,
-            "total_income": total_income,
+            "total_costs": "{0:,.2f}".format(total_costs),
+            "total_income": "{0:,.2f}".format(total_income),
             "total_deployed_drivers": total_deployed_drivers,
             "rows": rows
         }, status=status.HTTP_200_OK)
