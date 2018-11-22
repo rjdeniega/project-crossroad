@@ -19,7 +19,6 @@ import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
-import YearPicker from "react-year-picker";
 
 
 const dateFormat = "YYYY-MM-DD";

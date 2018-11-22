@@ -45,7 +45,7 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
-                        <th>Shuttle #</th>
+                        <th>Date</th>
                         <th>Shift #</th>
                         <th>10 Peso</th>
                         <th>12 Peso</th>

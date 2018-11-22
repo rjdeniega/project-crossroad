@@ -21,7 +21,7 @@ export class UserAvatar extends Component {
             notifications: [],
             unread: []
         };
-        
+
         this.fetchNotifications = this.fetchNotifications.bind(this)
         // Don't call this.setState() here!
         //set user for any children page of App (which is everything)
@@ -56,7 +56,7 @@ export class UserAvatar extends Component {
                 }
             }).catch(error => console.log(error));
     }
-    
+
     render() {
 
         const {notifications, unread} = this.state;
@@ -66,7 +66,7 @@ export class UserAvatar extends Component {
             </div>
         );
         const { username } = JSON.parse(localStorage.user);
-    
+
         return <div className="header-icons">
             <div className="user-full-name"> {username}</div>
             {/*<Tag className="user-type" color="var(--orange)">*/}
@@ -84,7 +84,7 @@ export class UserAvatar extends Component {
                       <List itemlayout="horizontal">
                         {notifications.map(function (d, idx) {
                             console.log(d)
-                            return (<Notification key={idx} title={d.type} 
+                            return (<Notification key={idx} title={d.type}
                                     description={d.description} isRead={d.is_read} id={d.id}/>)
                         })}
                       </List>

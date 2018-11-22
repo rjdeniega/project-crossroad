@@ -446,7 +446,12 @@ class ShuttleMaintenanceFrequency(APIView):
                     maintenanceCost = maintenanceCost + (item.unit_price * item.quantity)
 
                 for item_used in RepairModifications.objects.all().filter(repair=repair.id):
-                    item = Item.objects.get(id=item_used.pk)
+                    print(item_used.pk)
+                    print(Item.objects.all())
+                    try:
+                        item = Item.objects.get(pk=item_used.pk)
+                    except ObjectDoesNotExist:
+                        print(item_used.id)
                     maintenanceCost = maintenanceCost + (item_used.quantity * item.average_price)
 
             rows.append({
@@ -461,7 +466,8 @@ class ShuttleMaintenanceFrequency(APIView):
             })
 
         total_maintenance_cost = "{0:,.2f}".format(sum([item['maintenance_cost_value'] for item in rows]))
-        total_average_maintenance_cost = "{0:,.2f}".format(sum([item['average_cost_value'] for item in rows]) / len(rows))
+        total_average_maintenance_cost = "{0:,.2f}".format(
+            sum([item['average_cost_value'] for item in rows]) / len(rows))
 
         return Response(data={
             "rows": rows,

@@ -497,7 +497,7 @@ class MemberTransactionByReport(APIView):
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
                     "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in carwash_transactions])),
                     "carwash_total": sum([item.total for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
@@ -561,9 +561,9 @@ class PatronageRefund(APIView):
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
                 rate_of_refund = (sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]))/surplus if surplus != 0 else 0
+                    [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
                 report_items.append({
-                    "date":start_date,
+                    "date": start_date,
                     "member": member_data,
                     "member_card": IDCardSerializer(IDCards.objects.get(member=member)).data,
                     "no_of_beep": len(transactions),
@@ -576,7 +576,7 @@ class PatronageRefund(APIView):
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions]),
-                    "rate_of_refund": rate_of_refund*100,
+                    "rate_of_refund": rate_of_refund * 100,
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions])),
                     "patronage_refund": (rate_of_refund / 100) * sum([item.total for item in transactions]) + sum(
@@ -1255,6 +1255,116 @@ class TicketTypePerDayReport(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class TicketTypeWithRange(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = start_date + timedelta(days=6)  # for one week
+
+        temp_start = start_date
+
+        days = []
+        grand_am_total = 0
+        grand_pm_total = 0
+        grand_ten_total = 0
+        grand_twelve_total = 0
+        grand_fifteen_total = 0
+
+        while temp_start <= end_date:
+            deployments = Deployment.objects.filter(shift_iteration__date=temp_start)
+
+            # counts for the day
+            am_count = 0
+            pm_count = 0
+            am_ten = 0
+            am_twelve = 0
+            am_fifteen = 0
+            pm_ten = 0
+            pm_twelve = 0
+            pm_fifteen = 0
+
+            for deployment in deployments:
+                consumed_tickets = ConsumedTicket.objects.filter(remittance_form__deployment=deployment)
+
+                for consumed_ticket in consumed_tickets:
+                    if deployment.shift_iteration.shift.type is 'A':
+
+                        if consumed_ticket.assigned_ticket.type is 'A':
+                            print(consumed_ticket.total)
+                            am_count += consumed_ticket.total / 10
+                            am_ten += consumed_ticket.total / 10
+
+                        elif consumed_ticket.assigned_ticket.type is 'B':
+                            print(consumed_ticket.total)
+                            am_count += consumed_ticket.total / 12
+                            am_twelve += consumed_ticket.total / 12
+
+                        else:
+                            print(consumed_ticket.total)
+                            am_count += consumed_ticket.total / 15
+                            am_fifteen += consumed_ticket.total / 15
+
+                    else:
+
+                        if consumed_ticket.assigned_ticket.type is 'A':
+                            print("A")
+                            print(consumed_ticket.total)
+                            pm_count += consumed_ticket.total / 10
+                            pm_ten += consumed_ticket.total / 10
+
+                        elif consumed_ticket.assigned_ticket.type is 'B':
+                            print("B")
+                            print(consumed_ticket.total)
+                            pm_count += consumed_ticket.total / 12
+                            pm_twelve += consumed_ticket.total / 12
+
+                        else:
+                            print("C")
+                            print(consumed_ticket.total)
+                            pm_count += consumed_ticket.total / 15
+                            pm_fifteen += consumed_ticket.total / 15
+
+            days.append({
+                "date": temp_start.date(),
+                "am_total": am_count,
+                "pm_total": pm_count,
+                "am_ten": am_ten,
+                "am_twelve": am_twelve,
+                "am_fifteen": am_fifteen,
+                "pm_ten": pm_ten,
+                "pm_twelve": pm_twelve,
+                "pm_fifteen": pm_fifteen
+            })
+
+            grand_am_total += am_count
+            grand_pm_total += pm_count
+            grand_ten_total += am_ten + pm_ten
+            grand_twelve_total += am_twelve + pm_twelve
+            grand_fifteen_total += am_fifteen + pm_fifteen
+
+            temp_start = temp_start + timedelta(days=1)
+        am_stack = []
+        pm_stack = []
+        for item in days:
+            am_stack.append([item['am_ten'],item['am_twelve'],item['am_fifteen']])
+            pm_stack.append([item['pm_ten'], item['pm_twelve'], item['pm_fifteen']])
+        return Response(data={
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
+            "dates": [item['date'] for item in days],
+            "am_stack": am_stack,
+            "pm_stack": pm_stack,
+            "grand_total": grand_ten_total + grand_twelve_total + grand_fifteen_total,
+            "grand_am_total": grand_am_total,
+            "grand_pm_total": grand_pm_total,
+            "grand_ten_total": grand_ten_total,
+            "grand_twelve_total": grand_twelve_total,
+            "grand_fifteen_total": grand_fifteen_total,
+            "days": days
+        }, status=status.HTTP_200_OK)
+
+
 class TicketTypePerShuttle(APIView):
     @staticmethod
     def post(request):
@@ -1578,6 +1688,8 @@ class ShuttleCostVRevenueReport(APIView):
             total_cost += initialMaintenanceCost
 
         return Response(data={
+            "shuttle_maintenance_costs": [(item['cost'] + item['fuel_cost']) for item in rows],
+            "shuttle_revenues": [item['revenue'] for item in rows],
             "start_date": start_date,
             "total_remittance": total_remittance,
             "total_costs": total_cost,

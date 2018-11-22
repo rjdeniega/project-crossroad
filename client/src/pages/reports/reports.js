@@ -33,15 +33,8 @@ import {TicketPerDay } from './content/ticket_per_day/ticket_per_day'
 import {MemberTransactions} from './content/member_transactions/member_transactions'
 import {BeepTickets} from './content/beep_tickets/beep_tickets'
 import {PatronageRefund} from './content/patronage_refund/patronage_refund'
-
-
-
-
-
-
-
-
-
+import {ShuttleValueChart} from './content/shuttle_value_chart/shuttle_value_chart'
+import {TicketStack} from './content/ticket_stack/ticket_stack'
 
 
 const { Meta } = Card;
@@ -55,6 +48,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <RemittanceSummary/>
+},{
+    'title': 'Ticket chart per week',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <TicketStack/>
 },{
     'title': 'Remittance Chart',
     'description': 'view beep and ticketing passenger count',
@@ -101,6 +99,11 @@ const MAINTENANCE_CARDS = [{
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
     'content': <ShuttleIncome/>
+},{
+    'title': 'Revenue & Cost per Shuttle',
+    'description': 'view maintenance cost per shuttle',
+    'icon': wrench,
+    'content': <ShuttleValueChart/>
 }];
 const MEMBER_CARDS = [{
     'title': 'Shares Report',

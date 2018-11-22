@@ -23,7 +23,7 @@ const Option = Select.Option;
 
 class ComponentToPrint extends React.Component {
     render() {
-        const { data } = this.props
+        const { data } = this.props;
         return (
             <div className="container">
                 <div className="report-labels">

@@ -1,4 +1,7 @@
 /**
+ * Created by JasonDeniega on 22/11/2018.
+ */
+/**
  * Created by JasonDeniega on 19/11/2018.
  */
 /**
@@ -19,7 +22,7 @@ import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -27,37 +30,45 @@ const Option = Select.Option;
 
 
 class ComponentToPrint extends React.Component {
-    componentDidMount() {
-        console.log(this.props.data)
+    state = {
+        data: []
     }
 
-    render() {
-        const data = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', "November", "December"],
-            datasets: [
-                {
-                    label: 'My First dataset',
-                    fill: false,
-                    lineTension: 0.1,
-                    backgroundColor: 'rgba(75,192,192,0.4)',
-                    borderColor: 'rgba(75,192,192,1)',
-                    borderCapStyle: 'butt',
-                    borderDash: [],
-                    borderDashOffset: 0.0,
-                    borderJoinStyle: 'miter',
-                    pointBorderColor: 'rgba(75,192,192,1)',
-                    pointBackgroundColor: '#fff',
-                    pointBorderWidth: 1,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                    pointHoverBorderColor: 'rgba(220,220,220,1)',
-                    pointHoverBorderWidth: 2,
-                    pointRadius: 1,
-                    pointHitRadius: 10,
-                    data: [65, 59, 80, 81, 56, 55, 40, 2, 3, 4, 5, 1]
-                }
-            ]
+    componentDidMount() {
+        console.log(this.props.data);
+    }
+
+    renderBar = () => {
+        const revenue = {
+            label: 'Shuttle Revenue',
+            data: this.props.data.shuttle_revenues,
+            backgroundColor: 'rgba(0, 99, 132, 0.6)',
+            borderColor: 'rgba(255,99,132,1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+            hoverBorderColor: 'rgba(255,99,132,1)',
         };
+
+        const costs = {
+            label: 'Shuttle Costs',
+            data: this.props.data.shuttle_maintenance_costs,
+            backgroundColor: 'rgba(255,99,132,0.2)',
+            borderColor: 'rgba(255,99,132,1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(255,99,132,0.4)',
+            hoverBorderColor: 'rgba(255,99,132,1)',
+        };
+
+        let data = {
+            labels: ['Shuttle # 1', 'Shuttle # 2', 'Shuttle # 3', 'Shuttle # 4', 'Shuttle # 5',
+                'Shuttle # 6', 'Shuttle # 7', 'Shuttle # 8', 'Shuttle # 9'
+            ], datasets: [revenue, costs]
+        };
+        return <Bar data={data}/>
+    };
+
+    render() {
+
         return (
             <div className="container">
                 <div className="report-labels">
@@ -70,14 +81,15 @@ class ComponentToPrint extends React.Component {
                     }
                 </div>
                 <div className="report-body">
+                    {this.props.data && this.renderBar()}
                     {/*<div className="chart-wrapper">*/}
-                    <Line data={data}/>
                 </div>
             </div>
         );
     }
 }
-export class RemittanceChart extends Component {
+
+export class ShuttleValueChart extends Component {
     state = {};
 
     componentDidMount() {
@@ -88,7 +100,7 @@ export class RemittanceChart extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        postData('/remittance_for_the_month/', data).then(data => {
+        postData('/shuttle_net_income_report/', data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({
@@ -110,6 +122,7 @@ export class RemittanceChart extends Component {
             end_date: dateString
         }, () => this.fetchTransactions())
     };
+
 
     render() {
 
