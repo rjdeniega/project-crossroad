@@ -62,11 +62,10 @@ class ComponentToPrint extends React.Component {
         return <Line data={data} options={{
             title: {
                 display: true,
-                text: "Remittance Trend for" + this.props.data.days[0] + " to " + this.props.data.days[29]
+                text: "Remittance Trend for " + this.props.data.days[0] + " to " + this.props.data.days[29]
             }}}/>
-        
-    }
 
+    };
 
     render() {
         return (
@@ -129,7 +128,6 @@ export class RemittanceChart extends Component {
         return (
             <div className="report-body">
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
-                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}

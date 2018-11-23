@@ -54,7 +54,7 @@ const REMITTANCE_CARDS = [{
     'icon': money,
     'content': <TicketStack/>
 },{
-    'title': 'Remittance Chart',
+    'title': 'Remittance Trend',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <RemittanceChart/>
