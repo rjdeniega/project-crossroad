@@ -397,7 +397,23 @@ class SpecificDriver(APIView):
     def get(request, driver_id, supervisor_id):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         shift = Shift.objects.get(schedule=active_sched, supervisor_id=supervisor_id)
-        driver_assigned = DriversAssigned.objects.get(shift=shift, driver_id=driver_id)
+
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor_id=supervisor_id).order_by(
+            '-date').first()
+
+        if DeploymentView.is_in_shift(driver_id, shift.id):
+            driver_assigned = DriversAssigned.objects.get(shift=shift, driver_id=driver_id)
+        else:
+            shifts = Shift.objects.filter(schedule=active_sched)
+
+            for shift in shifts:
+                if shift.id != current_shift_iteration.shift.id:
+                    other_shift = shift
+
+            driver_assigned = DriversAssigned.objects.get(
+                shift_id=other_shift.id,
+                driver_id=driver_id
+            )
 
         print(driver_assigned.shuttle.status)
         if driver_assigned.shuttle.status == 'UM':
@@ -405,6 +421,8 @@ class SpecificDriver(APIView):
         else:
             is_under_maintenance = False
         print(is_under_maintenance)
+
+
         # I dont want to change front-end too much
         ten_peso = []
         twelve_peso = []
