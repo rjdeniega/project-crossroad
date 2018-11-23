@@ -205,7 +205,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="M")
         shuttle1.save()
@@ -214,7 +214,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="M")
         shuttle2.save()
@@ -223,7 +223,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="M")
         shuttle3.save()
@@ -232,7 +232,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="L")
         shuttle4.save()
@@ -241,7 +241,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="L")
         shuttle5.save()
@@ -250,7 +250,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="R")
         shuttle6.save()
@@ -259,7 +259,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="R")
         shuttle7.save()
@@ -268,7 +268,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="B")
         shuttle8.save()
@@ -277,7 +277,7 @@ class PopulateDatabase():
                            model="L300",
                            status="A",
                            date_acquired=datetime.strptime(
-                               '24052016', "%d%m%Y").date(),
+                               '24052018', "%d%m%Y").date(),
                            mileage=500,
                            route="B")
         shuttle9.save()
