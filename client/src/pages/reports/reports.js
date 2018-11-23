@@ -104,6 +104,11 @@ const MAINTENANCE_CARDS = [{
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
     'content': <ShuttleValueChart/>
+},{
+    'title': 'Current Inventory Count',
+    'description': 'view maintenance cost per shuttle',
+    'icon': wrench,
+    'content': <ShuttleValueChart/>
 }];
 const MEMBER_CARDS = [{
     'title': 'Shares Report',
