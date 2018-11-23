@@ -477,7 +477,7 @@ class PopulateDatabase():
         s4rp.save()
         outsourced_item1 = OutSourcedItems(item="Engine",
                                            quantity=1,
-                                           labor_fee=15000)
+                                           unit_fee=15000)
         outsourced_item1.save()
         shuttle4Repair.problems.add(s4rp)
         shuttle4Repair.outsourced_items.add(outsourced_item1)
