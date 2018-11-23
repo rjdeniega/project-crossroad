@@ -106,7 +106,9 @@ class PopulateDatabase():
                                     type="B",
                                     quantity=6,
                                     vendor="Lazada",
-                                    unit_price=150)
+                                    unit_price=150,
+                                    created=datetime.strptime(
+                                        '01112018', "%d%m%Y").date())
         itemMovement.save()
 
         item2 = Item(name="Signal Lightbulb",
@@ -120,7 +122,9 @@ class PopulateDatabase():
                                     type="B",
                                     quantity=10,
                                     vendor="Ace Hardware",
-                                    unit_price=250)
+                                     unit_price=250,
+                                     created=datetime.strptime(
+                                         '02112018', "%d%m%Y").date())
         itemMovement2.save()
 
         item3 = Item(name="Front Brake Pads",
@@ -135,7 +139,9 @@ class PopulateDatabase():
                                      type="B",
                                      quantity=9,
                                      vendor="Ace Hardware",
-                                     unit_price=1300)
+                                     unit_price=1300,
+                                     created=datetime.strptime(
+                                         '01112018', "%d%m%Y").date())
         itemMovement3.save()
 
         item4 = Item(name="Radiator Coolant",
@@ -150,7 +156,9 @@ class PopulateDatabase():
                                      type="B",
                                      quantity=6,
                                      vendor="Total",
-                                     unit_price=230)
+                                     unit_price=230,
+                                     created=datetime.strptime(
+                                         '01112018', "%d%m%Y").date())
         itemMovement4.save()
 
         item5 = Item(name="Engine Oil",
@@ -165,7 +173,10 @@ class PopulateDatabase():
                                      type="B",
                                      quantity=5,
                                      vendor="Shell",
-                                     unit_price=455)
+                                     unit_price=455,
+                                     created=datetime.strptime(
+                                         '01112018', "%d%m%Y").date()
+                                     )
         itemMovement5.save()
 
         item6 = Item(name="Tire Valve Cap",
@@ -180,7 +191,9 @@ class PopulateDatabase():
                                      type="B",
                                      quantity=16,
                                      vendor="Ace Hardware",
-                                     unit_price=25)
+                                     unit_price=25,
+                                     created=datetime.strptime(
+                                         '01112018', "%d%m%Y").date())
         itemMovement6.save()
 
         item7 = Item(name="Tire",
@@ -195,7 +208,9 @@ class PopulateDatabase():
                                      type="B",
                                      quantity=6,
                                      vendor="Goodyear",
-                                     unit_price=2860)
+                                     unit_price=2860,
+                                     created=datetime.strptime(
+                                         '01112018', "%d%m%Y").date())
         itemMovement7.save()
 
     @staticmethod
@@ -303,7 +318,8 @@ class PopulateDatabase():
         itemMovement1 = ItemMovement(item=item1,
                                      type="G",
                                      quantity=1,
-                                     repair=repair1)
+                                     repair=repair1,
+                                     created=datetime.strptime('16112018', "%d%m%Y").date())
         itemMovement1.save()
         repair1.problems.add(rp1)
         repair1.modifications.add(rm1)
@@ -325,7 +341,8 @@ class PopulateDatabase():
         itemMovement2 = ItemMovement(item=item2,
                                      type="G",
                                      quantity=1,
-                                     repair=repair2)
+                                     repair=repair2,
+                                     created=datetime.strptime('18112018', "%d%m%Y").date())
         itemMovement2.save()
         repair2.problems.add(rp2)
         repair2.modifications.add(rm2)
@@ -351,7 +368,9 @@ class PopulateDatabase():
         itemMovement3 = ItemMovement(item=item3,
                                      type="G",
                                      quantity=1,
-                                     repair=repair3)
+                                     repair=repair3,
+                                     created=datetime.strptime(
+                                         '01112018', "%d%m%Y").date())
         itemMovement3.save()
         repair3.problems.add(rp3)
         repair3.modifications.add(rm3)
@@ -378,7 +397,9 @@ class PopulateDatabase():
         itemMovement4 = ItemMovement(item=item4,
                                      type="G",
                                      quantity=2,
-                                     repair=repair4)
+                                     repair=repair4,
+                                     created=datetime.strptime(
+                                         '05112018', "%d%m%Y").date())
         itemMovement4.save()
         repair4.problems.add(rp4)
         repair4.modifications.add(rm4)
@@ -403,7 +424,9 @@ class PopulateDatabase():
         itemMovement5 = ItemMovement(item=item5,
                                      type="G",
                                      quantity=1,
-                                     repair=repair5)
+                                     repair=repair5,
+                                     created=datetime.strptime(
+                                         '14112018', "%d%m%Y").date())
         itemMovement5.save()
         repair5.problems.add(rp5)
         repair5.modifications.add(rm5)
@@ -430,7 +453,9 @@ class PopulateDatabase():
         itemMovement6 = ItemMovement(item=item6,
                                      type="G",
                                      quantity=1,
-                                     repair=repair6)
+                                     repair=repair6,
+                                     created=datetime.strptime(
+                                         '14112018', "%d%m%Y").date())
         itemMovement6.save()
         repair6.problems.add(rp6)
         repair6.modifications.add(rm6)
@@ -452,7 +477,7 @@ class PopulateDatabase():
         s4rp.save()
         outsourced_item1 = OutSourcedItems(item="Engine",
                                            quantity=1,
-                                           labor_fee=15000)
+                                           unit_fee=15000)
         outsourced_item1.save()
         shuttle4Repair.problems.add(s4rp)
         shuttle4Repair.outsourced_items.add(outsourced_item1)
@@ -480,7 +505,9 @@ class PopulateDatabase():
         itemMovement7 = ItemMovement(item=item7,
                                      type="G",
                                      quantity=1,
-                                     repair=repair7)
+                                     repair=repair7,
+                                     created=datetime.strptime(
+                                         '11112018', "%d%m%Y").date())
         itemMovement7.save()
         repair7.problems.add(rp7)
         repair7.modifications.add(rm7)
@@ -507,7 +534,9 @@ class PopulateDatabase():
         itemMovement8 = ItemMovement(item=item8,
                                      type="G",
                                      quantity=1,
-                                     repair=repair8)
+                                     repair=repair8,
+                                     created=datetime.strptime(
+                                         '13112018', "%d%m%Y").date())
         itemMovement8.save()
         repair8.problems.add(rp8)
         repair8.modifications.add(rm8)
@@ -533,7 +562,9 @@ class PopulateDatabase():
         itemMovement9 = ItemMovement(item=item9,
                                      type="G",
                                      quantity=1,
-                                     repair=repair9)
+                                     repair=repair9,
+                                     created=datetime.strptime(
+                                         '16112018', "%d%m%Y").date())
         itemMovement9.save()
         repair9.problems.add(rp9)
         repair9.modifications.add(rm9)
@@ -560,7 +591,9 @@ class PopulateDatabase():
         itemMovement10 = ItemMovement(item=item10,
                                      type="G",
                                      quantity=1,
-                                     repair=repair10)
+                                     repair=repair10,
+                                      created=datetime.strptime(
+                                          '02112018', "%d%m%Y").date())
         itemMovement10.save()
         repair10.problems.add(rp10)
         repair10.modifications.add(rm10)
@@ -587,7 +620,9 @@ class PopulateDatabase():
         itemMovement11 = ItemMovement(item=item11,
                                      type="G",
                                      quantity=2,
-                                     repair=repair11)
+                                     repair=repair11,
+                                     created=datetime.strptime(
+                             '11112018', "%d%m%Y").date())
         itemMovement11.save()
         repair11.problems.add(rp11)
         repair11.modifications.add(rm11)

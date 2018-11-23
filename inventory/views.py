@@ -79,8 +79,9 @@ class ItemView(APIView):
             item_movement = ItemMovement(item=item, type='B', quantity=item.quantity,
                                          vendor=request.POST.get('vendor'),
                                          unit_price=request.POST.get(
-                                             'unite_price'),
-                                         receipt=receipt)
+                                             'unit_price'),
+                                         receipt=receipt,
+                                         created=datetime.now().date())
             item_movement.save()
             return Response(data={
                 "item_name": item.name
@@ -128,7 +129,7 @@ class QuantityRestock(APIView):
         item.average_price = average / 2
         item.quantity = quants['new_quantity']
         item_movement = ItemMovement(item=Item.objects.get(id=item.id), type='B', quantity=quants['added_quantity'],
-                                     unit_price=quants['unit_price'], vendor=quants['vendor'])
+                                     unit_price=quants['unit_price'], vendor=quants['vendor'], created=datetime.now().date())
         item.save()
         item_movement.save()
         return Response(data={
@@ -294,7 +295,7 @@ class MechanicItems(APIView):
             repair.modifications.add(rm)
             if (rm.used_up == True):
                 im = ItemMovement(item=item, type='G',
-                                  quantity=1, repair=repair)
+                                  quantity=1, repair=repair, created=datetime.now().date())
                 im.save()
                 item.quantity = item.quantity - 1
 
@@ -304,7 +305,7 @@ class MechanicItems(APIView):
             rm.save()
             repair.modifications.add(rm)
             im = ItemMovement(item=item, type='G',
-                              quantity=data['quantity'], repair=repair)
+                              quantity=data['quantity'], repair=repair, created=datetime.now().date())
             im.save()
             item.quantity = item.quantity - data['quantity']
 
@@ -490,4 +491,34 @@ class ShuttleMaintenanceFrequency(APIView):
             "rows": rows,
             "total_maintenance_cost": total_maintenance_cost,
             "total_average_maintenance_cost": total_average_maintenance_cost,
+        }, status=status.HTTP_200_OK)
+
+        
+class ItemMovementReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = datetime.strptime(data["end_date"], '%Y-%m-%d')
+
+        rows = []
+
+        itemMovement = ItemMovement.objects.filter(created__gte=start_date, created__lte=end_date)
+
+
+        for movement in itemMovement:
+            type = ""
+            if movement.type == 'B':
+                type = 'Purchased from ' + movement.vendor
+            else:
+                type = 'Used in repairing shuttle ' + movement.repair.shuttle.id
+            rows.append({
+                "date": movement.created,
+                "item": movement.item.name, 
+                "type": type,
+                "quantity": movement.quantity
+            })
+
+        return Response(data={
+            "rows": rows
         }, status=status.HTTP_200_OK)
