@@ -35,6 +35,10 @@ import {BeepTickets} from './content/beep_tickets/beep_tickets'
 import {PatronageRefund} from './content/patronage_refund/patronage_refund'
 import {ShuttleValueChart} from './content/shuttle_value_chart/shuttle_value_chart'
 import {TicketStack} from './content/ticket_stack/ticket_stack'
+import {InventoryReport} from './content/inventory_report/inventory_report'
+import {ItemMovementReport} from './content/item_movement/inventory_movement'
+
+
 
 
 const { Meta } = Card;
@@ -108,7 +112,12 @@ const MAINTENANCE_CARDS = [{
     'title': 'Current Inventory Count',
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
-    'content': <ShuttleValueChart/>
+    'content': <InventoryReport/>
+},{
+    'title': 'Item Movement Report',
+    'description': 'view maintenance cost per shuttle',
+    'icon': wrench,
+    'content': <ItemMovementReport/>
 }];
 const MEMBER_CARDS = [{
     'title': 'Shares Report',

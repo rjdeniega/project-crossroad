@@ -511,14 +511,16 @@ class ItemMovementReport(APIView):
             if movement.type == 'B':
                 type = 'Purchased from ' + movement.vendor
             else:
-                type = 'Used in repairing shuttle ' + movement.repair.shuttle.id
+                type = 'Used in repairing shuttle ' + str(movement.repair.shuttle.id)
             rows.append({
-                "date": movement.created,
+                "date": movement.created.date(),
                 "item": movement.item.name, 
                 "type": type,
                 "quantity": movement.quantity
             })
 
         return Response(data={
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
             "rows": rows
         }, status=status.HTTP_200_OK)

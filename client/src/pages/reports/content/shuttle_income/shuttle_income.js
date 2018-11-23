@@ -54,19 +54,19 @@ class ComponentToPrint extends React.Component {
                                 <Fragment>
                                     <tr>
                                         <td>{item.shuttle_id}</td>
-                                        <td>{item.revenue}</td>
-                                        <td>{item.fuel_cost}</td>
-                                        <td>{item.cost}</td>
-                                        <td><b>{item.value}</b></td>
+                                        <td>{parseFloat(Math.round(item.revenue * 100) / 100).toFixed(2)}</td>
+                                        <td>{parseFloat(Math.round(item.fuel_cost * 100) / 100).toFixed(2)}</td>
+                                        <td>{parseFloat(Math.round(item.cost * 100) / 100).toFixed(2)}</td>
+                                        <td><b>{parseFloat(Math.round(item.value * 100) / 100).toFixed(2)}</b></td>
                                     </tr>
                                 </Fragment>
                             ))}
                             <tr>
                                 <td><b> Grand Total </b></td>
-                                <td className="total-line"><b>{this.props.data.total_remittance}</b></td>
-                                <td className="total-line"><b>{this.props.data.total_fuel}</b></td>
-                                <td className="total-line"><b>{this.props.data.total_costs}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_total}</b></td>
+                                <td className="total-line"><b>{parseFloat(Math.round(this.props.data.total_remittance * 100) / 100).toFixed(2)}</b></td>
+                                <td className="total-line"><b>{parseFloat(Math.round(this.props.data.total_fuel * 100) / 100).toFixed(2)}</b></td>
+                                <td className="total-line"><b>{parseFloat(Math.round(this.props.data.total_costs * 100) / 100).toFixed(2)}</b></td>
+                                <td className="total-line"><b>{parseFloat(Math.round(this.props.data.grand_total * 100) / 100).toFixed(2)}</b></td>
                             </tr>
                         </Fragment>
                         }

@@ -45,6 +45,8 @@ class SignInView(APIView):
             }, status=400)
         username = request.data["username"]
         password = request.data["password"]
+        print(username)
+        print(password)
         user = authenticate(username=username, password=password)
         if user is None:
             return Response(data={
@@ -528,8 +530,11 @@ class PatronageRefund(APIView):
         else:
             end_date = None
 
+        rate_of_refund = surplus/(sum([item.total for item in BeepTransaction.objects.all()]) + sum ([item.total for item in CarwashTransaction.objects.all()]))
+
         report_items = []
         for member in Member.objects.all():
+
             member_data = MemberSerializer(member).data
             try:
                 id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
@@ -560,8 +565,8 @@ class PatronageRefund(APIView):
                 for item in serialized_transactions.data:
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
-                rate_of_refund = (sum([item.total for item in transactions]) + sum(
-                    [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
+                # rate_of_refund = (sum([item.total for item in transactions]) + sum(
+                #     [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
                 report_items.append({
                     "date": start_date,
                     "member": member_data,
@@ -576,10 +581,10 @@ class PatronageRefund(APIView):
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions]),
-                    "rate_of_refund": rate_of_refund * 100,
+                    "rate_of_refund": rate_of_refund,
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions])),
-                    "patronage_refund": (rate_of_refund / 100) * sum([item.total for item in transactions]) + sum(
+                    "patronage_refund": (rate_of_refund) * sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions]),
                 })
         return Response(data={

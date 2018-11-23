@@ -1,4 +1,7 @@
 /**
+ * Created by JasonDeniega on 23/11/2018.
+ */
+/**
  * Created by JasonDeniega on 22/11/2018.
  */
 /**
@@ -35,8 +38,8 @@ class ComponentToPrint extends React.Component {
                 <div className="report-labels">
                     {this.props.data &&
                     <Fragment>
-                        {this.props.data.date &&
-                        <p> Inventory Count as of {this.props.data.date}</p>
+                        {this.props.data.end_date &&
+                        <p> Item Movement Report from {this.props.data.start_date} to {this.props.data.end_date}</p>
                         }
                     </Fragment>
                     }
@@ -45,15 +48,19 @@ class ComponentToPrint extends React.Component {
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
                         <th>Item Name</th>
+                        <th>Date Used</th>
+                        <th>Movement Type</th>
                         <th>Quantity</th>
                         </thead>
                         <tbody>
-                        {this.props.data.items &&
+                        {this.props.data &&
                         <Fragment>
-                            {this.props.data.items.map((item, index) => (
+                            {this.props.data.rows.map((item, index) => (
                                 <Fragment>
                                     <tr>
-                                        <td>{item.name}</td>
+                                        <td>{item.item}</td>
+                                        <td>{item.date}</td>
+                                        <td>{item.type}</td>
                                         <td>{item.quantity}</td>
                                     </tr>
                                 </Fragment>
@@ -75,7 +82,7 @@ class ComponentToPrint extends React.Component {
         );
     }
 }
-export class InventoryReport extends Component {
+export class ItemMovementReport extends Component {
     state = {};
 
     componentDidMount() {
@@ -87,7 +94,7 @@ export class InventoryReport extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        getData('/inventory/items/').then(data => {
+        postData('/inventory/items/item_movement_report',data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({
@@ -101,7 +108,7 @@ export class InventoryReport extends Component {
         this.setState({
             start_date_object: date,
             start_date: dateString
-        }, () => this.fetchTransactions())
+        })
     };
     handleEndDateChange = (date, dateString) => {
         this.setState({
@@ -114,6 +121,8 @@ export class InventoryReport extends Component {
     render() {
         return (
             <div className="report-body">
+                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                    <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}
