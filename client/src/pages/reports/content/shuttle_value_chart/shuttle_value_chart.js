@@ -75,7 +75,7 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Remittance Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p> Shuttle Revenue & Cost report for {this.props.data.start_date} to {this.props.data.end_date} </p>
                         }
                     </Fragment>
                     }

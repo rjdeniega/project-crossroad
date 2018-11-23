@@ -32,8 +32,8 @@ class ComponentToPrint extends React.Component {
                 <div className="report-labels">
                     {this.props.data &&
                     <Fragment>
-                        {this.props.data.start_date &&
-                        <p> Ticket Count Report for {this.props.data.start_date}</p>
+                        {this.props.data.date &&
+                        <p> Ticket Count Per Shuttle for {this.props.data.date}</p>
                         }
                     </Fragment>
                     }
@@ -185,7 +185,6 @@ export class TicketShuttleBreakdown extends Component {
         return (
             <div className="report-body">
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
-                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="formatted-report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}

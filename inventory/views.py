@@ -23,6 +23,22 @@ class SpecificItemView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class ItemAndMovement(APIView):
+    @staticmethod
+    def get(request):
+        data = {
+            "items": [],
+        }
+        for item in Item.objects.all():
+            data["items"].append(ItemSerializer(item))
+            data["movement_count"] = sum([item for item in ItemMovement.objects.all() if item.item == item])
+
+        return Response(data={
+            "items": data,
+            "date": datetime.now()
+        }, status=status.HTTP_200_OK)
+
+
 class ItemView(APIView):
     @staticmethod
     def get(request):
@@ -30,7 +46,8 @@ class ItemView(APIView):
         items = ItemSerializer(Item.objects.all(), many=True)
         # returns all item objects
         return Response(data={
-            "items": items.data
+            "items": items.data,
+            "date": datetime.now().date()
         }, status=status.HTTP_200_OK)
         # Using bare status codes in your responses isn't recommended. REST framework
         # includes a set of named constants that you can use to make your code more obvious and readable.
