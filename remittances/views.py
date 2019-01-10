@@ -510,7 +510,7 @@ class DeploymentView(APIView):
             print(driver_assigned.shuttle)
             deployment = Deployment.objects.create(
                 driver_id=data['driver'],
-                shuttle_id=data['shuttle'],
+                shuttle_id=driver_assigned.shuttle.id,
                 route=driver_assigned.shuttle.route,
                 shift_iteration_id=current_shift_iteration.id
             )

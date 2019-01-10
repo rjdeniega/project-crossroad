@@ -29,6 +29,7 @@ export class SignInPage extends Component {
     };
     //if the textbox changes change the content
     onChangeUserName = (e) => {
+        console.log(e.target.value)
         e.preventDefault();
         this.setState({username: e.target.value});
     };
