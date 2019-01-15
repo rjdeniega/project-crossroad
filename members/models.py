@@ -48,6 +48,7 @@ class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     remaining_tickets = PositiveIntegerField(default=0)
     application_date = DateField()
+    is_supervisor = BooleanField()
 
     def random(self):
         count = self.aggregate(count=Count('id'))['count']
@@ -66,11 +67,6 @@ class Mechanic(Person):
 
 
 class OperationsManager(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
-    application_date = DateField()
-
-
-class Supervisor(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
 
