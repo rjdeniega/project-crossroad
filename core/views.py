@@ -25,11 +25,11 @@ from core.models import Notification
 from core.serializers import (NotificationSerializer, PersonSerializer,
                               UserSerializer)
 from members.models import *
-from members.models import Clerk, Driver, OperationsManager, Person, Supervisor
+from members.models import Clerk, Driver, OperationsManager, Person
 from members.serializers import (ClerkSerializer, DriverSerializer,
                                  MechanicSerializer, MemberSerializer,
                                  OperationsManagerSerializer, ShareSerializer,
-                                 SupervisorSerializer, IDCardSerializer)
+                                 IDCardSerializer)
 from remittances.models import *
 from remittances.serializers import (BeepTransactionSerializer,
                                      CarwashTransactionSerializer)

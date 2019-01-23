@@ -122,7 +122,7 @@ class Deployment(SoftDeletionModel):
     route = CharField(max_length=1, choices=ROUTE)
     shift_iteration = ForeignKey(ShiftIteration, on_delete=models.CASCADE)
     status = CharField(max_length=1, choices=DEPLOYMENT_STATUS, default='O')
-    start_time = DateTimeField(default=datetime.now(), editable=False)
+    start_time = DateTimeField(default=timezone.now, editable=False)
     end_time = DateTimeField(null=True)
     result = CharField(max_length=1, choices=DEPLOYMENT_RESULTS, null=True)
     reason = CharField(max_length=64, null=True)
@@ -157,8 +157,8 @@ class SubbedDeployments(SoftDeletionModel):
     absent_driver = ForeignKey(DriversAssigned, on_delete=models.CASCADE)
 
 class Redeployments(SoftDeletionModel):
-    deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
-    prior_deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
+    deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
+    prior_deployment = ForeignKey(Deployment, related_name="prior_deployment", on_delete=models.CASCADE)
 
 class AssignedTicket(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)

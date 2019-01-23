@@ -18,23 +18,6 @@ class DriverSerializer(ModelSerializer):
         #     # fields and creates an object
 
 
-class SupervisorSerializer(ModelSerializer):
-    class Meta:
-        model = Supervisor
-        fields = '__all__'
-
-    def create(self, validated_data):
-        supervisor = Supervisor.objects.create(**validated_data)
-        user = User.objects.create_user(
-            username=supervisor.name,
-            email=supervisor.email,
-            password="1234"
-        )
-        supervisor.user = user
-        supervisor.save()
-        return supervisor
-
-
 class ClerkSerializer(ModelSerializer):
     class Meta:
         model = Clerk

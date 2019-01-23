@@ -5,14 +5,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from members.serializers import SupervisorSerializer, MemberSerializer
+from members.serializers import MemberSerializer
 from remittances.resources import BeepTransactionResource
 from remittances.serializers import *
 from .models import *
 import json
 from datetime import datetime
 from tablib import Dataset
-
 
 class ScheduleView(APIView):
     @staticmethod
