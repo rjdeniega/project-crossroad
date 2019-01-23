@@ -44,6 +44,11 @@ ITERATION_STATUS = [
     ('F', 'Finished')
 ]
 
+DEPLOYMENT_RESULTS = [
+    ('S', 'Successful'),
+    ('E', 'Early-end'),
+    ('B', 'Breakdown')
+]
 
 class Schedule(SoftDeletionModel):
     start_date = DateField()
