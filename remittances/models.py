@@ -44,12 +44,6 @@ ITERATION_STATUS = [
     ('F', 'Finished')
 ]
 
-DEPLOYMENT_RESULTS = [
-    ('S', 'Successful'),
-    ('E', 'Early-end'),
-    ('B', 'Breakdown')
-]
-
 
 class Schedule(SoftDeletionModel):
     start_date = DateField()
@@ -86,7 +80,7 @@ class Schedule(SoftDeletionModel):
 
 class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
-    supervisor = ForeignKey(Driver, on_delete=models.CASCADE)
+    supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
     schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
@@ -156,9 +150,11 @@ class SubbedDeployments(SoftDeletionModel):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     absent_driver = ForeignKey(DriversAssigned, on_delete=models.CASCADE)
 
+
 class Redeployments(SoftDeletionModel):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
     prior_deployment = ForeignKey(Deployment, related_name="prior_deployment", on_delete=models.CASCADE)
+
 
 class AssignedTicket(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
@@ -197,7 +193,6 @@ class RemittanceForm(SoftDeletionModel):
     km_from = DecimalField(default=0, max_digits=19, decimal_places=10)
     km_to = DecimalField(default=0, max_digits=19, decimal_places=10)
     discrepancy = DecimalField(default=0, max_digits=19, decimal_places=10)
-    checked_by = ForeignKey(User, on_delete=models.CASCADE, null=True)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
 

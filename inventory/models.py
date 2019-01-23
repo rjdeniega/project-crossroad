@@ -75,6 +75,7 @@ class Item(SoftDeletionModel):
     average_price = DecimalField(max_digits=10, decimal_places=2)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
+    item_code = CharField(max_length=8)
 
 
     def save(self, *args, **kwargs):
@@ -128,11 +129,17 @@ class Repair(SoftDeletionModel):
     maintenance = BooleanField(default=False)
 
 
+class Vendor(SoftDeletionModel):
+    name = CharField(max_length=64)
+    address = CharField(max_length=126)
+    contact_number = CharField(max_length=10)
+
+
 class ItemMovement(SoftDeletionModel):
     item = ForeignKey(Item, on_delete=models.CASCADE)
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
-    vendor = CharField(max_length=64, null=True)
+    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
     unit_price = DecimalField(max_digits=10, decimal_places=2, null=True)
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
     created = models.DateTimeField(editable=False, null=True)
@@ -145,3 +152,18 @@ class ItemMovement(SoftDeletionModel):
             self.modified = timezone.now()
         self.modified = timezone.now()
         return super(ItemMovement, self).save(*args, **kwargs)
+
+
+class PurchaseOrderItem(SoftDeletionModel):
+    item = CharField(max_length=64)
+    quantity = PositiveIntegerField()
+    unit_price = DecimalField(max_digits=10, decimal_places=2)
+
+
+class PurchaseOrder(SoftDeletionModel):
+    po_number = CharField(max_length=6)
+    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
+    date = models.DateTimeField(editable=False)
+    po_items = ManyToManyField(PurchaseOrderItem)
+
+

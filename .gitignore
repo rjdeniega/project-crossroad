@@ -91,3 +91,9 @@ db.sqlite3
 # Remove the .idea folder from git to avoid IDE conflicts
 .idea
 *.xml
+.vscode/launch.json
+.vscode/settings.json
+.vscode/launch.json
+.vscode/settings.json
+.vscode/launch.json
+.vscode/settings.json
