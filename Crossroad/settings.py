@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'import_export',
     'celery',
     'django_seed',
-
+    'django_extensions'
 ]
 
 REST_FRAMEWORK = {
@@ -157,3 +157,8 @@ CELERY_IMPORTS = (
 # CELERY_RESULT_SERIALIZER = 'json'
 # CELERY_TIMEZONE = 'Asia/Manila'
 CELERY_IGNORE_RESULT = True
+
+GRAPH_MODELS = {
+    'all_applications': True,
+    'group_models': True,
+}
