@@ -11,6 +11,7 @@ CV_STATUS = [
     ('S', 'Single'),
     ('M', 'Married')
 ]
+
 EDUCATIONAL_ATTAINMENT = [
     ('P', 'Preschool'),
     ('E', 'Elementary'),
@@ -43,10 +44,14 @@ class Person(SoftDeletionModel):
         count = self.aggregate(count=Count('id'))['count']
         random_index = randint(0, count - 1)
         return self.all()[random_index]
+    
+    def get_user_type(self):
+
 
 class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
     remaining_tickets = PositiveIntegerField(default=0)
+    is_supervisor = BooleanField(default=False)
     application_date = DateField()
 
     def random(self):

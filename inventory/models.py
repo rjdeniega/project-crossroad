@@ -37,6 +37,15 @@ ROUTE = [
     ('B', 'Back-up')
 ]
 
+DAYOFF_CHOICES = [
+    ('1', 'Monday'),
+    ('2', 'Tuesday'),
+    ('3', 'Wednesday'),
+    ('4', 'Thursday'),
+    ('5', 'Friday'),
+    ('6', 'Saturday'),
+    ('7', 'Sunday')
+]
 
 class Shuttle(SoftDeletionModel):
     plate_number = CharField(max_length=6, unique=True)
@@ -49,6 +58,7 @@ class Shuttle(SoftDeletionModel):
     mileage = PositiveIntegerField()
     route = CharField(max_length=1, choices=ROUTE)
     maintenance_sched = DateField(null=True)
+    dayoff_date = CharField(max_length=1, choices=DAYOFF_CHOICES)
 
     def save(self, *args, **kwargs):
         if not self.id:

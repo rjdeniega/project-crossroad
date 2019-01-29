@@ -115,19 +115,18 @@ class CreateUserView(APIView):
 
     @staticmethod
     def post(request):
-        print(request.data)
         if "username" not in request.data or "password" not in request.data:
             return Response(data={
                 "error": "Missing username,password, or user type"
             }, status=400, content_type="application/json")
+        
         user = User()
         user.username = request.POST.get('username')
         user.set_password(request.POST.get('password'))
         user.save()
+
         user_type = request.POST.get('user_type')
-        print("entered this shit")
-        print(request.POST.get('application_date'))
-        print(request.POST.get('birth_date'))
+
         data = {
             "user": user,
             "name": request.POST.get('name'),
@@ -139,6 +138,7 @@ class CreateUserView(APIView):
             "application_date": request.POST.get('application_date'),
             "photo": request.FILES.get('image')
         }
+
         member_data = {
             "user": user,
             "name": request.POST.get('name'),
@@ -161,17 +161,21 @@ class CreateUserView(APIView):
             "buy_in_date": request.POST.get('buy_in_date'),
             "receipt": request.POST.get('receipt'),
         }
+
         staff_data = data if user_type != "Member" else member_data
         user_staff = CreateUserView.create_user_type(user, user_type, staff_data)
-        print(model_to_dict(user_staff))
+        
         # user_staff.photo = Image.open(photo)
         # user_staff.save()
+
         new_user = UserSerializer(user)
         instance = CreateUserView.get_serialized_data(user_type, user_staff)
+
         return Response(data={
             "user_staff": instance.data,
             "user": new_user.data,
         }, status=200, content_type="application/json")
+
 
     @staticmethod
     def create_user_type(user, user_type, data):
@@ -182,7 +186,7 @@ class CreateUserView(APIView):
         if user_type == "OM":
             return OperationsManager.objects.create(**data)
         if user_type == "Supervisor":
-            return Supervisor.objects.create(**data)
+            return Driver.objects.create(**data, is_supervisor=True)
         if user_type == "Member":
             card_number = data.pop('card_number')
             share_value = data.pop('initial_share')
@@ -291,6 +295,21 @@ class PersonView(APIView):
         return Response(data={
             "people": people.data
         }, status=status.HTTP_200_OK)
+
+    def get_user_type(person):
+        if person.id in [driver.user for driver in Driver.objects.all()]:
+            return "driver"
+        if person.id in [supervisor.user for supervisor in Driver.objects.where(is_supervisor=True)]:
+            return "supervisor"
+        if person.id in [operations_manager.user for operations_manager in OperationsManager.objects.all()]:
+            return "operations_manager"
+        if person.id in [clerk.user for clerk in Clerk.objects.all()]:
+            return "clerk"
+        if person.id in [member.user for member in Member.objects.all()]:
+            return "member"
+        if person.id in [mechanic.user for mechanic in Mechanic.objects.all()]:
+            return "mechanic"
+
 
 
 class StaffView(APIView):
