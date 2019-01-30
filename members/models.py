@@ -46,7 +46,7 @@ class Person(SoftDeletionModel):
         return self.all()[random_index]
     
     def get_user_type(self):
-
+        return self.user_type
 
 class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
