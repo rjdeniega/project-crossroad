@@ -47,7 +47,9 @@ DAYOFF_CHOICES = [
     ('7', 'Sunday')
 ]
 
+
 class Shuttle(SoftDeletionModel):
+    shuttle_number = PositiveIntegerField(unique=True)
     plate_number = CharField(max_length=6, unique=True)
     make = CharField(max_length=64)
     model = CharField(max_length=64)
@@ -86,7 +88,6 @@ class Item(SoftDeletionModel):
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     item_code = CharField(max_length=8)
-
 
     def save(self, *args, **kwargs):
         if not self.id:

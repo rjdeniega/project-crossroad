@@ -16,7 +16,7 @@
     "react-icons-kit": "latest",
     "react-native": "latest",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "1.1.4",
+    "react-scripts": "^2.1.3",
     "react-table": "^6.8.6",
     "react-to-print": "^2.0.0-alpha-4"
   },
@@ -30,5 +30,11 @@
     "primary-color": "47798A",
     "font-family": "Montserrat"
   },
-  "proxy": "http://localhost:9000/"
+  "proxy": "http://localhost:9000/",
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
