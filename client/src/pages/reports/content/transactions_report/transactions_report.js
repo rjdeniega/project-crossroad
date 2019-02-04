@@ -109,9 +109,9 @@ export class TransactionReport extends Component {
             console.log(data.report_items);
             this.setState({
                 all_transactions: data.report_items,
-            }), this.setState({
+            }, () => this.setState({
                 filtered_transactions: this.state.all_transactions,
-            })
+            }));
         });
         getData('/members/').then(data => {
             console.log(data.members);

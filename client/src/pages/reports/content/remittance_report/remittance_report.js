@@ -105,13 +105,13 @@ export class RemittanceReport extends Component {
             console.log(data);
             this.setState({
                 all_transactions: data.report_items,
-            }), this.setState({
+            }, () => this.setState({
                 filtered_transactions: this.state.all_transactions,
-            }), this.setState({
+            }, () => this.setState({
                 grand_total: this.getGrandTotal(),
                 am_shift_total: this.getShiftTypeTotal("A"),
                 pm_shift_total: this.getShiftTypeTotal("P"),
-            })
+            })));
         });
         getData('/inventory/shuttles').then(data => {
             this.setState({

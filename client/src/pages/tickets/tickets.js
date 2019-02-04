@@ -99,9 +99,9 @@ export class TicketsPage extends Component {
             range_from: null,
             void_tickets: [],
 
-        }), this.setState({
+        }, () => this.setState({
             visible: true,
-        });
+        }) );
     };
 
     handleOk = (e) => {
