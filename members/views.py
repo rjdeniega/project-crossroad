@@ -16,8 +16,9 @@ class SupervisorView(APIView):
     @staticmethod
     def get(request):
         supervisors = [driver for driver in Driver.objects.all() if driver.is_supervisor]
+        serialized_supervisors = SupervisorSerializer(supervisors, many=True)
         return Response(data={
-            "supervisors": supervisors.data
+            "supervisors": serialized_supervisors.data
         }, status=status.HTTP_200_OK)
 
     @staticmethod
