@@ -18,6 +18,25 @@ class DriverSerializer(ModelSerializer):
         #     # fields and creates an object
 
 
+class SupervisorSerializer(ModelSerializer):
+    class Meta:
+        # these are the settings that come with the class
+        # we specify that this serializes the driver class
+        # and we want all fields to be included
+
+        model = Driver
+        fields = "__all__"
+
+        def create(self, validated_data):
+            driver = Driver.objects.create(**validated_data)
+            driver.is_supervisor = True
+            driver.save()
+            return driver
+            # this overrides the parent class' create function
+            # by default, it takes in the model's (in this case Driver) --
+            # fields and creates an object
+
+
 class ClerkSerializer(ModelSerializer):
     class Meta:
         model = Clerk

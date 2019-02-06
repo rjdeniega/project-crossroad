@@ -15,7 +15,7 @@ import json
 class SupervisorView(APIView):
     @staticmethod
     def get(request):
-        supervisors = SupervisorSerializer(Supervisor.objects.all(), many=True)
+        supervisors = [driver for driver in Driver.objects.all() if driver.is_supervisor]
         return Response(data={
             "supervisors": supervisors.data
         }, status=status.HTTP_200_OK)
