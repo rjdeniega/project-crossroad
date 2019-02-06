@@ -75,7 +75,7 @@ class SignInView(APIView):
             return "system_admin"
         if user in [driver.user for driver in Driver.objects.all()]:
             return "driver"
-        if user in [supervisor.user for supervisor in Supervisor.objects.all()]:
+        if user in [driver.user for driver in Driver.objects.all() if driver.is_supervisor]:
             return "supervisor"
         if user in [operations_manager.user for operations_manager in OperationsManager.objects.all()]:
             return "operations_manager"
@@ -92,8 +92,8 @@ class SignInView(APIView):
             return model_to_dict(user)
         if user_type == "driver":
             return DriverSerializer(Driver.objects.get(user=user)).data
-        # if user_type == "supervisor":
-        #     return SupervisorSerializer(Supervisor.objects.get(user=user)).data
+        if user_type == "supervisor":
+            return DriverSerializer(Driver.objects.get(user=user)).data
         if user_type == "operations_manager":
             return OperationsManagerSerializer(OperationsManager.objects.get(user=user)).data
         if user_type == "clerk":
@@ -120,7 +120,7 @@ class CreateUserView(APIView):
             return Response(data={
                 "error": "Missing username,password, or user type"
             }, status=400, content_type="application/json")
-        
+
         user = User()
         user.username = request.POST.get('username')
         user.set_password(request.POST.get('password'))
@@ -165,7 +165,7 @@ class CreateUserView(APIView):
 
         staff_data = data if user_type != "Member" else member_data
         user_staff = CreateUserView.create_user_type(user, user_type, staff_data)
-        
+
         # user_staff.photo = Image.open(photo)
         # user_staff.save()
 
@@ -176,7 +176,6 @@ class CreateUserView(APIView):
             "user_staff": instance.data,
             "user": new_user.data,
         }, status=200, content_type="application/json")
-
 
     @staticmethod
     def create_user_type(user, user_type, data):
@@ -219,8 +218,7 @@ class CreateUserView(APIView):
         if user_type == "OM":
             return OperationsManagerSerializer(user_staff)
         if user_type == "Supervisor":
-            pass
-            # return SupervisorSerializer(user_staff)
+            return DriverSerializer(user_staff)
         if user_type == "Member":
             return MemberSerializer(user_staff)
         if user_type == "Mechanic":
@@ -311,7 +309,6 @@ class PersonView(APIView):
             return "member"
         if person.id in [mechanic.user for mechanic in Mechanic.objects.all()]:
             return "mechanic"
-
 
 
 class StaffView(APIView):
@@ -551,7 +548,8 @@ class PatronageRefund(APIView):
         else:
             end_date = None
 
-        rate_of_refund = surplus/(sum([item.total for item in BeepTransaction.objects.all()]) + sum ([item.total for item in CarwashTransaction.objects.all()]))
+        rate_of_refund = surplus / (sum([item.total for item in BeepTransaction.objects.all()]) + sum(
+            [item.total for item in CarwashTransaction.objects.all()]))
 
         report_items = []
         for member in Member.objects.all():
@@ -1373,7 +1371,7 @@ class TicketTypeWithRange(APIView):
         am_stack = []
         pm_stack = []
         for item in days:
-            am_stack.append([item['am_ten'],item['am_twelve'],item['am_fifteen']])
+            am_stack.append([item['am_ten'], item['am_twelve'], item['am_fifteen']])
             pm_stack.append([item['pm_ten'], item['pm_twelve'], item['pm_fifteen']])
         return Response(data={
             "start_date": start_date.date(),
@@ -1743,7 +1741,7 @@ class RemittanceForTheMonth(APIView):
         month = date.month
         num_days = calendar.monthrange(year, month)[1]
 
-        days = [datetime(year, month, day) for day in range(1, num_days+1)]
+        days = [datetime(year, month, day) for day in range(1, num_days + 1)]
 
         values = []
         new_days = []
@@ -1753,7 +1751,6 @@ class RemittanceForTheMonth(APIView):
             value = rem.get_remittance_total(day) + rem.get_beep_total(day)
             values.append(value)
             new_days.append(day.date())
-
 
         return Response(data={
             "days": new_days,
@@ -1775,6 +1772,7 @@ class RemittanceForTheMonth(APIView):
         for beep in beeps:
             total += beep.total
         return total
+
 
 class NotificationItems(APIView):
     @staticmethod
