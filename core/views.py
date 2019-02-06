@@ -39,6 +39,7 @@ from remittances.views import IterationUtilites
 class SignInView(APIView):
     @staticmethod
     def post(request):
+        print("entered here")
         if "username" not in request.data or "password" not in request.data:
             return Response(data={
                 "error": "Missing username or password"
