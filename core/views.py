@@ -92,8 +92,8 @@ class SignInView(APIView):
             return model_to_dict(user)
         if user_type == "driver":
             return DriverSerializer(Driver.objects.get(user=user)).data
-        if user_type == "supervisor":
-            return SupervisorSerializer(Supervisor.objects.get(user=user)).data
+        # if user_type == "supervisor":
+        #     return SupervisorSerializer(Supervisor.objects.get(user=user)).data
         if user_type == "operations_manager":
             return OperationsManagerSerializer(OperationsManager.objects.get(user=user)).data
         if user_type == "clerk":
@@ -219,7 +219,8 @@ class CreateUserView(APIView):
         if user_type == "OM":
             return OperationsManagerSerializer(user_staff)
         if user_type == "Supervisor":
-            return SupervisorSerializer(user_staff)
+            pass
+            # return SupervisorSerializer(user_staff)
         if user_type == "Member":
             return MemberSerializer(user_staff)
         if user_type == "Mechanic":
@@ -319,13 +320,13 @@ class StaffView(APIView):
         drivers = DriverSerializer(Driver.objects.all(), many=True)
         managers = OperationsManagerSerializer(OperationsManager.objects.all(), many=True)
         clerks = ClerkSerializer(Clerk.objects.all(), many=True)
-        supervisors = SupervisorSerializer(Supervisor.objects.all(), many=True)
+        # supervisors = SupervisorSerializer(Supervisor.objects.all(), many=True)
 
         return Response(data={
             "drivers": drivers.data,
             "managers": managers.data,
             "clerks": clerks.data,
-            "supervisors": supervisors.data
+            # "supervisors": supervisors.data
         }, status=status.HTTP_200_OK)
 
 
