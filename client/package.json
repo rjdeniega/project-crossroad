@@ -1,46 +1,36 @@
 {
-  "name": "lyve-web-client",
+  "name": "client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^3.7.1",
-    "@material-ui/icons": "^3.0.1",
-    "@opuscapita/react-perfect-scrollbar": "^3.0.4",
-    "antd": "^3.13.1",
-    "axios": "^0.18.0",
+    "@opuscapita/react-perfect-scrollbar": "^3.0.3",
+    "antd": "latest",
     "chart.js": "^2.7.3",
-    "latest": "^0.2.0",
-    "material-ui": "^0.20.2",
-    "material-ui-pickers": "^2.1.1",
-    "prop-types": "^15.6.2",
-    "react": "^16.7.0",
+    "moment": "latest",
+    "rc-form": "latest",
+    "react": "^16.6.3",
+    "react-chartjs": "latest",
     "react-chartjs-2": "^2.7.4",
-    "react-custom-scrollbars": "^4.2.1",
-    "react-dom": "^16.7.0",
-    "react-icons-kit": "^1.2.1",
-    "react-plyr": "^2.1.1",
-    "react-redux": "^6.0.0",
+    "react-charts": "latest",
+    "react-dom": "^16.4.1",
+    "react-icons-kit": "latest",
+    "react-native": "latest",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.3",
-    "react-swipeable-views": "^0.13.1",
-    "react-text-mask": "^5.4.3",
-    "react-to-print": "^2.0.0-alpha-6",
-    "react-window-size-listener": "^1.2.3",
-    "recompose": "^0.30.0",
-    "typeface-lato": "0.0.54",
-    "typeface-noto-sans": "0.0.54",
-    "typeface-open-sans": "0.0.54",
-    "typeface-roboto": "0.0.54"
+    "react-table": "^6.8.6",
+    "react-to-print": "^2.0.0-alpha-4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "theme": {
+    "primary-color": "47798A",
+    "font-family": "Montserrat"
   },
+  "proxy": "http://localhost:9000/",
   "browserslist": [
     ">0.2%",
     "not dead",
@@ -50,5 +40,4 @@
   "devDependencies": {
     "redux": "^4.0.1"
   },
-  "proxy": "http://localhost:8000/"
 }
