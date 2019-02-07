@@ -5,15 +5,17 @@ import celery
 from django.contrib.auth.models import User
 from datetime import datetime
 from celery.schedules import timedelta
-from models import *
+from core.models import *
+from members.models import *
+from inventory.models import *
+from remittances.models import *
 
 app = Celery('Crossroad', broker='redis://localhost:6379/0')
 
 
 @periodic_task(run_every=(crontab(minute=0, hour=0)), name="calculate_recommendations")
 def update_here():
-    shuttles = Shuttles.objects.all()
-
+    shuttles = Shuttle.objects.all()
     for shuttle in shuttles: 
 
         if Repair.objects.filter(shuttle=shuttle.id).filter(
