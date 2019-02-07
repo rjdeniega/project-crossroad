@@ -17,7 +17,7 @@ export class MaintenancePage extends Component {
         return (
             <div className="body-wrapper" align="middle">
                 <Header />
-                {user_type == 'mechanic' ? (
+                {user_type === 'mechanic' ? (
                     <MechanicView/>
                 ):(
                     <div className={'shuttles-div'} align="left"

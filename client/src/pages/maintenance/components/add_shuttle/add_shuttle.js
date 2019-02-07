@@ -12,6 +12,9 @@ function hasErrors(fieldsError){
     return Object.keys(fieldsError).some(field => fieldsError[field])
 }
 
+function disabledDate(current){
+    return current > moment().endOf('day')
+}
 
 class AddShuttleFormInit extends React.Component{
     constructor(props){
@@ -27,6 +30,7 @@ class AddShuttleFormInit extends React.Component{
         e.preventDefault();
 
         let shuttle ={
+            shuttle_number: this.props.shuttle_number.value,
             plate_number: this.props.plate_number.value,
             make: this.props.make.value,
             model: this.props.model.value,
@@ -41,7 +45,7 @@ class AddShuttleFormInit extends React.Component{
         postData('inventory/shuttles/', shuttle)
             .then(response=> {
                 if(!response.error){
-                    message.success("Shuttle " + response.shuttle_id + " has been added");
+                    message.success("Shuttle " + response.shuttle_number + " has been added");
                 }else{
                     console.log(response.error);
                 }
@@ -52,6 +56,7 @@ class AddShuttleFormInit extends React.Component{
 
     render(){
         const{ getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
+        const shuttleNumberError = isFieldTouched('shuttle_number') && getFieldError('shuttle_number');
         const plateNumberError = isFieldTouched('plate_number') && getFieldError('plate_number');
         const makeError = isFieldTouched('make') && getFieldError('make');
         const modelError = isFieldTouched('model') && getFieldError('model');
@@ -72,6 +77,13 @@ class AddShuttleFormInit extends React.Component{
         return(
             <div>
                 <Form onChange={this.handleFormChange} onSubmit={this.handleSubmit} hideRequiredMark={true}>
+                    <FormItem label='Shuttle Number' validateStatus={shuttleNumberError ? 'error': ''}
+                              help={shuttleNumberError || ''} {...formItemLayout}>
+                        {getFieldDecorator('shuttle_number',{
+                            rules: [{required: true,
+                                     message: 'Shuttle Number is required!'}]
+                        })(<Input className='shuttle_number' type='text' placeholder='Number'/>)}
+                    </FormItem>
                     <FormItem label='Plate Number' validateStatus={plateNumberError ? 'error': ''}
                               help={plateNumberError || ''} {...formItemLayout}>
                         {getFieldDecorator('plate_number', {
@@ -117,7 +129,7 @@ class AddShuttleFormInit extends React.Component{
                         {getFieldDecorator('date_acquired', {
                             rules: [{required: true,
                                      message: 'Date acquired is required!'}],
-                        })(<DatePicker format={dateFormat} className="date_acquired"/>)}
+                        })(<DatePicker format={dateFormat} className="date_acquired" disabledDate={disabledDate}/>)}
                     </FormItem>
                     <FormItem wrapperCol={{
                         xs: {span: 24, offset: 0},
@@ -141,6 +153,10 @@ const AddShuttleForm = Form.create({
 
     mapPropsToFields(props){
         return{
+            shuttle_number: Form.createFormField({
+                ...props.shuttle_number,
+                value: props.shuttle_number.value,
+            }),
             plate_number: Form.createFormField({
                 ...props.plate_number,
                 value: props.plate_number.value,
@@ -174,6 +190,9 @@ class FinalForm extends Component{
     state = {
         formLayout: 'vertical',
         fields: {
+            shuttle_number: {
+                value: ''
+            },
             plate_number: {
                 value: ''
             },
@@ -240,7 +259,7 @@ export class AddShuttle extends Component{
     render(){
         return (
             <div className='button-div'>
-                <Button type="primary" onClick={this.showModal}>Add Shuttle</Button>
+                <Button type="primary" onClick={this.showModal} htmlType="button">Add Shuttle</Button>
                 <Modal title="Add Shuttle" visible={this.state.visible} onOk={this.handleOk}
                        onCancel={this.handleCancel} footer={false}>
                     <FinalForm handleOk={this.handleOk}/>

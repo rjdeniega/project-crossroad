@@ -154,9 +154,9 @@ class ShuttlesView(APIView):
         if shuttle_serializer.is_valid():
             shuttle = shuttle_serializer.create(
                 validated_data=shuttle_serializer.validated_data)
-
+            shuttle.save()
             return Response(data={
-                'shuttle_id': shuttle.id
+                'shuttle_number': shuttle.shuttle_number
             }, status=status.HTTP_200_OK)
         else:
             return Response(data={
@@ -250,7 +250,7 @@ class MechanicItems(APIView):
     @staticmethod
     def get(request, consume):
         consumable = True
-        if (consume == 1):
+        if consume == 1:
             consumable = False
 
         items = ItemSerializer(Item.objects.all()
@@ -277,9 +277,9 @@ class MechanicItems(APIView):
             repair.status = 'IP'
             repair.save()
 
-        sendRepair = RepairSerializer(repair)
+        send_repair = RepairSerializer(repair)
         return Response(data={
-            'repair': sendRepair.data
+            'repair': send_repair.data
         }, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -504,7 +504,6 @@ class ItemMovementReport(APIView):
         rows = []
 
         itemMovement = ItemMovement.objects.filter(created__gte=start_date, created__lte=end_date)
-
 
         for movement in itemMovement:
             type = ""
