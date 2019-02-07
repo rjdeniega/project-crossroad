@@ -38,6 +38,7 @@ class AddShuttleFormInit extends React.Component{
             status: "A",
             mileage: this.props.mileage.value,
             route: this.props.route.value,
+            dayoff_date: this.props.dayoff_date.value,
         };
 
         console.log(shuttle);
@@ -117,12 +118,25 @@ class AddShuttleFormInit extends React.Component{
                         })(<Input className='mileage' type='number' placeholder='Mileage' />)}
                     </FormItem>
                     <FormItem label='Route' {...formItemLayout}>
-                        {getFieldDecorator('route')(<Select className="route">
+                        {getFieldDecorator('route')(<Select className="route" defaultValue="Main Road">
                             <Select.Option value="Main Road" selected>Main Road</Select.Option>
                             <Select.Option value="Kaliwa">Kaliwa</Select.Option>
                             <Select.Option value="Kanan">Kanan</Select.Option>
                             <Select.Option value="Back-up">Back-up</Select.Option>
                         </Select>)}
+                    </FormItem>
+                    <FormItem label='Day-off Date' {...formItemLayout}>
+                        {getFieldDecorator('dayoff_date')(
+                            <Select className="route" defaultValue="Monday">
+                                <Select.Option value="Monday" selected>Monday</Select.Option>
+                                <Select.Option value="Tuesday">Tuesday</Select.Option>
+                                <Select.Option value="Wednesday">Wednesday</Select.Option>
+                                <Select.Option value="Thursday">Thursday</Select.Option>
+                                <Select.Option value="Friday">Friday</Select.Option>
+                                <Select.Option value="Saturday">Saturday</Select.Option>
+                                <Select.Option value="Sunday">Sunday</Select.Option>
+                            </Select>
+                        )}
                     </FormItem>
                     <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error': ''}
                               help={dateAcquiredError || ''} {...formItemLayout}>
@@ -175,11 +189,15 @@ const AddShuttleForm = Form.create({
             }),
             route: Form.createFormField({
                 ...props.route,
-                value: props.route.value
+                value: props.route.value,
             }),
             date_acquired: Form.createFormField({
                 ...props.date_acquired,
                 value: props.date_acquired.value,
+            }),
+            dayoff_date: Form.createFormField({
+                ...props.dayoff_date,
+                value: props.dayoff_date.value,
             })
         }
     },
@@ -210,7 +228,10 @@ class FinalForm extends Component{
             },
             date_acquired: {
                 value: ''
-            }
+            },
+            dayoff_date: {
+                value: ''
+            },
         }
     };
 

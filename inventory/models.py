@@ -58,9 +58,9 @@ class Shuttle(SoftDeletionModel):
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     mileage = PositiveIntegerField()
-    route = CharField(max_length=1, choices=ROUTE)
+    route = CharField(max_length=16)
     maintenance_sched = DateField(null=True)
-    dayoff_date = CharField(max_length=1, choices=DAYOFF_CHOICES)
+    dayoff_date = CharField(max_length=16)
 
     def save(self, *args, **kwargs):
         if not self.id:
