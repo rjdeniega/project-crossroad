@@ -72,7 +72,7 @@ class SignInView(APIView):
         print("enters here")
         if user.is_superuser:
             return "system_admin"
-        if user in [driver.user for driver in Driver.objects.all()]:
+        if user in [driver.user for driver in Driver.objects.all() if not driver.is_supervisor]:
             return "driver"
         if user in [driver.user for driver in Driver.objects.all() if driver.is_supervisor]:
             return "supervisor"
