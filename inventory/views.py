@@ -523,3 +523,42 @@ class ItemMovementReport(APIView):
             "end_date": end_date.date(),
             "rows": rows
         }, status=status.HTTP_200_OK)
+
+
+class ShuttleDayOff(APIView):
+    @staticmethod
+    def get(request):
+        data = list()
+
+        x = 0
+        while x <= 6:
+            if x is 0:
+                day = 'Monday'
+            elif x is 1:
+                day = 'Tueday'
+            elif x is 2:
+                day = 'Wednesday'
+            elif x is 3:
+                day = 'Thursday'
+            elif x is 4:
+                day = 'Friday'
+            elif x is 5:
+                day = 'Saturday'
+            elif x is 6:
+                day = 'Sunday'
+
+            shuttles = []
+            for shuttle in Shuttle.objects.filter(dayoff_date=day):
+                shuttles.append({
+                    "number": shuttle.shuttle_number,
+                    "plate_number": shuttle.plate_number
+                })
+            
+            data.append(shuttles)
+
+            x += 1
+
+        return Response(data={
+            "day_offs": data
+        }, status=status.HTTP_200_OK)
+

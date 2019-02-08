@@ -25,6 +25,7 @@ inventory_urls = [
     path('mechanic/items/<int:consume>', MechanicItems.as_view()),
     path('mechanic/items/add/<int:pk>', MechanicItems.as_view()),
     path('finalize/<int:pk>', OutsourceModification.as_view()),
+    path('shuttles/dayoffs', ShuttleDayOff.as_view()),
 
     # Maintenance Report
     path('report/<int:pk>', MaintenanceReport.as_view())

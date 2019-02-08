@@ -97,3 +97,7 @@ db.sqlite3
 .vscode/settings.json
 .vscode/launch.json
 .vscode/settings.json
+*.jpg
+*.png
+.vscode/launch.json
+.vscode/settings.json

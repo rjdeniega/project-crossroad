@@ -1,5 +1,5 @@
-import React, {Component} from 'react'
-import {Modal, Button, Form, Input, DatePicker, message, Select} from 'antd'
+import React, { Component } from 'react'
+import { Modal, Button, Form, Input, DatePicker, message, Select, Tooltip, Icon, Col, Row, List } from 'antd'
 import moment from 'moment'
 import './style.css'
 import { postData } from "../../../../network_requests/general";
@@ -8,28 +8,28 @@ const FormItem = Form.Item;
 const dateFormat = 'YYYY-MM-DD';
 
 
-function hasErrors(fieldsError){
+function hasErrors(fieldsError) {
     return Object.keys(fieldsError).some(field => fieldsError[field])
 }
 
-function disabledDate(current){
+function disabledDate(current) {
     return current > moment().endOf('day')
 }
 
-class AddShuttleFormInit extends React.Component{
-    constructor(props){
+class AddShuttleFormInit extends React.Component {
+    constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this)
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.form.validateFields();
     }
 
-    handleSubmit(e){
+    handleSubmit(e) {
         e.preventDefault();
 
-        let shuttle ={
+        let shuttle = {
             shuttle_number: this.props.shuttle_number.value,
             plate_number: this.props.plate_number.value,
             make: this.props.make.value,
@@ -44,10 +44,10 @@ class AddShuttleFormInit extends React.Component{
         console.log(shuttle);
 
         postData('inventory/shuttles/', shuttle)
-            .then(response=> {
-                if(!response.error){
+            .then(response => {
+                if (!response.error) {
                     message.success("Shuttle " + response.shuttle_number + " has been added");
-                }else{
+                } else {
                     console.log(response.error);
                 }
             });
@@ -55,8 +55,8 @@ class AddShuttleFormInit extends React.Component{
         this.props.handleOk()
     }
 
-    render(){
-        const{ getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
+    render() {
+        const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
         const shuttleNumberError = isFieldTouched('shuttle_number') && getFieldError('shuttle_number');
         const plateNumberError = isFieldTouched('plate_number') && getFieldError('plate_number');
         const makeError = isFieldTouched('make') && getFieldError('make');
@@ -75,38 +75,59 @@ class AddShuttleFormInit extends React.Component{
             },
         };
 
-        return(
+        const dayOffDateLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 8 },
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 16 },
+            },
+        };
+
+        return (
             <div>
                 <Form onChange={this.handleFormChange} onSubmit={this.handleSubmit} hideRequiredMark={true}>
-                    <FormItem label='Shuttle Number' validateStatus={shuttleNumberError ? 'error': ''}
-                              help={shuttleNumberError || ''} {...formItemLayout}>
-                        {getFieldDecorator('shuttle_number',{
-                            rules: [{required: true,
-                                     message: 'Shuttle Number is required!'}]
-                        })(<Input className='shuttle_number' type='text' placeholder='Number'/>)}
+                    <FormItem label='Shuttle Number' validateStatus={shuttleNumberError ? 'error' : ''}
+                        help={shuttleNumberError || ''} {...formItemLayout}>
+                        {getFieldDecorator('shuttle_number', {
+                            rules: [{
+                                required: true,
+                                message: 'Shuttle Number is required!'
+                            }]
+                        })(<Input className='shuttle_number' type='text' placeholder='Number' />)}
                     </FormItem>
-                    <FormItem label='Plate Number' validateStatus={plateNumberError ? 'error': ''}
-                              help={plateNumberError || ''} {...formItemLayout}>
+                    <FormItem label='Plate Number' validateStatus={plateNumberError ? 'error' : ''}
+                        help={plateNumberError || ''} {...formItemLayout}>
                         {getFieldDecorator('plate_number', {
-                            rules: [{required: true,
-                                     message: 'Plate Number is required!'},
-                                    {len: 6,
-                                     message: 'Please input a proper plate number (No hyphen)'}],
-                        })(<Input className='plate_number' type='text' placeholder='AB1234 / ABC123'/>)}
+                            rules: [{
+                                required: true,
+                                message: 'Plate Number is required!'
+                            },
+                            {
+                                len: 6,
+                                message: 'Please input a proper plate number (No hyphen)'
+                            }],
+                        })(<Input className='plate_number' type='text' placeholder='AB1234 / ABC123' />)}
                     </FormItem>
-                    <FormItem label='Make' validateStatus={makeError ? 'error': ''}
-                              help={makeError || ''} {...formItemLayout}>
+                    <FormItem label='Make' validateStatus={makeError ? 'error' : ''}
+                        help={makeError || ''} {...formItemLayout}>
                         {getFieldDecorator('make', {
-                            rules: [{required: true,
-                                     message: 'Make is required!'}]
-                        })(<Input className='make' type='text' placeholder='Make'/>)}
+                            rules: [{
+                                required: true,
+                                message: 'Make is required!'
+                            }]
+                        })(<Input className='make' type='text' placeholder='Make' />)}
                     </FormItem>
-                    <FormItem label='Model' validateStatus={modelError ? 'error': ''}
-                              help={modelError || ''} {...formItemLayout}>
+                    <FormItem label='Model' validateStatus={modelError ? 'error' : ''}
+                        help={modelError || ''} {...formItemLayout}>
                         {getFieldDecorator('model', {
-                            rules: [{required: true,
-                                     message: 'Model is required!'}],
-                        })(<Input className='model' type='text' placeholder='Model'/>)}
+                            rules: [{
+                                required: true,
+                                message: 'Model is required!'
+                            }],
+                        })(<Input className='model' type='text' placeholder='Model' />)}
                     </FormItem>
                     <FormItem label='Mileage' validateStatus={mileageError ? 'error' : ''}
                         help={mileageError || ''} {...formItemLayout}>
@@ -125,7 +146,7 @@ class AddShuttleFormInit extends React.Component{
                             <Select.Option value="Back-up">Back-up</Select.Option>
                         </Select>)}
                     </FormItem>
-                    <FormItem label='Day-off Date' {...formItemLayout}>
+                    <FormItem label='Day-off Date' {...dayOffDateLayout}>
                         {getFieldDecorator('dayoff_date')(
                             <Select className="route" defaultValue="Monday">
                                 <Select.Option value="Monday" selected>Monday</Select.Option>
@@ -138,16 +159,18 @@ class AddShuttleFormInit extends React.Component{
                             </Select>
                         )}
                     </FormItem>
-                    <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error': ''}
-                              help={dateAcquiredError || ''} {...formItemLayout}>
+                    <FormItem label='Date Acquired' validateStatus={dateAcquiredError ? 'error' : ''}
+                        help={dateAcquiredError || ''} {...formItemLayout}>
                         {getFieldDecorator('date_acquired', {
-                            rules: [{required: true,
-                                     message: 'Date acquired is required!'}],
-                        })(<DatePicker format={dateFormat} className="date_acquired" disabledDate={disabledDate}/>)}
+                            rules: [{
+                                required: true,
+                                message: 'Date acquired is required!'
+                            }],
+                        })(<DatePicker format={dateFormat} className="date_acquired" disabledDate={disabledDate} />)}
                     </FormItem>
                     <FormItem wrapperCol={{
-                        xs: {span: 24, offset: 0},
-                        sm: {span: 16, offset: 8},
+                        xs: { span: 24, offset: 0 },
+                        sm: { span: 16, offset: 8 },
                     }}>
                         <Button type="primary" htmlType='submit' disabled={hasErrors(getFieldsError())}>
                             Submit
@@ -161,12 +184,12 @@ class AddShuttleFormInit extends React.Component{
 
 const AddShuttleForm = Form.create({
 
-    onFieldsChange(props, changedFields){
+    onFieldsChange(props, changedFields) {
         props.onChange(changedFields);
     },
 
-    mapPropsToFields(props){
-        return{
+    mapPropsToFields(props) {
+        return {
             shuttle_number: Form.createFormField({
                 ...props.shuttle_number,
                 value: props.shuttle_number.value,
@@ -204,7 +227,7 @@ const AddShuttleForm = Form.create({
 
 })(AddShuttleFormInit);
 
-class FinalForm extends Component{
+class FinalForm extends Component {
     state = {
         formLayout: 'vertical',
         fields: {
@@ -236,8 +259,8 @@ class FinalForm extends Component{
     };
 
     handleFormChange = (changedFields) => {
-        this.setState(({fields}) => ({
-            fields: {...fields, ...changedFields}
+        this.setState(({ fields }) => ({
+            fields: { ...fields, ...changedFields }
         }));
     };
 
@@ -245,19 +268,20 @@ class FinalForm extends Component{
         this.props.handleOk()
     };
 
-    render(){
+    render() {
         const fields = this.state.fields;
-        return(
+        return (
             <div>
-                <AddShuttleForm {...fields} onChange={this.handleFormChange} handleOk={this.handleOk}/>
+                <AddShuttleForm {...fields} onChange={this.handleFormChange} handleOk={this.handleOk} />
             </div>
         )
     }
 }
 
-export class AddShuttle extends Component{
+export class AddShuttle extends Component {
     state = {
-        visible: false};
+        visible: false
+    };
 
     showModal = () => {
         this.setState({
@@ -277,15 +301,82 @@ export class AddShuttle extends Component{
         })
     };
 
-    render(){
+    render() {
         return (
             <div className='button-div'>
                 <Button type="primary" onClick={this.showModal} htmlType="button">Add Shuttle</Button>
                 <Modal title="Add Shuttle" visible={this.state.visible} onOk={this.handleOk}
-                       onCancel={this.handleCancel} footer={false}>
-                    <FinalForm handleOk={this.handleOk}/>
+                    onCancel={this.handleCancel} footer={false}>
+                    <Row>
+                        <Col span={12}>
+                            <FinalForm handleOk={this.handleOk} />
+                        </Col>
+                        <Col span={12}>
+                            <DayOffInfo />
+                        </Col>
+                    </Row>
                 </Modal>
             </div>
         )
     }
+}
+
+class DayOffInfo extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            dayoffs : []
+        }
+    }
+
+    componentDidMount(){
+        this.fetchDayoffs()
+    }
+
+    fetchDayoffs() {
+        fetch('/inventory/shuttles/dayoffs')
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        dayoffs: data.day_offs
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
+    render() {
+        return (
+            <div>
+                <Day day="Monday" list={this.state.dayoffs[0]} />
+                <Day day="Tueday" list={this.state.dayoffs[1]} />
+                <Day day="Wednesday" list={this.state.dayoffs[2]} />
+                <Day day="Thursday" list={this.state.dayoffs[3]} />
+                <Day day="Friday" list={this.state.dayoffs[4]} />
+                <Day day="Saturday" list={this.state.dayoffs[5]} />
+                <Day day="Sunday" list={this.state.dayoffs[6]} />
+            </div>
+        ); 
+    }
+}
+
+function Day(props){
+    return (
+        <div>
+            <List
+                size="small"
+                header={props.day}
+                dataSource={props.list}
+                renderItem={item => (
+                    <List.Item>Shuttle #{item.number} - {item.plate_number}</List.Item>
+                )}
+            />
+        </div>
+    )
 }
