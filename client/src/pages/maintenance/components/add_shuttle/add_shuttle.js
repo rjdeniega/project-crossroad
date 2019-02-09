@@ -305,8 +305,13 @@ export class AddShuttle extends Component {
         return (
             <div className='button-div'>
                 <Button type="primary" onClick={this.showModal} htmlType="button">Add Shuttle</Button>
-                <Modal title="Add Shuttle" visible={this.state.visible} onOk={this.handleOk}
-                    onCancel={this.handleCancel} footer={false}>
+                <Modal title="Add Shuttle"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                    footer={false}
+                    width="800px"
+                >
                     <Row>
                         <Col span={12}>
                             <FinalForm handleOk={this.handleOk} />
@@ -322,14 +327,14 @@ export class AddShuttle extends Component {
 }
 
 class DayOffInfo extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
-            dayoffs : []
+            dayoffs: []
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.fetchDayoffs()
     }
 
@@ -353,30 +358,45 @@ class DayOffInfo extends React.Component {
 
     render() {
         return (
-            <div>
-                <Day day="Monday" list={this.state.dayoffs[0]} />
-                <Day day="Tueday" list={this.state.dayoffs[1]} />
-                <Day day="Wednesday" list={this.state.dayoffs[2]} />
-                <Day day="Thursday" list={this.state.dayoffs[3]} />
-                <Day day="Friday" list={this.state.dayoffs[4]} />
-                <Day day="Saturday" list={this.state.dayoffs[5]} />
-                <Day day="Sunday" list={this.state.dayoffs[6]} />
+            <div id="dayOffContainer">
+                <p id="list-title">Shuttle Day Off List</p>
+                <div id="dayOffList">
+                    <Day day="Monday" list={this.state.dayoffs[0]} />
+                    <Day day="Tuesday" list={this.state.dayoffs[1]} />
+                    <Day day="Wednesday" list={this.state.dayoffs[2]} />
+                    <Day day="Thursday" list={this.state.dayoffs[3]} />
+                    <Day day="Friday" list={this.state.dayoffs[4]} />
+                    <Day day="Saturday" list={this.state.dayoffs[5]} />
+                    <Day day="Sunday" list={this.state.dayoffs[6]} />
+                </div>
             </div>
-        ); 
+        );
     }
 }
 
-function Day(props){
+function Day(props) {
     return (
         <div>
-            <List
-                size="small"
-                header={props.day}
-                dataSource={props.list}
-                renderItem={item => (
-                    <List.Item>Shuttle #{item.number} - {item.plate_number}</List.Item>
-                )}
-            />
+            <div>{props.day}</div>
+            <ShuttleList shuttles={props.list} />
         </div>
     )
+}
+
+function ShuttleList(props) {
+    const shuttles = props.shuttles;
+    
+    if (typeof (shuttles) !== 'undefined') {
+        const listItems = shuttles.map((shuttle) =>
+            <li key={shuttle.id.toString()}>
+                Shuttle#{shuttle.number} - {shuttle.plate_number}
+            </li>
+        );
+
+        return (
+            <ul>{listItems}</ul>
+        );
+    }
+        
+    return <i>None</i>
 }

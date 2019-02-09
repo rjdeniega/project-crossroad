@@ -550,6 +550,7 @@ class ShuttleDayOff(APIView):
             shuttles = []
             for shuttle in Shuttle.objects.filter(dayoff_date=day):
                 shuttles.append({
+                    "id": shuttle.id,
                     "number": shuttle.shuttle_number,
                     "plate_number": shuttle.plate_number
                 })
