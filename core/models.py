@@ -72,9 +72,9 @@ class SoftDeletionModel(Model):
 
 
 NOTIFICATION_TYPE = [
-    ('I', 'Inventory'), # Mechanic, Clerk, OM
-    ('R', 'Remittances'), # OM, Supervisor, Clerk
-    ('M', 'Members'), # Members, Clerk
+    ('I', 'Inventory'),  # Mechanic, Clerk, OM
+    ('R', 'Remittances'),  # OM, Supervisor, Clerk
+    ('M', 'Members'),  # Members, Clerk
     ('N', 'Maintenance')
 ]
 
