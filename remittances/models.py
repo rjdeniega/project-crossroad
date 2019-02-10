@@ -50,7 +50,7 @@ DEPLOYMENT_RESULTS = [
     ('B', 'Breakdown')
 ]
 
-class Schedule(SoftDeletionModel):
+class Schedule(models.Model):
     start_date = DateField()
     end_date = DateField(null=True)
     created = models.DateTimeField(editable=False)
@@ -83,9 +83,9 @@ class Schedule(SoftDeletionModel):
             return 'pending'
 
 
-class Shift(SoftDeletionModel):
+class Shift(models.Model):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
-    supervisor = ForeignKey(Supervisor, on_delete=models.CASCADE)
+    supervisor = ForeignKey(Driver, on_delete=models.CASCADE)
     schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
     created = models.DateTimeField(editable=False)
     modified = models.DateTimeField(null=True)
@@ -97,14 +97,14 @@ class Shift(SoftDeletionModel):
         return super(Shift, self).save(*args, **kwargs)
 
 
-class DriversAssigned(SoftDeletionModel):
+class DriversAssigned(models.Model):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
     shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
     deployment_type = CharField(max_length=16)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 
-class ShiftIteration(SoftDeletionModel):
+class ShiftIteration(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
     date = DateField(default=timezone.now)
     status = CharField(max_length=1, choices=ITERATION_STATUS, default='O')
@@ -115,7 +115,7 @@ class ShiftIteration(SoftDeletionModel):
         self.save()
 
 
-class Deployment(SoftDeletionModel):
+class Deployment(models.Model):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
     route = CharField(max_length=1, choices=ROUTE)
@@ -151,17 +151,17 @@ class Deployment(SoftDeletionModel):
         self.save()
 
 
-class SubbedDeployments(SoftDeletionModel):
+class SubbedDeployments(models.Model):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     absent_driver = ForeignKey(DriversAssigned, on_delete=models.CASCADE)
 
 
-class Redeployments(SoftDeletionModel):
+class Redeployments(models.Model):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
     prior_deployment = ForeignKey(Deployment, related_name="prior_deployment", on_delete=models.CASCADE)
 
 
-class AssignedTicket(SoftDeletionModel):
+class AssignedTicket(models.Model):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     range_from = IntegerField(null=True)
     range_to = IntegerField(null=True)
@@ -183,12 +183,12 @@ class AssignedTicket(SoftDeletionModel):
         self.save()
 
 
-class VoidTicket(SoftDeletionModel):
+class VoidTicket(models.Model):
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
     ticket_number = IntegerField()
 
 
-class RemittanceForm(SoftDeletionModel):
+class RemittanceForm(models.Model):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     fuel_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     fuel_receipt = CharField(max_length=36, null=True)
@@ -220,7 +220,7 @@ class RemittanceForm(SoftDeletionModel):
         return self.total + costs
 
 
-class ConsumedTicket(SoftDeletionModel):
+class ConsumedTicket(models.Model):
     remittance_form = ForeignKey(RemittanceForm, on_delete=models.CASCADE)
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
     start_ticket = IntegerField(default=0)
@@ -228,18 +228,18 @@ class ConsumedTicket(SoftDeletionModel):
     total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
 
 
-class BeepShift(SoftDeletionModel):
+class BeepShift(models.Model):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
     date = DateField(null=True)
 
 
-class BeepTransaction(SoftDeletionModel):
+class BeepTransaction(models.Model):
     shift = ForeignKey(BeepShift, on_delete=models.CASCADE, null=True)
     card_number = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
 
 
-class CarwashTransaction(SoftDeletionModel):
+class CarwashTransaction(models.Model):
     date = DateField()
     member = ForeignKey(Member,on_delete=models.CASCADE)
     receipt = CharField(null=True, max_length=20)
