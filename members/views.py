@@ -87,7 +87,7 @@ class DriverView(APIView):
     @staticmethod
     def get(request):
         # transform django objects to JSON (so it can be interpreted in the front-end_
-        drivers = DriverSerializer(Driver.objects.all(), many=True)
+        drivers = DriverSerializer(Driver.objects.filter(is_supervisor=False), many=True)
         # returns all driver objects
 
         return Response(data={
