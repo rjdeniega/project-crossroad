@@ -429,7 +429,7 @@ export class ShiftManagementPane extends Component {
                 <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
                         defaultValue="Please select shuttle">
                     {this.state.shuttles.map(item => (
-                        <Option value={item.id}>{item.plate_number}</Option>
+                        <Option value={item.id}>Shuttle#{item.shuttle_number} - {item.plate_number} - {item.route}</Option>
                     ))}
                 </Select>
             </Modal>
