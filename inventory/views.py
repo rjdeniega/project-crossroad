@@ -552,7 +552,8 @@ class ShuttleDayOff(APIView):
                 shuttles.append({
                     "id": shuttle.id,
                     "number": shuttle.shuttle_number,
-                    "plate_number": shuttle.plate_number
+                    "plate_number": shuttle.plate_number,
+                    "route": shuttle.route,
                 })
             
             data.append(shuttles)

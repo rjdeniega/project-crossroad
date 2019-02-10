@@ -389,7 +389,7 @@ function ShuttleList(props) {
     if (typeof (shuttles) !== 'undefined') {
         const listItems = shuttles.map((shuttle) =>
             <li key={shuttle.id.toString()}>
-                Shuttle#{shuttle.number} - {shuttle.plate_number}
+                Shuttle#{shuttle.number} - {shuttle.plate_number} - {shuttle.route}
             </li>
         );
 

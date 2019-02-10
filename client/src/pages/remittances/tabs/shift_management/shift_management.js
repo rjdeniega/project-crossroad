@@ -20,6 +20,7 @@ const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 const columns = [{
     title: 'Name',
     dataIndex: 'name',
+    align: 'left',
     render: (text, record) => <div><Avatar className="driver-icon"
                                            style={{ marginRight: '20px' }}
                                            src={record.photo ? record.photo : users}/>
@@ -434,7 +435,7 @@ export class ShiftManagementPane extends Component {
             </Modal>
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label-type">AM</div>
+                    <div className="tab-label-type">AM Shift</div>
                     <Dropdown overlay={this.supervisors("AM")}>
                         <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.am_shift_supervisor} <AntIcon type="down"/>
@@ -446,7 +447,7 @@ export class ShiftManagementPane extends Component {
             </div>
             <div className="pm-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label-type">PM</div>
+                    <div className="tab-label-type">PM Shift</div>
                     <Dropdown overlay={this.supervisors("PM")}>
                         <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.pm_shift_supervisor}<AntIcon type="down"/>
@@ -484,7 +485,7 @@ export class ShiftManagementPane extends Component {
                                 <Icon icon={clockO} size={30} style={{ marginRight: '10px', marginTop: '5px' }}/>
                             </div>
                             <div className="tab-label">
-                                Create Shift
+                                Create Schedule
                             </div>
                         </div>
                         <div className="expiration-label">expiring in 7 days</div>
