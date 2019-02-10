@@ -363,7 +363,7 @@ export class ShiftManagementPane extends Component {
     handleShiftCreate = () => {
         const data = this.createForm();
         console.log(JSON.stringify(data));
-        postData('remittances/schedules/', data)
+        postData('remittances/schedules/create', data)
             .then((data) => {
                 console.log(data["error"]);
                 if (data['errors']) {

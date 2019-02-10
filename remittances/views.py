@@ -72,7 +72,7 @@ class CreateSchedule(APIView):
 
         schedule = Schedule()
         schedule.start_date = data['start_date']
-        schedule.save()
+        schedule.create()
         new_sched = Schedule.objects.get(id=schedule.id)
         new_sched.end_date = new_sched.start_date + timedelta(days=14)
         new_sched.save()
