@@ -174,7 +174,9 @@ class PurchaseOrderItem(SoftDeletionModel):
 class PurchaseOrder(SoftDeletionModel):
     po_number = CharField(max_length=6)
     vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
-    date = models.DateTimeField(editable=False)
+    order_date = models.DateTimeField(editable=False)
+    delivery_date = models.DateTimeField(null=True)
     po_items = ManyToManyField(PurchaseOrderItem)
+    status = CharField(max_length=64)
 
 

@@ -7,15 +7,16 @@ import {Icon} from 'react-icons-kit'
 import {warning} from 'react-icons-kit/typicons/warning'
 import {arrowSortedDown} from 'react-icons-kit/typicons/arrowSortedDown'
 import {zoom} from 'react-icons-kit/typicons/zoom'
-import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm, Tooltip} from 'antd'
+import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm, Tooltip, Tabs} from 'antd'
 import {ItemMovementTable} from "./components/item_movement/item_movement_display";
+import {PurchaseOrderList} from "./components/purchase_order_list/purchase_order_list";
 import '../../utilities/colorsFonts.css'
 import './style.css'
 
 
 const data = [];
 
-function hasErrors(fieldsError){
+function hasErrors(fieldsError) {
     return Object.keys(fieldsError).some(field => fieldsError[field]);
 }
 
@@ -27,8 +28,8 @@ function CheckItem(props) {
     const quantity = props.quantity;
     if (parseInt(quantity) <= 3)
         return (<Tooltip title='Quantity is below 3!'>
-                    <Icon className='warning-icon' icon={warning} size={18} style={{color: 'red'}}/>
-                </Tooltip>);
+            <Icon className='warning-icon' icon={warning} size={18} style={{color: 'red'}}/>
+        </Tooltip>);
     else
         return null
 }
@@ -69,16 +70,16 @@ class EditableCell extends React.Component {
                     return (
                         <td {...restProps}>
                             {editing ? (
-                                    <FormItem style={{margin: 0}}>
-                                        {getFieldDecorator(dataIndex, {
-                                            rules: [{
-                                                required: true,
-                                                message: `Please Input ${title}!`,
-                                            }],
-                                            initialValue: record[dataIndex],
-                                        })(this.getInput())}
-                                    </FormItem>
-                                ) : restProps.children}
+                                <FormItem style={{margin: 0}}>
+                                    {getFieldDecorator(dataIndex, {
+                                        rules: [{
+                                            required: true,
+                                            message: `Please Input ${title}!`,
+                                        }],
+                                        initialValue: record[dataIndex],
+                                    })(this.getInput())}
+                                </FormItem>
+                            ) : restProps.children}
                         </td>
                     )
                 }}
@@ -87,8 +88,8 @@ class EditableCell extends React.Component {
     }
 }
 
-class RestockForm extends Component{
-    constructor(props){
+class RestockForm extends Component {
+    constructor(props) {
         super(props);
         this.state = {
             item: props.item,
@@ -98,11 +99,11 @@ class RestockForm extends Component{
     }
 
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.form.validateFields();
     }
 
-    handleSubmit(e){
+    handleSubmit(e) {
         e.preventDefault();
         this.props.onSubmit();
         const new_quantity = this.props.quantity.value + this.props.item.quantity;
@@ -114,30 +115,32 @@ class RestockForm extends Component{
             vendor: this.props.vendor.value,
             unit_price: this.props.unit_price.value
         };
-        fetch('inventory/items/restock/' + this.props.item.id,{
+        fetch('inventory/items/restock/' + this.props.item.id, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(quants),
-        }).then(data => data).then(data => {message.success('Quantity has been added')});
+        }).then(data => data).then(data => {
+            message.success('Quantity has been added')
+        });
         console.log(new_quantity)
 
     }
 
-    render(){
+    render() {
 
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
         const quantityError = isFieldTouched('quantity') && getFieldError('quantity');
         const unitpriceError = isFieldTouched('unit_price') && getFieldError('unit_price');
         const vendorError = isFieldTouched('vendor') && getFieldError('vendor');
 
-        return(
+        return (
             <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
                 <FormItem className='quantity-label' label='Quantity' validateStatus={quantityError ? 'error' : ''}
                           help={quantityError || ''}>
-                    {getFieldDecorator('quantity',{
+                    {getFieldDecorator('quantity', {
                         rules: [{
                             required: true,
                             message: 'Please input quantity',
@@ -146,11 +149,11 @@ class RestockForm extends Component{
                         <InputNumber className='quantity' type="text" placeholder="Quantity"
                                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}/>
                     )}
-                    </FormItem>
+                </FormItem>
                 <FormItem className='unit-price-label' label='Unit Price'
-                          validateStatus={unitpriceError ? 'error' :''}
+                          validateStatus={unitpriceError ? 'error' : ''}
                           help={unitpriceError || ''}>
-                    {getFieldDecorator('unit_price',{
+                    {getFieldDecorator('unit_price', {
                         rules: [{
                             required: true,
                             message: 'Please input unit price',
@@ -160,11 +163,11 @@ class RestockForm extends Component{
                                      formatter={value => `₱ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                                      parser={value => value.replace(/₱\s?|(,*)/g, '')}/>
                     )}
-                    </FormItem>
+                </FormItem>
                 <FormItem className='vendor-label' label='Vendor'
                           validateStatus={vendorError ? 'error' : ''}
                           help={vendorError || ''}>
-                    {getFieldDecorator('vendor',{
+                    {getFieldDecorator('vendor', {
                         rules: [{
                             required: true,
                             message: 'Please input vendor',
@@ -172,7 +175,7 @@ class RestockForm extends Component{
                     })(
                         <Input className='vendor' type="text" placeholder="Vendor"/>
                     )}
-                    </FormItem>
+                </FormItem>
                 <FormItem>
                     <Button type="primary" htmlType="submit" disabled={hasErrors(getFieldsError())}>
                         Submit
@@ -184,11 +187,11 @@ class RestockForm extends Component{
 }
 
 const RestockFormInit = Form.create({
-    onFieldsChange(props, changedFields){
+    onFieldsChange(props, changedFields) {
         props.onChange(changedFields);
     },
-    mapPropsToFields(props){
-        return{
+    mapPropsToFields(props) {
+        return {
             quantity: Form.createFormField({
                 ...props.quantity,
                 value: props.quantity.value,
@@ -205,8 +208,8 @@ const RestockFormInit = Form.create({
     },
 })(RestockForm);
 
-class RestockModal extends React.Component{
-    constructor(props){
+class RestockModal extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
             visible: false,
@@ -250,9 +253,9 @@ class RestockModal extends React.Component{
         }));
     };
 
-    render(){
+    render() {
         const fields = this.state.fields;
-        return(
+        return (
             <div>
                 <a onClick={this.showModal}>Restock</a>
                 <Modal title={"Restock " + this.state.item.name}
@@ -267,8 +270,8 @@ class RestockModal extends React.Component{
 
 }
 
-class ItemMovementModal extends React.Component{
-    constructor(props){
+class ItemMovementModal extends React.Component {
+    constructor(props) {
         super(props);
         this.state = {
             visible: false,
@@ -288,12 +291,12 @@ class ItemMovementModal extends React.Component{
         });
     };
 
-    render(){
-        return(
+    render() {
+        return (
             <div>
                 <a onClick={this.showModal}>Item Movement</a>
                 <Modal visible={this.state.visible} footer={null} onCancel={this.handleCancel}
-                        title={this.state.item.name + " item movement"} width={1000}>
+                       title={this.state.item.name + " item movement"} width={1000}>
                     <ItemMovementTable item={this.state.item}/>
                 </Modal>
             </div>
@@ -314,7 +317,7 @@ const ItemActions = (props, table) => (
         <Menu.Item key={props.id}>
             <RestockModal item={props}/>
         </Menu.Item>
-        <Menu.Divider />
+        <Menu.Divider/>
         <Menu.Item key={props.id}>
             <a onClick={() => table.edit(props.id)}>Edit</a>
         </Menu.Item>
@@ -401,7 +404,7 @@ class EditableTable extends React.Component {
                     return (
                         <div>
                             {editable ? (
-                                    <span>
+                                <span>
                                 <EditableContext.Consumer>
                                     {form => (
                                         <a
@@ -418,7 +421,7 @@ class EditableTable extends React.Component {
                                     <a>Cancel</a>
                                 </Popconfirm>
                             </span>
-                                ) : (<span>
+                            ) : (<span>
                             <Dropdown overlay={ItemActions(record, this)} trigger={['click']}>
                                 <a href="#" className="ant-dropdown-link">
                                     Actions<Icon className="action-icon" icon={arrowSortedDown} size={14}/>
@@ -440,16 +443,17 @@ class EditableTable extends React.Component {
         this.setState({isLoading: true});
         this.fetchItems()
     }
-    /* 
+
+    /*
     componentDidUpdate(){
         this.fetchItems()
     } */
 
-    fetchItems(){
+    fetchItems() {
         fetch('inventory/items/')
-             .then(response => {
-                 return response;
-             })
+            .then(response => {
+                return response;
+            })
             .then(response => response.json())
             .then(data => this.setState({data: data.items, isLoading: false}));
     }
@@ -461,10 +465,10 @@ class EditableTable extends React.Component {
     onDelete = (key) => {
         const data = [...this.state.data];
         message.success(key.name + " has been deleted");
-        fetch('inventory/items/' + key.id,{
+        fetch('inventory/items/' + key.id, {
             method: "DELETE"
         })
-            .then(response=>response);
+            .then(response => response);
     };
 
     edit(key) {
@@ -477,14 +481,16 @@ class EditableTable extends React.Component {
                 return;
             }
             console.log(form.getFieldsValue());
-            fetch('inventory/items/' + key,{
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(form.getFieldsValue()),
-                }).then(data => data).then(() => {message.success('Item was edited')});
+            fetch('inventory/items/' + key, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(form.getFieldsValue()),
+            }).then(data => data).then(() => {
+                message.success('Item was edited')
+            });
             this.setState({editingKey: ''});
         })
     }
@@ -548,15 +554,63 @@ class EditableTable extends React.Component {
     }
 }
 
+
 export class InventoryPage extends Component {
     // go to app.js and switch to PAGES[index of this page in the array] to
     // make inventory initial page. Navbar inventory button works tho so up to u gl
+
+    state = {
+        modalVisible: false,
+        activeTab: "1",
+    };
+
+    showModal = () => {
+        this.setState({
+            modalVisible: true,
+        });
+    };
+
+    handleCancel = () => {
+        this.setState({
+            modalVisible: false,
+        });
+    };
+
+    changeTab = (e) => {
+        this.setState({
+            activeTab: e,
+        })
+    };
+
     render() {
         return (
             <div className="body-wrapper">
                 <Header/>
                 <div className='table-style'>
-                    <EditableTable />
+                    <Tabs activeKey={this.state.activeTab} onChange={this.changeTab}>
+                        <Tabs.TabPane tab="Inventory" key="1" onClick={() => this.changeTab("1")}>
+                            <EditableTable/>
+                        </Tabs.TabPane>
+                        <Tabs.TabPane tab="Purchase Order" onClick={() => this.changeTab("2")}>
+                            <Button type="primary" onClick={this.showModal} htmlType="button" className="poButton">
+                                Create Purchase Order
+                            </Button>
+                            <Modal
+                                title="Create Purchase Order"
+                                visible={this.state.modalVisible}
+                                onOk={this.handleOk}
+                                onCancel={this.handleCancel}
+                                className="purchaseOrderModal"
+                            >
+                                <p>Some contents...</p>
+                                <p>Some contents...</p>
+                                <p>Some contents...</p>
+                            </Modal>
+                            <PurchaseOrderList/>
+                        </Tabs.TabPane>
+                    </Tabs>
+
+
                     <div>
 
                     </div>

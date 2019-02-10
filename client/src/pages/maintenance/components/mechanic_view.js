@@ -359,7 +359,7 @@ export class MechanicView extends Component{
                     </div>
                     );
         }
-    }
+    };
 
     render(){
         const {repairs, loadedRepair, problems, findings, modifications} = this.state

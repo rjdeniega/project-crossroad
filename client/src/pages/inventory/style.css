@@ -64,3 +64,11 @@
 .highlight {
   color: #f50;
 }
+
+.poButton {
+    margin-bottom: 15px;
+}
+
+.purchaseOrderModal{
+    width: 50vw !important;
+}
