@@ -518,7 +518,7 @@ export class ShiftManagementPane extends Component {
                             />
                         </div>
                         <div className="create-shift-button">
-                            <Button type="primary" onClick={this.handleShiftCreate}>Create this shift</Button>
+                            <Button type="primary" onClick={this.handleShiftCreate}>Save Schedule</Button>
                         </div>
                     </div>
                     <div className="driver-selection">
