@@ -50,7 +50,7 @@ DEPLOYMENT_RESULTS = [
     ('B', 'Breakdown')
 ]
 
-class Schedule(models.Model):
+class Schedule(SoftDeletionModel):
     start_date = DateField()
     end_date = DateField(null=True)
     created = models.DateTimeField(editable=False)
@@ -83,7 +83,7 @@ class Schedule(models.Model):
             return 'pending'
 
 
-class Shift(models.Model):
+class Shift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
     supervisor = ForeignKey(Driver, on_delete=models.CASCADE)
     schedule = ForeignKey(Schedule, on_delete=models.CASCADE)
@@ -97,14 +97,14 @@ class Shift(models.Model):
         return super(Shift, self).save(*args, **kwargs)
 
 
-class DriversAssigned(models.Model):
+class DriversAssigned(SoftDeletionModel):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
     shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
     deployment_type = CharField(max_length=16)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
 
-class ShiftIteration(models.Model):
+class ShiftIteration(SoftDeletionModel):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
     date = DateField(default=timezone.now)
     status = CharField(max_length=1, choices=ITERATION_STATUS, default='O')
@@ -115,7 +115,7 @@ class ShiftIteration(models.Model):
         self.save()
 
 
-class Deployment(models.Model):
+class Deployment(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     shuttle = ForeignKey(Shuttle, on_delete=models.CASCADE)
     route = CharField(max_length=1, choices=ROUTE)
@@ -151,17 +151,17 @@ class Deployment(models.Model):
         self.save()
 
 
-class SubbedDeployments(models.Model):
+class SubbedDeployments(SoftDeletionModel):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     absent_driver = ForeignKey(DriversAssigned, on_delete=models.CASCADE)
 
 
-class Redeployments(models.Model):
+class Redeployments(SoftDeletionModel):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
     prior_deployment = ForeignKey(Deployment, related_name="prior_deployment", on_delete=models.CASCADE)
 
 
-class AssignedTicket(models.Model):
+class AssignedTicket(SoftDeletionModel):
     driver = ForeignKey(Driver, on_delete=models.CASCADE)
     range_from = IntegerField(null=True)
     range_to = IntegerField(null=True)
@@ -183,12 +183,12 @@ class AssignedTicket(models.Model):
         self.save()
 
 
-class VoidTicket(models.Model):
+class VoidTicket(SoftDeletionModel):
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
     ticket_number = IntegerField()
 
 
-class RemittanceForm(models.Model):
+class RemittanceForm(SoftDeletionModel):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     fuel_cost = DecimalField(default=0, max_digits=19, decimal_places=10)
     fuel_receipt = CharField(max_length=36, null=True)
@@ -220,7 +220,7 @@ class RemittanceForm(models.Model):
         return self.total + costs
 
 
-class ConsumedTicket(models.Model):
+class ConsumedTicket(SoftDeletionModel):
     remittance_form = ForeignKey(RemittanceForm, on_delete=models.CASCADE)
     assigned_ticket = ForeignKey(AssignedTicket, on_delete=models.CASCADE)
     start_ticket = IntegerField(default=0)
@@ -228,18 +228,18 @@ class ConsumedTicket(models.Model):
     total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
 
 
-class BeepShift(models.Model):
+class BeepShift(SoftDeletionModel):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
     date = DateField(null=True)
 
 
-class BeepTransaction(models.Model):
+class BeepTransaction(SoftDeletionModel):
     shift = ForeignKey(BeepShift, on_delete=models.CASCADE, null=True)
     card_number = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
 
 
-class CarwashTransaction(models.Model):
+class CarwashTransaction(SoftDeletionModel):
     date = DateField()
     member = ForeignKey(Member,on_delete=models.CASCADE)
     receipt = CharField(null=True, max_length=20)
