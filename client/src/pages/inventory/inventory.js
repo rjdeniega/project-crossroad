@@ -7,12 +7,14 @@ import {Icon} from 'react-icons-kit'
 import {warning} from 'react-icons-kit/typicons/warning'
 import {arrowSortedDown} from 'react-icons-kit/typicons/arrowSortedDown'
 import {zoom} from 'react-icons-kit/typicons/zoom'
+import {printer} from 'react-icons-kit/icomoon/printer'
 import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm, Tooltip, Tabs} from 'antd'
 import {ItemMovementTable} from "./components/item_movement/item_movement_display";
 import {PurchaseOrderList} from "./components/purchase_order_list/purchase_order_list";
 import '../../utilities/colorsFonts.css'
 import './style.css'
-
+import {PurchaseOrderForm} from "./components/purchase_order_form/purchase_order_form";
+import ReactToPrint from 'react-to-print'
 
 const data = [];
 
@@ -591,7 +593,7 @@ export class InventoryPage extends Component {
                         <Tabs.TabPane tab="Inventory" key="1" onClick={() => this.changeTab("1")}>
                             <EditableTable/>
                         </Tabs.TabPane>
-                        <Tabs.TabPane tab="Purchase Order" onClick={() => this.changeTab("2")}>
+                        <Tabs.TabPane tab="Purchase Order" onClick={() => this.changeTab("2")} className='full-table'>
                             <Button type="primary" onClick={this.showModal} htmlType="button" className="poButton">
                                 Create Purchase Order
                             </Button>
@@ -601,10 +603,14 @@ export class InventoryPage extends Component {
                                 onOk={this.handleOk}
                                 onCancel={this.handleCancel}
                                 className="purchaseOrderModal"
+                                footer={[
+                                    <ReactToPrint
+                                        trigger={() => <Button htmlType="button" type="primary"><Icon className="printer" icon={printer} size={14}/> &nbsp; Print</Button>}
+                                        content={() => this.componentRef}
+                                    />,
+                                ]}
                             >
-                                <p>Some contents...</p>
-                                <p>Some contents...</p>
-                                <p>Some contents...</p>
+                                <PurchaseOrderForm ref={el => (this.componentRef = el)}/>
                             </Modal>
                             <PurchaseOrderList/>
                         </Tabs.TabPane>

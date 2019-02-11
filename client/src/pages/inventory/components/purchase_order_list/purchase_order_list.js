@@ -84,22 +84,24 @@ const columns = [{
     dataIndex: 'vendor',
     key: 'vendor',
     align: 'left',
-    sorter: (a, b) => a.vendor - b.vendor,
+    sorter: (a, b) => {
+        return a.vendor.localeCompare(b.vendor)
+    },
 }, {
     title: 'Status',
     key: 'status',
     dataIndex: 'status',
     align: 'right',
-    filters:[{
+    filters: [{
         text: 'Complete',
         value: 'Complete',
-    },{
+    }, {
         text: 'Processing',
         value: 'Processing',
-    },{
+    }, {
         text: 'Requires Payment',
         value: 'Requires Payment',
-    },{
+    }, {
         text: 'Rejected',
         value: 'Rejected',
     }],
@@ -121,9 +123,8 @@ const columns = [{
 
 export class PurchaseOrderList extends Component {
     render() {
-        console.log(data);
         return (<div>
-            <Table columns={columns} dataSource={data}/>
+            <Table columns={columns} dataSource={data} pagination={{pageSize: 7}}/>
         </div>)
     }
 }

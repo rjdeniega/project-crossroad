@@ -4,6 +4,8 @@
     box-shadow: 0 1px 5px 0 rgba(45,62,80,.12);
     border-radius: 5px;
     padding: 0 15px;
+    overflow: auto;
+    height: 80vh;
 }
 
 .warning-icon{
@@ -70,5 +72,10 @@
 }
 
 .purchaseOrderModal{
-    width: 50vw !important;
+    padding: 0 !important;
+    width: 8.5in !important;
+}
+
+.ant-modal-body{
+    padding: 0!important;
 }
