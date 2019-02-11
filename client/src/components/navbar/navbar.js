@@ -42,13 +42,6 @@ const TABS = [
         image: money
     },
     {
-        name: "Tickets",
-        key: "tickets",
-        path: '/tickets',
-        component: TicketsPage,
-        image: ic_receipt
-    },
-    {
         name: "Members",
         key: "members",
         path: '/members',
@@ -84,6 +77,13 @@ const SUPERVISOR_TABS = [
         path: '/remittances',
         component: RemittancePage,
         image: money
+    },
+    {
+        name: "Tickets",
+        key: "tickets",
+        path: '/tickets',
+        component: TicketsPage,
+        image: ic_receipt
     },
     {
         name: "Inventory",
