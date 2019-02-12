@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import '../revised-style.css';
 
 export class PreDeployment extends React.Component {
     constructor(props){
@@ -6,6 +7,10 @@ export class PreDeployment extends React.Component {
     }
 
     render(){
-        return (<div>Pre-Deployment</div>);
+        return (
+            <div className="phase-container">
+                Pre-Deployment
+            </div>
+        );
     }
 }
