@@ -2,14 +2,70 @@
     background: rgba(255, 255, 255, 1);
     box-shadow: 0 1px 20px -5px rgba(51, 71, 91, 0.12);
     min-height: 100px;
+    padding: 20px;
 }
 
 .remittance-body {
     padding: 16px;
 }
 
+.phase-header-title {
+    font-weight: 550;
+    font-size: x-large;
+    margin: 0px;
+}
+
+
+.deployment-header {
+    align-content: center;
+}
+
+.deployment-name {
+    margin-left: 5px;
+}
+
+.list-container {
+    margin-top: 20px;
+}
+
+.deployment-list-container {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.detail-container {
+    padding-left: 5px;
+    padding-top: 2px;
+}
+
+.detail-items-title {
+    font-weight: 450;
+}
+
+.detail-items-value {
+    font-style: italic;
+    margin-left: 3px;
+}
+
 Col {
     margin: 16px;
     margin-top: 16px;
     margin-bottom: 16px;
+}
+
+.list-detail-container {
+    position: relative;
+}
+
+.deployment-button-container {
+    align-content: baseline;
+    right: 0;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 15px;
+    margin-right: 10px;
+}
+
+.deployment-button {
+    margin-left: 5px;
 }
