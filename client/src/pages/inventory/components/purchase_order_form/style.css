@@ -1,0 +1,26 @@
+.purchase-order-form {
+    height: 11in;
+    width: 8.5in;
+    padding: 0.5in;
+    overflow:  visible;
+}
+
+.ant-input.purchase_order_number {
+    width: 0.65in !important;
+}
+
+.form-info {
+    margin-bottom: 0;
+}
+
+.vendor-name-input {
+    width: 3in !important;
+}
+
+.vendor-address-input {
+    width: 2.86in !important;
+}
+
+.vendor-contact-input {
+    width: 2.88in !important;
+}
