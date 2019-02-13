@@ -237,10 +237,21 @@ class BeepTransaction(models.Model):
     shift = ForeignKey(BeepShift, on_delete=models.CASCADE, null=True)
     card_number = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
+    created = DateTimeField()
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        return super(BeepTransaction, self).save(*args, **kwargs)
 
 
 class CarwashTransaction(models.Model):
-    date = DateField()
+    date = DateTimeField()
     member = ForeignKey(Member,on_delete=models.CASCADE)
     receipt = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
+
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+        return super(CarwashTransaction, self).save(*args, **kwargs)

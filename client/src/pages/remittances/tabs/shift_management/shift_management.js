@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import users from '../../../../images/default.png'
-import { Modal, Button, notification, Divider } from 'antd';
+import { Collapse, List, Col, Row, Modal, Button, notification, Divider } from 'antd';
 import { clockO } from 'react-icons-kit/fa/clockO'
 import { Icon } from 'react-icons-kit'
 import { DatePicker } from 'antd';
@@ -15,6 +15,7 @@ import { Icon as AntIcon } from 'antd';
 import { getData, postData } from "../../../../network_requests/general";
 
 const Option = Select.Option;
+const Panel = Collapse.Panel;
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 //this defines the struvcture of the table and how its rendered, in this case I just have one column
 const columns = [{
@@ -26,6 +27,27 @@ const columns = [{
                                            src={record.photo ? record.photo : users}/>
         {record.name}</div>
 }];
+
+const text = `
+  A dog is a type of domesticated animal.
+  Known for its loyalty and faithfulness,
+  it can be found as a welcome guest in many households across the world.
+`;
+
+const data = [
+    {
+        title: 'Ant Design Title 1',
+    },
+    {
+        title: 'Ant Design Title 2',
+    },
+    {
+        title: 'Ant Design Title 3',
+    },
+    {
+        title: 'Ant Design Title 4',
+    },
+];
 
 export class ShiftManagementPane extends Component {
     state = {
@@ -77,7 +99,7 @@ export class ShiftManagementPane extends Component {
                         startDateObject: moment(data["expected_start_date"]),
                         startDate: moment(data["expected_start_date"]).format('YYYY-MM-DD'),
                         endDateObject: moment(data["expected_end_date"]),
-                        currentSched:  moment(data["expected_start_date"])
+                        currentSched: moment(data["expected_start_date"])
                     })
                 }
             }
@@ -429,7 +451,8 @@ export class ShiftManagementPane extends Component {
                 <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
                         defaultValue="Please select shuttle">
                     {this.state.shuttles.map(item => (
-                        <Option value={item.id}>Shuttle#{item.shuttle_number} - {item.plate_number} - {item.route}</Option>
+                        <Option value={item.id}>Shuttle#{item.shuttle_number} - {item.plate_number}
+                            - {item.route}</Option>
                     ))}
                 </Select>
             </Modal>
@@ -459,18 +482,57 @@ export class ShiftManagementPane extends Component {
                        dataSource={this.state.drivers}/>,
 
             </div>
-            {/*<div className="mn-shift-pane">*/}
-            {/*<div className="shifts-label-div">*/}
-            {/*<div className="tab-label-type">Midnight</div>*/}
-            {/*<Dropdown overlay={this.supervisors("MN")}>*/}
-            {/*<Button className="supervisor-select" style={{ marginLeft: 8 }}>*/}
-            {/*{this.state.mn_shift_supervisor}<AntIcon type="down"/>*/}
-            {/*</Button>*/}
-            {/*</Dropdown>*/}
-            {/*</div>*/}
-            {/*<Table showHeader={false} rowSelection={this.mnRowSelection} pagination={false} columns={columns}*/}
-            {/*dataSource={this.state.drivers}/>,*/}
-            {/*</div>*/}
+            <div className="current-shift-pane">
+                <div className="shifts-label-div">
+                    <div className="tab-label-type">Current Shift Details</div>
+                </div>
+                <div className="current-shift-tables">
+                    <Collapse defaultActiveKey={['1']}>
+                        <Panel header="Details" key="1">
+                            <p>{text}</p>
+                        </Panel>
+                        <Panel header="AM Shift Drivers" key="2">
+                            <div className="AM-current">
+                                <List
+                                    itemLayout="horizontal"
+                                    size="small"
+                                    dataSource={data}
+                                    renderItem={item => (
+                                        <List.Item>
+                                            <List.Item.Meta
+                                                avatar={<Avatar
+                                                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                                                title={<a href="https://ant.design">{item.title}</a>}
+                                                description="Shuttle = ABSDADA Deployment Type = Regular"
+                                            />
+                                        </List.Item>
+                                    )}
+                                />
+                            </div>
+                        </Panel>
+                        <Panel header="PM Shift Drivers" key="3">
+                              <div className="PM-current">
+                                <List
+                                    itemLayout="horizontal"
+                                    size="small"
+                                    dataSource={data}
+                                    renderItem={item => (
+                                        <List.Item>
+                                            <List.Item.Meta
+                                                avatar={<Avatar
+                                                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
+                                                title={<a href="https://ant.design">{item.title}</a>}
+                                                description="Shuttle = ABSDADA Deployment Type = Regular"
+                                            />
+                                        </List.Item>
+                                    )}
+                                />
+                            </div>
+                        </Panel>
+                    </Collapse>,
+
+                </div>
+            </div>
         </div>
     );
 
@@ -498,15 +560,15 @@ export class ShiftManagementPane extends Component {
                                 format="YYYY-MM-DD"
                                 value={this.state.startDateObject}
                                 placeholder="Start Date"
-                                onChange={(date,dateString) => this.handleDateChange(date,dateString)}
+                                onChange={(date, dateString) => this.handleDateChange(date, dateString)}
                             />
                             }
                             {!this.state.currentSched &&
-                                <DatePicker
+                            <DatePicker
                                 className="date-picker"
                                 format="YYYY-MM-DD"
                                 placeholder="Start Date"
-                                onChange={(date,dateString) => this.handleDateChange(date,dateString)}
+                                onChange={(date, dateString) => this.handleDateChange(date, dateString)}
                             />
                             }
                             <DatePicker

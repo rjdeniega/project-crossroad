@@ -304,11 +304,14 @@ export class ShiftHistoryPane extends Component {
 
     renderShiftTables = (amSupervisor, pmSupervisor, mnSupervisor) => (
         <Fragment>
-            <ReactToPrint
-                trigger={() => <a href="#">Print this out!</a>}
-                content={() => this.componentRef}
-            />
-            <ShiftPrint data={this.state} ref={el => (this.componentRef = el)}/>
+            <div className="buttons-container">
+                <Button>Edit Schedule </Button>
+                <ReactToPrint
+                    trigger={() => <a href="#">Print this out!</a>}
+                    content={() => this.componentRef}
+                />
+                <ShiftPrint data={this.state} ref={el => (this.componentRef = el)}/>
+            </div>
         </Fragment>
     );
     renderScheduleList = () => (
@@ -326,7 +329,7 @@ export class ShiftHistoryPane extends Component {
                         <List.Item.Meta
                             title={<p className="list-title">{item.start_date} - {item.end_date}</p>}
                         />
-                        <AntIcon type="check-circle" className="status-icon"/>
+                        <AntIcon type="check-circle" className="status-icon"/> <p>Current</p>
                     </List.Item>
                 )}
             />
