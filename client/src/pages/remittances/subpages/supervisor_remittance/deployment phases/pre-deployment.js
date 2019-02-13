@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button } from 'antd';
+import { List, Avatar, Button, Tag } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
 
@@ -59,7 +59,6 @@ class DeploymentList extends React.Component {
                 <List
                     itemLayout="horizontal"
                     dataSource={this.state.deployments}
-                    header="Deployments"
                     bordered={true}
                     renderItem={
                         item => (
@@ -94,7 +93,7 @@ function DeploymentListDetails(props) {
     return (
         <div>
             <div className="deployment-header">
-                <Avatar icon="user" />
+                <Avatar icon="user" shape="square" />
                 <span className="deployment-name">
                     {props.name}
                 </span>
@@ -126,10 +125,10 @@ function DetailItems(props) {
     return (
         <div className="detail-container">
             <span className="detail-items-title">
-                {props.title}:
+                { props.title }:
             </span>
             <span className="detail-items-value">
-                {props.value}
+                { props.value }
             </span>
         </div>
     );

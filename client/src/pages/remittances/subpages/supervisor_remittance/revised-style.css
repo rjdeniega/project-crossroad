@@ -21,6 +21,7 @@
 }
 
 .deployment-name {
+    font-weight: 600;
     margin-left: 5px;
 }
 
@@ -40,11 +41,13 @@
 
 .detail-items-title {
     font-weight: 450;
+    font-size: 12px;
 }
 
 .detail-items-value {
-    font-style: italic;
+    font-weight: 350;
     margin-left: 3px;
+    font-size: 12px;
 }
 
 Col {
@@ -58,7 +61,7 @@ Col {
 }
 
 .deployment-button-container {
-    align-content: baseline;
+    align-content: center;
     right: 0;
     position: absolute;
     bottom: 0;
