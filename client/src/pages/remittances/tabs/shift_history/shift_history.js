@@ -452,7 +452,7 @@ export class ShiftHistoryPane extends Component {
                         <List.Item.Meta
                             title={<p className="list-title">{item.start_date} - {item.end_date}</p>}
                         />
-                        <AntIcon type="check-circle" className="status-icon"/> <p>Current</p>
+                        <AntIcon type="check-circle" theme="filled" className="status-icon"/> <p>Current</p>
                     </List.Item>
                 )}
             />
