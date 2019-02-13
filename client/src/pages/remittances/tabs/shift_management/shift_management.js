@@ -63,8 +63,6 @@ export class ShiftManagementPane extends Component {
         am_shift_supervisor_key: null,
         pm_shift_supervisor: "select PM supervisor",
         pm_shift_supervisor_key: null,
-        mn_shift_supervisor: "select Midnight supervisor",
-        mn_shift_supervisor_key: null,
         supervisors: null,
         shuttles: [],
         visible: false,

@@ -107,4 +107,8 @@
 .remittance-tabs .ant-tabs-bar{
     width: 100%!important;
     }
+.add-sched-modal{
+    height: 500px!important;
+    width: 500px!important;
+    }
 

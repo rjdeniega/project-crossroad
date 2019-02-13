@@ -14,6 +14,7 @@ import { Select, Table, Avatar, Dropdown, Menu, message, List } from 'antd';
 import { Icon as AntIcon } from 'antd';
 import { getData, postData } from "../../../../network_requests/general";
 import ReactToPrint from "react-to-print";
+import { renderShiftTables } from '../shift_management/shift_management'
 
 const Option = Select.Option;
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
@@ -38,6 +39,10 @@ export class ShiftHistoryPane extends Component {
         am_shift_drivers: [],
         pm_shift_drivers: [],
         mn_shift_drivers: [],
+        am_shift_supervisor: "select AM supervisor",
+        am_shift_supervisor_key: null,
+        pm_shift_supervisor: "select PM supervisor",
+        pm_shift_supervisor_key: null,
         supervisors: null,
         shuttles: [],
         visible: false,
@@ -150,6 +155,64 @@ export class ShiftHistoryPane extends Component {
         this.setState({
             ...state
         });
+    };
+
+    amRowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            // get the last selected item
+            const current = selectedRowKeys[selectedRowKeys.length - 1];
+            this.state.am_shift_drivers.map((item) => {
+                if (item["driver"] == current) {
+                    this.isChecked = true;
+                    console.log("checked became true")
+                }
+            });
+            console.log(this.isChecked);
+            if (!this.isChecked) {
+                this.setState({
+                    driver_selected: current,
+                    selected_shift_type: "AM"
+                });
+                this.showModal()
+            }
+            else {
+                let index = this.state.am_shift_drivers.indexOf(this.state.driver_selected);
+                let array = this.state.am_shift_drivers.splice(index);
+                this.setState({
+                    am_shift_drivers: array
+                }, console.log(this.state.am_shift_drivers))
+            }
+        },
+        getCheckboxProps: record => ({
+            defaultChecked: record.name === 'ira macazo', // Column configuration not to be checked
+            name: record.name,
+        }),
+    };
+    pmRowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            const current = selectedRowKeys[selectedRowKeys.length - 1];
+            //check if item is already checked
+            this.state.pm_shift_drivers.map((item) => {
+                if (item["driver"] == current) {
+                    this.isChecked = true
+                }
+            });
+            if (!this.isChecked) {
+                this.setState({
+                    driver_selected: current,
+                    selected_shift_type: "PM"
+                }, () => console.log(this.state.selected_shift_type));
+
+                this.showModal()
+            }
+            else {
+                let index = this.state.pm_shift_drivers.indexOf(this.state.driver_selected);
+                let array = this.state.pm_shift_drivers.splice(index);
+                this.setState({
+                    pm_shift_drivers: array
+                }, console.log(this.state.pm_shift_drivers))
+            }
+        },
     };
 
     //normal action handlers
@@ -305,14 +368,74 @@ export class ShiftHistoryPane extends Component {
     renderShiftTables = (amSupervisor, pmSupervisor, mnSupervisor) => (
         <Fragment>
             <div className="buttons-container">
-                <Button>Edit Schedule </Button>
+                <Button onClick={this.showModal}>Edit Schedule </Button>
                 <ReactToPrint
-                    trigger={() => <a href="#">Print this out!</a>}
+                    trigger={() => <Button>Print this out!</Button>}
                     content={() => this.componentRef}
                 />
-                <ShiftPrint data={this.state} ref={el => (this.componentRef = el)}/>
             </div>
+            <ShiftPrint data={this.state} ref={el => (this.componentRef = el)}/>
         </Fragment>
+    );
+    renderModalShiftTable = () => (
+        <div className="sched-modal-tables-wrapper">
+            <Modal
+                title="Assign this driver to a shuttle"
+                visible={this.state.create_visible}
+                onOk={this.handleConfirm}
+                className="sched-modal"
+                onCancel={this.handleCancel}
+
+            >
+                {this.state.selected_shift_type == "AM" &&
+                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input"
+                        defaultValue="Please select deployment type">
+                    <Option value="E">Early</Option>
+                    <Option value="R">Regular</Option>
+                </Select>
+                }
+                {this.state.selected_shift_type == "PM" &&
+                <Select onChange={this.handleSelectChange("deployment_type")} className="user-input"
+                        defaultValue="Please select deployment type">
+                    <Option value="L">Late</Option>
+                    <Option value="R">Regular</Option>
+                </Select>
+                }
+                <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
+                        defaultValue="Please select shuttle">
+                    {this.state.shuttles.map(item => (
+                        <Option value={item.id}>Shuttle#{item.shuttle_number} - {item.plate_number}
+                            - {item.route}</Option>
+                    ))}
+                </Select>
+            </Modal>
+            <div className="sched-am-shift-pane">
+                <div className="shifts-label-div">
+                    <div className="tab-label-type">AM Shift</div>
+                    <Dropdown overlay={this.supervisors("AM")}>
+                        <Button className="supervisor-select" style={{ marginLeft: 8 }}>
+                            {this.state.am_shift_supervisor} <AntIcon type="down"/>
+                        </Button>
+                    </Dropdown>
+                </div>
+                <Table showHeader={false} rowSelection={this.amRowSelection} pagination={false} columns={columns}
+                       dataSource={this.state.drivers}/>,
+            </div>
+            <div className="sched-pm-shift-pane">
+                <div className="shifts-label-div">
+                    <div className="tab-label-type">PM Shift</div>
+                    <Dropdown overlay={this.supervisors("PM")}>
+                        <Button className="supervisor-select" style={{ marginLeft: 8 }}>
+                            {this.state.pm_shift_supervisor}<AntIcon type="down"/>
+                        </Button>
+                    </Dropdown>
+                    {/*<Divider orientation="left">Select Drivers</Divider>*/}
+                </div>
+                <Table showHeader={false} rowSelection={this.pmRowSelection} pagination={false} columns={columns}
+                       dataSource={this.state.drivers}/>,
+
+            </div>
+        </div>
     );
     renderScheduleList = () => (
         <div className="sched-wrapper">
@@ -337,17 +460,13 @@ export class ShiftHistoryPane extends Component {
     );
     renderAddScheduleModal = () => (
         <Modal
-            title="Assign this driver to a shuttle"
+            title="Edit Schedule"
+            className="add-sched-modal"
             visible={this.state.visible}
             onOk={this.handleConfirm}
             onCancel={this.handleCancel}
         >
-            <Select onChange={this.handleSelectChange("assigned_shuttle")} className="user-input"
-                    defaultValue="Please select shuttle">
-                {this.state.shuttles.map(item => (
-                    <Option value={item.id}>{item.plate_number}</Option>
-                ))}
-            </Select>
+            {this.renderModalShiftTable()}
         </Modal>
     );
 
