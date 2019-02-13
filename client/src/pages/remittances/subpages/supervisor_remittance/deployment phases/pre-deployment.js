@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Tag } from 'antd';
+import { List, Avatar, Button, Modal } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
 
@@ -72,20 +72,12 @@ function DeploymentList(props) {
                             <List.Item>
                                 <DeploymentListDetails
                                     name={item.driver.name}
-                                    shuttle={ "#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
+                                    shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
                                     route={item.shuttle.route}
-                                    expected_departure= "5:30pm"
-                                    tickets= "130pcs"
+                                    expected_departure="5:30pm"
+                                    tickets="130pcs"
                                     photo={item.driver.photo}
                                 />
-                                <div className="deployment-button-container">
-                                    <Button className="deployment-button">
-                                        Sub
-                                        </Button>
-                                    <Button type="primary" className="deployment-button">
-                                        Deploy
-                                        </Button>
-                                </div>
                             </List.Item>
                         </div>
                     )
@@ -96,6 +88,23 @@ function DeploymentList(props) {
 }
 
 function DeploymentListDetails(props) {
+    const confirm = Modal.confirm;
+
+    function showConfirm() {
+        confirm({
+            title: 'Are you sure you want to deploy this driver?',
+            content: 'Deploying this driver would start his/her time for the shift.',
+
+            onOk() {
+                return new Promise((resolve, reject) => {
+                    setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+                }).catch(() => console.log('Oops errors!'));
+            },
+
+            onCancel() { },
+        });
+    }
+
     return (
         <div>
             <div className="deployment-header">
@@ -122,6 +131,20 @@ function DeploymentListDetails(props) {
                     title="Tickets Onhand"
                     value={props.tickets}
                 />
+            </div>
+
+
+            <div className="deployment-button-container">
+                <Button className="deployment-button">
+                    Sub
+                 </Button>
+                <Button
+                    type="primary"
+                    className="deployment-button"
+                    onClick={showConfirm}
+                >
+                    Deploy
+                </Button>
             </div>
         </div>
     );
