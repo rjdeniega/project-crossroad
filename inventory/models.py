@@ -177,6 +177,7 @@ class PurchaseOrder(SoftDeletionModel):
     order_date = models.DateTimeField(editable=False)
     delivery_date = models.DateTimeField(null=True)
     po_items = ManyToManyField(PurchaseOrderItem)
+    special_instruction = CharField(max_length=256)
     status = CharField(max_length=64)
 
 
