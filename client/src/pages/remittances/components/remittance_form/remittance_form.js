@@ -166,32 +166,32 @@ export class RemittanceForm extends Component {
         const first_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_first) - parseInt(this.props.fifteen_peso_start_first) + 1) * 15);
         const second_fifteen_sum = parseInt((parseInt(this.state.fifteen_end_final_second) - parseInt(this.props.fifteen_peso_start_second) + 1) * 15);
 
-        if (fieldName == "ten_end_final_first") {
+        if (fieldName === "ten_end_final_first") {
             this.setState({
                 first_ten_sum: isNaN(first_ten_sum) ? 0 : first_ten_sum
             })
         }
-        if (fieldName == "ten_end_final_second") {
+        if (fieldName === "ten_end_final_second") {
             this.setState({
                 second_ten_sum: isNaN(second_ten_sum) ? 0 : second_ten_sum
             })
         }
-        if (fieldName == "twelve_end_final_first") {
+        if (fieldName === "twelve_end_final_first") {
             this.setState({
                 first_twelve_sum: isNaN(first_twelve_sum) ? 0 : first_twelve_sum
             })
         }
-        if (fieldName == "twelve_end_final_second") {
+        if (fieldName === "twelve_end_final_second") {
             this.setState({
                 second_twelve_sum: isNaN(second_twelve_sum) ? 0 : second_twelve_sum
             })
         }
-        if (fieldName == "fifteen_end_final_first") {
+        if (fieldName === "fifteen_end_final_first") {
             this.setState({
                 first_fifteen_sum: isNaN(first_fifteen_sum) ? 0 : first_fifteen_sum
             })
         }
-        if (fieldName == "fifteen_end_final_second") {
+        if (fieldName === "fifteen_end_final_second") {
             this.setState({
                 second_fifteen_sum: isNaN(second_fifteen_sum) ? 0 : second_fifteen_sum
             })
