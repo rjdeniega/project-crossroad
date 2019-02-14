@@ -145,6 +145,9 @@ class Vendor(SoftDeletionModel):
     address = CharField(max_length=126)
     contact_number = CharField(max_length=10)
 
+    def __str__(self):
+        return self.name
+
 
 class ItemMovement(SoftDeletionModel):
     item = ForeignKey(Item, on_delete=models.CASCADE)

@@ -54,3 +54,15 @@ class PurchaseOrderSerializer(ModelSerializer):
     class Meta:
         model = PurchaseOrder
         fields = "__all__"
+
+
+class PurchaseOrderItemSerializer(ModelSerializer):
+    class Meta:
+        model = PurchaseOrderItem
+        fields = "__all__"
+
+
+class VendorSerializer(ModelSerializer):
+    class Meta:
+        model = Vendor
+        fields = "__all__"

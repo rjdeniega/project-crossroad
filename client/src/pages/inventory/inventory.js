@@ -575,16 +575,17 @@ export class InventoryPage extends Component {
     }
 
     componentDidMount() {
-        this.loadPurchaseOrders()
+        this.loadPurchaseOrders();
     }
 
     loadPurchaseOrders() {
         /** @namespace data.purchase_orders **/
         getData('inventory/purchase_order/').then(data => {
-            const {purchase_order_list} = this.state;
+            const temp_purchase_order_list = [];
             let purchase_orders = data.purchase_orders;
             purchase_orders.forEach(function (purchase_order) {
                 let temp_purchase_order = {
+                    id: purchase_order.id,
                     key: purchase_order.po_number,
                     po_number: purchase_order.po_number,
                     order_date: purchase_order.order_date,
@@ -593,7 +594,10 @@ export class InventoryPage extends Component {
                     status: purchase_order.status,
                 };
 
-                purchase_order_list.push(temp_purchase_order)
+                temp_purchase_order_list.push(temp_purchase_order)
+            });
+            this.setState({
+                purchase_order_list: temp_purchase_order_list
             })
         })
     }
@@ -650,9 +654,9 @@ export class InventoryPage extends Component {
                             >
                                 <PurchaseOrderForm ref={this.poComponent} close={this.handleCancel}
                                                    load_purchase_order={this.loadPurchaseOrders}
-                                                   purchase_order_list={purchase_order_list}/>
+                                                   />
                             </Modal>
-                            <PurchaseOrderList/>
+                            <PurchaseOrderList purchase_order_list={purchase_order_list}/>
                         </Tabs.TabPane>
                     </Tabs>
 

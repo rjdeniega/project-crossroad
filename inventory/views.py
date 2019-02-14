@@ -289,12 +289,12 @@ class MechanicItems(APIView):
         data = json.loads(request.body)
 
         item = Item.objects.get(id=data['selectedItem'])
-        if (item.consumable == True):
+        if item.consumable:
             rm = RepairModifications(
                 item_used=item, quantity=1, used_up=data['depleted'])
             rm.save()
             repair.modifications.add(rm)
-            if (rm.used_up == True):
+            if rm.used_up:
                 im = ItemMovement(item=item, type='G',
                                   quantity=1, repair=repair, created=datetime.now().date())
                 im.save()
@@ -536,7 +536,7 @@ class ShuttleDayOff(APIView):
             if x is 0:
                 day = 'Monday'
             elif x is 1:
-                day = 'Tueday'
+                day = 'Tuesday'
             elif x is 2:
                 day = 'Wednesday'
             elif x is 3:
@@ -577,6 +577,38 @@ class PurchaseOrderView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
+        if not Vendor.objects.filter(name=data['vendor_name']).exists():
+            vendor = Vendor(name=data['vendor_name'], address=data['vendor_address'],
+                            contact_number=data['vendor_contact'])
+            vendor.save()
+        else:
+            vendor = Vendor.objects.get(name=data['vendor_name'])
+
+        purchase_order = PurchaseOrder(po_number=data["po_num"], vendor=vendor, order_date=datetime.now(),
+                                       special_instruction=data["special_instruction"], status="Processing")
+
+        purchase_order.save()
+
+        for item in data['items']:
+            purchase_order_item = PurchaseOrderItem(item=item['detail'], quantity=item['quantity'],
+                                                    unit_price=item['unit_price'])
+            purchase_order_item.save()
+            purchase_order.po_items.add(purchase_order_item)
+
         return Response(data={
             'something': "wah",
+        }, status=status.HTTP_200_OK)
+
+
+class PurchaseOrderSpecific(APIView):
+    @staticmethod
+    def get(request, pk):
+        purchase_order = PurchaseOrder.objects.get(id=pk)
+        purchase_order_details = PurchaseOrderSerializer(purchase_order)
+        items = PurchaseOrderItemSerializer(purchase_order.po_items.all(), many=True)
+        vendor = VendorSerializer(Vendor.objects.get(id=purchase_order.vendor.id))
+        return Response(data={
+            'purchase_order': purchase_order_details.data,
+            'items': items.data,
+            'vendor': vendor.data,
         }, status=status.HTTP_200_OK)
