@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import {Table, Row, Col, Input, AutoComplete, Divider} from 'antd';
+import {Table, Row, Col, Input, AutoComplete, Divider, message} from 'antd';
 import update from 'react-addons-update';
 import './style.css';
 import NumberFormat from 'react-number-format';
+import {getData, postData} from "../../../../network_requests/general";
+
 
 const dataSource = ['Budjolex', 'Ace Hardware', 'Concorde'];
 
@@ -19,6 +21,16 @@ const autoFillData = [{
     address: '3rd floor Greenhills',
     contact: '705-1436'
 }];
+
+function pad(num) {
+    let digits = 6 - num.toString().length;
+    let output = '';
+    for(let i = 0; i < digits; i++){
+        output += '0';
+    }
+    output = output + num;
+    return output;
+}
 
 function createState() {
     let state = [];
@@ -94,14 +106,25 @@ export class PurchaseOrderForm extends Component {
         super(props);
 
         this.state = {
+            po_num: '',
             vendorName: '',
             vendorAddress: '',
             vendorContact: '',
+            special_instructions: '',
             items: createState(),
             grand_total: '',
         };
 
-        this.updateFields = this.updateFields.bind(this)
+        this.updateFields = this.updateFields.bind(this);
+        this.updateDetails = this.updateDetails.bind(this);
+    }
+
+    componentDidMount() {
+        getData('inventory/purchase_order/').then(data => {
+            this.setState({
+                po_num: data.purchase_orders.length + 1,
+            })
+        })
     }
 
     getVendorInfo = (vendor) => {
@@ -113,6 +136,74 @@ export class PurchaseOrderForm extends Component {
                 })
             }
         })
+    };
+
+
+    saveForm() {
+        const {items, vendorName, vendorAddress, vendorContact, po_num, special_instructions} = this.state;
+        let empty_field = false;
+        let no_items = 0;
+        for (let i = 1; i <= 8; i++) {
+            let missing_detail = !items[i].detail;
+            let missing_quantity = !items[i].quantity;
+            let missing_price = !items[i].unit_price;
+            if (!missing_detail && !missing_quantity && !missing_price) {
+                no_items++;
+            } else if (!(missing_detail && missing_price && missing_quantity)) {
+                empty_field = true;
+            }
+        }
+
+        if (empty_field === false && no_items > 0 && vendorName && vendorAddress && vendorContact && po_num) {
+            let final_items = [];
+            items.forEach(function (item){
+                if(item.detail){
+                    final_items.push(item)
+                }
+            });
+            let data = {
+                "po_num": po_num,
+                "vendor_name": vendorName,
+                "vendor_address": vendorAddress,
+                "vendor_contact": vendorContact,
+                "special_instruction": special_instructions,
+                "items": final_items,
+            };
+            console.log(data);
+            postData('inventory/purchase_order/', data).then(data => {
+                console.log(data);
+                message.success(no_items.toString() + " " + empty_field.toString());
+                this.props.load_purchase_order();
+                this.props.close();
+            });
+
+        } else {
+            message.error("Please complete form")
+        }
+    }
+
+    updateDetails = (attribute, value) => {
+        switch (attribute) {
+            case 'vendor_name':
+                this.setState({
+                    vendorName: value,
+                });
+                break;
+            case 'vendor_address':
+                this.setState({
+                    vendorAddress: value,
+                });
+                break;
+            case 'vendor_contact':
+                this.setState({
+                    vendorContact: value,
+                });
+                break;
+            case 'special_instructions':
+                this.setState({
+                    special_instructions: value,
+                })
+        }
     };
 
     updateFields = (key, desc, attribute) => {
@@ -175,12 +266,10 @@ export class PurchaseOrderForm extends Component {
                 }
             });
         }
-
     };
 
     render() {
-        console.log(this.state.items);
-        const {vendorName, vendorAddress, vendorContact, items, grand_total} = this.state;
+        const {po_num, vendorName, vendorAddress, vendorContact, items, grand_total} = this.state;
         return (
             <div className="purchase-order-form">
                 <Row type="flex" justify="space-between" align="bottom">
@@ -203,11 +292,8 @@ export class PurchaseOrderForm extends Component {
                     <Col span={12}>
                         <p className="form-info">Sta. Rosa City, Laguna, ZIP: 4026</p>
                     </Col>
-                    <Col span={10}>
-                        <p align="right" className="form-info">PO #: &nbsp;</p>
-                    </Col>
-                    <Col span={2}>
-                        <Input align="right" className='purchase_order_number' size='small'/>
+                    <Col span={12}>
+                        <p align="right" className="form-info">PO #: {pad(po_num)}</p>
                     </Col>
                 </Row>
                 <Row>
@@ -230,7 +316,9 @@ export class PurchaseOrderForm extends Component {
                             size='small'
                             className='vendor-name-input'
                             onSelect={this.getVendorInfo}
+                            value={vendorName}
                             dataSource={dataSource}
+                            onChange={e => this.updateDetails('vendor_name', e)}
                             filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}/>
                     </Col>
                 </Row>
@@ -242,7 +330,8 @@ export class PurchaseOrderForm extends Component {
                         <Input
                             size='small'
                             className='vendor-address-input'
-                            value={vendorAddress}/>
+                            value={vendorAddress}
+                            onChange={e => this.updateDetails('vendor_address', e.target.value)}/>
                     </Col>
                 </Row>
                 <Row>
@@ -253,7 +342,8 @@ export class PurchaseOrderForm extends Component {
                         <Input
                             size='small'
                             className='vendor-contact-input'
-                            value={vendorContact}/>
+                            value={vendorContact}
+                            onChange={e => this.updateDetails('vendor_contact', e.target.value)}/>
                     </Col>
                 </Row>
                 <Row>
@@ -270,7 +360,8 @@ export class PurchaseOrderForm extends Component {
                 </Row>
                 <Row>
                     <Col span={24}>
-                        <Input.TextArea autosize={{minRows: 2, maxRows: 2}} size="small"/>
+                        <Input.TextArea autosize={{minRows: 2, maxRows: 2}} size="small"
+                                        onChange={e => this.updateDetails('special_instructions', e.target.value)}/>
                     </Col>
                 </Row>
                 <br/>

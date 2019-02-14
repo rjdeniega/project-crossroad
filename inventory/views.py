@@ -129,7 +129,8 @@ class QuantityRestock(APIView):
         item.average_price = average / 2
         item.quantity = quants['new_quantity']
         item_movement = ItemMovement(item=Item.objects.get(id=item.id), type='B', quantity=quants['added_quantity'],
-                                     unit_price=quants['unit_price'], vendor=quants['vendor'], created=datetime.now().date())
+                                     unit_price=quants['unit_price'], vendor=quants['vendor'],
+                                     created=datetime.now().date())
         item.save()
         item_movement.save()
         return Response(data={
@@ -493,7 +494,7 @@ class ShuttleMaintenanceFrequency(APIView):
             "total_average_maintenance_cost": total_average_maintenance_cost,
         }, status=status.HTTP_200_OK)
 
-        
+
 class ItemMovementReport(APIView):
     @staticmethod
     def post(request):
@@ -513,7 +514,7 @@ class ItemMovementReport(APIView):
                 type = 'Used in repairing shuttle ' + str(movement.repair.shuttle.id)
             rows.append({
                 "date": movement.created.date(),
-                "item": movement.item.name, 
+                "item": movement.item.name,
                 "type": type,
                 "quantity": movement.quantity
             })
@@ -555,7 +556,7 @@ class ShuttleDayOff(APIView):
                     "plate_number": shuttle.plate_number,
                     "route": shuttle.route,
                 })
-            
+
             data.append(shuttles)
 
             x += 1
@@ -564,3 +565,18 @@ class ShuttleDayOff(APIView):
             "day_offs": data
         }, status=status.HTTP_200_OK)
 
+
+class PurchaseOrderView(APIView):
+    @staticmethod
+    def get(request):
+        purchase_orders = PurchaseOrderSerializer(PurchaseOrder.objects.all(), many=True)
+        return Response(data={
+            "purchase_orders": purchase_orders.data,
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        return Response(data={
+            'something': "wah",
+        }, status=status.HTTP_200_OK)

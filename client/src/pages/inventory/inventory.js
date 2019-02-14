@@ -15,6 +15,8 @@ import '../../utilities/colorsFonts.css'
 import './style.css'
 import {PurchaseOrderForm} from "./components/purchase_order_form/purchase_order_form";
 import ReactToPrint from 'react-to-print'
+import {ic_save} from 'react-icons-kit/md/ic_save'
+import {getData} from "../../network_requests/general";
 
 const data = [];
 
@@ -560,10 +562,44 @@ class EditableTable extends React.Component {
 export class InventoryPage extends Component {
     // go to app.js and switch to PAGES[index of this page in the array] to
     // make inventory initial page. Navbar inventory button works tho so up to u gl
+    constructor(props) {
+        super(props);
+        this.state = {
+            modalVisible: false,
+            activeTab: "1",
+            purchase_order_list: []
+        };
+        this.poComponent = React.createRef();
+        this.changeTab = this.changeTab.bind(this);
+        this.loadPurchaseOrders = this.loadPurchaseOrders.bind(this);
+    }
 
-    state = {
-        modalVisible: false,
-        activeTab: "1",
+    componentDidMount() {
+        this.loadPurchaseOrders()
+    }
+
+    loadPurchaseOrders() {
+        /** @namespace data.purchase_orders **/
+        getData('inventory/purchase_order/').then(data => {
+            const {purchase_order_list} = this.state;
+            let purchase_orders = data.purchase_orders;
+            purchase_orders.forEach(function (purchase_order) {
+                let temp_purchase_order = {
+                    key: purchase_order.po_number,
+                    po_number: purchase_order.po_number,
+                    order_date: purchase_order.order_date,
+                    delivery_date: purchase_order.delivery_date,
+                    vendor: purchase_order.vendor,
+                    status: purchase_order.status,
+                };
+
+                purchase_order_list.push(temp_purchase_order)
+            })
+        })
+    }
+
+    onClick = () => {
+        this.poComponent.current.saveForm();
     };
 
     showModal = () => {
@@ -585,6 +621,8 @@ export class InventoryPage extends Component {
     };
 
     render() {
+
+        const {purchase_order_list} = this.state;
         return (
             <div className="body-wrapper">
                 <Header/>
@@ -604,13 +642,15 @@ export class InventoryPage extends Component {
                                 onCancel={this.handleCancel}
                                 className="purchaseOrderModal"
                                 footer={[
-                                    <ReactToPrint
-                                        trigger={() => <Button htmlType="button" type="primary"><Icon className="printer" icon={printer} size={14}/> &nbsp; Print</Button>}
-                                        content={() => this.componentRef}
-                                    />,
+                                    <Button htmlType="button" type="primary"
+                                            onClick={this.onClick}><Icon className="save"
+                                                                         icon={ic_save}
+                                                                         size={14}/> &nbsp; Save</Button>,
                                 ]}
                             >
-                                <PurchaseOrderForm ref={el => (this.componentRef = el)}/>
+                                <PurchaseOrderForm ref={this.poComponent} close={this.handleCancel}
+                                                   load_purchase_order={this.loadPurchaseOrders}
+                                                   purchase_order_list={purchase_order_list}/>
                             </Modal>
                             <PurchaseOrderList/>
                         </Tabs.TabPane>

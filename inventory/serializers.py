@@ -48,3 +48,9 @@ class OutsourcedItemsSerializer(ModelSerializer):
     class Meta:
         model = OutSourcedItems
         fields = "__all__"
+
+
+class PurchaseOrderSerializer(ModelSerializer):
+    class Meta:
+        model = PurchaseOrder
+        fields = "__all__"

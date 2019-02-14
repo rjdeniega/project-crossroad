@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Table, Divider, Tag} from 'antd';
 import './style.css'
+import {getData} from "../../../../network_requests/general";
 
 function tagColour(status) {
     let color;
@@ -122,9 +123,14 @@ const columns = [{
 }];
 
 export class PurchaseOrderList extends Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
+        const {purchase_order_list} = this.props;
         return (<div>
-            <Table columns={columns} dataSource={data} pagination={{pageSize: 7}}/>
+            <Table columns={columns} dataSource={purchase_order_list} pagination={{pageSize: 7}}/>
         </div>)
     }
 }
