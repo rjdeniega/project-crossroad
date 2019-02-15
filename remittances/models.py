@@ -139,6 +139,26 @@ class Deployment(models.Model):
     created = models.DateTimeField(editable=False, default=timezone.now)
     modified = models.DateTimeField(null=True)
 
+    def __str__(self):
+        driver_name = self.driver.name
+        shuttle = str(self.shuttle.shuttle_number) + " - " + self.shuttle.plate_number
+        route = self.get_route_display()
+        status = self.get_status_display()
+        date = self.shift_iteration.date.strftime('%m/%d/%Y')
+        return (driver_name + " driving shuttle#" + shuttle + " on route " + route + "(" + status + ") on " + date) 
+
+    def get_status_display(self):
+        if self.status is 'O':
+            return 'Ongoing'
+        return 'Finished'
+
+    def get_route_display(self):
+        if self.route is 'M':
+            return 'Main Road'
+        elif self.route is 'R':
+            return 'Kanan'
+        return 'Kaliwa'
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.created = timezone.now()
