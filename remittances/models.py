@@ -96,6 +96,17 @@ class Shift(models.Model):
         self.modified = timezone.now()
         return super(Shift, self).save(*args, **kwargs)
 
+    def get_type_display(self):
+        if self.type is 'A':
+            return 'AM'
+        return 'PM'
+
+    def __str__(self):
+        shift_name = self.get_type_display() + " shift"
+        schedule = self.schedule.start_date.strftime('%m/%d/%Y') + " to " + self.schedule.end_date.strftime('%m/%d/%Y')
+        supervisor = self.supervisor.name
+        return (shift_name + " - " + schedule + " - " + supervisor) 
+
 
 class DriversAssigned(models.Model):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
