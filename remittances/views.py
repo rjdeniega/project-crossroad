@@ -473,14 +473,32 @@ class DeploymentView(APIView):
         data = json.loads(request.body)
         is_valid = True
 
-        # VALIDATIONS
-        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor_id=data['supervisor']).order_by(
-            '-date').first()
+        supervisor_id = data['supervisor_id']
+        driver_id = data['driver_id']
 
-        if DeploymentView.is_in_shift(data['driver'], current_shift_iteration.shift.id):
+        # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
+        if DeploymentView.is_first_deployment(supervisor_id):
+            iteration = ShiftIteration()
+            
+            active_sched = RemittanceUtilities.get_active_schedule();
+            for shift in Shift.objects.filter(schedule=active_sched.id):
+                if shift.supervisor == supervisor_id:
+                    shift_id = shift.id
+            
+            iteration.shift = shift_id
+            iteration.date = datetime.now()
+            iteration.save()
+
+        else:
+            iteration = ShiftIteration.objects.filter(
+                shift__supervisor=supervisor_id
+                ).orderby("-date").first()
+
+        # VALIDATIONS
+        if DeploymentView.is_in_shift(driver_id, iteration.shift.id):
             driver_assigned = DriversAssigned.objects.get(
-                shift_id=current_shift_iteration.shift,
-                driver_id=data['driver']
+                shift_id=iteration.shift,
+                driver_id=driver_id
             )
 
             if driver_assigned.shuttle.status is 'UM':
@@ -492,12 +510,12 @@ class DeploymentView(APIView):
             shifts = Shift.objects.filter(schedule=active_sched)
 
             for shift in shifts:
-                if shift.id != current_shift_iteration.shift.id:
+                if shift.id != iteration.shift.id:
                     other_shift = shift
 
             driver_assigned = DriversAssigned.objects.get(
                 shift_id=other_shift.id,
-                driver_id=data['driver']
+                driver_id=driver_id
             )
 
             if driver_assigned.shuttle.status == 'UM':
@@ -508,10 +526,10 @@ class DeploymentView(APIView):
         if is_valid:
             print(driver_assigned.shuttle)
             deployment = Deployment.objects.create(
-                driver_id=data['driver'],
-                shuttle_id=driver_assigned.shuttle.id,
-                route=driver_assigned.shuttle.route,
-                shift_iteration_id=current_shift_iteration.id
+                driver_id = driver_id,
+                shuttle_id = driver_assigned.shuttle.id,
+                route = driver_assigned.shuttle.route,
+                shift_iteration_id = iteration.id
             )
 
             serialized_deployment = DeploymentSerializer(deployment)
@@ -537,6 +555,18 @@ class DeploymentView(APIView):
             if driver.driver.id == driver_id:
                 return True
         return False
+    
+    @staticmethod
+    def is_first_deployment(supervisor_id):
+        shift_iteration = ShiftIteration.objects.filter(
+            shift__supervisor_id=supervisor_id,
+            date=datetime.today 
+            )
+        
+        if shift_iteration is None:
+            return True
+        else:
+            return False
 
 
 class DeployedDrivers(APIView):
