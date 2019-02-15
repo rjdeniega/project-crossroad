@@ -482,17 +482,19 @@ class DeploymentView(APIView):
             
             active_sched = RemittanceUtilities.get_active_schedule();
             for shift in Shift.objects.filter(schedule=active_sched.id):
-                if shift.supervisor == supervisor_id:
+                print(shift.supervisor.id)
+                print(supervisor_id)
+                if shift.supervisor.id == supervisor_id:
                     shift_id = shift.id
             
-            iteration.shift = shift_id
+            iteration.shift_id = shift_id
             iteration.date = datetime.now()
             iteration.save()
 
         else:
             iteration = ShiftIteration.objects.filter(
                 shift__supervisor=supervisor_id
-                ).orderby("-date").first()
+                ).order_by("-date").first()
 
         # VALIDATIONS
         if DeploymentView.is_in_shift(driver_id, iteration.shift.id):
@@ -524,7 +526,6 @@ class DeploymentView(APIView):
 
         # CREATE DEPLOYMENT
         if is_valid:
-            print(driver_assigned.shuttle)
             deployment = Deployment.objects.create(
                 driver_id = driver_id,
                 shuttle_id = driver_assigned.shuttle.id,
@@ -560,10 +561,10 @@ class DeploymentView(APIView):
     def is_first_deployment(supervisor_id):
         shift_iteration = ShiftIteration.objects.filter(
             shift__supervisor_id=supervisor_id,
-            date=datetime.today 
+            date=datetime.now() 
             )
-        
-        if shift_iteration is None:
+
+        if not shift_iteration:
             return True
         else:
             return False
