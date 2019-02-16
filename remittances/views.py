@@ -504,30 +504,12 @@ class DeploymentView(APIView):
                 ).order_by("-date").first()
 
         # VALIDATIONS
-        if DeploymentView.is_in_shift(driver_id, iteration.shift.id):
-            driver_assigned = DriversAssigned.objects.get(
+        driver_assigned = DriversAssigned.objects.get(
                 shift_id=iteration.shift,
                 driver_id=driver_id
             )
 
-            if driver_assigned.shuttle.status is 'UM':
-                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
-                is_valid = False
-
-        else:
-            active_sched = RemittanceUtilities.get_active_schedule()
-            shifts = Shift.objects.filter(schedule=active_sched)
-
-            for shift in shifts:
-                if shift.id != iteration.shift.id:
-                    other_shift = shift
-
-            driver_assigned = DriversAssigned.objects.get(
-                shift_id=other_shift.id,
-                driver_id=driver_id
-            )
-
-            if driver_assigned.shuttle.status == 'UM':
+        if driver_assigned.shuttle.status is 'UM':
                 error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
                 is_valid = False
 
@@ -653,9 +635,16 @@ class DeployedDrivers(APIView):
             "-date").first()
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='O')
         deployments_serializer = DeploymentSerializer(deployments, many=True)
+
+        #INSERT NEEDED DATA FOR LIST
         for item in deployments_serializer.data:
             driver = Driver.objects.get(id=item.get('driver'))
+            shuttle = Shuttle.objects.get(id=item.get('shuttle'))
+
             item["driver_name"] = driver.name
+            item["shuttle_number"] = shuttle.shuttle_number
+            item["shuttle_plate_number"] = shuttle.plate_number
+
         return Response(data={
             "deployed_drivers": deployments_serializer.data
         }, status=status.HTTP_200_OK)

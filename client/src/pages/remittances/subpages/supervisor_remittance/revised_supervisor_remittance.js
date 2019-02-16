@@ -12,11 +12,13 @@ export class SupervisorRemittance extends React.Component {
         super(props);
         this.state = {
             'plannedDrivers': [],
+            'deployedDrivers': [],
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.fetchPlannedDrivers();
+        this.fetchDeployedDrivers();
     }
 
     fetchPlannedDrivers() {
@@ -38,6 +40,25 @@ export class SupervisorRemittance extends React.Component {
             }).catch(error => console.log(error));
     }
 
+    fetchDeployedDrivers() {
+        const supervisor = JSON.parse(localStorage.user_staff);
+        fetch('/remittances/deployments/deployed_drivers/' + supervisor.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        deployedDrivers: data.deployed_drivers
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
     render() {
         return (
             <div className="page-container">
@@ -45,12 +66,13 @@ export class SupervisorRemittance extends React.Component {
                 <Row className="remittance-body" gutter={16}>
                     <Col span={8}>
                         <PreDeployment 
-                            onListChange={this.fetchPlannedDrivers}
                             plannedDrivers={this.state.plannedDrivers}
                         />
                     </Col>
                     <Col span={8}>
-                        <DuringDeployment />
+                        <DuringDeployment 
+                            deployedDrivers={this.state.deployedDrivers}
+                        />
                     </Col>
                     <Col span={8}>
                         <PostDeployment />

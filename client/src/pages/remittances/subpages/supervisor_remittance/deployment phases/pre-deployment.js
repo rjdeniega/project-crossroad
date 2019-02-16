@@ -9,10 +9,6 @@ export class PreDeployment extends React.Component {
         super(props);
     }
 
-    componentDidMount() {
-        this.props.onListChange();
-    }
-
     render() {
         return (
             <div className="phase-container">
