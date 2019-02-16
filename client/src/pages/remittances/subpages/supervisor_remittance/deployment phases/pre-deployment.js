@@ -89,42 +89,9 @@ function DeploymentList(props) {
 }
 
 function DeploymentListDetails(props) {
-    const confirm = Modal.confirm;
     const driver_id = props.id;
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
-
-    function showConfirm() {
-        confirm({
-            title: 'Are you sure you want to deploy this driver?',
-            content: 'Deploying this driver would start his/her time for the shift.',
-
-            onOk() {
-                handleDeploy();
-                return new Promise((resolve, reject) => {
-                    setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-                }).catch(() => console.log('Oops errors!'));
-            },
-
-            onCancel() { },
-        });
-    }
-
-    function handleDeploy() {
-        let deploy = {
-            'supervisor_id': supervisor.id,
-            'driver_id': driver_id
-        }
-
-        postData('remittances/deployments/', deploy)
-            .then(response => {
-                if (!response.error) {
-                    message.success(driver_name + " has been deployed");
-                } else {
-                    console.log(response.error);
-                }
-            });
-    }
 
     return (
         <div>
@@ -154,22 +121,14 @@ function DeploymentListDetails(props) {
                 />
             </div>
 
-
-            <div className="deployment-button-container">
-                <Button className="deployment-button">
-                    Sub
-                 </Button>
-                <Button
-                    type="primary"
-                    className="deployment-button"
-                    onClick={showConfirm}
-                >
-                    Deploy
-                </Button>
-            </div>
+            <DeploymentButtons
+                supervisor_id={supervisor.id}
+                driver_id={driver_id}
+                driver_name={driver_name}
+            />
         </div>
     );
- }
+}
 
 function DetailItems(props) {
     return (
@@ -180,6 +139,63 @@ function DetailItems(props) {
             <span className="detail-items-value">
                 {props.value}
             </span>
+        </div>
+    );
+}
+
+function DeploymentButtons(props) {
+    const supervisor_id = props.supervisor_id
+    const driver_id = props.driver_id
+    const driver_name = props.driver_name
+
+    function showConfirm() {
+        const confirm = Modal.confirm;
+
+        confirm({
+            title: 'Are you sure you want to deploy this driver?',
+            content: 'Deploying this driver would start his/her time for the shift.',
+
+            onOk() {
+                handleDeploy();
+
+                return new Promise((resolve, reject) => {
+                    setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+                }).catch(() => console.log('Oops errors!'));
+            },
+
+            onCancel() { },
+        });
+    }
+
+    function handleDeploy() {
+        console.log(supervisor_id)
+        let deploy = {
+            'supervisor_id': supervisor_id,
+            'driver_id': driver_id
+        }
+
+        postData('remittances/deployments/', deploy)
+            .then(response => {
+                if (!response.error) {
+                    message.success(driver_name + " has been deployed");
+                } else {
+                    console.log(response.error);
+                }
+            });
+    }
+
+    return (
+        <div className="deployment-button-container">
+            <Button className="deployment-button">
+                Sub
+                </Button>
+            <Button
+                type="primary"
+                className="deployment-button"
+                onClick={showConfirm}
+            >
+                Deploy
+                </Button>
         </div>
     );
 }
