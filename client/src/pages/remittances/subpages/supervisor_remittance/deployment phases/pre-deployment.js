@@ -75,7 +75,7 @@ function DeploymentList(props) {
                                     name={item.driver.name}
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
                                     route={item.shuttle.route}
-                                    expected_departure="5:30pm"
+                                    expected_departure={item.expected_departure}
                                     tickets="130pcs"
                                     photo={item.driver.photo}
                                 />

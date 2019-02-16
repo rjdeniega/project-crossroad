@@ -373,6 +373,15 @@ class NonDeployedDrivers(APIView):
             item["driver"]["shuttle_id"] = item["shuttle"]["id"]
             item["driver"]["shuttle_plate_number"] = item["shuttle"]["plate_number"]
 
+            if item['deployment_type'] is 'E' and item['shift']['type'] is 'A':
+                item['expected_departure'] = "5:00 AM"
+            elif item['deployment_type'] is 'R' and item['shift']['type'] is 'A':
+                item['expected_departure'] = "7:00 AM"
+            elif item['deployment_type'] is 'R' and item['shift']['type'] is 'P':
+                item['expected_departure'] = "2:00 PM"
+            else:
+                item['expected_departure'] = "10:00 PM"
+
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
         }, status=status.HTTP_200_OK)
