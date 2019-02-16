@@ -18,7 +18,7 @@ export class PreDeployment extends React.Component {
 
     fetchPlannedDrivers() {
         const supervisor = JSON.parse(localStorage.user_staff);
-        fetch('/remittances/shifts/assigned_drivers/' + supervisor.id)
+        fetch('/remittances/shifts/pending_drivers/' + supervisor.id)
             .then(response => {
                 return response;
             })
@@ -26,7 +26,7 @@ export class PreDeployment extends React.Component {
             .then(data => {
                 if (!data.error) {
                     this.setState({
-                        plannedDrivers: data.drivers_assigned
+                        plannedDrivers: data.non_deployed_drivers
                     });
                 }
                 else {
