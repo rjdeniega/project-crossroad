@@ -481,8 +481,7 @@ class DeploymentView(APIView):
     def post(request):
         data = json.loads(request.body)
         is_valid = True
-        print(data['supervisor_id'])
-        print(data['driver_id'])
+        
         supervisor_id = data['supervisor_id']
         driver_id = data['driver_id']
 
@@ -492,8 +491,6 @@ class DeploymentView(APIView):
             
             active_sched = RemittanceUtilities.get_active_schedule();
             for shift in Shift.objects.filter(schedule=active_sched.id):
-                print(shift.supervisor.id)
-                print(supervisor_id)
                 if shift.supervisor.id == supervisor_id:
                     shift_id = shift.id
             
@@ -587,8 +584,7 @@ class DeploySubDriver(APIView):
     def post(request):
         data = json.loads(request.body)
         is_valid = True
-        print(data['supervisor_id'])
-        print(data['driver_id'])
+        
         supervisor_id = data['supervisor_id']
         driver_id = data['driver_id']
         absent_id = data['absent_id']

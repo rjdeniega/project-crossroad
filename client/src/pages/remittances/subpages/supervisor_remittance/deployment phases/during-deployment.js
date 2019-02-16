@@ -5,6 +5,13 @@ import '../revised-style.css';
 export class DuringDeployment extends React.Component {
     constructor(props){
         super(props);
+        this.state = {
+            deployedDrivers: [],
+        }
+    }
+
+    componentDidMount() {
+        
     }
 
     render(){

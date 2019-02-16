@@ -7,32 +7,10 @@ import { postData } from '../../../../../network_requests/general';
 export class PreDeployment extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            plannedDrivers: [],
-        }
     }
 
     componentDidMount() {
-        this.fetchPlannedDrivers();
-    }
-
-    fetchPlannedDrivers() {
-        const supervisor = JSON.parse(localStorage.user_staff);
-        fetch('/remittances/shifts/pending_drivers/' + supervisor.id)
-            .then(response => {
-                return response;
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    this.setState({
-                        plannedDrivers: data.non_deployed_drivers
-                    });
-                }
-                else {
-                    console.log(data.error)
-                }
-            }).catch(error => console.log(error));
+        this.props.onListChange();
     }
 
     render() {
@@ -43,7 +21,7 @@ export class PreDeployment extends React.Component {
                     description="Deploy drivers for the day"
                 />
                 <DeploymentList
-                    plannedDrivers={this.state.plannedDrivers}
+                    plannedDrivers={this.props.plannedDrivers}
                 />
             </div>
         );
