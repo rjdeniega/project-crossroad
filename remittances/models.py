@@ -121,6 +121,17 @@ class ShiftIteration(models.Model):
     status = CharField(max_length=1, choices=ITERATION_STATUS, default='O')
     remarks = CharField(max_length=64, null=True)
 
+    def __str__(self):
+        shift_type = self.shift.get_type_display()
+        date = self.date.strftime('%m/%d/%Y')
+        status = self.get_status_display()
+        return (shift_type + ' Shift on ' + date + ' (' + status + ')' ) 
+
+    def get_status_display(self):
+        if self.status == 'O':
+            return 'Ongoing'
+        return 'Finished'
+
     def finish_shift(self):
         self.status = 'F'
         self.save()
