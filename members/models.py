@@ -37,7 +37,7 @@ class Person(SoftDeletionModel):
     photo = FileField(default='client/src/images/default.png', null=True)
 
     def __str__(self):
-        return self.name
+        return (str(self.id) + " - " + self.name)
 
 
     def random(self):

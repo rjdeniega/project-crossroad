@@ -582,6 +582,73 @@ class DeploymentView(APIView):
             return False
 
 
+class DeploySubDriver(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        is_valid = True
+        print(data['supervisor_id'])
+        print(data['driver_id'])
+        supervisor_id = data['supervisor_id']
+        driver_id = data['driver_id']
+        absent_id = data['absent_id']
+
+        # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
+        if DeploymentView.is_first_deployment(supervisor_id):
+            iteration = ShiftIteration()
+            
+            active_sched = RemittanceUtilities.get_active_schedule();
+            for shift in Shift.objects.filter(schedule=active_sched.id):
+                print(shift.supervisor.id)
+                print(supervisor_id)
+                if shift.supervisor.id == supervisor_id:
+                    shift_id = shift.id
+            
+            iteration.shift_id = shift_id
+            iteration.date = datetime.now()
+            iteration.save()
+
+        else:
+            iteration = ShiftIteration.objects.filter(
+                shift__supervisor=supervisor_id
+                ).order_by("-date").first()
+
+        # VALIDATIONS
+        driver_assigned = DriversAssigned.objects.get(
+                shift_id=iteration.shift,
+                driver_id=absent_id
+            )
+
+        if driver_assigned.shuttle.status is 'UM':
+                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+                is_valid = False
+        
+        #CREATE DEPLOYMENT
+        if is_valid:
+            deployment = Deployment.objects.create(
+                driver_id = driver_id,
+                shuttle_id = driver_assigned.shuttle.id,
+                route = driver_assigned.shuttle.route,
+                shift_iteration_id = iteration.id
+            )
+
+            sub_deployment = SubbedDeployments.objects.create(
+                deployment = deployment,
+                absent_driver = driver_assigned
+            )
+
+            serialized_deployment = DeploymentSerializer(deployment)
+
+            return Response(data={
+                'deployment': serialized_deployment.data
+            }, status=status.HTTP_200_OK)
+
+        else:
+            return Response(data={
+                "errors": error_message
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+
 class DeployedDrivers(APIView):
     # this function returns all ongoing deployments for the latest shift iteration of the supervisor
     @staticmethod
