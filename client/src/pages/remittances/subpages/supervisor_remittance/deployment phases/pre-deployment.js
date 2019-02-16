@@ -224,6 +224,8 @@ class SubButton extends React.Component {
     }
 
     handleOk = () => {
+        this.handleDeploy();
+
         this.setState({
             'modal_is_visible': false,
         });
@@ -239,6 +241,23 @@ class SubButton extends React.Component {
         this.setState({
             'sub_driver_id': sub_driver_id
         });
+    }
+
+    handleDeploy() {
+        let deploy = {
+            'supervisor_id': this.props.supervisor_id,
+            'driver_id': this.state.sub_driver_id,
+            'absent_id': this.state.driver_id
+        }
+
+        postData('remittances/deployments/deploy-sub/', deploy)
+            .then(response => {
+                if (!response.error) {
+                    message.success("A sub-driver has been deployed for " + this.props.driver_name);
+                } else {
+                    console.log(response.error);
+                }
+            });
     }
 
     render() {
