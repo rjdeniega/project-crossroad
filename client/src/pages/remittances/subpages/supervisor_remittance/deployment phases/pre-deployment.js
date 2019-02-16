@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message } from 'antd';
+import { List, Avatar, Button, Modal, message, Select } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
 import { postData } from '../../../../../network_requests/general';
@@ -125,6 +125,8 @@ function DeploymentListDetails(props) {
                 supervisor_id={supervisor.id}
                 driver_id={driver_id}
                 driver_name={driver_name}
+                shuttle={props.shuttle}
+                route={props.route}
             />
         </div>
     );
@@ -186,16 +188,155 @@ function DeploymentButtons(props) {
 
     return (
         <div className="deployment-button-container">
-            <Button className="deployment-button">
-                Sub
-                </Button>
+            <SubButton 
+                shuttle={props.shuttle}
+                route={props.route}
+                driver_id={props.driver_id}
+                supervisor_id={supervisor_id}
+                driver_name={driver_name}
+            />
             <Button
                 type="primary"
                 className="deployment-button"
                 onClick={showConfirm}
             >
                 Deploy
-                </Button>
+            </Button>
         </div>
     );
+}
+
+class SubButton extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            'modal_is_visible': false,
+            'driver_id': this.props.driver_id,
+            'sub_driver_id': null,
+        }
+        this.handleSubDriverChange = this.handleSubDriverChange.bind(this);
+    }
+
+    showModal = () => {
+        this.setState({
+            'modal_is_visible': true,
+        });
+    }
+
+    handleOk = () => {
+        this.setState({
+            'modal_is_visible': false,
+        });
+    }
+
+    handleCancel = () => {
+        this.setState({
+            'modal_is_visible': false,
+        });
+    }
+
+    handleSubDriverChange(sub_driver_id) {
+        this.setState({
+            'sub_driver_id': sub_driver_id
+        });
+    }
+
+    render() {
+        return (
+            <div className="subButton-container">
+                <Button className="deployment-button" onClick={this.showModal}>
+                    Sub
+                </Button>
+                <Modal
+                    title="Deploy a sub-driver"
+                    visible={this.state.modal_is_visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                    okText="Deploy"
+                >
+                    <SubContent 
+                        onSelectChange={this.handleSubDriverChange}
+                        supervisor_id={this.props.supervisor_id}
+                        shuttle={this.props.shuttle}
+                        driver_name={this.props.driver_name}
+                        route={this.props.route}
+                    />
+                </Modal>
+            </div>
+        );
+    }
+}
+
+class SubContent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            'supervisor_id': this.props.supervisor_id,
+            'subDrivers': [],
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    componentDidMount(){
+        this.fetchSubDrivers();
+    }
+
+    fetchSubDrivers() {
+        console.log(this.state.supervisor_id)
+        fetch('/remittances/shifts/sub_drivers/' + this.state.supervisor_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        subDrivers: data.sub_drivers
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
+    handleChange(value) {
+        this.props.onSelectChange(value);
+    }
+
+    render() {
+        return (
+            <div>
+                <div>
+                    <span className="select-group">
+                        <label>Subdrivers: </label>
+                        <Select onChange={this.handleChange} style={{ width: 200 }}>
+                            {
+                                this.state.subDrivers.map((item) => (
+                                    <option value={item.driver.id} key={item.driver.id}>
+                                        {item.driver.name}
+                                    </option>
+                                ))
+                            }
+                        </Select>
+                    </span>
+                </div>
+                <div>
+                    <span>Deployment Details</span>
+                    <DetailItems
+                        title="Subbing in for "
+                        value={this.props.driver_name}
+                    />
+                    <DetailItems
+                        title="Shuttle: "
+                        value={this.props.shuttle}
+                    />
+                    <DetailItems
+                        title="Route: "
+                        value={this.props.route}
+                    />
+                </div>
+            </div>
+        );
+    }
 }

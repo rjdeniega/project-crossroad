@@ -72,3 +72,7 @@ Col {
 .deployment-button {
     margin-left: 5px;
 }
+
+.subButton-container {
+    display: inline;
+}
