@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal } from 'antd';
+import { List, Avatar, Button, Modal, message } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
+import { postData } from '../../../../../network_requests/general';
 
 export class PreDeployment extends React.Component {
     constructor(props) {
@@ -16,9 +17,8 @@ export class PreDeployment extends React.Component {
     }
 
     fetchPlannedDrivers() {
-        const supervisor_id = JSON.parse(localStorage.user_staff);
-
-        fetch('/remittances/shifts/assigned_drivers/1')
+        const supervisor = JSON.parse(localStorage.user_staff);
+        fetch('/remittances/shifts/assigned_drivers/' + supervisor.id)
             .then(response => {
                 return response;
             })
@@ -71,6 +71,7 @@ function DeploymentList(props) {
                         <div className="list-detail-container">
                             <List.Item>
                                 <DeploymentListDetails
+                                    id={item.driver.id}
                                     name={item.driver.name}
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
                                     route={item.shuttle.route}
@@ -89,6 +90,9 @@ function DeploymentList(props) {
 
 function DeploymentListDetails(props) {
     const confirm = Modal.confirm;
+    const driver_id = props.id;
+    const driver_name = props.name;
+    const supervisor = JSON.parse(localStorage.user_staff);
 
     function showConfirm() {
         confirm({
@@ -96,6 +100,7 @@ function DeploymentListDetails(props) {
             content: 'Deploying this driver would start his/her time for the shift.',
 
             onOk() {
+                handleDeploy();
                 return new Promise((resolve, reject) => {
                     setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
                 }).catch(() => console.log('Oops errors!'));
@@ -103,6 +108,22 @@ function DeploymentListDetails(props) {
 
             onCancel() { },
         });
+    }
+
+    function handleDeploy() {
+        let deploy = {
+            'supervisor_id': supervisor.id,
+            'driver_id': driver_id
+        }
+
+        postData('remittances/deployments/', deploy)
+            .then(response => {
+                if (!response.error) {
+                    message.success(driver_name + " has been deployed");
+                } else {
+                    console.log(response.error);
+                }
+            });
     }
 
     return (
@@ -148,7 +169,7 @@ function DeploymentListDetails(props) {
             </div>
         </div>
     );
-}
+ }
 
 function DetailItems(props) {
     return (

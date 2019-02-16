@@ -472,7 +472,8 @@ class DeploymentView(APIView):
     def post(request):
         data = json.loads(request.body)
         is_valid = True
-
+        print(data['supervisor_id'])
+        print(data['driver_id'])
         supervisor_id = data['supervisor_id']
         driver_id = data['driver_id']
 
@@ -559,11 +560,13 @@ class DeploymentView(APIView):
     
     @staticmethod
     def is_first_deployment(supervisor_id):
+        print(type(supervisor_id))
         shift_iteration = ShiftIteration.objects.filter(
             shift__supervisor_id=supervisor_id,
             date=datetime.now() 
             )
-
+        print(type(shift_iteration))
+        print(shift_iteration)
         if not shift_iteration:
             return True
         else:
