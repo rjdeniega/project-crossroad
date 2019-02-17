@@ -76,3 +76,8 @@ Col {
 .subButton-container {
     display: inline;
 }
+
+.sub-arrow {
+    margin-left: 3px;
+    margin-right: 3px
+}

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { List, Avatar, Button, Modal, message, Select, Icon } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip } from 'antd';
 import '../revised-style.css';
 import { postData } from '../../../../../network_requests/general';
 
@@ -69,7 +69,7 @@ function DeploymentListDetails(props) {
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
     const absent_driver = props.absent_driver
-
+    
     if(typeof absent_driver == "undefined"){
         return (
             <div>
@@ -97,15 +97,19 @@ function DeploymentListDetails(props) {
             </div>
         );
     } else {
+        const prompt_text = props.name + " was subbed in for " + absent_driver.name
+
         return (
             <div>
                 <div className="deployment-header">
-                    <Avatar src={absent_driver.photo} shape="square" /> 
-                    <Icon type="arrow-right" />
-                    <Avatar src={props.photo} shape="square" />
-                    <span className="deployment-name">
-                        {props.name}
-                    </span>
+                    <Tooltip title={prompt_text} placement="topLeft">
+                        <Avatar src={absent_driver.photo} shape="square" /> 
+                        <Icon type="arrow-right" className="sub-arrow" />
+                        <Avatar src={props.photo} shape="square" />
+                        <span className="deployment-name">
+                            {props.name}
+                        </span>
+                    </Tooltip>
                 </div>
     
                 <div className="deployment-list-container">
