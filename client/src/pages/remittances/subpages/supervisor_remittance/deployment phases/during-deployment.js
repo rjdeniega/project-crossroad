@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
-
+import { List, Avatar, Button, Modal, message, Select } from 'antd';
 import '../revised-style.css';
+import { postData } from '../../../../../network_requests/general';
+
 
 export class DuringDeployment extends React.Component {
     constructor(props){
         super(props);
+        console.log(this.props.deployedDrivers)
     }
 
     render(){
@@ -15,7 +18,7 @@ export class DuringDeployment extends React.Component {
                     description="Monitor deployed drivers"
                 />
                 <DeploymentList
-                    plannedDrivers={this.props.deployedDrivers}
+                    deployedDrivers={this.props.deployedDrivers}
                 />
             </div>
         );
@@ -47,7 +50,6 @@ function DeploymentList(props) {
                                     name={item.driver.name}
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
                                     route={item.shuttle.route}
-                                    expected_departure={item.expected_departure}
                                     tickets="130pcs"
                                     photo={item.driver.photo}
                                 />
@@ -60,3 +62,48 @@ function DeploymentList(props) {
     );
 }
 
+
+function DeploymentListDetails(props) {
+    const driver_id = props.id;
+    const driver_name = props.name;
+    const supervisor = JSON.parse(localStorage.user_staff);
+
+    return (
+        <div>
+            <div className="deployment-header">
+                <Avatar src={props.photo} shape="square" />
+                <span className="deployment-name">
+                    {props.name}
+                </span>
+            </div>
+
+            <div className="deployment-list-container">
+                <DetailItems
+                    title="Shuttle"
+                    value={props.shuttle}
+                />
+                <DetailItems
+                    title="Route"
+                    value={props.route}
+                />
+                <DetailItems
+                    title="Tickets Onhand"
+                    value={props.tickets}
+                />
+            </div>
+        </div>
+    );
+}
+
+function DetailItems(props) {
+    return (
+        <div className="detail-container">
+            <span className="detail-items-title">
+                {props.title}:
+            </span>
+            <span className="detail-items-value">
+                {props.value}
+            </span>
+        </div>
+    );
+}
