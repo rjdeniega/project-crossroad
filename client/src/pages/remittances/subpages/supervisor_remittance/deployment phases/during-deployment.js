@@ -94,6 +94,10 @@ function DeploymentListDetails(props) {
                         value={props.tickets}
                     />
                 </div>
+                
+                <StopDeploymentButton
+                
+                />
             </div>
         );
     } else {
@@ -126,6 +130,10 @@ function DeploymentListDetails(props) {
                         value={props.tickets}
                     />
                 </div>
+
+                <StopDeploymentButton
+                
+                />
             </div>
         );
     }
@@ -140,6 +148,40 @@ function DetailItems(props) {
             <span className="detail-items-value">
                 {props.value}
             </span>
+        </div>
+    );
+}
+
+function StopDeploymentButton(props) {
+    const supervisor_id = props.supervisor_id
+    const driver_id = props.driver_id
+    const driver_name = props.driver_name
+
+    function handleStop() {
+        console.log(supervisor_id)
+        let deploy = {
+            'supervisor_id': supervisor_id,
+            'driver_id': driver_id
+        }
+
+        postData('remittances/deployments/', deploy)
+            .then(response => {
+                if (!response.error) {
+                    message.success(driver_name + " has been deployed");
+                } else {
+                    console.log(response.error);
+                }
+            });
+    }
+
+    return (
+        <div className="deployment-button-container">
+            <Button
+                type="danger"
+                className="deployment-button"
+            >
+                Stop
+            </Button>
         </div>
     );
 }
