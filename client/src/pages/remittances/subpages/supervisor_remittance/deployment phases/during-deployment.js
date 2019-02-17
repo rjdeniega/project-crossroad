@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { List, Avatar, Button, Modal, message, Select } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Icon } from 'antd';
 import '../revised-style.css';
 import { postData } from '../../../../../network_requests/general';
 
@@ -52,6 +52,7 @@ function DeploymentList(props) {
                                     route={item.shuttle.route}
                                     tickets="130pcs"
                                     photo={item.driver.photo}
+                                    absent_driver={item.absent_driver}
                                 />
                             </List.Item>
                         </div>
@@ -67,32 +68,63 @@ function DeploymentListDetails(props) {
     const driver_id = props.id;
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
+    const absent_driver = props.absent_driver
 
-    return (
-        <div>
-            <div className="deployment-header">
-                <Avatar src={props.photo} shape="square" />
-                <span className="deployment-name">
-                    {props.name}
-                </span>
+    if(typeof absent_driver == "undefined"){
+        return (
+            <div>
+                <div className="deployment-header">
+                    <Avatar src={props.photo} shape="square" />
+                    <span className="deployment-name">
+                        {props.name}
+                    </span>
+                </div>
+    
+                <div className="deployment-list-container">
+                    <DetailItems
+                        title="Shuttle"
+                        value={props.shuttle}
+                    />
+                    <DetailItems
+                        title="Route"
+                        value={props.route}
+                    />
+                    <DetailItems
+                        title="Tickets Onhand"
+                        value={props.tickets}
+                    />
+                </div>
             </div>
-
-            <div className="deployment-list-container">
-                <DetailItems
-                    title="Shuttle"
-                    value={props.shuttle}
-                />
-                <DetailItems
-                    title="Route"
-                    value={props.route}
-                />
-                <DetailItems
-                    title="Tickets Onhand"
-                    value={props.tickets}
-                />
+        );
+    } else {
+        return (
+            <div>
+                <div className="deployment-header">
+                    <Avatar src={absent_driver.photo} shape="square" /> 
+                    <Icon type="arrow-right" />
+                    <Avatar src={props.photo} shape="square" />
+                    <span className="deployment-name">
+                        {props.name}
+                    </span>
+                </div>
+    
+                <div className="deployment-list-container">
+                    <DetailItems
+                        title="Shuttle"
+                        value={props.shuttle}
+                    />
+                    <DetailItems
+                        title="Route"
+                        value={props.route}
+                    />
+                    <DetailItems
+                        title="Tickets Onhand"
+                        value={props.tickets}
+                    />
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 }
 
 function DetailItems(props) {

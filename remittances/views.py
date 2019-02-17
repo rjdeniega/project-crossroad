@@ -646,9 +646,9 @@ class DeployedDrivers(APIView):
 
             if DeployedDrivers.is_sub(item['id']):
                 sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()
-                absent_driver = DriverSerializer(Driver.objects.get(id=sub_deployment.absent_driver.id))
-
-                item["absent_driver"] = absent_driver.data
+                absent_driver_id = sub_deployment.absent_driver.driver.id
+                absent_driver_obj = DriverSerializer(Driver.objects.get(id=absent_driver_id))
+                item["absent_driver"] = absent_driver_obj.data
 
             
         return Response(data={

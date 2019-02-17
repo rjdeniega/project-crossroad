@@ -114,6 +114,9 @@ class DriversAssigned(models.Model):
     deployment_type = CharField(max_length=16)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return (self.driver.name + ' driving ')
+
 
 class ShiftIteration(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
@@ -197,6 +200,9 @@ class SubbedDeployments(models.Model):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     absent_driver = ForeignKey(DriversAssigned, on_delete=models.CASCADE)
 
+    def __str__(self):
+        date = self.deployment.shift_iteration.date.strftime('%m/%d/%Y')
+        return (self.deployment.driver.name + " subbbed in for " + self.absent_driver.driver.name + " (" + date + ")")
 
 class Redeployments(models.Model):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
