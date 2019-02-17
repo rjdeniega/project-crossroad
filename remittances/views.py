@@ -5,9 +5,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from members.serializers import MemberSerializer
+from members.serializers import MemberSerializer, DriverSerializer
 from remittances.resources import BeepTransactionResource
 from remittances.serializers import *
+from inventory.serializers import ShuttlesSerializer
 from .models import *
 import json
 from datetime import datetime
@@ -638,16 +639,28 @@ class DeployedDrivers(APIView):
 
         #INSERT NEEDED DATA FOR LIST
         for item in deployments_serializer.data:
-            driver = Driver.objects.get(id=item.get('driver'))
-            shuttle = Shuttle.objects.get(id=item.get('shuttle'))
+            driver = DriverSerializer(Driver.objects.get(id=item.get('driver')))
+            shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle'))) 
+            item["driver"] = driver.data
+            item["shuttle"] = shuttle.data
 
-            item["driver_name"] = driver.name
-            item["shuttle_number"] = shuttle.shuttle_number
-            item["shuttle_plate_number"] = shuttle.plate_number
+            if DeployedDrivers.is_sub(item['id']):
+                sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()
+                absent_driver = DriverSerializer(Driver.objects.get(id=sub_deployment.absent_driver.id))
 
+                item["absent_driver"] = absent_driver.data
+
+            
         return Response(data={
             "deployed_drivers": deployments_serializer.data
         }, status=status.HTTP_200_OK)
+    
+    @staticmethod
+    def is_sub(deployment_id):
+        for item in SubbedDeployments.objects.filter(deployment_id=deployment_id):
+            return True
+        return False
+
 
 
 class RemittanceUtilities():
