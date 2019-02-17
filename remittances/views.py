@@ -369,6 +369,10 @@ class NonDeployedDrivers(APIView):
         for driver in drivers:
             query = query.exclude(driver=driver.driver.id)
 
+        for driver in query:
+            if NonDeployedDrivers.did_deploy_a_sub(driver.id, shift_iteration.id):
+                query = query.exclude(driver=driver.driver.id)
+
         non_deployed_drivers = PlannedDriversSerializer(query, many=True)
         for item in non_deployed_drivers.data:
             item["driver"]["shuttle_id"] = item["shuttle"]["id"]
@@ -386,6 +390,21 @@ class NonDeployedDrivers(APIView):
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
         }, status=status.HTTP_200_OK)
+    
+    @staticmethod
+    def did_deploy_a_sub(driver_id, shift_iteration_id):
+        deployments = Deployment.objects.filter(shift_iteration_id=shift_iteration_id)
+        print(driver_id)
+        for deployment in deployments:
+            subbed_deployment = SubbedDeployments.objects.filter(deployment=deployment, absent_driver_id=driver_id).first()
+            
+            if subbed_deployment:
+                print(subbed_deployment)
+                print("entered here")
+                return True
+        
+        return False
+ 
 
 
 class SubDrivers(APIView):
