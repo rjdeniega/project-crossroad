@@ -101,7 +101,8 @@ function DeploymentListDetails(props) {
                 </div>
                 
                 <StopDeploymentButton
-                
+                    supervisor_id={supervisor.id}
+                    driver_id={props.driver_id}
                 />
             </div>
         );
@@ -141,7 +142,9 @@ function DeploymentListDetails(props) {
                 </div>
 
                 <StopDeploymentButton
-                
+                    supervisor_id={supervisor.id}
+                    driver_id={props.driver_id}
+                    driver_name={props.driver_name}
                 />
             </div>
         );
@@ -161,36 +164,61 @@ function DetailItems(props) {
     );
 }
 
-function StopDeploymentButton(props) {
-    const supervisor_id = props.supervisor_id
-    const driver_id = props.driver_id
-    const driver_name = props.driver_name
+class StopDeploymentButton extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            modal_visibility: false
+        }
+    }
 
-    function handleStop() {
-        console.log(supervisor_id)
+    showModal = () => {
+        this.setState({
+            modal_visibility: true
+        });
+    }
+
+    handleCancel = () => {
+        this.setState({
+            modal_visibility: false,
+        });
+      }
+
+    handleStop() {
         let deploy = {
-            'supervisor_id': supervisor_id,
-            'driver_id': driver_id
+            'supervisor_id': this.props.supervisor_id,
+            'driver_id': this.props.driver_id
         }
 
         postData('remittances/deployments/', deploy)
             .then(response => {
                 if (!response.error) {
-                    message.success(driver_name + " has been deployed");
+                    message.success(this.props.driver_name + " has been deployed");
                 } else {
                     console.log(response.error);
                 }
             });
     }
 
-    return (
-        <div className="deployment-button-container">
-            <Button
-                type="danger"
-                className="deployment-button"
-            >
-                Stop
-            </Button>
-        </div>
-    );
+    render() {
+        return (
+            <div className="deployment-button-container">
+                <Button
+                    type="danger"
+                    className="deployment-button"
+                    onClick={this.showModal}
+                >
+                    Stop
+                </Button>
+
+                <Modal
+                    title="Stop Deployment"
+                    visible={this.state.modal_visibility}
+                    onOk={this.handleCancel}
+                    onCancel={this.handleCancel}
+                >
+                </Modal>
+            </div>
+        );
+    }
 }
