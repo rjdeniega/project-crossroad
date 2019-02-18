@@ -104,8 +104,9 @@ function DeploymentListDetails(props) {
                 <StopDeploymentButton
                     supervisor_id={supervisor.id}
                     driver_id={props.driver_id}
-                    driver_name={props.driver_name}
+                    driver_name={driver_name}
                     deployment_id={props.deployment_id}
+                    route={props.route}
                 />
             </div>
         );
@@ -147,8 +148,9 @@ function DeploymentListDetails(props) {
                 <StopDeploymentButton
                     supervisor_id={supervisor.id}
                     driver_id={props.driver_id}
-                    driver_name={props.driver_name}
+                    driver_name={driver_name}
                     deployment_id={props.deployment_id}
+                    route={props.route}
                 />
             </div>
         );
@@ -171,17 +173,27 @@ function DetailItems(props) {
 class StopDeploymentButton extends React.Component {
     constructor(props) {
         super(props)
+
+        this.handleShuttleChange = this.handleShuttleChange.bind(this);
+        
         const shuttleBreakdown = (
             <ShuttleBreakdown 
                 deployment_id={this.props.deployment_id}
+                driver_name={this.props.driver_name}
+                route={this.props.route}
+                onSelectChange={this.handleShuttleChange}
             />
         )
+
         this.state = {
             modal_visibility: false,
             tooltip_message: null,
             modal_body: 1,
-            content: shuttleBreakdown
+            content: shuttleBreakdown,
+            shuttle_replacement: null,
         }
+
+        
     }
 
     componentDidMount() {
@@ -218,16 +230,24 @@ class StopDeploymentButton extends React.Component {
             });
     }
 
+    handleShuttleChange(value) {
+        this.setState({
+            shuttle_replacement: value
+        });
+    }
+
     handleSelectChange = (value) => {
         let modal_body = ((value == 1) ? 2 : 1);
         let breakdown_message = "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment";
         let earlyend_message = "early leave of driver is when the driver requests for an early end of deployment for personal reasons";
         let tooltip_message = ((value == 1) ? breakdown_message : earlyend_message);
-        
-        
+
         const shuttleBreakdown = (
             <ShuttleBreakdown 
                 deployment_id={this.props.deployment_id}
+                driver_name={this.props.driver_name}
+                route={this.props.route}
+                onSelectChange={this.handleShuttleChange}
             />
         )
 
@@ -294,6 +314,8 @@ class ShuttleBreakdown extends React.Component {
         this.state = {
             availableShuttles: [],
         }
+
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
@@ -319,14 +341,22 @@ class ShuttleBreakdown extends React.Component {
             }).catch(error => console.log(error));
     }
 
+    handleChange(value) {
+        this.props.onSelectChange(value);
+    }
+
     render() {
         return (
             <div>
                 <div>
-                    Replace Broken Shuttle
+                    Redeploy with a new shuttle
                 </div>
+                <DetailItems 
+                    title="Driver"
+                    value={this.props.driver_name}
+                />
                 <label>Available Shuttles: </label>
-                <Select style={{ width: 200 }}>
+                <Select style={{ width: 200 }} onChange={this.handleChange}>
                     {
                         this.state.availableShuttles.map((item) => (
                             <option value={item.id} key={item.id}>
@@ -335,6 +365,10 @@ class ShuttleBreakdown extends React.Component {
                         ))
                     }
                 </Select>
+                <DetailItems
+                    title="Route"
+                    value={this.props.route}
+                />
             </div>
         );
     }
