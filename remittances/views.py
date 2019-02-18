@@ -13,6 +13,7 @@ from .models import *
 import json
 from datetime import datetime
 from tablib import Dataset
+from time import time
 
 class ScheduleView(APIView):
     @staticmethod
@@ -659,9 +660,12 @@ class DeployedDrivers(APIView):
         #INSERT NEEDED DATA FOR LIST
         for item in deployments_serializer.data:
             driver = DriverSerializer(Driver.objects.get(id=item.get('driver')))
-            shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle'))) 
+            shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle')))
+            deployment = Deployment.objects.get(id=item["id"]);
+            time = deployment.start_time
             item["driver"] = driver.data
             item["shuttle"] = shuttle.data
+            item["start_time"] = time.strftime("%I:%M %p") 
 
             if DeployedDrivers.is_sub(item['id']):
                 sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()

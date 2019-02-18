@@ -50,6 +50,7 @@ function DeploymentList(props) {
                                     name={item.driver.name}
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
                                     route={item.shuttle.route}
+                                    start_time={item.start_time}
                                     tickets="130pcs"
                                     photo={item.driver.photo}
                                     absent_driver={item.absent_driver}
@@ -90,6 +91,10 @@ function DeploymentListDetails(props) {
                         value={props.route}
                     />
                     <DetailItems
+                        title="Start Time"
+                        value={props.start_time}
+                    />
+                    <DetailItems
                         title="Tickets Onhand"
                         value={props.tickets}
                     />
@@ -124,6 +129,10 @@ function DeploymentListDetails(props) {
                     <DetailItems
                         title="Route"
                         value={props.route}
+                    />
+                    <DetailItems
+                        title="Start Time"
+                        value={props.start_time}
                     />
                     <DetailItems
                         title="Tickets Onhand"
