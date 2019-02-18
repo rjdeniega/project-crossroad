@@ -168,8 +168,16 @@ class StopDeploymentButton extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            modal_visibility: false
+            modal_visibility: false,
+            tooltip_message: null,
+            modal_body: 1,
         }
+    }
+
+    componentDidMount() {
+        this.setState({
+            tooltip_message: "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment"
+        })
     }
 
     showModal = () => {
@@ -200,7 +208,20 @@ class StopDeploymentButton extends React.Component {
             });
     }
 
+    handleSelectChange = (value) => {
+        let modal_body = ((value == 1)? 2 : 1);
+        let breakdown_message = "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment";
+        let earlyend_message = "early leave of driver is when the driver requests for an early end of deployment for personal reasons";
+        let tooltip_message = ((value == 1)? breakdown_message : earlyend_message);
+        this.setState({
+            modal_body: modal_body,
+            tooltip_message: tooltip_message
+        });
+    }
+
     render() {
+        const Option = Select.Option
+
         return (
             <div className="deployment-button-container">
                 <Button
@@ -217,6 +238,22 @@ class StopDeploymentButton extends React.Component {
                     onOk={this.handleCancel}
                     onCancel={this.handleCancel}
                 >
+                    <span className="stop-deployment-modal-select">
+                        <label>
+                            Reason for Termination:
+                        </label>
+                        <Select 
+                            defaultValue='1' 
+                            style={{ width: 200 }} 
+                            onChange={this.handleSelectChange}
+                        >
+                            <Option value='1'>Shuttle Breakdown</Option>
+                            <Option value='2'>Early Leave of Driver</Option>
+                        </Select>
+                        <Tooltip title={this.state.tooltip_message}>
+                            <Icon type="question-circle" />
+                        </Tooltip>
+                    </span>
                 </Modal>
             </div>
         );
