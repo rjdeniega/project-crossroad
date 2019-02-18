@@ -690,7 +690,7 @@ class ShuttleBreakdown(APIView):
         deployment = Deployment.objects.get(id=deployment_id);
         shift_iteration = ShiftIteration.objects.get(id=deployment.shift_iteration.id)
         
-        shuttles = Shuttle.objects.all().exclude(id=deployment.shuttle.id)
+        shuttles = Shuttle.objects.filter().exclude(id=deployment.shuttle.id, status="UM")
 
         deployments = Deployment.objects.filter(shift_iteration=shift_iteration.id)
 

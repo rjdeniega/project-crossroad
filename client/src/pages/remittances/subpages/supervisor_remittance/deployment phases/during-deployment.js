@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip } from 'antd';
 import '../revised-style.css';
 import { postData } from '../../../../../network_requests/general';
 
 
 export class DuringDeployment extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         console.log(this.props.deployedDrivers)
     }
 
-    render(){
+    render() {
         return (
             <div className="phase-container">
                 <Header
@@ -46,6 +46,7 @@ function DeploymentList(props) {
                         <div className="list-detail-container">
                             <List.Item>
                                 <DeploymentListDetails
+                                    deployment_id={item.id}
                                     id={item.driver.id}
                                     name={item.driver.name}
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
@@ -70,8 +71,8 @@ function DeploymentListDetails(props) {
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
     const absent_driver = props.absent_driver
-    
-    if(typeof absent_driver == "undefined"){
+
+    if (typeof absent_driver == "undefined") {
         return (
             <div>
                 <div className="deployment-header">
@@ -80,48 +81,7 @@ function DeploymentListDetails(props) {
                         {props.name}
                     </span>
                 </div>
-    
-                <div className="deployment-list-container">
-                    <DetailItems
-                        title="Shuttle"
-                        value={props.shuttle}
-                    />
-                    <DetailItems
-                        title="Route"
-                        value={props.route}
-                    />
-                    <DetailItems
-                        title="Start Time"
-                        value={props.start_time}
-                    />
-                    <DetailItems
-                        title="Tickets Onhand"
-                        value={props.tickets}
-                    />
-                </div>
-                
-                <StopDeploymentButton
-                    supervisor_id={supervisor.id}
-                    driver_id={props.driver_id}
-                />
-            </div>
-        );
-    } else {
-        const prompt_text = props.name + " was subbed in for " + absent_driver.name
 
-        return (
-            <div>
-                <div className="deployment-header">
-                    <Tooltip title={prompt_text} placement="topLeft">
-                        <Avatar src={absent_driver.photo} shape="square" /> 
-                        <Icon type="arrow-right" className="sub-arrow" />
-                        <Avatar src={props.photo} shape="square" />
-                        <span className="deployment-name">
-                            {props.name}
-                        </span>
-                    </Tooltip>
-                </div>
-    
                 <div className="deployment-list-container">
                     <DetailItems
                         title="Shuttle"
@@ -145,6 +105,50 @@ function DeploymentListDetails(props) {
                     supervisor_id={supervisor.id}
                     driver_id={props.driver_id}
                     driver_name={props.driver_name}
+                    deployment_id={props.deployment_id}
+                />
+            </div>
+        );
+    } else {
+        const prompt_text = props.name + " was subbed in for " + absent_driver.name
+
+        return (
+            <div>
+                <div className="deployment-header">
+                    <Tooltip title={prompt_text} placement="topLeft">
+                        <Avatar src={absent_driver.photo} shape="square" />
+                        <Icon type="arrow-right" className="sub-arrow" />
+                        <Avatar src={props.photo} shape="square" />
+                        <span className="deployment-name">
+                            {props.name}
+                        </span>
+                    </Tooltip>
+                </div>
+
+                <div className="deployment-list-container">
+                    <DetailItems
+                        title="Shuttle"
+                        value={props.shuttle}
+                    />
+                    <DetailItems
+                        title="Route"
+                        value={props.route}
+                    />
+                    <DetailItems
+                        title="Start Time"
+                        value={props.start_time}
+                    />
+                    <DetailItems
+                        title="Tickets Onhand"
+                        value={props.tickets}
+                    />
+                </div>
+
+                <StopDeploymentButton
+                    supervisor_id={supervisor.id}
+                    driver_id={props.driver_id}
+                    driver_name={props.driver_name}
+                    deployment_id={props.deployment_id}
                 />
             </div>
         );
@@ -167,10 +171,16 @@ function DetailItems(props) {
 class StopDeploymentButton extends React.Component {
     constructor(props) {
         super(props)
+        const shuttleBreakdown = (
+            <ShuttleBreakdown 
+                deployment_id={this.props.deployment_id}
+            />
+        )
         this.state = {
             modal_visibility: false,
             tooltip_message: null,
             modal_body: 1,
+            content: shuttleBreakdown
         }
     }
 
@@ -190,7 +200,7 @@ class StopDeploymentButton extends React.Component {
         this.setState({
             modal_visibility: false,
         });
-      }
+    }
 
     handleStop() {
         let deploy = {
@@ -209,13 +219,30 @@ class StopDeploymentButton extends React.Component {
     }
 
     handleSelectChange = (value) => {
-        let modal_body = ((value == 1)? 2 : 1);
+        let modal_body = ((value == 1) ? 2 : 1);
         let breakdown_message = "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment";
         let earlyend_message = "early leave of driver is when the driver requests for an early end of deployment for personal reasons";
-        let tooltip_message = ((value == 1)? breakdown_message : earlyend_message);
+        let tooltip_message = ((value == 1) ? breakdown_message : earlyend_message);
+        
+        
+        const shuttleBreakdown = (
+            <ShuttleBreakdown 
+                deployment_id={this.props.deployment_id}
+            />
+        )
+
+        const earlyLeave = (
+            <EarlyLeave 
+                deployment_id={this.props.deployment_id}
+            />
+        )
+        
+        let content = (value == 1) ? shuttleBreakdown : earlyLeave;
+
         this.setState({
             modal_body: modal_body,
-            tooltip_message: tooltip_message
+            tooltip_message: tooltip_message,
+            content: content
         });
     }
 
@@ -242,9 +269,9 @@ class StopDeploymentButton extends React.Component {
                         <label>
                             Reason for Termination:
                         </label>
-                        <Select 
-                            defaultValue='1' 
-                            style={{ width: 200 }} 
+                        <Select
+                            defaultValue='1'
+                            style={{ width: 200 }}
                             onChange={this.handleSelectChange}
                         >
                             <Option value='1'>Shuttle Breakdown</Option>
@@ -254,7 +281,74 @@ class StopDeploymentButton extends React.Component {
                             <Icon type="question-circle" />
                         </Tooltip>
                     </span>
+                    {this.state.content}
                 </Modal>
+            </div>
+        );
+    }
+}
+
+class ShuttleBreakdown extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            availableShuttles: [],
+        }
+    }
+
+    componentDidMount() {
+        this.fetchAvailableShuttles();
+    }
+
+    fetchAvailableShuttles() {
+        console.log(this.props.deployment_id)
+        fetch('/remittances/deployments/' + this.props.deployment_id + '/available-shuttles')
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        availableShuttles: data.shuttles
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
+    render() {
+        return (
+            <div>
+                <div>
+                    Replace Broken Shuttle
+                </div>
+                <label>Available Shuttles: </label>
+                <Select style={{ width: 200 }}>
+                    {
+                        this.state.availableShuttles.map((item) => (
+                            <option value={item.id} key={item.id}>
+                                Shuttle#{item.shuttle_number} - {item.plate_number}
+                            </option>
+                        ))
+                    }
+                </Select>
+            </div>
+        );
+    }
+}
+
+class EarlyLeave extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        return (
+            <div>
+                Early Leave
             </div>
         );
     }
