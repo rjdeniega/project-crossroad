@@ -191,6 +191,7 @@ class StopDeploymentButton extends React.Component {
             modal_body: 1,
             content: shuttleBreakdown,
             shuttle_replacement: null,
+            confirmLoading: false
         }
 
         
@@ -214,16 +215,37 @@ class StopDeploymentButton extends React.Component {
         });
     }
 
-    handleStop() {
-        let deploy = {
-            'supervisor_id': this.props.supervisor_id,
-            'driver_id': this.props.driver_id
+    handleOk = () => {
+        this.setState({
+            confirmLoading: true,
+        })
+        
+        if(this.state.modal_body == 1){
+            this.handleBreakdownRedeploy()
+        } else {
+
         }
 
-        postData('remittances/deployments/', deploy)
+        setTimeout(() => {
+            this.setState({
+                modal_visibility: false,
+                confirmLoading: false,
+            });
+          }, 1000);
+    }
+
+    handleBreakdownRedeploy() {
+        console.log(this.props.deployment_id)
+        console.log(this.state.shuttle_replacement)
+        let breakdown = {
+            'deployment_id': this.props.deployment_id,
+            'shuttle_id': this.state.shuttle_replacement
+        }
+
+        postData('remittances/deployments/shuttle-breakdown/redeploy/', breakdown)
             .then(response => {
                 if (!response.error) {
-                    message.success(this.props.driver_name + " has been deployed");
+                    message.success("Driver has been redeployed with a new shuttle");
                 } else {
                     console.log(response.error);
                 }
@@ -282,8 +304,9 @@ class StopDeploymentButton extends React.Component {
                 <Modal
                     title="Stop Deployment"
                     visible={this.state.modal_visibility}
-                    onOk={this.handleCancel}
+                    onOk={this.handleOk}
                     onCancel={this.handleCancel}
+                    confirmLoading={this.state.confirmLoading}
                 >
                     <span className="stop-deployment-modal-select">
                         <label>

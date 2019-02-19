@@ -14,6 +14,9 @@ export class SupervisorRemittance extends React.Component {
             'plannedDrivers': [],
             'deployedDrivers': [],
         }
+
+        this.fetchPlannedDrivers = this.fetchPlannedDrivers.bind(this);
+        this.fetchDeployedDrivers = this.fetchDeployedDrivers.bind(this);
     }
 
     componentDidMount() {

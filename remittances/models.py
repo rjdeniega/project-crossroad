@@ -149,7 +149,7 @@ class Deployment(models.Model):
     start_time = DateTimeField(default=timezone.now, editable=False)
     end_time = DateTimeField(null=True)
     result = CharField(max_length=1, choices=DEPLOYMENT_RESULTS, null=True)
-    reason = CharField(max_length=64, null=True)
+    reason = CharField(max_length=64, blank=True)
     created = models.DateTimeField(editable=False, default=timezone.now)
     modified = models.DateTimeField(null=True)
 
