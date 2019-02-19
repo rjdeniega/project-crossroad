@@ -46,11 +46,13 @@ export class ShiftHistoryPane extends Component {
         supervisors: null,
         shuttles: [],
         visible: false,
+        assign_visible: false,
         create_visible: false,
         assigned_shuttle: null,
         driver_selected: null,
         selected_shift_type: null,
         activeSchedule: null,
+        drivers: [],
 
     };
 
@@ -134,9 +136,78 @@ export class ShiftHistoryPane extends Component {
         });
     }
 
+    handleAssign = (e) => {
+        const assignment = {
+            "driver": this.state.driver_selected,
+            "shuttle": this.state.assigned_shuttle,
+            "deployment_type": this.state.deployment_type,
+        };
+        if (this.state.selected_shift_type == "AM") {
+            this.setState({
+                am_shift_drivers: [...this.state.am_shift_drivers, assignment]
+            }, () => console.log(this.state.am_shift_drivers));
+        }
+        else if (this.state.selected_shift_type == "PM") {
+            this.setState({
+                pm_shift_drivers: [...this.state.pm_shift_drivers, assignment]
+            }, () => {
+                console.log(this.state.pm_shift_drivers);
+            });
+        }
+        this.setState({
+            assign_visible: false,
+        });
+    };
+    handleConfirm = (e) => {
+        const assignment = {
+            "driver": this.state.driver_selected,
+            "shuttle": this.state.assigned_shuttle,
+            "deployment_type": this.state.deployment_type,
+        };
+        console.log(this.state.am_shift_drivers);
+        if (this.state.selected_shift_type == "AM") {
+            this.setState({
+                am_shift_drivers: [...this.state.am_shift_drivers, assignment]
+            }, () => console.log(this.state.am_shift_drivers));
+        }
+        else if (this.state.selected_shift_type == "PM") {
+            this.setState({
+                pm_shift_drivers: [...this.state.pm_shift_drivers, assignment]
+            }, () => {
+                console.log(this.state.pm_shift_drivers);
+            });
+        }
+        this.handleShiftCreate();
+        this.setState({
+            create_visible: false,
+        });
+    };
+    handleShiftCreate = () => {
+        const data = this.createForm();
+        console.log(JSON.stringify(data));
+        // postData('remittances/schedules/create', data)
+        //     .then((data) => {
+        //         console.log(data["error"]);
+        //         if (data['errors']) {
+        //             console.log(data);
+        //             message.error(data['errors']['non_field_errors'])
+        //         }
+        //         else {
+        //             console.log(data['start_date']);
+        //             message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);
+        //         }
+        //     })
+        //     .catch(error => console.log(error));
+    };
+
     showModal = event => {
         this.setState({
             visible: true
+        })
+    };
+    showAssignModal = event => {
+        this.setState({
+            assign_visible: true
         })
     };
 
@@ -144,6 +215,13 @@ export class ShiftHistoryPane extends Component {
         console.log(e);
         this.setState({
             visible: false,
+        });
+    };
+    handleAssignCancel = (e) => {
+        console.log(this.state.am_shift_drivers);
+        console.log(this.state.pm_shift_drivers)
+        this.setState({
+            assign_visible: false,
         });
     };
     handleSelectChange = fieldName => value => {
@@ -156,63 +234,94 @@ export class ShiftHistoryPane extends Component {
             ...state
         });
     };
-
-    amRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            // get the last selected item
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-            this.state.am_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true;
-                    console.log("checked became true")
+    isMatching = (record, type) => {
+        let status = false;
+        if (type == "AM") {
+            this.state.am_shift_drivers.forEach(x => {
+                if (x.driver_id == record.key) {
+                    status = true
                 }
             });
-            console.log(this.isChecked);
-            if (!this.isChecked) {
+        }
+        else {
+            this.state.pm_shift_drivers.forEach(x => {
+                if (x.driver_id == record.key) {
+                    status = true
+                }
+            });
+        }
+        return status;
+    };
+
+    amRowSelection = {
+        onSelect: (record, selected, selectedRows, nativeEvent) => {
+            console.log(record);
+            console.log(selected);
+            // get the last selected item
+            const current =  record.key;
+            if (selected) {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "AM"
                 });
-                this.showModal()
+                this.showAssignModal()
             }
             else {
-                let index = this.state.am_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.am_shift_drivers.splice(index);
+                let removed_driver = null;
+                this.state.am_shift_drivers.forEach(x => {
+                    if (x.driver_id == current) {
+                        removed_driver = x;
+                    }
+                });
+                let index = this.state.am_shift_drivers.indexOf(removed_driver);
+                let array = this.state.am_shift_drivers;
+                array.splice(index);
                 this.setState({
                     am_shift_drivers: array
-                }, console.log(this.state.am_shift_drivers))
+                }, () => {
+                    console.log(this.state.am_shift_drivers)
+                })
             }
         },
         getCheckboxProps: record => ({
-            defaultChecked: record.name === 'ira macazo', // Column configuration not to be checked
-            name: record.name,
+            defaultChecked: this.isMatching(record, "AM")// Column configuration not to be checked
+            , name: record.name,
         }),
     };
     pmRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-            //check if item is already checked
-            this.state.pm_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true
-                }
-            });
-            if (!this.isChecked) {
+       onSelect: (record, selected, selectedRows, nativeEvent) => {
+            console.log(record);
+            console.log(selected);
+            // get the last selected item
+            const current =  record.key;
+            if (selected) {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "PM"
-                }, () => console.log(this.state.selected_shift_type));
-
-                this.showModal()
+                });
+                this.showAssignModal()
             }
             else {
-                let index = this.state.pm_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.pm_shift_drivers.splice(index);
+                let removed_driver = null;
+                this.state.pm_shift_drivers.forEach(x => {
+                    if (x.driver_id == current) {
+                        removed_driver = x;
+                    }
+                });
+                let index = this.state.pm_shift_drivers.indexOf(removed_driver);
+                let array = this.state.pm_shift_drivers;
+                array.splice(index);
                 this.setState({
                     pm_shift_drivers: array
-                }, console.log(this.state.pm_shift_drivers))
+                }, () => {
+                    console.log(this.state.pm_shift_drivers)
+                })
             }
         },
+        getCheckboxProps: record => ({
+            defaultChecked: this.isMatching(record, "PM")// Column configuration not to be checked
+            , name: record.name,
+        }),
     };
 
     //normal action handlers
@@ -296,33 +405,18 @@ export class ShiftHistoryPane extends Component {
             "type": "P",
             "drivers_assigned": this.state.pm_shift_drivers
         };
-        const mn_shift = {
-            "supervisor": this.state.mn_shift_supervisor_key,
-            "type": "M",
-            "drivers_assigned": this.state.mn_shift_drivers
-        };
+        // const mn_shift = {
+        //     "supervisor": this.state.mn_shift_supervisor_key,
+        //     "type": "M",
+        //     "drivers_assigned": this.state.mn_shift_drivers
+        // };
+
+        //removed mn shift in shifts dict
         return {
             "start_date": this.state.startDate,
             "end_date": this.state.endDate,
-            "shifts": [am_shift, pm_shift, mn_shift],
+            "shifts": [am_shift, pm_shift],
         };
-    };
-    handleShiftCreate = () => {
-        const data = this.createForm();
-        console.log(JSON.stringify(data));
-        postData('remittances/schedules/', data)
-            .then((data) => {
-                console.log(data["error"]);
-                if (data['errors']) {
-                    console.log(data);
-                    message.error(data['errors']['non_field_errors'])
-                }
-                else {
-                    console.log(data['start_date']);
-                    message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);
-                }
-            })
-            .catch(error => console.log(error));
     };
     handleSelectSchedule = (id) => {
         console.log(id);
@@ -336,15 +430,38 @@ export class ShiftHistoryPane extends Component {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
-                const tableData = [];
+                const am_drivers = [];
+                const pm_drivers = [];
                 //append drivers with their ids as key
                 console.log(data);
+                console.log(data.shifts);
+                data.shifts[0].drivers.forEach(item => am_drivers.push({
+                    "key": item.id,
+                    "name": item.name,
+                    "photo": item.photo
+                }));
+                data.shifts[1].drivers.forEach(item => pm_drivers.push({
+                    "key": item.id,
+                    "name": item.name,
+                    "photo": item.photo
+                }));
+
                 this.setState({
+                    startDateObject: moment(data["expected_start_date"]),
+                    startDate: moment(data["expected_start_date"]).format('YYYY-MM-DD'),
+                    endDateObject: moment(data["expected_end_date"]),
+                    currentSched: moment(data["expected_start_date"]),
                     am_shift_drivers: data.shifts[0].drivers,
+                    am_shift_drivers_formatted: am_drivers,
                     amSupervisor: data.shifts[0].supervisor_name,
                     pm_shift_drivers: data.shifts[1].drivers,
+                    pm_shift_drivers_formatted: pm_drivers,
                     pmSupervisor: data.shifts[1].supervisor_name,
                     activeSchedule: data.id,
+                    am_shift_supervisor: data.shifts[0].supervisor_name,
+                    pm_shift_supervisor: data.shifts[1].supervisor_name,
+                    am_shift_supervisor_key: data.shifts[0].id,
+                    pm_shift_supervisor_key: data.shifts[1].id,
                 })
             }
             else {
@@ -377,14 +494,21 @@ export class ShiftHistoryPane extends Component {
             <ShiftPrint data={this.state} ref={el => (this.componentRef = el)}/>
         </Fragment>
     );
+    setCurrentValue = (event) => {
+        console.log("enters in this wonderful function");
+        console.log(event);
+        this.setState({
+            selected_driver_key: event.key
+        });
+    };
     renderModalShiftTable = () => (
         <div className="sched-modal-tables-wrapper">
             <Modal
                 title="Assign this driver to a shuttle"
-                visible={this.state.create_visible}
-                onOk={this.handleConfirm}
+                visible={this.state.assign_visible}
+                onOk={this.handleAssign}
                 className="sched-modal"
-                onCancel={this.handleCancel}
+                onCancel={this.handleAssignCancel}
 
             >
                 {this.state.selected_shift_type == "AM" &&
@@ -409,6 +533,21 @@ export class ShiftHistoryPane extends Component {
                     ))}
                 </Select>
             </Modal>
+            <DatePicker
+                className="date-picker"
+                disabled
+                format="YYYY-MM-DD"
+                value={this.state.startDateObject}
+                placeholder="Start Date"
+                onChange={(date, dateString) => this.handleDateChange(date, dateString)}
+            />
+            <DatePicker
+                className="date-picker"
+                disabled
+                placeholder="End Date"
+                format="YYYY-MM-DD"
+                value={this.state.endDateObject}
+            />
             <div className="sched-am-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">AM Shift</div>
@@ -418,7 +557,7 @@ export class ShiftHistoryPane extends Component {
                         </Button>
                     </Dropdown>
                 </div>
-                <Table showHeader={false} rowSelection={this.amRowSelection} pagination={false} columns={columns}
+                <Table showHeader={false} onRowClick={this.setCurrentValue} rowSelection={this.amRowSelection} pagination={false} columns={columns}
                        dataSource={this.state.drivers}/>,
             </div>
             <div className="sched-pm-shift-pane">
@@ -517,6 +656,8 @@ export class ShiftHistoryPane extends Component {
         )
     }
 }
+
+
 export class ShiftPrint extends Component {
     render() {
         return (
