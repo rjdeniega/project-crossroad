@@ -181,6 +181,7 @@ class Deployment(models.Model):
 
     def end_deployment(self):
         self.end_time = datetime.now()
+        self.status = 'F'
         self.save()
 
     def set_deployment_success(self):
