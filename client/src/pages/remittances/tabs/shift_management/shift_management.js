@@ -206,55 +206,64 @@ export class ShiftManagementPane extends Component {
     // rowSelection object indicates the need for row selection
     isChecked = false;
     amRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
+        onSelect: (record, selected, selectedRows, nativeEvent) => {
+            console.log(record);
+            console.log(selected);
             // get the last selected item
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-            this.state.am_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true;
-                    console.log("checked became true")
-                }
-            });
-            console.log(this.isChecked);
-            if (!this.isChecked) {
+            const current =  record.key;
+            if (selected) {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "AM"
                 });
-                this.showModal()
+                this.showAssignModal()
             }
             else {
-                let index = this.state.am_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.am_shift_drivers.splice(index);
+                let removed_driver = null;
+                this.state.am_shift_drivers.forEach(x => {
+                    if (x.driver_id == current) {
+                        removed_driver = x;
+                    }
+                });
+                let index = this.state.am_shift_drivers.indexOf(removed_driver);
+                let array = this.state.am_shift_drivers;
+                array.splice(index);
                 this.setState({
                     am_shift_drivers: array
-                }, console.log(this.state.am_shift_drivers))
+                }, () => {
+                    console.log(this.state.am_shift_drivers)
+                })
             }
         },
     };
     pmRowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            const current = selectedRowKeys[selectedRowKeys.length - 1];
-            //check if item is already checked
-            this.state.pm_shift_drivers.map((item) => {
-                if (item["driver"] == current) {
-                    this.isChecked = true
-                }
-            });
-            if (!this.isChecked) {
+        onSelect: (record, selected, selectedRows, nativeEvent) => {
+            console.log(record);
+            console.log(selected);
+            // get the last selected item
+            const current =  record.key;
+            if (selected) {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "PM"
-                }, () => console.log(this.state.selected_shift_type));
-
-                this.showModal()
+                });
+                this.showAssignModal()
             }
             else {
-                let index = this.state.pm_shift_drivers.indexOf(this.state.driver_selected);
-                let array = this.state.pm_shift_drivers.splice(index);
+                let removed_driver = null;
+                this.state.pm_shift_drivers.forEach(x => {
+                    if (x.driver_id == current) {
+                        removed_driver = x;
+                    }
+                });
+                let index = this.state.pm_shift_drivers.indexOf(removed_driver);
+                let array = this.state.pm_shift_drivers;
+                array.splice(index);
                 this.setState({
                     pm_shift_drivers: array
-                }, console.log(this.state.pm_shift_drivers))
+                }, () => {
+                    console.log(this.state.pm_shift_drivers)
+                })
             }
         },
     };
