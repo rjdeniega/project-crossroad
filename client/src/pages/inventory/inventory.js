@@ -590,9 +590,11 @@ export class InventoryPage extends Component {
                     po_number: purchase_order.po_number,
                     order_date: purchase_order.order_date,
                     delivery_date: purchase_order.delivery_date,
-                    vendor: purchase_order.vendor,
                     status: purchase_order.status,
                 };
+                getData('inventory/vendors/' + purchase_order.vendor).then(data => {
+                    temp_purchase_order['vendor'] = data.vendor.name
+                });
 
                 temp_purchase_order_list.push(temp_purchase_order)
             });
@@ -646,7 +648,7 @@ export class InventoryPage extends Component {
                                 onCancel={this.handleCancel}
                                 className="purchaseOrderModal"
                                 footer={[
-                                    <Button htmlType="button" type="primary"
+                                    <Button key={1} htmlType="button" type="primary"
                                             onClick={this.onClick}><Icon className="save"
                                                                          icon={ic_save}
                                                                          size={14}/> &nbsp; Save</Button>,
@@ -654,7 +656,7 @@ export class InventoryPage extends Component {
                             >
                                 <PurchaseOrderForm ref={this.poComponent} close={this.handleCancel}
                                                    load_purchase_order={this.loadPurchaseOrders}
-                                                   />
+                                />
                             </Modal>
                             <PurchaseOrderList purchase_order_list={purchase_order_list}/>
                         </Tabs.TabPane>

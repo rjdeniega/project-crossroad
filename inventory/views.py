@@ -612,3 +612,22 @@ class PurchaseOrderSpecific(APIView):
             'items': items.data,
             'vendor': vendor.data,
         }, status=status.HTTP_200_OK)
+
+
+class VendorsView(APIView):
+    @staticmethod
+    def get(request):
+        vendors = VendorSerializer(Vendor.objects.all(), many=True)
+        return Response(data={
+            'vendors': vendors.data,
+        }, status=status.HTTP_200_OK)
+
+
+class VendorSpecific(APIView):
+    @staticmethod
+    def get(request, pk):
+        vendor = VendorSerializer(Vendor.objects.get(id=pk))
+
+        return Response(data={
+            'vendor': vendor.data
+        })

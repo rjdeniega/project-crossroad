@@ -6,22 +6,6 @@ import NumberFormat from 'react-number-format';
 import {getData, postData} from "../../../../network_requests/general";
 
 
-const dataSource = ['Budjolex', 'Ace Hardware', 'Concorde'];
-
-const autoFillData = [{
-    name: 'Budjolex',
-    address: '12 Karilagan St., Kawilihan Village',
-    contact: '09178712380',
-}, {
-    name: 'Ace Hardware',
-    address: '1st Floor Megamall',
-    contact: '671-2973',
-}, {
-    name: 'Concorde',
-    address: '3rd floor Greenhills',
-    contact: '705-1436'
-}];
-
 function pad(num) {
     let digits = 6 - num.toString().length;
     let output = '';
@@ -58,7 +42,7 @@ function createRows(items, grand_total, updateItems) {
     let rows = [];
     for (let i = 1; i <= 8; i++) {
         rows.push({
-            key: i,
+            key: i + '',
             details: <Input className={"item" + i} value={items[i].detail}
                             onChange={e => updateItems(i, e.target.value, "detail")}/>,
             quantity: <Input className={"quantity" + i} value={items[i].quantity} type="number" min={0}
@@ -70,7 +54,7 @@ function createRows(items, grand_total, updateItems) {
         })
     }
     rows.push({
-        key: 9,
+        key: '9',
         unit_price: "Total: ",
         total: <NumberFormat value={grand_total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
                              decimalScale={2} fixedDecimalScale={true}/>,
@@ -113,6 +97,8 @@ export class PurchaseOrderForm extends Component {
             special_instructions: '',
             items: createState(),
             grand_total: '',
+            autofill_data: [],
+            data_source: [],
         };
 
         this.updateFields = this.updateFields.bind(this);
@@ -124,15 +110,32 @@ export class PurchaseOrderForm extends Component {
             this.setState({
                 po_num: data.purchase_orders.length + 1,
             })
+        });
+        getData('inventory/vendors/').then(data => {
+            /** @namespace data.vendors **/
+            let autofill_data = [], data_source = [];
+            data.vendors.forEach(vendor => {
+                autofill_data.push({
+                    name: vendor.name,
+                    address: vendor.address,
+                    contact_number: vendor.contact_number,
+                });
+                data_source.push(vendor.name);
+            });
+            this.setState({
+                autofill_data: autofill_data,
+                data_source: data_source
+            })
         })
     }
 
     getVendorInfo = (vendor) => {
-        autoFillData.map(instance => {
+        const { autofill_data} = this.state;
+        autofill_data.map(instance => {
             if (instance.name === vendor) {
                 this.setState({
                     vendorAddress: instance.address,
-                    vendorContact: instance.contact,
+                    vendorContact: instance.contact_number,
                 })
             }
         })
@@ -269,7 +272,7 @@ export class PurchaseOrderForm extends Component {
     };
 
     render() {
-        const {po_num, vendorName, vendorAddress, vendorContact, items, grand_total} = this.state;
+        const {po_num, vendorName, vendorAddress, vendorContact, items, grand_total, data_source} = this.state;
         return (
             <div className="purchase-order-form">
                 <Row type="flex" justify="space-between" align="bottom">
@@ -317,7 +320,7 @@ export class PurchaseOrderForm extends Component {
                             className='vendor-name-input'
                             onSelect={this.getVendorInfo}
                             value={vendorName}
-                            dataSource={dataSource}
+                            dataSource={data_source}
                             onChange={e => this.updateDetails('vendor_name', e)}
                             filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}/>
                     </Col>

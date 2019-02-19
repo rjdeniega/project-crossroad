@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {Table, Divider, Tag, Modal, Button} from 'antd';
+import {Table, Divider, Tag, Modal, Button, message} from 'antd';
 import './style.css'
 import {getData} from "../../../../network_requests/general";
 import ReactToPrint from 'react-to-print'
 import {PurchaseOrderView} from "../purchase_order_view/purchase_order_view";
 import {Icon} from 'react-icons-kit'
 import {printer} from 'react-icons-kit/icomoon/printer'
+import {UpdatePurchaseOrder} from "../update_purchase_order/update_purchase_order";
 
 function pad(num) {
     let digits = 6 - num.toString().length;
@@ -31,50 +32,15 @@ function tagColour(status) {
     return color;
 }
 
-function dateFormat(date) {
-    if (date === null) {
-        return "N/A"
-    } else {
-        return date.toLocaleString()
-    }
-}
-
-const data = [{
-    key: '1',
-    po_number: '72391',
-    order_date: new Date(2019, 0, 15, 12, 1),
-    delivery_date: null,
-    vendor: "Ace Hardware",
-    status: "Processing",
-}, {
-    key: '2',
-    po_number: '75923',
-    order_date: new Date(2019, 0, 1, 4, 23),
-    delivery_date: new Date(2019, 0, 8, 12, 1),
-    vendor: "Ace Hardware",
-    status: "Requires Payment",
-}, {
-    key: '3',
-    po_number: '71265',
-    order_date: new Date(2019, 1, 9, 12, 1),
-    delivery_date: null,
-    vendor: "Budjolex",
-    status: "Processing",
-}, {
-    key: '4',
-    po_number: '12364',
-    order_date: new Date(2019, 0, 4, 2, 1),
-    delivery_date: new Date(2019, 0, 7, 8, 1),
-    vendor: "Concorde",
-    status: "Complete",
-}];
-
 
 export class PurchaseOrderList extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {visible: false}
+        this.state = {
+            visible: false,
+            update_modal: false,
+        }
     }
 
 
@@ -82,6 +48,26 @@ export class PurchaseOrderList extends Component {
         this.setState({
             visible: true,
         });
+    };
+
+    updateModal = () => {
+        this.setState({
+            update_modal: true,
+        })
+    };
+
+    disapprove = (po_id) => {
+        this.setState({
+            update_modal: false,
+        });
+        message.success(po_id)
+    };
+
+    confirm = (po_id, items) => {
+        this.setState({
+            update_modal: false,
+        });
+        message.success(po_id)
     };
 
     handleOk = (e) => {
@@ -95,6 +81,13 @@ export class PurchaseOrderList extends Component {
         console.log(e);
         this.setState({
             visible: false,
+        });
+    };
+
+    handleCancel2 = (e) => {
+        console.log(e);
+        this.setState({
+            update_modal: false,
         });
     };
 
@@ -163,7 +156,18 @@ export class PurchaseOrderList extends Component {
         dataIndex: 'id',
         render: value => (
             <span>
-            <a href="#">Update</a>
+            <a onClick={this.updateModal}>Update</a>
+                <Modal
+                    title="Update Status"
+                    visible={this.state.update_modal}
+                    onCancel={this.handleCancel2}
+                    className="update-purchase-order-modal"
+                    footer={[
+                        <Button key={1} htmlType='button' type="danger" onClick={() => this.disapprove(value)}>Disapproved</Button>,
+                        <Button key={2} htmlType='button' type="primary" onClick={() => this.confirm(value)}>Confirm</Button>
+                    ]}>
+                    <UpdatePurchaseOrder po_id={value}/>
+                </Modal>
             <Divider type='vertical'/>
             <a onClick={this.showModal}>View</a>
             <Modal
@@ -173,7 +177,7 @@ export class PurchaseOrderList extends Component {
                 onCancel={this.handleCancel}
                 className="purchaseOrderModal"
                 footer={[
-                    <ReactToPrint
+                    <ReactToPrint key={1}
                         trigger={() => <Button htmlType="button" type="primary"><Icon className="print"
                                                                                       icon={printer}
                                                                                       size={14}/> &nbsp; Print this out!</Button>}
