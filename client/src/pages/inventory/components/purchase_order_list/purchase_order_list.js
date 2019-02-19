@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
-import {Table, Divider, Tag, Modal} from 'antd';
+import {Table, Divider, Tag, Modal, Button} from 'antd';
 import './style.css'
 import {getData} from "../../../../network_requests/general";
+import ReactToPrint from 'react-to-print'
 import {PurchaseOrderView} from "../purchase_order_view/purchase_order_view";
+import {Icon} from 'react-icons-kit'
+import {printer} from 'react-icons-kit/icomoon/printer'
 
 function pad(num) {
     let digits = 6 - num.toString().length;
@@ -112,7 +115,7 @@ export class PurchaseOrderList extends Component {
         defaultSortOrder: 'descend',
         sorter: (a, b) => a.order_date - b.order_date,
         render: date => (
-            <span>{dateFormat(date)}</span>
+            <span>{new Date(date.substring(0, 10)).toLocaleDateString()}</span>
         )
     }, {
         title: 'Delivery Date',
@@ -121,7 +124,7 @@ export class PurchaseOrderList extends Component {
         align: 'left',
         sorter: (a, b) => a.delivery_date - b.delivery_date,
         render: date => (
-            <span>{dateFormat(date)}</span>
+            <span>{date !== null ? new Date(date.substring(0, 10)).toLocaleDateString() : "N/A"}</span>
         )
     }, {
         title: 'Vendor',
@@ -168,8 +171,17 @@ export class PurchaseOrderList extends Component {
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
+                className="purchaseOrderModal"
+                footer={[
+                    <ReactToPrint
+                        trigger={() => <Button htmlType="button" type="primary"><Icon className="print"
+                                                                                      icon={printer}
+                                                                                      size={14}/> &nbsp; Print this out!</Button>}
+                        content={() => this.componentRef}
+                    />
+                ]}
             >
-                <PurchaseOrderView po_id={value}/>
+                <PurchaseOrderView po_id={value} ref={el => (this.componentRef = el)}/>
             </Modal>
         </span>)
     }];
