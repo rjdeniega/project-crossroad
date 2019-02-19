@@ -12,7 +12,7 @@ import { DatePicker } from 'antd';
 import moment from 'moment';
 import { Select, Table, Avatar, Dropdown, Menu, message, List } from 'antd';
 import { Icon as AntIcon } from 'antd';
-import { getData, postData } from "../../../../network_requests/general";
+import { getData, postData, putData } from "../../../../network_requests/general";
 import ReactToPrint from "react-to-print";
 import { renderShiftTables } from '../shift_management/shift_management'
 
@@ -138,8 +138,8 @@ export class ShiftHistoryPane extends Component {
 
     handleAssign = (e) => {
         const assignment = {
-            "driver": this.state.driver_selected,
-            "shuttle": this.state.assigned_shuttle,
+            "driver_id": this.state.driver_selected,
+            "shuttle_id": this.state.assigned_shuttle,
             "deployment_type": this.state.deployment_type,
         };
         if (this.state.selected_shift_type == "AM") {
@@ -160,7 +160,7 @@ export class ShiftHistoryPane extends Component {
     };
     handleConfirm = (e) => {
         const assignment = {
-            "driver": this.state.driver_selected,
+            "driver_id": this.state.driver_selected,
             "shuttle": this.state.assigned_shuttle,
             "deployment_type": this.state.deployment_type,
         };
@@ -185,19 +185,20 @@ export class ShiftHistoryPane extends Component {
     handleShiftCreate = () => {
         const data = this.createForm();
         console.log(JSON.stringify(data));
-        // postData('remittances/schedules/create', data)
-        //     .then((data) => {
-        //         console.log(data["error"]);
-        //         if (data['errors']) {
-        //             console.log(data);
-        //             message.error(data['errors']['non_field_errors'])
-        //         }
-        //         else {
-        //             console.log(data['start_date']);
-        //             message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);
-        //         }
-        //     })
-        //     .catch(error => console.log(error));
+        console.log(this.state.activeSchedule);
+        postData('remittances/schedules/'+ this.state.activeSchedule, data)
+            .then((data) => {
+                console.log(data["error"]);
+                if (data['errors']) {
+                    console.log(data);
+                    message.error(data['errors']['non_field_errors'])
+                }
+                else {
+                    console.log(data['start_date']);
+                    message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);
+                }
+            })
+            .catch(error => console.log(error));
     };
 
     showModal = event => {

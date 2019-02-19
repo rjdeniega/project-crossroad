@@ -77,6 +77,9 @@ class ScheduleSerializer(ModelSerializer):
 
         return schedule
 
+
+
+
     # TODO validate that there are am shifts, pm shifts, and mn shifts in the schedule
     def validate(self, data):
         schedules = Schedule.objects.all()

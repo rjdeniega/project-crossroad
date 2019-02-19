@@ -13,6 +13,7 @@ import json
 from datetime import datetime
 from tablib import Dataset
 
+
 class ScheduleView(APIView):
     @staticmethod
     def get(request):
@@ -231,6 +232,50 @@ class SpecificScheduleView(APIView):
             'shifts': tempshifts
         }, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def post(request, schedule_id):
+        schedule = Schedule.objects.get(pk=schedule_id)
+        # delete existing drivers and replace with new data
+        drivers = [driver for driver in DriversAssigned.objects.all() if driver.shift.schedule == schedule]
+        am_drivers = [driver for driver in drivers if driver.shift.type == "A"]
+
+        data = json.loads(request.body)
+        shifts = data.pop('shifts')
+        print(shifts)
+        # get driver ids for comparison
+
+        if len(shifts[0]['drivers_assigned']) > 0:
+            print(shifts[0]['drivers_assigned'])
+            data_am_drivers = [item for item in shifts[0]['drivers_assigned']]
+            data_am_drivers_id = [item['driver_id'] for item in shifts[0]['drivers_assigned']]
+
+            for item in am_drivers:
+                if item.driver.id not in data_am_drivers_id:
+                    item.delete()
+                else:
+                    x = [x for x in data_am_drivers if x['driver_id'] == item.driver.id][0]
+
+                    item.shuttle = Shuttle.objects.get(pk=x['shuttle_id'])
+                    item.deployment_type = Shuttle.objects.get(pk=x['deployment_type'])
+                    item.save()
+
+        if len(shifts[1]['drivers_assigned']) > 0:
+            data_pm_drivers_id = [item for item in shifts[1]['drivers_assigned']]
+
+
+
+        # DriversAssigned.objects.create(driver=Driver.objects.get(pk=1),
+        #                                shift=Shift.objects.get(pk=1),
+        #                                shuttle=Shuttle.objects.get(pk=1))
+
+
+
+        return Response(data={
+            'id': schedule.id,
+            'start_date': schedule.start_date,
+            'end_date': schedule.end_date,
+        }, status=status.HTTP_200_OK)
+
 
 class AssignTicketView(APIView):
     @staticmethod
@@ -420,7 +465,6 @@ class SpecificDriver(APIView):
         else:
             is_under_maintenance = False
         print(is_under_maintenance)
-
 
         # I dont want to change front-end too much
         ten_peso = []
