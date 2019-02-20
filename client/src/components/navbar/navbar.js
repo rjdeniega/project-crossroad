@@ -20,8 +20,10 @@ import {money} from 'react-icons-kit/fa/money'
 import {Link, withRouter} from "react-router-dom";
 import {wrench} from 'react-icons-kit/fa/wrench'
 import { MembersPage } from "../../pages/members/members";
+import { HistoryPage } from "../../pages/driver_history/driver_history";
 import {fileTextO} from 'react-icons-kit/fa/fileTextO'
 import {ic_receipt} from 'react-icons-kit/md/ic_receipt'
+import {ic_history} from 'react-icons-kit/md/ic_history'
 
 
 
@@ -98,6 +100,13 @@ const SUPERVISOR_TABS = [
         path: '/maintenance',
         component: MaintenancePage,
         image: wrench
+    },
+    {
+        name: "History",
+        key: "history",
+        path: '/history',
+        component: HistoryPage,
+        image: ic_history
     },
 ];
 const MEMBER_TABS = [

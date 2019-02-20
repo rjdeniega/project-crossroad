@@ -187,6 +187,7 @@ export class TicketsPage extends Component {
                 <List.Item>
                     <List.Item.Meta
                         avatar={<Avatar src={item.driver_photo ? item.driver_photo : users}/>}
+                        description="2 tickets left"
                         title={<b>{item.name}</b>}
                     />
                     <Button type="primary" size="small" onClick={() => this.showModal(item.key, item.name)}>Assign
