@@ -107,6 +107,7 @@ function DeploymentListDetails(props) {
                     driver_name={driver_name}
                     deployment_id={props.deployment_id}
                     route={props.route}
+                    shuttle={props.shuttle}
                 />
             </div>
         );
@@ -151,6 +152,7 @@ function DeploymentListDetails(props) {
                     driver_name={driver_name}
                     deployment_id={props.deployment_id}
                     route={props.route}
+                    shuttle={props.shuttle}
                 />
             </div>
         );
@@ -175,9 +177,9 @@ class StopDeploymentButton extends React.Component {
         super(props)
 
         this.handleShuttleChange = this.handleShuttleChange.bind(this);
-        
+
         const shuttleBreakdown = (
-            <ShuttleBreakdown 
+            <ShuttleBreakdown
                 deployment_id={this.props.deployment_id}
                 driver_name={this.props.driver_name}
                 route={this.props.route}
@@ -194,7 +196,7 @@ class StopDeploymentButton extends React.Component {
             confirmLoading: false
         }
 
-        
+
     }
 
     componentDidMount() {
@@ -219,8 +221,8 @@ class StopDeploymentButton extends React.Component {
         this.setState({
             confirmLoading: true,
         })
-        
-        if(this.state.modal_body == 1){
+
+        if (this.state.modal_body == 1) {
             this.handleBreakdownRedeploy()
         } else {
 
@@ -231,7 +233,7 @@ class StopDeploymentButton extends React.Component {
                 modal_visibility: false,
                 confirmLoading: false,
             });
-          }, 1000);
+        }, 1000);
     }
 
     handleBreakdownRedeploy() {
@@ -265,7 +267,7 @@ class StopDeploymentButton extends React.Component {
         let tooltip_message = ((value == 1) ? breakdown_message : earlyend_message);
 
         const shuttleBreakdown = (
-            <ShuttleBreakdown 
+            <ShuttleBreakdown
                 deployment_id={this.props.deployment_id}
                 driver_name={this.props.driver_name}
                 route={this.props.route}
@@ -274,11 +276,14 @@ class StopDeploymentButton extends React.Component {
         )
 
         const earlyLeave = (
-            <EarlyLeave 
+            <EarlyLeave
                 deployment_id={this.props.deployment_id}
+                driver_name={this.props.driver_name}
+                route={this.props.route}
+                shuttle={this.props.shuttle}
             />
         )
-        
+
         let content = (value == 1) ? shuttleBreakdown : earlyLeave;
 
         this.setState({
@@ -374,7 +379,7 @@ class ShuttleBreakdown extends React.Component {
                 <div>
                     Redeploy with a new shuttle
                 </div>
-                <DetailItems 
+                <DetailItems
                     title="Driver"
                     value={this.props.driver_name}
                 />
@@ -400,12 +405,47 @@ class ShuttleBreakdown extends React.Component {
 class EarlyLeave extends React.Component {
     constructor(props) {
         super(props)
+
+        super(props)
+        this.state = {
+            availableDrivers: [],
+        }
+
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    componentDidMount(){
+
+    }
+
+    handleChange() {
+
     }
 
     render() {
         return (
             <div>
-                Early Leave
+                <div>
+                    Redeploy with a replacement driver
+                </div>
+                <label>Available Drivers: </label>
+                <Select style={{ width: 200 }} onChange={this.handleChange}>
+                    {
+                        this.state.availableDrivers.map((item) => (
+                            <option value={item.id} key={item.id}>
+                                {item.name}
+                            </option>
+                        ))
+                    }
+                </Select>
+                <DetailItems
+                    title="Shuttle"
+                    value={this.props.shuttle}
+                />
+                <DetailItems
+                    title="Route"
+                    value={this.props.route}
+                />
             </div>
         );
     }
