@@ -177,6 +177,7 @@ class StopDeploymentButton extends React.Component {
         super(props)
 
         this.handleShuttleChange = this.handleShuttleChange.bind(this);
+        this.handleDriverChange = this.handleDriverChange.bind(this);
 
         const shuttleBreakdown = (
             <ShuttleBreakdown
@@ -260,6 +261,12 @@ class StopDeploymentButton extends React.Component {
         });
     }
 
+    handleDriverChange(value) {
+        this.setState({
+            driver_replacement: value
+        });
+    }
+
     handleSelectChange = (value) => {
         let modal_body = ((value == 1) ? 2 : 1);
         let breakdown_message = "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment";
@@ -281,6 +288,7 @@ class StopDeploymentButton extends React.Component {
                 driver_name={this.props.driver_name}
                 route={this.props.route}
                 shuttle={this.props.shuttle}
+                onSelectChange={this.handleDriverChange}
             />
         )
 
@@ -415,11 +423,30 @@ class EarlyLeave extends React.Component {
     }
 
     componentDidMount(){
-
+        this.fetchAvailableDrivers()
     }
 
-    handleChange() {
+    fetchAvailableDrivers() {
+        console.log(this.props.deployment_id)
+        fetch('/remittances/deployments/' + this.props.deployment_id + '/available-drivers')
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        availableDrivers: data.available_drivers
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
 
+    handleChange(value) {
+        this.props.onSelectChange(value);
     }
 
     render() {

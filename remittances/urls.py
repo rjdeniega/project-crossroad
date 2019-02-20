@@ -21,7 +21,8 @@ remittance_urls = [
     path('deployments/deploy-sub/', DeploySubDriver.as_view()),
     path('deployments/<int:deployment_id>/available-shuttles', ShuttleBreakdown.as_view()),
     path('deployments/shuttle-breakdown/redeploy/', ShuttleBreakdown.as_view()),
-    
+    path('deployments/<int:deployment_id>/available-drivers', RedeployDriver.as_view()),
+
     path('shifts/remarks', ShiftRemarks.as_view()),
     path('shifts/remarks/<int:supervisor_id>', ShiftRemarks.as_view()),
     path('shifts/assigned_drivers/<int:supervisor_id>', PlannedDrivers.as_view()),

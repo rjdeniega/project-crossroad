@@ -734,6 +734,24 @@ class ShuttleBreakdown(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class RedeployDriver(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id)
+        shift_iteration = ShiftIteration.objects.get(id=deployment.shift_iteration.id)
+
+        drivers = Driver.objects.filter(is_supervisor=False)
+
+        deployments = Deployment.objects.filter(shift_iteration=shift_iteration.id)
+
+        for deployment in deployments:
+            drivers = drivers.exclude(id=deployment.driver.id)
+
+        serialized_drivers = DriverSerializer(drivers, many=True)
+        return Response(data={
+            "available_drivers": serialized_drivers.data
+        }, status=status.HTTP_200_OK)
+
 
 class RemittanceUtilities():
     @staticmethod
