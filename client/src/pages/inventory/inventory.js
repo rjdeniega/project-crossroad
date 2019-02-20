@@ -658,7 +658,7 @@ export class InventoryPage extends Component {
                                                    load_purchase_order={this.loadPurchaseOrders}
                                 />
                             </Modal>
-                            <PurchaseOrderList purchase_order_list={purchase_order_list}/>
+                            <PurchaseOrderList purchase_order_list={purchase_order_list} load_purchase_orders={this.loadPurchaseOrders}/>
                         </Tabs.TabPane>
                     </Tabs>
 

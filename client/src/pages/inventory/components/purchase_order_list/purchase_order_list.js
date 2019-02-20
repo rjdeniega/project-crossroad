@@ -106,7 +106,9 @@ export class PurchaseOrderList extends Component {
         key: 'order_date',
         align: 'left',
         defaultSortOrder: 'descend',
-        sorter: (a, b) => a.order_date - b.order_date,
+        sorter: (a, b) => {
+            return new Date(a.order_date) > new Date(b.order_date)
+        },
         render: date => (
             <span>{new Date(date.substring(0, 10)).toLocaleDateString()}</span>
         )
@@ -115,7 +117,9 @@ export class PurchaseOrderList extends Component {
         dataIndex: 'delivery_date',
         key: 'delivery_date',
         align: 'left',
-        sorter: (a, b) => a.delivery_date - b.delivery_date,
+        sorter: (a, b) => {
+            return new Date(a.delivery_date) > new Date(b.delivery_date)
+        },
         render: date => (
             <span>{date !== null ? new Date(date.substring(0, 10)).toLocaleDateString() : "N/A"}</span>
         )
@@ -154,22 +158,29 @@ export class PurchaseOrderList extends Component {
     }, {
         key: 'action',
         dataIndex: 'id',
-        render: value => (
+        render: (value, row) => (
             <span>
-            <a onClick={this.updateModal}>Update</a>
-                <Modal
-                    title="Update Status"
-                    visible={this.state.update_modal}
-                    onCancel={this.handleCancel2}
-                    className="update-purchase-order-modal"
-                    footer={[
-                        <Button key={1} htmlType='button' type="danger" onClick={() => this.disapprove(value)}>Disapproved</Button>,
-                        <Button key={2} htmlType='button' type="primary" onClick={() => this.confirm(value)}>Confirm</Button>
-                    ]}>
-                    <UpdatePurchaseOrder po_id={value}/>
-                </Modal>
-            <Divider type='vertical'/>
-            <a onClick={this.showModal}>View</a>
+                {row.status === "Processing" ?
+                    <span>
+                        <a onClick={this.updateModal}>Update</a>
+                        <Modal
+                            title="Update Status"
+                            visible={this.state.update_modal}
+                            onCancel={this.handleCancel2}
+                            className="update-purchase-order-modal"
+                            footer={[
+                                <Button key={1} htmlType='button' type="danger"
+                                        onClick={() => this.purchaseOrderRef.disapprove(value)}>Disapproved</Button>,
+                                <Button key={2} htmlType='button' type="primary"
+                                        onClick={() => this.confirm(value)}>Confirm</Button>
+                            ]}>
+                            <UpdatePurchaseOrder po_id={value} ref={el => (this.purchaseOrderRef = el)}
+                                                 load_purchase_orders={this.props.load_purchase_orders}/>
+                        </Modal>
+                        <Divider type='vertical'/>
+                    </span> : ""}
+
+                <a onClick={this.showModal}>View</a>
             <Modal
                 title="Purchase Order"
                 visible={this.state.visible}
@@ -178,10 +189,11 @@ export class PurchaseOrderList extends Component {
                 className="purchaseOrderModal"
                 footer={[
                     <ReactToPrint key={1}
-                        trigger={() => <Button htmlType="button" type="primary"><Icon className="print"
-                                                                                      icon={printer}
-                                                                                      size={14}/> &nbsp; Print this out!</Button>}
-                        content={() => this.componentRef}
+                                  trigger={() => <Button htmlType="button" type="primary"><Icon className="print"
+                                                                                                icon={printer}
+                                                                                                size={14}/> &nbsp; Print
+                                      this out!</Button>}
+                                  content={() => this.componentRef}
                     />
                 ]}
             >
@@ -192,7 +204,6 @@ export class PurchaseOrderList extends Component {
 
     render() {
         const {purchase_order_list} = this.props;
-        console.log(purchase_order_list);
         return (<div>
             <Table columns={this.columns} dataSource={purchase_order_list} pagination={{pageSize: 7}}/>
 

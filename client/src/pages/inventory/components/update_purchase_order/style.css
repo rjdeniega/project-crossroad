@@ -1,3 +1,7 @@
 .update-purchase-order-layout{
-    padding: 35px;
+    padding: 0.2in 0.5in 0.2in 0.5in;
+}
+
+.item-form-container{
+    margin-bottom: 0.1in !important;
 }

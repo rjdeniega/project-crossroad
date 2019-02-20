@@ -631,3 +631,16 @@ class VendorSpecific(APIView):
         return Response(data={
             'vendor': vendor.data
         })
+
+
+class UpdatePurchaseOrder(APIView):
+    @staticmethod
+    def post(request, pk):
+        data = json.loads(request.body)
+        purchase_order = PurchaseOrder.objects.get(id=pk)
+        if data['update'] == "reject":
+            purchase_order.status = "Cancelled"
+            purchase_order.save()
+            return Response(data={
+                'foo': 'bar'
+            }, status=status.HTTP_200_OK)
