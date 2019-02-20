@@ -226,7 +226,7 @@ class StopDeploymentButton extends React.Component {
         if (this.state.modal_body == 1) {
             this.handleBreakdownRedeploy()
         } else {
-
+            this.handleDriverRedeploy()
         }
 
         setTimeout(() => {
@@ -255,6 +255,24 @@ class StopDeploymentButton extends React.Component {
             });
     }
 
+    handleDriverRedeploy() {
+        let earlyleave = {
+            'deployment_id': this.props.deployment_id,
+            'driver_id': this.state.driver_replacement
+        }
+
+        let notice = "Driver has been deployed for " + this.props.driver_name
+       
+        postData('remittances/deployments/early-leave/redeploy/', earlyleave)
+            .then(response => {
+                if (!response.error) {
+                    message.success(notice);
+                } else {
+                    console.log(response.error);
+                }
+            });
+    }
+
     handleShuttleChange(value) {
         this.setState({
             shuttle_replacement: value
@@ -268,7 +286,7 @@ class StopDeploymentButton extends React.Component {
     }
 
     handleSelectChange = (value) => {
-        let modal_body = ((value == 1) ? 2 : 1);
+        let modal_body = value;
         let breakdown_message = "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment";
         let earlyend_message = "early leave of driver is when the driver requests for an early end of deployment for personal reasons";
         let tooltip_message = ((value == 1) ? breakdown_message : earlyend_message);

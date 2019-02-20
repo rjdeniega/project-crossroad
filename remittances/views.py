@@ -752,6 +752,34 @@ class RedeployDriver(APIView):
             "available_drivers": serialized_drivers.data
         }, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        deployment = Deployment.objects.get(id=data["deployment_id"])
+        driver = Driver.objects.get(id=data["driver_id"])
+
+        new_deployment = Deployment.objects.create(
+            driver=driver,
+            shuttle=deployment.shuttle,
+            route=deployment.route,
+            shift_iteration=deployment.shift_iteration,
+        )
+
+        redeployment = Redeployments.objects.create(
+            deployment=new_deployment,
+            prior_deployment=deployment
+        )
+
+        deployment.set_deployment_early()
+        deployment.end_deployment()
+
+        serialized_deployment = DeploymentSerializer(new_deployment)
+
+        return Response(data={
+            "redeployment": serialized_deployment.data
+        }, status=status.HTTP_200_OK)
+
 
 class RemittanceUtilities():
     @staticmethod
