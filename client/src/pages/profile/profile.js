@@ -25,7 +25,8 @@ import {
     Select,
     InputNumber,
     Row,
-    Col
+    Col,
+    Form,
 } from 'antd';
 import { Icon } from 'react-icons-kit'
 import { driversLicenseO } from 'react-icons-kit/fa/driversLicenseO'
@@ -36,7 +37,16 @@ import moment from "moment";
 const { MonthPicker, RangePicker } = DatePicker;
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
-
+const formItemLayout = {
+    labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 },
+    },
+    wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+    },
+};
 
 const antIcon = <Icon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)' }} spin/>;
 const share_columns = [{
@@ -116,7 +126,7 @@ const carwash_columns = [{
 }];
 const beep_columns = [{
     title: 'Date Acquired',
-    dataIndex: 'date',
+    dataIndex: 'register_date',
     key: 'date',
     render: (text) => (
         <div>
@@ -125,20 +135,20 @@ const beep_columns = [{
     )
 }, {
     title: 'Card Number',
-    dataIndex: 'receipt',
-    key: 'receipt',
+    dataIndex: 'can',
+    key: 'can',
     render: (text) => (
-        <div className="rem-status">
+        <div>
             {text}
         </div>
     ),
 }, {
     title: 'Number Of Transactions',
-    dataIndex: 'total',
-    key: 'total',
+    dataIndex: 'transactions',
+    key: 'transactions',
     render: (text) => (
-        <div className="rem-status">
-            <p><b>Php {parseInt(text)}</b></p>
+        <div>
+            {text}
         </div>
     ),
 }];
@@ -148,14 +158,16 @@ export class ProfilePage extends Component {
         visible: false,
         beep_visible: false,
         transactions_visible: false,
+        add_beep_visible: false,
         name: null,
         address: null,
+        register_date: null,
+        date_object: moment('2015/01/01', dateFormat)
 
 
     };
 
     componentDidMount() {
-        this.fetchIdCards();
         this.fetchMember();
         this.fetchMemberShares();
         this.fetchMemberTransactions();
@@ -170,7 +182,7 @@ export class ProfilePage extends Component {
         getData('/members/cards/' + id).then(data => {
             console.log(data);
             this.setState({
-                cards: data,
+                cards: data.cards,
             })
         });
     }
@@ -178,6 +190,37 @@ export class ProfilePage extends Component {
     handleOk = () => {
 
     };
+    handleDateChange = (date, dateString) => this.setState({
+        date_object: date,
+        register_date: dateString
+    });
+    handleAddBeep = () => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        console.log(this.state.can);
+        console.log(this.state.register_date);
+        let data = {
+            'can' : this.state.can,
+            'register_date' : this.state.register_date,
+        };
+
+        postData('/members/cards/' + id, data)
+            .then(data => {
+                if (data.error) {
+                    console.log(this.state.error);
+                }
+                else {
+                    console.log(data);
+                }
+            })
+            .catch(error => console.log(error));
+
+        message.success('Beep card successfully edited!');
+
+        this.setState({
+            beep_visible: false,
+            add_beep_visible: false,
+        });
+    }
     handleBeepOk = () => {
         this.setState({
             visible: false,
@@ -190,6 +233,7 @@ export class ProfilePage extends Component {
             visible: false,
             transactions_visible: false,
             beep_visible: false,
+            add_beep_visible: false,
         });
     };
 
@@ -199,8 +243,14 @@ export class ProfilePage extends Component {
         });
     };
     showBeep = () => {
+        this.fetchIdCards();
         this.setState({
             beep_visible: true,
+        });
+    };
+    showAddBeep = () => {
+        this.setState({
+            add_beep_visible: true,
         });
     };
     showTransactions = () => {
@@ -556,6 +606,37 @@ export class ProfilePage extends Component {
                                         onCancel={this.handleCancel}
                                         footer={null}
                                     >
+                                        <Modal
+                                            className="add-user-modal"
+                                            title="My Beep Cards"
+                                            visible={this.state.add_beep_visible}
+                                            onOk={this.handleAddBeep}
+                                            onCancel={this.handleCancel}
+                                        >
+                                            <Form>
+                                                <Form.Item
+                                                    {...formItemLayout}
+                                                    label="Date Acquired"
+                                                >
+                                                    <DatePicker className="user-input" onChange={this.handleDateChange}
+                                                                format={dateFormat}/>
+                                                </Form.Item>
+                                                <Form.Item
+                                                    {...formItemLayout}
+                                                    label="Card Number"
+                                                >
+                                                    <InputNumber
+                                                        onChange={this.handleNumberFormChange("can")}
+                                                        defaultValue={this.state.can}
+                                                        className="user-input"
+                                                        type="text"
+                                                        placeholder="XXXXX"/>
+                                                </Form.Item>
+
+
+                                            </Form>
+                                        </Modal>
+                                        <Button onClick={this.showAddBeep}> Add New Card</Button>
                                         <Table bordered size="medium"
                                                className="remittance-table"
                                                columns={beep_columns}

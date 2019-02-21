@@ -324,6 +324,33 @@ class IDCardView(APIView):
     def get(request, member_id):
         print("etners here")
         id_cards = IDCardsSerializer(IDCards.objects.filter(member=Member.objects.get(pk=member_id)), many=True)
+
+        for item in id_cards.data:
+            x = [y for y in BeepTransaction.objects.all() if y.card_number == item['can']]
+            item['transactions'] = len(x)
         return Response(data={
             "cards": id_cards.data,
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, member_id):
+        body = json.loads(request.body)
+        print(request)
+        print(body)
+        data = {
+            "member": Member.objects.get(pk=member_id),
+            "can": body["can"],
+            "register_date": body["register_date"],
+        }
+        card_serializer = IDCardSerializer(data=data)
+
+        if card_serializer.is_valid():
+            card = card_serializer.create(validated_data=card_serializer.validated_data)
+        else:
+            return Response(data={
+                "errors": card_serializer.errors
+            }, status=400)
+
+        return Response(data={
+            "card": IDCardSerializer(card).data,
         }, status=status.HTTP_200_OK)
