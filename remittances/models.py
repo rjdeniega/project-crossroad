@@ -50,6 +50,7 @@ DEPLOYMENT_RESULTS = [
     ('B', 'Breakdown')
 ]
 
+
 class Schedule(models.Model):
     start_date = DateField()
     end_date = DateField(null=True)
@@ -176,10 +177,10 @@ class AssignedTicket(models.Model):
         return super(AssignedTicket, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.get_type_display() + ": " + str(self.range_from)+ " - " + str(self.range_to)
+        return self.get_type_display() + ": " + str(self.range_from) + " - " + str(self.range_to)
 
     def compute_range_to(self, value):
-        self.range_to = self.range_from + int(value) - 1 # value is per bundle needs to minus 1
+        self.range_to = self.range_from + int(value) - 1  # value is per bundle needs to minus 1
         self.save()
 
 
@@ -237,7 +238,8 @@ class BeepTransaction(models.Model):
     shift = ForeignKey(BeepShift, on_delete=models.CASCADE, null=True)
     card_number = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
-    created = DateTimeField()
+    transaction_date_time = DateTimeField()
+    card_profile_name = CharField(null=True, max_length=56)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -247,7 +249,7 @@ class BeepTransaction(models.Model):
 
 class CarwashTransaction(models.Model):
     date = DateTimeField()
-    member = ForeignKey(Member,on_delete=models.CASCADE)
+    member = ForeignKey(Member, on_delete=models.CASCADE)
     receipt = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
 

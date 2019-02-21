@@ -5,10 +5,12 @@
 import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { Modal, Button, Input, Select, Icon, Table } from 'antd'
+import { Modal, Button, Input, Select, Icon, Table, Radio, Row, Col, Alert, Form } from 'antd'
 import { postDataWithImage, postDataWithFile, getData } from "../../../../network_requests/general";
 
 const Option = Select.Option;
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
 const columns = [{
     title: 'Date',
     dataIndex: 'shift.date',
@@ -63,7 +65,7 @@ const transaction_columns = [{
     title: 'Member Name',
     dataIndex: 'member.name',
     key: 'member.name',
-    render: (text,record) => (
+    render: (text, record) => (
         <div>
             {!text && <p>Prospect</p>}
             {text}
@@ -77,6 +79,16 @@ const transaction_columns = [{
         <p><b>Php {parseInt(text)}</b></p>
     ),
 }];
+const formItemLayout = {
+    labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 },
+    },
+    wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+    },
+};
 
 export class BeepPane extends Component {
     state = {
@@ -85,7 +97,8 @@ export class BeepPane extends Component {
         file: null,
         shift_type: null,
         shifts: [],
-        transactions: []
+        transactions: [],
+        function: 'add'
     };
 
     componentDidMount() {
@@ -93,7 +106,7 @@ export class BeepPane extends Component {
     }
 
     fetchTransactions = () => {
-        getData('/remittances/beep/').then(data => {
+        getData('/remittances/beep_modified/').then(data => {
             if (!data.error) {
                 console.log(data.beep_shifts);
                 this.setState({
@@ -159,6 +172,7 @@ export class BeepPane extends Component {
     handleUpload = () => {
         const formData = new FormData();
         formData.append('shift_type', this.state.shift_type);
+        formData.append('function', this.state.function);
         formData.append('file', this.state.file);
         console.log(formData);
 
@@ -179,6 +193,14 @@ export class BeepPane extends Component {
             .catch(error => console.log(error));
     };
 
+    onChange = (e) => {
+        this.setState({
+            function: e.target.value
+        })
+        console.log(`radio checked:${e.target.value}`);
+    }
+
+
     render() {
         return (
             <div className="beep-tab-body">
@@ -188,14 +210,42 @@ export class BeepPane extends Component {
                     onOk={this.handleConfirm}
                     onCancel={this.handleCancel}
                 >
-                    <Select onChange={this.handleSelectChange("shift_type")} className="user-input"
-                            defaultValue="Please select shift type">
-                        <Option value="A">AM</Option>
-                        <Option value="P">PM</Option>
-                        <Option value="M">MN</Option>
-                    </Select>
-                    <Input className="user-input" type="file" placeholder="select image"
-                           onChange={this.handleFileChange}/>
+                    <Form className="login-form">
+                        {this.state.function == "replace" &&
+                        <Alert message="Warning! This will replace all existing information on this shift"
+                               type="warning" showIcon/>
+                        }
+
+                        <Form.Item
+                            {...formItemLayout}
+                            label="Choose Action:"
+                        >
+                            <RadioGroup onChange={this.onChange} defaultValue="add">
+                                <RadioButton value="add">Add</RadioButton>
+                                <RadioButton value="replace">Replace</RadioButton>
+                            </RadioGroup>
+                        </Form.Item>
+
+                        <Form.Item
+                            {...formItemLayout}
+                            label="Shift Type"
+                        >
+                            <Select onChange={this.handleSelectChange("shift_type")} className="user-input"
+                                    defaultValue="Please select shift type">
+                                <Option value="A">AM</Option>
+                                <Option value="P">PM</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label="Beep CSV file"
+                        >
+                            <Input className="user-input" type="file" placeholder="select image"
+                                   onChange={this.handleFileChange}/>
+                        </Form.Item>
+                    </Form>
+
+
                     {/*<Button type="primary" onClick={this.handleUpload}> Submit </Button>*/}
                 </Modal>
                 <Modal

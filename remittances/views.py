@@ -262,8 +262,6 @@ class SpecificScheduleView(APIView):
         if len(shifts[1]['drivers_assigned']) > 0:
             data_pm_drivers_id = [item for item in shifts[1]['drivers_assigned']]
 
-
-
         # DriversAssigned.objects.create(driver=Driver.objects.get(pk=1),
         #                                shift=Shift.objects.get(pk=1),
         #                                shuttle=Shuttle.objects.get(pk=1))
@@ -1401,7 +1399,11 @@ class BeepTransactionView(APIView):
     def post(request):
         print(request.data)
         shift_type = request.POST.get('shift_type')
+        function = request.POST.get('function')
         beep_shift = BeepTransactionView.shift_get_or_create(shift_type)
+        if function == 'replace':
+            [item.delete() for item in BeepTransaction.objects.all() if item.shift == beep_shift]
+
         BeepTransactionView.temp_shift = beep_shift
         beep_resource = BeepTransactionResource()
         dataset = Dataset()
@@ -1433,6 +1435,46 @@ class BeepTransactionView(APIView):
         beep_shift.date = datetime.now()
         beep_shift.save()
         return beep_shift
+
+
+class BeepCollapsedView(APIView):
+    @staticmethod
+    def get(request):
+        beep_shifts = []
+        for shift in BeepShift.objects.all():
+            dict_transactions = []
+            transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.all() if
+                            item.shift.id == shift.id]
+            for transaction in transactions:
+                transaction_instance = transaction.data
+                try:
+                    card = IDCards.objects.get(can=int(transaction_instance["card_number"]))
+                except ObjectDoesNotExist:
+                    card = None
+                if card is not None:
+                    member = card.member
+                    transaction_instance["member"] = MemberSerializer(member).data
+                else:
+                    transaction_instance["member"] = None
+
+                does_exist = False
+                for item in dict_transactions:
+                    if transaction_instance['card_number'] == item['card_number']:
+                        item['total'] = float(item['total']) + float(transaction_instance['total'])
+                        does_exist = True
+
+                if not does_exist:
+                    dict_transactions.append(transaction_instance)
+
+            beep_shifts.append({
+                "total": sum([float(item["total"]) for item in dict_transactions]),
+                "shift": BeepShiftSerializer(shift).data,
+                "transactions": dict_transactions
+            })
+
+        return Response(data={
+            "beep_shifts": beep_shifts
+        }, status=status.HTTP_200_OK)
 
 
 class CarwashTransactionView(APIView):

@@ -145,5 +145,8 @@
     background: var(--darkgreen)!important;
     }
 
+.ant-input{
+    padding: inherit!important;
+    }
 
 
