@@ -10,6 +10,8 @@ import { List, Avatar } from 'antd'
 import './style.css'
 import emptyStateImage from '../../images/empty state record.png'
 import users from '../../images/default.png'
+import { ic_payment } from 'react-icons-kit/md/ic_payment'
+import { ic_attach_money } from 'react-icons-kit/md/ic_attach_money'
 import {
     Spin,
     Icon as AntIcon,
@@ -21,7 +23,9 @@ import {
     Input,
     DatePicker,
     Select,
-    InputNumber
+    InputNumber,
+    Row,
+    Col
 } from 'antd';
 import { Icon } from 'react-icons-kit'
 import { driversLicenseO } from 'react-icons-kit/fa/driversLicenseO'
@@ -64,30 +68,21 @@ const share_columns = [{
     ),
 }];
 const columns = [{
-    title: 'Date',
-    dataIndex: 'shift_date',
-    key: 'shift_date',
-    render: (text) => (
-        <div>
-            {text}
-        </div>
-    )
-}, {
     title: 'Card Number',
-    dataIndex: 'card_number',
-    key: 'card_number',
+    dataIndex: 'can',
+    key: 'can',
     render: (text) => (
         <div className="rem-status">
             {text}
         </div>
     ),
 }, {
-    title: 'Transaction Cost',
-    dataIndex: 'total',
-    key: 'total',
+    title: 'Registration Date',
+    dataIndex: 'register_date',
+    key: 'register_date',
     render: (text) => (
         <div className="rem-status">
-            <p><b>Php {parseInt(text)}</b></p>
+            {text}
         </div>
     ),
 }];
@@ -119,40 +114,93 @@ const carwash_columns = [{
         </div>
     ),
 }];
+const beep_columns = [{
+    title: 'Date Acquired',
+    dataIndex: 'date',
+    key: 'date',
+    render: (text) => (
+        <div>
+            {text}
+        </div>
+    )
+}, {
+    title: 'Card Number',
+    dataIndex: 'receipt',
+    key: 'receipt',
+    render: (text) => (
+        <div className="rem-status">
+            {text}
+        </div>
+    ),
+}, {
+    title: 'Number Of Transactions',
+    dataIndex: 'total',
+    key: 'total',
+    render: (text) => (
+        <div className="rem-status">
+            <p><b>Php {parseInt(text)}</b></p>
+        </div>
+    ),
+}];
 export class ProfilePage extends Component {
     state = {
         users: null,
         visible: false,
+        beep_visible: false,
         transactions_visible: false,
         name: null,
         address: null,
 
+
     };
 
     componentDidMount() {
-        this.fetchMember()
-        this.fetchMemberShares()
-        this.fetchMemberTransactions()
+        this.fetchIdCards();
+        this.fetchMember();
+        this.fetchMemberShares();
+        this.fetchMemberTransactions();
 
     }
 
     componentDidUpdate() {
     }
 
+    fetchIdCards() {
+        const { id } = JSON.parse(localStorage.user_staff);
+        getData('/members/cards/' + id).then(data => {
+            console.log(data);
+            this.setState({
+                cards: data,
+            })
+        });
+    }
+
     handleOk = () => {
 
+    };
+    handleBeepOk = () => {
+        this.setState({
+            visible: false,
+            beep_visible: false,
+        });
     };
     handleCancel = (e) => {
         console.log(e);
         this.setState({
             visible: false,
             transactions_visible: false,
+            beep_visible: false,
         });
     };
 
     showModal = () => {
         this.setState({
             visible: true,
+        });
+    };
+    showBeep = () => {
+        this.setState({
+            beep_visible: true,
         });
     };
     showTransactions = () => {
@@ -413,6 +461,7 @@ export class ProfilePage extends Component {
                             { this.renderMemberContent()}
 
                         </Modal>
+
                         <Icon className="page-icon" icon={driversLicenseO} size={42}/>
                         <div className="page-title"> My Profile</div>
                         <Button className="add-user" onClick={this.showModal}> Edit Profile </Button>
@@ -462,7 +511,7 @@ export class ProfilePage extends Component {
                                     </div>
                                 </div>
                             </div>
-                            <div className="tables">
+                            <div className="profile-tables">
                                 <Modal
                                     className="add-user-modal"
                                     title="Transactions"
@@ -499,7 +548,29 @@ export class ProfilePage extends Component {
                                 </Modal>
 
                                 <div className="shares-container">
-                                    <Button onClick={this.showTransactions}> View Transactions </Button>
+                                    <Modal
+                                        className="add-user-modal"
+                                        title="My Beep Cards"
+                                        visible={this.state.beep_visible}
+                                        onOk={this.handleBeepOk}
+                                        onCancel={this.handleCancel}
+                                        footer={null}
+                                    >
+                                        <Table bordered size="medium"
+                                               className="remittance-table"
+                                               columns={beep_columns}
+                                               dataSource={this.state.cards}
+                                        />
+                                    </Modal>
+                                    <Row>
+                                        <Button className="beep-button" icon='credit-card' type="primary"
+                                                onClick={this.showBeep}> My Beep Cards </Button>
+                                    </Row>
+                                    <Row>
+                                        <Button className="beep-button" icon='dollar' type="primary"
+                                                onClick={this.showTransactions}> My
+                                            Transactions </Button>
+                                    </Row>
                                     <div className="tab-label">
                                         Shares
                                     </div>

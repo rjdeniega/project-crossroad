@@ -27,10 +27,13 @@
     grid-column: 2/3;
     }
 
-.tables {
-    display: grid;
-    grid-template-rows: 10% 50% 50%
+.profile-tables {
+    margin-top: 20px;
     }
 .profile-shares-table{
     height: 200px!important;
+    }
+.beep-button{
+    width: 200px!important;
+    margin-bottom: 5px;
     }

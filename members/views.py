@@ -317,3 +317,13 @@ class MemberSharesView(APIView):
         return Response(data={
             "share": ShareSerializer(share).data,
         }, status=status.HTTP_200_OK)
+
+
+class IDCardView(APIView):
+    @staticmethod
+    def get(request, member_id):
+        print("etners here")
+        id_cards = IDCardsSerializer(IDCards.objects.filter(member=Member.objects.get(pk=member_id)), many=True)
+        return Response(data={
+            "cards": id_cards.data,
+        }, status=status.HTTP_200_OK)

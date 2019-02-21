@@ -254,7 +254,7 @@ export class BeepPane extends Component {
                             {...formItemLayout}
                             label="Beep CSV file"
                         >
-                            <Input className="user-input" type="file" placeholder="select image"
+                            <Input className="user-input upload-input" type="file" placeholder="select image"
                                    onChange={this.handleFileChange}/>
                         </Form.Item>
                     </Form>
