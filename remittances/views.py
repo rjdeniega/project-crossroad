@@ -262,8 +262,6 @@ class SpecificScheduleView(APIView):
         if len(shifts[1]['drivers_assigned']) > 0:
             data_pm_drivers_id = [item for item in shifts[1]['drivers_assigned']]
 
-
-
         # DriversAssigned.objects.create(driver=Driver.objects.get(pk=1),
         #                                shift=Shift.objects.get(pk=1),
         #                                shuttle=Shuttle.objects.get(pk=1))
@@ -1401,7 +1399,11 @@ class BeepTransactionView(APIView):
     def post(request):
         print(request.data)
         shift_type = request.POST.get('shift_type')
+        function = request.POST.get('function')
         beep_shift = BeepTransactionView.shift_get_or_create(shift_type)
+        if function == 'replace':
+            [item.delete() for item in BeepTransaction.objects.all() if item.shift == beep_shift]
+
         BeepTransactionView.temp_shift = beep_shift
         beep_resource = BeepTransactionResource()
         dataset = Dataset()
@@ -1433,6 +1435,7 @@ class BeepTransactionView(APIView):
         beep_shift.date = datetime.now()
         beep_shift.save()
         return beep_shift
+
 
 class BeepCollapsedView(APIView):
     @staticmethod
