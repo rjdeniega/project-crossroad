@@ -646,7 +646,7 @@ export class InventoryPage extends Component {
                                 visible={this.state.modalVisible}
                                 onOk={this.handleOk}
                                 onCancel={this.handleCancel}
-                                className="purchaseOrderModal"
+                                className="purchase-order-modal"
                                 footer={[
                                     <Button key={1} htmlType="button" type="primary"
                                             onClick={this.onClick}><Icon className="save"

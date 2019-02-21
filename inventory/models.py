@@ -48,6 +48,15 @@ DAYOFF_CHOICES = [
 ]
 
 
+class Vendor(SoftDeletionModel):
+    name = CharField(max_length=64)
+    address = CharField(max_length=126)
+    contact_number = CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+
+
 class Shuttle(SoftDeletionModel):
     shuttle_number = PositiveIntegerField(unique=True)
     plate_number = CharField(max_length=6, unique=True)
@@ -87,6 +96,7 @@ class Item(SoftDeletionModel):
     measurement = PositiveIntegerField(null=True)
     unit = CharField(max_length=10, null=True)
     brand = CharField(max_length=64)
+    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     item_code = CharField(max_length=8)
@@ -142,25 +152,14 @@ class Repair(SoftDeletionModel):
     maintenance = BooleanField(default=False)
 
 
-class Vendor(SoftDeletionModel):
-    name = CharField(max_length=64)
-    address = CharField(max_length=126)
-    contact_number = CharField(max_length=10)
-
-    def __str__(self):
-        return self.name
-
-
 class ItemMovement(SoftDeletionModel):
     item = ForeignKey(Item, on_delete=models.CASCADE)
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
-    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
     unit_price = DecimalField(max_digits=10, decimal_places=2, null=True)
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
-    receipt = FileField(default='client/src/images/default.png', null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -184,5 +183,3 @@ class PurchaseOrder(SoftDeletionModel):
     po_items = ManyToManyField(PurchaseOrderItem)
     special_instruction = CharField(max_length=256)
     status = CharField(max_length=64)
-
-

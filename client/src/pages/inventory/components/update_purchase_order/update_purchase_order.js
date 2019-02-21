@@ -60,8 +60,34 @@ export class UpdatePurchaseOrder extends Component {
         let data = {
             'update': 'reject'
         };
+        /** @namespace this.props.load_purchase_orders () **/
         postData('inventory/purchase_order/update/' + id, data).then(() => {
             message.success("Purchase order has been cancelled");
+            this.props.load_purchase_orders()
+        })
+    };
+
+    approve = (id) => {
+        let final_items = [];
+        this.state.item_details.forEach(function (item){
+            final_items.push({
+                name: item.generic_name,
+                description: item.description,
+                quantity: item.quantity,
+                unit_price: item.unit_price,
+                item_type: item.item_type,
+                measurement: item.measurement,
+                unit: item.unit,
+                brand: item.brand,
+                item_code: item.item_code
+            })
+        });
+        let data = {
+            update: "accepted",
+            items: final_items,
+        };
+        postData('inventory/purchase_order/update/' + id, data).then(() => {
+            message.success("Purchase order has been confirmed");
             this.props.load_purchase_orders()
         })
     };

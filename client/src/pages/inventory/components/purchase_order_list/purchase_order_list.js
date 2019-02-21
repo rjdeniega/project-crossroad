@@ -2,10 +2,7 @@ import React, {Component} from 'react';
 import {Table, Divider, Tag, Modal, Button, message} from 'antd';
 import './style.css'
 import {getData} from "../../../../network_requests/general";
-import ReactToPrint from 'react-to-print'
 import {PurchaseOrderView} from "../purchase_order_view/purchase_order_view";
-import {Icon} from 'react-icons-kit'
-import {printer} from 'react-icons-kit/icomoon/printer'
 import {UpdatePurchaseOrder} from "../update_purchase_order/update_purchase_order";
 
 function pad(num) {
@@ -38,17 +35,9 @@ export class PurchaseOrderList extends Component {
         super(props);
 
         this.state = {
-            visible: false,
             update_modal: false,
         }
     }
-
-
-    showModal = () => {
-        this.setState({
-            visible: true,
-        });
-    };
 
     updateModal = () => {
         this.setState({
@@ -68,20 +57,6 @@ export class PurchaseOrderList extends Component {
             update_modal: false,
         });
         message.success(po_id)
-    };
-
-    handleOk = (e) => {
-        console.log(e);
-        this.setState({
-            visible: false,
-        });
-    };
-
-    handleCancel = (e) => {
-        console.log(e);
-        this.setState({
-            visible: false,
-        });
     };
 
     handleCancel2 = (e) => {
@@ -172,33 +147,14 @@ export class PurchaseOrderList extends Component {
                                 <Button key={1} htmlType='button' type="danger"
                                         onClick={() => this.purchaseOrderRef.disapprove(value)}>Disapproved</Button>,
                                 <Button key={2} htmlType='button' type="primary"
-                                        onClick={() => this.confirm(value)}>Confirm</Button>
+                                        onClick={() => this.purchaseOrderRef.approve(value)}>Confirm</Button>
                             ]}>
                             <UpdatePurchaseOrder po_id={value} ref={el => (this.purchaseOrderRef = el)}
                                                  load_purchase_orders={this.props.load_purchase_orders}/>
                         </Modal>
                         <Divider type='vertical'/>
                     </span> : ""}
-
-                <a onClick={this.showModal}>View</a>
-            <Modal
-                title="Purchase Order"
-                visible={this.state.visible}
-                onOk={this.handleOk}
-                onCancel={this.handleCancel}
-                className="purchaseOrderModal"
-                footer={[
-                    <ReactToPrint key={1}
-                                  trigger={() => <Button htmlType="button" type="primary"><Icon className="print"
-                                                                                                icon={printer}
-                                                                                                size={14}/> &nbsp; Print
-                                      this out!</Button>}
-                                  content={() => this.componentRef}
-                    />
-                ]}
-            >
-                <PurchaseOrderView po_id={value} ref={el => (this.componentRef = el)}/>
-            </Modal>
+                <PurchaseOrderView po_id={value}/>
         </span>)
     }];
 
