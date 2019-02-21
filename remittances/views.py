@@ -1400,7 +1400,7 @@ class BeepTransactionView(APIView):
         print(request.data)
         shift_type = request.POST.get('shift_type')
         function = request.POST.get('function')
-        beep_shift = BeepTransactionView.shift_get_or_create(shift_type)
+        beep_shift = BeepTransactionView.shift_get_or_create(request.POST.get('date'), shift_type)
         if function == 'replace':
             [item.delete() for item in BeepTransaction.objects.all() if item.shift == beep_shift]
 
@@ -1424,9 +1424,12 @@ class BeepTransactionView(APIView):
         return BeepTransactionView.temp_shift.id
 
     @staticmethod
-    def shift_get_or_create(shift_type):
+    def shift_get_or_create(date, shift_type):
         for shift in BeepShift.objects.all():
-            if shift.date == datetime.now().date() and shift.type == shift_type:
+            print(shift.date)
+            print(datetime.strptime(date, '%Y-%m-%d').date())
+            print(shift.date == datetime.strptime(date, '%Y-%m-%d').date())
+            if shift.date == datetime.strptime(date, '%Y-%m-%d').date() and shift.type == shift_type:
                 print("its the same")
                 return shift
         print("not the same")
