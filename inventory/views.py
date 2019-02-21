@@ -646,6 +646,7 @@ class UpdatePurchaseOrder(APIView):
             }, status=status.HTTP_200_OK)
         else:
             for item in data['items']:
+                print(item)
                 purchase_order.status = "Complete"
                 purchase_order.delivery_date = datetime.now()
                 purchase_order.save()
@@ -657,6 +658,6 @@ class UpdatePurchaseOrder(APIView):
                 item_movement = ItemMovement(item=inventory_item, type="B", quantity=item['quantity'],
                                              unit_price=item['unit_price'])
                 item_movement.save()
-                return Response(data={
-                    'foo': 'bar'
-                }, status=status.HTTP_200_OK)
+            return Response(data={
+                'foo': 'bar'
+            }, status=status.HTTP_200_OK)

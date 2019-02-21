@@ -33,38 +33,7 @@ function tagColour(status) {
 export class PurchaseOrderList extends Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            update_modal: false,
-        }
     }
-
-    updateModal = () => {
-        this.setState({
-            update_modal: true,
-        })
-    };
-
-    disapprove = (po_id) => {
-        this.setState({
-            update_modal: false,
-        });
-        message.success(po_id)
-    };
-
-    confirm = (po_id, items) => {
-        this.setState({
-            update_modal: false,
-        });
-        message.success(po_id)
-    };
-
-    handleCancel2 = (e) => {
-        console.log(e);
-        this.setState({
-            update_modal: false,
-        });
-    };
 
     columns = [{
         title: 'PO Number',
@@ -137,21 +106,8 @@ export class PurchaseOrderList extends Component {
             <span>
                 {row.status === "Processing" ?
                     <span>
-                        <a onClick={this.updateModal}>Update</a>
-                        <Modal
-                            title="Update Status"
-                            visible={this.state.update_modal}
-                            onCancel={this.handleCancel2}
-                            className="update-purchase-order-modal"
-                            footer={[
-                                <Button key={1} htmlType='button' type="danger"
-                                        onClick={() => this.purchaseOrderRef.disapprove(value)}>Disapproved</Button>,
-                                <Button key={2} htmlType='button' type="primary"
-                                        onClick={() => this.purchaseOrderRef.approve(value)}>Confirm</Button>
-                            ]}>
-                            <UpdatePurchaseOrder po_id={value} ref={el => (this.purchaseOrderRef = el)}
-                                                 load_purchase_orders={this.props.load_purchase_orders}/>
-                        </Modal>
+                        <UpdatePurchaseOrder po_id={value}
+                                             load_purchase_orders={this.props.load_purchase_orders}/>
                         <Divider type='vertical'/>
                     </span> : ""}
                 <PurchaseOrderView po_id={value}/>
