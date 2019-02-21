@@ -5,8 +5,9 @@
 import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { Modal, Button, Input, Select, Icon, Table, Radio, Row, Col, Alert, Form } from 'antd'
+import { Modal, Button, Input, Select, Icon, Table, Radio, Row, Col, Alert, Form, DatePicker, Pagination} from 'antd'
 import { postDataWithImage, postDataWithFile, getData } from "../../../../network_requests/general";
+import moment from "moment";
 
 const Option = Select.Option;
 const RadioButton = Radio.Button;
@@ -89,7 +90,7 @@ const formItemLayout = {
         sm: { span: 16 },
     },
 };
-
+const dateFormat = "YYYY-MM-DD";
 export class BeepPane extends Component {
     state = {
         visible: false,
@@ -98,7 +99,9 @@ export class BeepPane extends Component {
         shift_type: null,
         shifts: [],
         transactions: [],
-        function: 'add'
+        function: 'add',
+        date: null,
+        date_object: moment('2015/01/01', dateFormat)
     };
 
     componentDidMount() {
@@ -123,6 +126,10 @@ export class BeepPane extends Component {
             visible: true
         })
     };
+    handleDateChange = (date, dateString) => this.setState({
+        date_object: date,
+        date: dateString
+    });
     handleConfirm = (e) => {
         this.handleUpload();
         this.setState({
@@ -173,6 +180,7 @@ export class BeepPane extends Component {
         const formData = new FormData();
         formData.append('shift_type', this.state.shift_type);
         formData.append('function', this.state.function);
+        formData.append('date', this.state.date);
         formData.append('file', this.state.file);
         console.log(formData);
 
@@ -225,6 +233,12 @@ export class BeepPane extends Component {
                                 <RadioButton value="replace">Replace</RadioButton>
                             </RadioGroup>
                         </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label="Select Date"
+                        >
+                            <DatePicker className="user-input" onChange={this.handleDateChange} format={dateFormat}/>
+                        </Form.Item>
 
                         <Form.Item
                             {...formItemLayout}
@@ -267,6 +281,9 @@ export class BeepPane extends Component {
                            className="remittance-table"
                            columns={columns}
                            dataSource={this.state.shifts}
+                           pagination = {{
+                               pageSize: 5,
+                           }}
                            onRow={(record) => {
                                return {
                                    onClick: () => {
