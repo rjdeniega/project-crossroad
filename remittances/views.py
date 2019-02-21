@@ -1434,6 +1434,45 @@ class BeepTransactionView(APIView):
         beep_shift.save()
         return beep_shift
 
+class BeepCollapsedView(APIView):
+    @staticmethod
+    def get(request):
+        beep_shifts = []
+        for shift in BeepShift.objects.all():
+            dict_transactions = []
+            transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.all() if
+                            item.shift.id == shift.id]
+            for transaction in transactions:
+                transaction_instance = transaction.data
+                try:
+                    card = IDCards.objects.get(can=int(transaction_instance["card_number"]))
+                except ObjectDoesNotExist:
+                    card = None
+                if card is not None:
+                    member = card.member
+                    transaction_instance["member"] = MemberSerializer(member).data
+                else:
+                    transaction_instance["member"] = None
+
+                does_exist = False
+                for item in dict_transactions:
+                    if transaction_instance['card_number'] == item['card_number']:
+                        item['total'] = float(item['total']) + float(transaction_instance['total'])
+                        does_exist = True
+
+                if not does_exist:
+                    dict_transactions.append(transaction_instance)
+
+            beep_shifts.append({
+                "total": sum([float(item["total"]) for item in dict_transactions]),
+                "shift": BeepShiftSerializer(shift).data,
+                "transactions": dict_transactions
+            })
+
+        return Response(data={
+            "beep_shifts": beep_shifts
+        }, status=status.HTTP_200_OK)
+
 
 class CarwashTransactionView(APIView):
     @staticmethod

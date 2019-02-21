@@ -216,7 +216,7 @@ export class ShiftManagementPane extends Component {
                     driver_selected: current,
                     selected_shift_type: "AM"
                 });
-                this.showAssignModal()
+                this.showModal()
             }
             else {
                 let removed_driver = null;
@@ -247,7 +247,7 @@ export class ShiftManagementPane extends Component {
                     driver_selected: current,
                     selected_shift_type: "PM"
                 });
-                this.showAssignModal()
+                this.showModal()
             }
             else {
                 let removed_driver = null;
