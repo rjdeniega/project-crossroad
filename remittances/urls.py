@@ -12,6 +12,7 @@ remittance_urls = [
 
     path('tickets/assign', AssignTicketView.as_view()),
     path('tickets/', AssignedTicketHistory.as_view()),
+    path('tickets/<int:deployment_id>', DeploymentTickets.as_view()),
 
     path('deployments/', DeploymentView.as_view()),
     path('deployments/<int:pk>', DeploymentView.as_view()),

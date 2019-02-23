@@ -215,6 +215,7 @@ class AssignedTicket(models.Model):
     range_from = IntegerField(null=True)
     range_to = IntegerField(null=True)
     type = CharField(max_length=1, choices=TICKET_TYPE)
+    is_consumed = BooleanField(default=False)
     created = models.DateTimeField(editable=False, default=timezone.now)
     modified = models.DateTimeField(null=True)
 

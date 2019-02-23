@@ -808,6 +808,71 @@ class DriverDeployment(APIView):
             'deployments': data
         }, status=status.HTTP_200_OK)
 
+
+class DeploymentTickets(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id);
+        
+        ten_tickets = AssignedTicket.objects.filter(
+            driver=deployment.driver,
+            type="A",
+            is_consumed=False
+            )
+
+        twelve_tickets = AssignedTicket.objects.filter(
+            driver=deployment.driver,
+            type="B",
+            is_consumed=False
+            )
+
+        fifteen_tickets = AssignedTicket.objects.filter(
+            driver=deployment.driver,
+            type="C",
+            is_consumed=False
+            )
+        
+        ten_list = []
+        twelve_list = []
+        fifteen_list = []
+
+        for ten in ten_tickets:
+            ten_list.append(DeploymentTickets.getUsableTickets(ten))
+        
+        for twelve in twelve_tickets:
+            twelve_list.append(DeploymentTickets.getUsableTickets(twelve))
+        
+        for fifteen in fifteen_tickets:
+            fifteen_list.append(DeploymentTickets.getUsableTickets(fifteen))
+
+        return Response(data={
+            "ten_tickets": ten_list,
+            "twelve_tickets": twelve_list,
+            "fifteen_tickets": fifteen_list
+        }, status=status.HTTP_200_OK)
+
+    
+    @staticmethod
+    def getUsableTickets(ticket):
+        consumed = ConsumedTicket.objects.filter(assigned_ticket=ticket).order_by('-end_ticket').first()
+
+        if consumed is not None:
+            tickets_left = {
+                'id': ticket.id,
+                'start_ticket': consumed.end_ticket + 1,
+                'end_ticket': ticket.range_to
+            }
+        else:
+            tickets_left = {
+                'id': ticket.id,
+                'start_ticket': ticket.range_from,
+                'end_ticket': ticket.range_to
+            }
+        
+        return tickets_left
+
+
+
 class RemittanceUtilities():
     @staticmethod
     def get_active_schedule():
