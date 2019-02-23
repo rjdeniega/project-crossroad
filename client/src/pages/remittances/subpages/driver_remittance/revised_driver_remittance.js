@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Header } from '../../components/header/remittance_header';
-import { Row, Col, Tag, Drawer, Button, List } from 'antd';
+import { Row, Col, Tag, Drawer, Button, List, Divider, Form, Input, Tooltip, Icon } from 'antd';
 
 import './revised-style.css'
 
@@ -127,20 +127,64 @@ function DeploymentListDetails(props) {
                     value={end_time}
                 />
             </div>
-            <SubmitRemittance />
+            <SubmitRemittance
+                deployment_id={props.id}
+            />
         </div>
     );
 }
 
 class SubmitRemittance extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
+
+        this.state = {
+            drawer_visibility: false,
+        }
+    }
+
+    showDrawer = () => {
+        this.setState({
+            drawer_visibility: true
+        })
+    }
+
+    onClose = () => {
+        this.setState({
+            drawer_visibility: false
+        })
     }
 
     render() {
+
+        const RemForm = Form.create({ name: 'remittance-form' })(RemittanceForm);
+
         return (
             <div className="button-container">
-                <Button className="list-action">Submit Remittance</Button>
+                <Button
+                    className="list-action"
+                    onClick={this.showDrawer}
+                >
+                    Submit Remittance
+                </Button>
+                <Drawer
+                    title="Remittance Form"
+                    placement="right"
+                    closable={false}
+                    onClose={this.onClose}
+                    visible={this.state.drawer_visibility}
+                    width={600}
+                >
+                    <RemForm deployment_id={this.props.deployment_id} />
+                    <div className="form-footer" >
+                        <Button onClick={this.onClose} style={{ marginRight: 8 }}>
+                            Cancel
+                        </Button>
+                        <Button onClick={this.onClose} type="primary">
+                            Submit
+                        </Button>
+                    </div>
+                </Drawer>
             </div>
         );
     }
@@ -158,13 +202,244 @@ function DetailItem(props) {
 class RemittanceForm extends React.Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+            "tenPesoTickets": [],
+            "twelvePesoTickets": [],
+            "fifteenPesoTickets": []
+        }
+    }
+
+    componentDidMount() {
+        this.fetchTickets();
+    }
+
+    fetchTickets() {
+        fetch('/remittances/tickets/' + this.props.deployment_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        tenPesoTickets: data.ten_tickets,
+                        twelvePesoTickets: data.twelve_tickets,
+                        fifteenPesoTickets: data.fifteen_tickets
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
     }
 
     render() {
+        const formItemLayout = {
+            labelCol: {
+                xs: { span: 24 },
+                sm: { span: 8 },
+            },
+            wrapperCol: {
+                xs: { span: 24 },
+                sm: { span: 16 },
+            },
+        }
+
+        const tailFormItemLayout = {
+            wrapperCol: {
+                xs: {
+                    span: 24,
+                    offset: 0,
+                },
+                sm: {
+                    span: 16,
+                    offset: 8,
+                },
+            },
+        }
+
+        const { getFieldDecorator } = this.props.form;
+
         return (
-            <div>
-                insert form here
-            </div>
+            <Form onSubmit={this.handleSubmit} className="remittance-form">
+                <Form.Item
+                    {...formItemLayout}
+                    label={
+                        <span>
+                            <Tooltip title="Input current mileage of the shuttle">
+                                <Icon type="question-circle-o" className="field-guide" />
+                            </Tooltip>
+                            Mileage
+                        </span>
+                    }
+                >
+                    {
+                        getFieldDecorator('mileage', {
+                            rules: [{
+                                required: true,
+                                message: "Please input the shuttle's current mileage"
+                            }]
+                        })(
+                            <Input />
+                        )
+                    }
+                </Form.Item>
+                {this.state.tenPesoTickets && this.state.tenPesoTickets.length &&
+                    <div>
+                        <Divider>10 Peso Tickets</Divider>
+                        {
+                            this.state.tenPesoTickets.map((item) => (
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label= {
+                                        <span>
+                                            <Tooltip title="Input the last consumed ticket of this bundle">
+                                                <Icon type="question-circle-o" className="field-guide" />
+                                            </Tooltip>
+                                            Ticket No. {item.start_ticket} to
+                                        </span>
+                                    }
+                                >
+                                    {
+                                        getFieldDecorator('ten_peso_'.concat(item.id), {
+                                            rules: [{
+                                                message: "Please input the shuttle's current mileage"
+                                            }]
+                                        })(
+                                            <Input />
+                                        )
+                                    }
+                                </Form.Item>
+                                ))
+                        }
+                    </div>
+                }
+                {this.state.twelvePesoTickets && this.state.twelvePesoTickets.length &&
+                    <div>
+                        <Divider>12 Peso Tickets</Divider>
+                        {
+                            this.state.twelvePesoTickets.map((item) => (
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label= {
+                                        <span>
+                                            <Tooltip title="Input the last consumed ticket of this bundle">
+                                                <Icon type="question-circle-o" className="field-guide" />
+                                            </Tooltip>
+                                            Ticket No. {item.start_ticket} to
+                                        </span>
+                                    }
+                                >
+                                    {
+                                        getFieldDecorator('twelve_peso_'.concat(item.id), {
+                                            rules: [{
+                                                message: "Please input the shuttle's current mileage"
+                                            }]
+                                        })(
+                                            <Input />
+                                        )
+                                    }
+                                </Form.Item>
+                                ))
+                        }
+                    </div>
+                }
+                {this.state.fifteenPesoTickets && this.state.fifteenPesoTickets.length &&
+                    <div>
+                        <Divider>15 Peso Tickets</Divider>
+                        {
+                            this.state.fifteenPesoTickets.map((item) => (
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label= {
+                                        <span>
+                                            <Tooltip title="Input the last consumed ticket of this bundle">
+                                                <Icon type="question-circle-o" className="field-guide" />
+                                            </Tooltip>
+                                            Ticket No. {item.start_ticket} to
+                                        </span>
+                                    }
+                                >
+                                    {
+                                        getFieldDecorator('fifteen_peso_'.concat(item.id), {
+                                            rules: [{
+                                                message: "Please input the shuttle's current mileage"
+                                            }]
+                                        })(
+                                            <Input />
+                                        )
+                                    }
+                                </Form.Item>
+                                ))
+                        }
+                    </div>
+                }
+                <Divider orientation="left"> Other Information </Divider>
+                <Form.Item
+                    {...formItemLayout}
+                    label={
+                        <span>
+                            <Tooltip title="Input costs made from buying fuel">
+                                <Icon type="question-circle-o" className="field-guide" />
+                            </Tooltip>
+                            Fuel Costs
+                        </span>
+                    }
+                >
+                    {
+                        getFieldDecorator('fuel_costs', {
+                            rules: [{
+                                message: "Please input the shuttle's current mileage"
+                            }]
+                        })(
+                            <Input />
+                        )
+                    }
+                </Form.Item>
+                <Form.Item
+                    {...formItemLayout}
+                    label={
+                        <span>
+                            <Tooltip title="Input the OR number of the receipt acquired from buying fuel">
+                                <Icon type="question-circle-o" className="field-guide" />
+                            </Tooltip>
+                            OR Number
+                        </span>
+                    }
+                >
+                    {
+                        getFieldDecorator('or_number', {
+                            rules: [{
+                                message: "Please input the shuttle's current mileage"
+                            }]
+                        })(
+                            <Input />
+                        )
+                    }
+                </Form.Item>
+                <Form.Item
+                    {...formItemLayout}
+                    label={
+                        <span>
+                            <Tooltip title="Input other costs acquired during deployment">
+                                <Icon type="question-circle-o" className="field-guide" />
+                            </Tooltip>
+                            Other Costs
+                        </span>
+                    }
+                >
+                    {
+                        getFieldDecorator('other_costs', {
+                            rules: [{
+                                message: "Please input the shuttle's current mileage"
+                            }]
+                        })(
+                            <Input />
+                        )
+                    }
+                </Form.Item>
+            </Form>
         );
     }
 }
