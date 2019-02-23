@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip, Divider } from 'antd';
 import '../revised-style.css';
 import { postData } from '../../../../../network_requests/general';
 
@@ -340,20 +340,23 @@ class StopDeploymentButton extends React.Component {
                     confirmLoading={this.state.confirmLoading}
                 >
                     <span className="stop-deployment-modal-select">
-                        <label>
-                            Reason for Termination:
+                        <label className="reason-label">
+                            Reason for Termination
+                            <Tooltip title={this.state.tooltip_message} className="info-circle">
+                                <Icon type="question-circle" />
+                            </Tooltip>
+                            :
                         </label>
                         <Select
                             defaultValue='1'
                             style={{ width: 200 }}
                             onChange={this.handleSelectChange}
+                            className="reason-select"
                         >
                             <Option value='1'>Shuttle Breakdown</Option>
                             <Option value='2'>Early Leave of Driver</Option>
                         </Select>
-                        <Tooltip title={this.state.tooltip_message}>
-                            <Icon type="question-circle" />
-                        </Tooltip>
+                        
                     </span>
                     {this.state.content}
                 </Modal>
@@ -402,15 +405,19 @@ class ShuttleBreakdown extends React.Component {
     render() {
         return (
             <div>
-                <div>
+                <Divider orientation="left">
                     Redeploy with a new shuttle
-                </div>
-                <DetailItems
+                </Divider>
+                <ModalDetails
                     title="Driver"
                     value={this.props.driver_name}
                 />
-                <label>Available Shuttles: </label>
-                <Select style={{ width: 200 }} onChange={this.handleChange}>
+                <label className="modal-detail-title">Available Shuttles: </label>
+                <Select 
+                    style={{ width: 200 }} 
+                    onChange={this.handleChange} 
+                    className="modal-detail-value"
+                >
                     {
                         this.state.availableShuttles.map((item) => (
                             <option value={item.id} key={item.id}>
@@ -419,13 +426,26 @@ class ShuttleBreakdown extends React.Component {
                         ))
                     }
                 </Select>
-                <DetailItems
+                <ModalDetails
                     title="Route"
                     value={this.props.route}
                 />
             </div>
         );
     }
+}
+
+function ModalDetails(props){
+    return (
+        <div className="modal-detail-container">
+            <span className="modal-detail-title">
+                {props.title}:
+            </span>
+            <span className="modal-detail-value">
+                {props.value}
+            </span>
+        </div>
+    );
 }
 
 class EarlyLeave extends React.Component {
@@ -470,11 +490,15 @@ class EarlyLeave extends React.Component {
     render() {
         return (
             <div>
-                <div>
+                <Divider orientation="left">
                     Redeploy with a replacement driver
-                </div>
-                <label>Available Drivers: </label>
-                <Select style={{ width: 200 }} onChange={this.handleChange}>
+                </Divider>
+                <label className="modal-detail-title">Available Drivers: </label>
+                <Select 
+                    style={{ width: 200 }} 
+                    onChange={this.handleChange} 
+                    className="modal-detail-value"
+                >
                     {
                         this.state.availableDrivers.map((item) => (
                             <option value={item.id} key={item.id}>
@@ -483,11 +507,11 @@ class EarlyLeave extends React.Component {
                         ))
                     }
                 </Select>
-                <DetailItems
+                <ModalDetails
                     title="Shuttle"
                     value={this.props.shuttle}
                 />
-                <DetailItems
+                <ModalDetails
                     title="Route"
                     value={this.props.route}
                 />
