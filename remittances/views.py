@@ -791,12 +791,16 @@ class DriverDeployment(APIView):
             endtime = None
             if deployment.end_time:
                 endtime = deployment.end_time.strftime("%I:%M %p")
+            
+            shuttle = "#" + str(deployment.shuttle.shuttle_number) + " - " + deployment.shuttle.plate_number
+
             data.append({
                 'id': deployment.id,
-                'shift_date': deployment.shift_iteration.date,
+                'shift_date': deployment.shift_iteration.date.strftime("%b %d %Y"),
                 'start_time': deployment.start_time.strftime("%I:%M %p"),
                 'end_time': endtime,
-                'status': deployment.status
+                'status': deployment.status,
+                'shuttle': shuttle
             })
         
         print(data)

@@ -1,0 +1,10 @@
+.list-container {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 1px 20px -5px rgba(51, 71, 91, 0.12);
+    min-height: 100px;
+    padding: 20px;
+}
+
+.item-date {
+    font-weight: 700;
+}
