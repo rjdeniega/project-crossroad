@@ -780,6 +780,29 @@ class RedeployDriver(APIView):
             "redeployment": serialized_deployment.data
         }, status=status.HTTP_200_OK)
 
+class DriverDeployment(APIView):
+    @staticmethod
+    def get(request, driver_id):
+        deployments = Deployment.objects.filter(driver_id=driver_id).reverse()
+
+        data = []
+
+        for deployment in deployments:
+            endtime = None
+            if deployment.end_time:
+                endtime = deployment.end_time.strftime("%I:%M %p")
+            data.append({
+                'id': deployment.id,
+                'shift_date': deployment.shift_iteration.date,
+                'start_time': deployment.start_time.strftime("%I:%M %p"),
+                'end_time': endtime,
+                'status': deployment.status
+            })
+        
+        print(data)
+        return Response(data={
+            'deployments': data
+        }, status=status.HTTP_200_OK)
 
 class RemittanceUtilities():
     @staticmethod

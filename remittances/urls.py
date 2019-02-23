@@ -23,6 +23,7 @@ remittance_urls = [
     path('deployments/shuttle-breakdown/redeploy/', ShuttleBreakdown.as_view()),
     path('deployments/<int:deployment_id>/available-drivers', RedeployDriver.as_view()),
     path('deployments/early-leave/redeploy/', RedeployDriver.as_view()),
+    path('deployments/driver/<int:driver_id>', DriverDeployment.as_view()),
 
     path('shifts/remarks', ShiftRemarks.as_view()),
     path('shifts/remarks/<int:supervisor_id>', ShiftRemarks.as_view()),
