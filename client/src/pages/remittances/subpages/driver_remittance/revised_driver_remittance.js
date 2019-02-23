@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { Header } from '../../components/header/remittance_header';
-import { Row, Col, Table, Tag } from 'antd';
+import { Row, Col, Tag, Drawer, Button, List } from 'antd';
 
 import './revised-style.css'
-import { Button } from 'antd/lib/radio';
 
 export class DriverRemittance extends React.Component {
     constructor(props) {
@@ -11,7 +10,7 @@ export class DriverRemittance extends React.Component {
     }
 
     render() {
-        return(
+        return (
             <div className="page-container">
                 <Header />
                 <Row className="remittance-body">
@@ -29,8 +28,21 @@ class DeploymentList extends React.Component {
         super(props);
 
         this.state = {
-            'deployments': []
+            'deployments': [],
+            'drawer_visibility': false
         }
+    }
+
+    showDrawer() {
+        this.setState({
+            drawer_visibility: true,
+        })
+    }
+
+    onClose() {
+        this.setState({
+            drawer_visibility: false
+        })
     }
 
     componentDidMount() {
@@ -57,71 +69,101 @@ class DeploymentList extends React.Component {
     }
 
     render() {
-        const columns = [{
-            title: 'Date',
-            dataIndex: 'shift_date',
-            key: 'shift_date',
-            align: 'left',
-            render: (shift_date) => (
-                <span className="item-date">
-                    {shift_date}
-                </span>
-            ),
-        }, {
-            title: 'Shuttle',
-            dataIndex: 'shuttle',
-            key: 'shuttle',
-            align: 'left'
-        }, {
-            title: 'Start Time',
-            dataIndex: 'start_time',
-            key: 'start_time',
-            align: 'left'
-        }, {
-            title: 'End Time',
-            dataIndex: 'end_time',
-            key: 'end_time',
-            align: 'left',
-            render: (end_time) => (
-                <span>
-                    { end_time == null ? 'N/A' : end_time }
-                </span>
-            )
-        }, {
-            title: "Status",
-            dataIndex: 'status',
-            key: 'status',
-            align: 'left',
-            render: (status) => (
-                <span>
-                    <Tag 
-                        color={ status == 'O' ? 'geekblue' : 'green' }
-                    >
-                        {status == 'O' ? 'Ongoing' : 'Finished'}
-                    </Tag>
-                </span>
-            ),
-        }, {
-            title: "Action",
-            key: 'action',
-            align: 'left',
-            render: (text, record) => (
-                <span>
-                    { record.status == 'O'? <Button>Submit Remittance</Button> : <Button>View</Button> }    
-                </span>
-            ),
-        }]
 
-        return(
+
+        return (
             <div className="list-container">
-                <div>
-                    Deployment List
-                </div>
-                <Table 
-                    columns={columns} 
+                <List
+                    header={<div> List of Deployments </div>}
                     dataSource={this.state.deployments}
-                    size="small"
-                    />
+                    bordered={true}
+                    renderItem={
+                        item => (
+                            <div className="list-detail-container">
+                                <List.Item>
+                                    <DeploymentListDetails
+                                        id={item.id}
+                                        date={item.shift_date}
+                                        start_time={item.start_time}
+                                        end_time={item.end_time}
+                                        status={item.status}
+                                        shuttle={item.shuttle}
+                                    />
+                                </List.Item>
+                            </div>
+                        )
+                    }
+                />
+            </div>
+        );
+    }
+}
+
+function DeploymentListDetails(props) {
+    let tag_color = props.status == 'O' ? 'blue' : 'green';
+    let status = props.status == 'O' ? 'Ongoing' : 'Finished';
+    let end_time = props.end_time == null ? 'N/A' : props.end_time;
+    return (
+        <div className="deployment-list-container">
+            <div className="list-header">
+                <span className="list-header-date">
+                    {props.date}
+                </span>
+                <Tag color={tag_color}>
+                    {status}
+                </Tag>
+            </div>
+            <div className="list-details">
+                <DetailItem
+                    title="Shuttle"
+                    value={props.shuttle}
+                />
+                <DetailItem
+                    title="Start Time"
+                    value={props.start_time}
+                />
+                <DetailItem
+                    title="End Time"
+                    value={end_time}
+                />
+            </div>
+            <SubmitRemittance />
+        </div>
+    );
+}
+
+class SubmitRemittance extends React.Component {
+    constructor(props){
+        super(props);
+    }
+
+    render() {
+        return (
+            <div className="button-container">
+                <Button className="list-action">Submit Remittance</Button>
+            </div>
+        );
+    }
+}
+
+function DetailItem(props) {
+    return (
+        <div>
+            <span className="detail-item-title">{props.title}: </span>
+            <span className="detail-item-value">{props.value}</span>
+        </div>
+    );
+}
+
+class RemittanceForm extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        return (
+            <div>
+                insert form here
             </div>
         );
     }

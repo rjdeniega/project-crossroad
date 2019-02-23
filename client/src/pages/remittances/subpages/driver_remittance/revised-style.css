@@ -8,3 +8,39 @@
 .item-date {
     font-weight: 700;
 }
+
+.list-header {
+    align-content: center;
+}
+
+.list-details {
+    margin-left: 10px;
+}
+
+.list-header-date {
+    font-weight: 600;
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.detail-item-title {
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+.detail-item-value {
+    font-weight: 300;
+}
+
+.list-detail-container {
+    position: relative;
+}
+
+.button-container {
+    align-content: center;
+    right: 0;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 15px;
+    margin-right: 10px;
+}
