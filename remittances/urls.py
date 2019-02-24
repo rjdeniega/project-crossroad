@@ -34,10 +34,11 @@ remittance_urls = [
 
     path('remittance_form/submit/', SubmitRemittance.as_view()),
     path('remittance_form/view/<int:deployment_id>', ViewRemittance.as_view()),
+    path('remittance_form/pending/<int:supervisor_id>', PendingRemittances.as_view()),
+
     path('remittance_form/driver/<int:driver_id>', DeploymentDetails.as_view()),
     path('remittance_form/', RemittanceFormView.as_view()),
     path('remittance_form/confirm', ConfirmRemittanceForm.as_view()),
-    path('remittance_form/pending/<int:supervisor_id>', ConfirmRemittanceForm.as_view()),
     path('remittance_form/add_discrepancy/<int:remittance_form_id>', AddDiscrepancy.as_view()),
 
     path('get_carwash_transaction/<int:member_id>', CarwashTransactionView.as_view()),

@@ -991,6 +991,48 @@ class SubmitRemittance(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class PendingRemittances(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
+            "-date").first()
+        deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='F')
+
+        #only serialize those that have pending remittances
+        to_serialize = []
+        for deployment in deployments:
+            print(deployment.id)
+            remittance = RemittanceForm.objects.filter(deployment=deployment, status='P').first()
+
+            if remittance:
+                print('should be added' + str(deployment.id))
+                to_serialize.append(deployment)
+
+        deployments_serializer = DeploymentSerializer(to_serialize, many=True)
+
+        #INSERT NEEDED DATA FOR LIST
+        for item in deployments_serializer.data:
+            driver = DriverSerializer(Driver.objects.get(id=item.get('driver')))
+            shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle')))
+            deployment = Deployment.objects.get(id=item["id"]);
+            start_time = deployment.start_time
+            end_time = deployment.end_time
+
+            item["driver"] = driver.data
+            item["shuttle"] = shuttle.data
+            item["start_time"] = start_time.strftime("%I:%M %p") 
+            item["end_time"] = end_time.strftime("%I:%M %p")
+
+            if DeployedDrivers.is_sub(item['id']):
+                sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()
+                absent_driver_id = sub_deployment.absent_driver.driver.id
+                absent_driver_obj = DriverSerializer(Driver.objects.get(id=absent_driver_id))
+                item["absent_driver"] = absent_driver_obj.data
+
+        return Response(data={
+            'deployments': deployments_serializer.data
+        }, status=status.HTTP_200_OK)
+
 class ViewRemittance(APIView):
     @staticmethod
     def get(request, deployment_id):
