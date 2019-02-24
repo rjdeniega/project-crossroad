@@ -105,35 +105,129 @@ function DeploymentListDetails(props) {
     let tag_color = props.status == 'O' ? 'blue' : 'green';
     let status = props.status == 'O' ? 'Ongoing' : 'Finished';
     let end_time = props.end_time == null ? 'N/A' : props.end_time;
-    return (
-        <div className="deployment-list-container">
-            <div className="list-header">
-                <span className="list-header-date">
-                    {props.date}
-                </span>
-                <Tag color={tag_color}>
-                    {status}
-                </Tag>
+    if(status == 'Ongoing'){
+        return (
+            <div className="deployment-list-container">
+                <div className="list-header">
+                    <span className="list-header-date">
+                        {props.date}
+                    </span>
+                    <Tag color={tag_color}>
+                        {status}
+                    </Tag>
+                </div>
+                <div className="list-details">
+                    <DetailItem
+                        title="Shuttle"
+                        value={props.shuttle}
+                    />
+                    <DetailItem
+                        title="Start Time"
+                        value={props.start_time}
+                    />
+                    <DetailItem
+                        title="End Time"
+                        value={end_time}
+                    />
+                </div>
+                <SubmitRemittance
+                    deployment_id={props.id}
+                />
             </div>
-            <div className="list-details">
-                <DetailItem
-                    title="Shuttle"
-                    value={props.shuttle}
-                />
-                <DetailItem
-                    title="Start Time"
-                    value={props.start_time}
-                />
-                <DetailItem
-                    title="End Time"
-                    value={end_time}
+        );
+    } else {
+        return (
+            <div className="deployment-list-container">
+                <div className="list-header">
+                    <span className="list-header-date">
+                        {props.date}
+                    </span>
+                    <Tag color={tag_color}>
+                        {status}
+                    </Tag>
+                </div>
+                <div className="list-details">
+                    <DetailItem
+                        title="Shuttle"
+                        value={props.shuttle}
+                    />
+                    <DetailItem
+                        title="Start Time"
+                        value={props.start_time}
+                    />
+                    <DetailItem
+                        title="End Time"
+                        value={end_time}
+                    />
+                </div>
+                <ViewRemittance
+                    deployment_id={props.id}
                 />
             </div>
-            <SubmitRemittance
-                deployment_id={props.id}
-            />
-        </div>
-    );
+        );
+    }
+   
+}
+
+class ViewRemittance extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            drawer_visibility: false,
+        }
+
+        this.onClose = this.onClose.bind(this);
+    }
+
+    showDrawer = () => {
+        this.setState({
+            drawer_visibility: true
+        })
+    }   
+
+    onClose = () => {
+        this.setState({
+            drawer_visibility: false
+        })
+    }
+
+    render() {
+        return (
+            <div className="button-container">
+                <Button
+                    className="list-action"
+                    onClick={this.showDrawer}
+                >
+                    View Remittance
+                </Button>
+                <Drawer
+                    title="Remittance Form"
+                    placement="right"
+                    closable={true}
+                    onClose={this.onClose}
+                    visible={this.state.drawer_visibility}
+                    width={600}
+                >
+                    <RemittanceInfo />
+                </Drawer>
+            </div>
+        )
+    }
+}
+
+class RemittanceInfo extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return(
+            <div>
+                Remittance Info
+            </div>
+        );
+    }
 }
 
 class SubmitRemittance extends React.Component {
