@@ -884,12 +884,16 @@ class SubmitRemittance(APIView):
         rem_form.deployment = deployment
         if data["fuel_costs"]:
             rem_form.fuel_cost = data["fuel_costs"]
-        
+        else:
+            rem_form.fuel_cost = 0
+
         if data["or_number"]:
             rem_form.fuel_receipt = data["or_number"]
 
         if data["other_costs"]:
             rem_form.other_cost = data["other_costs"]
+        else:
+            rem_form.fuel_cost = 0
         
         rem_form.km_from = deployment.shuttle.mileage
         rem_form.km_to = data["mileage"]
@@ -975,6 +979,8 @@ class SubmitRemittance(APIView):
                     assigned.is_consumed = True
                     assigned.save()
 
+
+        rem_form.total -= (rem_form.fuel_cost + rem_form.other_cost)
         deployment.shuttle.save()
         deployment.end_deployment()
         rem_form.save()
