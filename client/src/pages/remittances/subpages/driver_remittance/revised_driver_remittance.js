@@ -162,6 +162,7 @@ function DeploymentListDetails(props) {
                 </div>
                 <ViewRemittance
                     deployment_id={props.id}
+                    deployment_date={props.date}
                 />
             </div>
         );
@@ -202,7 +203,7 @@ class ViewRemittance extends React.Component {
                     View Remittance
                 </Button>
                 <Drawer
-                    title="Remittance Info"
+                    title={"Remittance Info for deployment on " + this.props.deployment_date}
                     placement="right"
                     closable={true}
                     onClose={this.onClose}
