@@ -872,6 +872,106 @@ class DeploymentTickets(APIView):
         return tickets_left
 
 
+class SubmitRemittance(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body);
+        
+        deployment = Deployment.objects.get(id=data["deployment_id"]);
+
+        #create remittance form
+        rem_form = RemittanceForm()
+        rem_form.deployment = deployment
+        if not data["fuel_costs"]:
+            rem_form.fuel_cost = data["fuel_costs"]
+        
+        if not data["or_number"]:
+            rem_form.fuel_receipt = data["or_number"]
+
+        if not data["other_costs"]:
+            rem_form.other_cost = data["other_costs"]
+        
+        rem_form.km_from = deployment.shuttle.mileage
+        rem_form.km_to = data["mileage"]
+
+        deployment.shuttle.mileage = data["mileage"]
+
+        rem_form.save()
+
+        for ticket_used in data["ten_peso_tickets"]:
+            assigned = AssignedTicket.objects.get(id=ticket_used["id"])
+
+            if not ticket_used["value"]:
+                # Get current tickets
+                consumed_tickets = ConsumedTickets.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_tickets').first()
+
+                new_consumed = ConsumedTicket()
+                new_consumed.assigned_ticket = assigned
+                new_consumed.start_ticket = last_consumed.end_ticket + 1
+                new_consumed.end_ticket = ticket_used["value"]
+                new_consumed.total = (new_consumed.end_ticket - new_consumed.start_ticket) * 10
+                new_consumed.save()
+
+                rem_form.total += new_consumed.total
+
+                if assigned.range_to == new_consumed.end_ticket:
+                    assigned.is_consumed = True
+                    assigned.save()
+        
+
+        for ticket_used in data["twelve_peso_tickets"]:
+            assigned = AssignedTicket.objects.get(id=ticket_used["id"])
+
+            if not ticket_used["value"]:
+                # Get current tickets
+                consumed_tickets = ConsumedTickets.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_tickets').first()
+
+                new_consumed = ConsumedTicket()
+                new_consumed.assigned_ticket = assigned
+                new_consumed.start_ticket = last_consumed.end_ticket + 1
+                new_consumed.end_ticket = ticket_used["value"]
+                new_consumed.total = (new_consumed.end_ticket - new_consumed.start_ticket) * 12
+                new_consumed.save()
+
+                rem_form.total += new_consumed.total
+
+                if assigned.range_to == new_consumed.end_ticket:
+                    assigned.is_consumed = True
+                    assigned.save()
+
+        
+        for ticket_used in data["fifteen_peso_tickets"]:
+            assigned = AssignedTicket.objects.get(id=ticket_used["id"])
+
+            if not ticket_used["value"]:
+                # Get current tickets
+                consumed_tickets = ConsumedTickets.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_tickets').first()
+
+                new_consumed = ConsumedTicket()
+                new_consumed.assigned_ticket = assigned
+                new_consumed.start_ticket = last_consumed.end_ticket + 1
+                new_consumed.end_ticket = ticket_used["value"]
+                new_consumed.total = (new_consumed.end_ticket - new_consumed.start_ticket) * 15
+                new_consumed.save()
+
+                rem_form.total += new_consumed.total
+
+                if assigned.range_to == new_consumed.end_ticket:
+                    assigned.is_consumed = True
+                    assigned.save()
+
+        deployment.shuttle.save()
+        deployment.end_deployment()
+        rem_form.save()
+
+        serialized_rem_form = RemittanceFormSerializer(rem_form)
+        return Response(data={
+            "remittance_form": serialized_rem_form.data
+        }, status=status.HTTP_200_OK)
+
 
 class RemittanceUtilities():
     @staticmethod

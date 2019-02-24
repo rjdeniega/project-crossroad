@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { Header } from '../../components/header/remittance_header';
-import { Row, Col, Tag, Drawer, Button, List, Divider, Form, Input, Tooltip, Icon } from 'antd';
+import { Row, Col, Tag, Drawer, Button, List, Divider, Form, Input, Tooltip, Icon, message } from 'antd';
 
 import './revised-style.css'
 import { list } from 'react-icons-kit/feather';
+import { postData } from '../../../../network_requests/general';
 
 export class DriverRemittance extends React.Component {
     constructor(props) {
@@ -262,7 +263,18 @@ class RemittanceForm extends React.Component {
                     x++;
                 }
 
+                values["deployment_id"] = this.props.deployment_id
+
                 console.log('Received values of form:', values);
+
+                postData('remittances/remittance_form/submit/', values)
+                    .then(response => {
+                    if (!response.error) {
+                        message.success("Remittance form has been submitted");
+                    } else {
+                        console.log(response.error);
+                    }
+            });
             }
         });
     }
