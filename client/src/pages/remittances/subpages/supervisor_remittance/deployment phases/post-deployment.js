@@ -468,6 +468,14 @@ class ConfirmRemittanceForm extends React.Component {
     handleSubmit = (e) => {
         this.props.form.validateFields((err, values) => {
             if (!err) {
+                postData(('remittances/remittance_form/' + this.props.remittance_id + '/confirm/'), values)
+                    .then(response => {
+                        if (!response.error) {
+                            message.success("Remittance form has been confirmed");
+                        } else {
+                            console.log(response.error);
+                        }
+                    });
                 console.log('Received values of form:', values);
             }
         });

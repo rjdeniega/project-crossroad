@@ -35,6 +35,7 @@ remittance_urls = [
     path('remittance_form/submit/', SubmitRemittance.as_view()),
     path('remittance_form/view/<int:deployment_id>', ViewRemittance.as_view()),
     path('remittance_form/pending/<int:supervisor_id>', PendingRemittances.as_view()),
+    path('remittance_form/<int:remittance_id>/confirm/', PendingRemittances.as_view()),
 
     path('remittance_form/driver/<int:driver_id>', DeploymentDetails.as_view()),
     path('remittance_form/', RemittanceFormView.as_view()),

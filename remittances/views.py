@@ -1031,6 +1031,19 @@ class PendingRemittances(APIView):
             'deployments': deployments_serializer.data
         }, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def post(request, remittance_id):
+        data = json.loads(request.body);
+
+        rem_form = RemittanceForm.objects.get(id=remittance_id)
+        rem_form.discrepancy = data["actual"] - rem_form.total
+        rem_form.status = 'C'
+        rem_form.save()
+
+        return Response(data={
+            "remittance_form": [],
+        }, status=status.HTTP_200_OK)
+
 class ViewRemittance(APIView):
     @staticmethod
     def get(request, deployment_id):
