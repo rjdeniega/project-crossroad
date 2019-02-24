@@ -59,3 +59,24 @@
 .field-guide {
     margin-right: 5px;
 }
+
+.view-remittances-tag {
+    float: right;
+    font-weight: 550;
+}
+
+.item-total {
+    float: right;
+    font-weight: 500;
+}
+
+.item-rem-total {
+    float: right;
+    font-weight: 500;
+    border-top: solid gray;
+    border-top-width: thin;
+}
+
+.total-row {
+    margin-top: 15px;
+}

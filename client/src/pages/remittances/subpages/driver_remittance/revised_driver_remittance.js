@@ -105,7 +105,7 @@ function DeploymentListDetails(props) {
     let tag_color = props.status == 'O' ? 'blue' : 'green';
     let status = props.status == 'O' ? 'Ongoing' : 'Finished';
     let end_time = props.end_time == null ? 'N/A' : props.end_time;
-    if(status == 'Ongoing'){
+    if (status == 'Ongoing') {
         return (
             <div className="deployment-list-container">
                 <div className="list-header">
@@ -166,7 +166,7 @@ function DeploymentListDetails(props) {
             </div>
         );
     }
-   
+
 }
 
 class ViewRemittance extends React.Component {
@@ -184,7 +184,7 @@ class ViewRemittance extends React.Component {
         this.setState({
             drawer_visibility: true
         })
-    }   
+    }
 
     onClose = () => {
         this.setState({
@@ -202,14 +202,16 @@ class ViewRemittance extends React.Component {
                     View Remittance
                 </Button>
                 <Drawer
-                    title="Remittance Form"
+                    title="Remittance Info"
                     placement="right"
                     closable={true}
                     onClose={this.onClose}
                     visible={this.state.drawer_visibility}
                     width={600}
                 >
-                    <RemittanceInfo />
+                    <RemittanceInfo
+                        deployment_id={this.props.deployment_id}
+                    />
                 </Drawer>
             </div>
         )
@@ -219,12 +221,230 @@ class ViewRemittance extends React.Component {
 class RemittanceInfo extends React.Component {
     constructor(props) {
         super(props);
+
+        this.state = {
+            "remittance_form": {},
+            "ten_tickets": [],
+            "twelve_tickets": [],
+            "fifteen_tickets": []
+        }
+    }
+
+    componentDidMount() {
+        this.fetchRemittanceForm();
+    }
+
+    fetchRemittanceForm() {
+        console.log(this.props.deployment_id)
+        fetch('/remittances/remittance_form/view/' + this.props.deployment_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        remittance_form: data.remittance_form,
+                        ten_tickets: data.ten_tickets,
+                        twelve_tickets: data.twelve_tickets,
+                        fifteen_tickets: data.fifteen_tickets
+                    });
+                    console.log(
+                        this.state.remittance_form,
+                        this.state.ten_tickets,
+                        this.state.twelve_tickets,
+                        this.state.fifteen_tickets
+                    )
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
     }
 
     render() {
-        return(
+
+        const ten_isEmpty = this.state.ten_tickets.length == 0 ? true : false;
+        const twelve_isEmpty = this.state.twelve_tickets.length == 0 ? true : false;
+        const fifteen_isEmpty = this.state.fifteen_tickets.length == 0 ? true : false;
+
+        return (
             <div>
-                Remittance Info
+                <Row gutter={16}>
+                    <Col span={8}>
+                        <span className="view-remittances-tag">
+                            Mileage:
+                        </span>
+                    </Col>
+                    <Col span={16}>
+                        <span>
+                            {parseFloat(Math.round(this.state.remittance_form.km_from * 100) / 100).toFixed(2)} km
+                        </span>
+                        <span> - </span>
+                        <span>
+                            {parseFloat(Math.round(this.state.remittance_form.km_to * 100) / 100).toFixed(2)} km
+                        </span>
+                    </Col>
+                </Row>
+                {ten_isEmpty == false &&
+                    <Divider>
+                        10 Peso Tickets
+                    </Divider>
+                }
+                {ten_isEmpty == false &&
+                    this.state.ten_tickets.map((item) => (
+                        <Row gutter={16}>
+                            <Col span={8}>
+                                <span className="view-remittances-tag">
+                                    Ticket No:
+                            </span>
+                            </Col>
+                            <Col span={8}>
+                                <span>
+                                    {item.start_ticket}
+                                </span>
+                                <span> - </span>
+                                <span>
+                                    {item.end_ticket}
+                                </span>
+                            </Col>
+                            <Col span={8}>
+                                <Divider type="vertical" />
+                                <Tooltip
+                                    title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 10"}
+                                    placement="topRight"
+                                >
+                                    <span className="item-total">
+                                        {parseFloat(Math.round(item.total * 100) / 100).toFixed(2)}
+                                    </span>
+                                </Tooltip>
+                            </Col>
+                        </Row>
+                    ))
+                }
+
+                {twelve_isEmpty == false &&
+                    <Divider>
+                        12 Peso Tickets
+                    </Divider>
+                }
+                {twelve_isEmpty == false &&
+                    this.state.twelve_tickets.map((item) => (
+                        <Row gutter={16}>
+                            <Col span={8}>
+                                <span className="view-remittances-tag">
+                                    Ticket No:
+                            </span>
+                            </Col>
+                            <Col span={8}>
+                                <span>
+                                    {item.start_ticket}
+                                </span>
+                                <span> - </span>
+                                <span>
+                                    {item.end_ticket}
+                                </span>
+                            </Col>
+                            <Col span={8}>
+                                <Divider type="vertical" />
+                                <Tooltip
+                                    title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 12"}
+                                    placement="topRight"
+                                >
+                                    <span className="item-total">
+                                        {parseFloat(Math.round(item.total * 100) / 100).toFixed(2)}
+                                    </span>
+                                </Tooltip>
+                            </Col>
+                        </Row>
+                    ))
+                }
+
+                {fifteen_isEmpty == false &&
+                    <Divider>
+                        15 Peso Tickets
+                    </Divider>
+                }
+                {fifteen_isEmpty == false &&
+                    this.state.fifteen_tickets.map((item) => (
+                        <Row gutter={16}>
+                            <Col span={8}>
+                                <span className="view-remittances-tag">
+                                    Ticket No:
+                                </span>
+                            </Col>
+                            <Col span={8}>
+                                <span>
+                                    {item.start_ticket}
+                                </span>
+                                <span> - </span>
+                                <span>
+                                    {item.end_ticket}
+                                </span>
+                            </Col>
+                            <Col span={8}>
+                                <Divider type="vertical" />
+                                <Tooltip
+                                    title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 15"}
+                                    placement="topRight"
+                                >
+                                    <span className="item-total">
+                                        {parseFloat(Math.round(item.total * 100) / 100).toFixed(2)}
+                                    </span>
+                                </Tooltip>
+                            </Col>
+                        </Row>
+                    ))
+                }
+
+                <Divider orientation="left">Other Information</Divider>
+                <Row gutter={16}>
+                    <Col span={16}>
+                        {this.state.remittance_form.fuel_cost != 0 ? (
+                            <Tooltip title={"Receipt No.: " + this.state.remittance_form.fuel_receipt}>
+                                <span className="view-remittances-tag">
+                                    Fuel Costs:
+                                </span>
+                            </Tooltip>
+                        ) : (
+                            <span className="view-remittances-tag">
+                                Fuel Costs:
+                            </span>
+                        )}
+                    </Col>
+                    <Col span={8}>
+                        <Divider type="vertical" />
+                        <span className="item-total">
+                            ({parseFloat(Math.round(this.state.remittance_form.fuel_cost * 100) / 100).toFixed(2)})
+                        </span>
+                    </Col>
+                </Row>
+                <Row gutter={16}>
+                    <Col span={16}>
+                        <span className="view-remittances-tag">
+                            Other Costs:
+                        </span>
+                    </Col>
+                    <Col span={8}>
+                        <Divider type="vertical" />
+                        <span className="item-total">
+                            ({parseFloat(Math.round(this.state.remittance_form.other_cost * 100) / 100).toFixed(2)})
+                        </span>
+                    </Col>
+                </Row>
+                <Row gutter={16} className="total-row">
+                    <Col span={16}>
+                        <span className="view-remittances-tag">
+                            Total:
+                        </span>
+                    </Col>
+                    <Col span={8}>
+                        <Divider type="vertical" />
+                        <span className="item-rem-total">
+                            (Php) {parseFloat(Math.round(this.state.remittance_form.total * 100) / 100).toFixed(2)}
+                        </span>
+                    </Col>
+                </Row>
             </div>
         );
     }
@@ -273,10 +493,10 @@ class SubmitRemittance extends React.Component {
                     visible={this.state.drawer_visibility}
                     width={600}
                 >
-                    <RemForm 
+                    <RemForm
                         deployment_id={this.props.deployment_id}
                         onClose={this.onClose}
-                    
+
                     />
                 </Drawer>
             </div>
@@ -310,14 +530,14 @@ class RemittanceForm extends React.Component {
 
     handleSubmit = (e) => {
         this.props.form.validateFields((err, values) => {
-            if(!err){
+            if (!err) {
                 var list_of_keys = Object.keys(values);
-                
+
                 var x = 0;
                 values["ten_peso_tickets"] = [];
-                while(x < list_of_keys.length){
+                while (x < list_of_keys.length) {
                     var str = list_of_keys[x]
-                    if(str.includes("ten_peso")){
+                    if (str.includes("ten_peso")) {
                         var parts = str.split("-", 2);
                         values["ten_peso_tickets"].push({
                             "id": parts[1],
@@ -329,30 +549,30 @@ class RemittanceForm extends React.Component {
 
                 var x = 0;
                 values["twelve_peso_tickets"] = [];
-                while(x < list_of_keys.length){
+                while (x < list_of_keys.length) {
                     var str = list_of_keys[x]
-                    if(str.includes("twelve_peso")){
+                    if (str.includes("twelve_peso")) {
                         console.log("entered_here if twelve")
                         var parts = str.split("-", 2);
                         values["twelve_peso_tickets"].push({
                             "id": parts[1],
                             "value": values[list_of_keys[x]]
-                        }); 
+                        });
                     }
                     x++;
                 }
 
                 var x = 0;
                 values["fifteen_peso_tickets"] = [];
-                while(x < list_of_keys.length){
+                while (x < list_of_keys.length) {
                     var str = list_of_keys[x]
-                    if(str.includes("fifteen_peso")){
+                    if (str.includes("fifteen_peso")) {
                         console.log("entered_here if fifteen")
                         var parts = str.split("-", 2);
                         values["fifteen_peso_tickets"].push({
                             "id": parts[1],
                             "value": values[list_of_keys[x]]
-                        }); 
+                        });
                     }
                     x++;
                 }
@@ -363,12 +583,12 @@ class RemittanceForm extends React.Component {
 
                 postData('remittances/remittance_form/submit/', values)
                     .then(response => {
-                    if (!response.error) {
-                        message.success("Remittance form has been submitted");
-                    } else {
-                        console.log(response.error);
-                    }
-            });
+                        if (!response.error) {
+                            message.success("Remittance form has been submitted");
+                        } else {
+                            console.log(response.error);
+                        }
+                    });
             }
         });
     }
@@ -451,7 +671,7 @@ class RemittanceForm extends React.Component {
                             this.state.tenPesoTickets.map((item) => (
                                 <Form.Item
                                     {...formItemLayout}
-                                    label= {
+                                    label={
                                         <span>
                                             <Tooltip title="Input the last consumed ticket of this bundle">
                                                 <Icon type="question-circle-o" className="field-guide" />
@@ -469,7 +689,7 @@ class RemittanceForm extends React.Component {
                                         )
                                     }
                                 </Form.Item>
-                                ))
+                            ))
                         }
                     </div>
                 }
@@ -480,7 +700,7 @@ class RemittanceForm extends React.Component {
                             this.state.twelvePesoTickets.map((item) => (
                                 <Form.Item
                                     {...formItemLayout}
-                                    label= {
+                                    label={
                                         <span>
                                             <Tooltip title="Input the last consumed ticket of this bundle">
                                                 <Icon type="question-circle-o" className="field-guide" />
@@ -498,7 +718,7 @@ class RemittanceForm extends React.Component {
                                         )
                                     }
                                 </Form.Item>
-                                ))
+                            ))
                         }
                     </div>
                 }
@@ -509,7 +729,7 @@ class RemittanceForm extends React.Component {
                             this.state.fifteenPesoTickets.map((item) => (
                                 <Form.Item
                                     {...formItemLayout}
-                                    label= {
+                                    label={
                                         <span>
                                             <Tooltip title="Input the last consumed ticket of this bundle">
                                                 <Icon type="question-circle-o" className="field-guide" />
@@ -527,7 +747,7 @@ class RemittanceForm extends React.Component {
                                         )
                                     }
                                 </Form.Item>
-                                ))
+                            ))
                         }
                     </div>
                 }
@@ -545,7 +765,7 @@ class RemittanceForm extends React.Component {
                 >
                     {
                         getFieldDecorator('fuel_costs', {
-                            rules: [ ]
+                            rules: []
                         })(
                             <Input />
                         )
