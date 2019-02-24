@@ -13,16 +13,18 @@ export class SupervisorRemittance extends React.Component {
         this.state = {
             'plannedDrivers': [],
             'deployedDrivers': [],
+            'pendingDeployments': []
         }
 
         this.fetchPlannedDrivers = this.fetchPlannedDrivers.bind(this);
         this.fetchDeployedDrivers = this.fetchDeployedDrivers.bind(this);
+        this.fetchPendingDeployments = this.fetchPendingDeployments.bind(this);
     }
 
     componentDidMount() {
         this.fetchDeployedDrivers();
         this.fetchPlannedDrivers();
-        
+        this.fetchPendingDeployments();
     }
 
     fetchPlannedDrivers() {
@@ -36,6 +38,25 @@ export class SupervisorRemittance extends React.Component {
                 if (!data.error) {
                     this.setState({
                         plannedDrivers: data.non_deployed_drivers
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
+    fetchPendingDeployments() {
+        const supervisor = JSON.parse(localStorage.user_staff);
+        fetch('/remittances/remittance_form/pending/' + supervisor.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        pendingDeployments: data.deployments
                     });
                 }
                 else {
@@ -79,7 +100,9 @@ export class SupervisorRemittance extends React.Component {
                         />
                     </Col>
                     <Col span={8}>
-                        <PostDeployment />
+                        <PostDeployment 
+                            pendingDeployments={this.state.pendingDeployments}
+                        />
                     </Col>
                 </Row>
             </div>

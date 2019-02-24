@@ -1001,11 +1001,9 @@ class PendingRemittances(APIView):
         #only serialize those that have pending remittances
         to_serialize = []
         for deployment in deployments:
-            print(deployment.id)
             remittance = RemittanceForm.objects.filter(deployment=deployment, status='P').first()
 
             if remittance:
-                print('should be added' + str(deployment.id))
                 to_serialize.append(deployment)
 
         deployments_serializer = DeploymentSerializer(to_serialize, many=True)
