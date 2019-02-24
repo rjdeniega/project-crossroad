@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import { Row, Col, Avatar, Drawer, Button, List, Divider, Tooltip, Icon, message } from 'antd';
+import React, { Component } from 'react';
+import { Row, Col, Avatar, Drawer, Button, List, Divider, Tooltip, Icon, Form, message, Input, InputNumber } from 'antd';
 import { postData } from '../../../../../network_requests/general';
 
 import '../revised-style.css';
 
 export class PostDeployment extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
     }
 
-    render(){
+    render() {
         return (
             <div className="phase-container">
                 <Header
@@ -212,6 +212,7 @@ class ViewRemittance extends React.Component {
                 >
                     <RemittanceInfo
                         deployment_id={this.props.deployment_id}
+                        onClose={this.onClose}
                     />
                 </Drawer>
             </div>
@@ -268,6 +269,7 @@ class RemittanceInfo extends React.Component {
         const ten_isEmpty = this.state.ten_tickets.length == 0 ? true : false;
         const twelve_isEmpty = this.state.twelve_tickets.length == 0 ? true : false;
         const fifteen_isEmpty = this.state.fifteen_tickets.length == 0 ? true : false;
+        const ConForm = Form.create({ name: 'confirm-form' })(ConfirmRemittanceForm);
 
         return (
             <div>
@@ -408,10 +410,10 @@ class RemittanceInfo extends React.Component {
                                 </span>
                             </Tooltip>
                         ) : (
-                            <span className="view-remittances-tag">
-                                Fuel Costs:
+                                <span className="view-remittances-tag">
+                                    Fuel Costs:
                             </span>
-                        )}
+                            )}
                     </Col>
                     <Col span={8}>
                         <Divider type="vertical" />
@@ -446,7 +448,68 @@ class RemittanceInfo extends React.Component {
                         </span>
                     </Col>
                 </Row>
+                <div className="confirm-remittance-container">
+                    <Divider orientation="left"> Confirm Remittance </Divider>
+                    <ConForm
+                        onClose={this.props.onClose}
+                        remittance_id={this.state.remittance_form.id}
+                    />
+                </div>
             </div>
+        );
+    }
+}
+
+class ConfirmRemittanceForm extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    handleSubmit = (e) => {
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                console.log('Received values of form:', values);
+            }
+        });
+    }
+
+
+    render() {
+
+        const { getFieldDecorator } = this.props.form;
+
+        return (
+            <Form onSubmit={this.handleSubmit} layout="inline" className="confirm-form">
+                <Form.Item
+                    label={
+                        <span>
+                            <Tooltip title="Input amount received from driver">
+                                <Icon type="question-circle-o" className="field-guide" />
+                            </Tooltip>
+                            Actual Cash
+                        </span>
+                    }
+                >
+                    {
+                        getFieldDecorator('actual', {
+                            rules: [{
+                                required: true,
+                                message: "Please input the actual cash received"
+                            },]
+                        })(
+                            <InputNumber />
+                        )
+                    }
+                </Form.Item>
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        onClick={this.handleSubmit}
+                    >
+                        Confirm Remittance
+                    </Button>
+                </Form.Item>
+            </Form>
         );
     }
 }
