@@ -882,13 +882,13 @@ class SubmitRemittance(APIView):
         #create remittance form
         rem_form = RemittanceForm()
         rem_form.deployment = deployment
-        if not data["fuel_costs"]:
+        if data["fuel_costs"]:
             rem_form.fuel_cost = data["fuel_costs"]
         
-        if not data["or_number"]:
+        if data["or_number"]:
             rem_form.fuel_receipt = data["or_number"]
 
-        if not data["other_costs"]:
+        if data["other_costs"]:
             rem_form.other_cost = data["other_costs"]
         
         rem_form.km_from = deployment.shuttle.mileage
@@ -901,16 +901,20 @@ class SubmitRemittance(APIView):
         for ticket_used in data["ten_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
-            if not ticket_used["value"]:
+            if ticket_used["value"]:
                 # Get current tickets
-                consumed_tickets = ConsumedTickets.objects.filter(assigned_ticket=assigned)
-                last_consumed = consumed_tickets.order_by('-end_tickets').first()
+                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_ticket').first()
 
                 new_consumed = ConsumedTicket()
                 new_consumed.assigned_ticket = assigned
-                new_consumed.start_ticket = last_consumed.end_ticket + 1
+                if last_consumed is not None:
+                    new_consumed.start_ticket = last_consumed.end_ticket + 1
+                else:
+                    new_consumed.start_ticket = assigned.range_from
                 new_consumed.end_ticket = ticket_used["value"]
-                new_consumed.total = (new_consumed.end_ticket - new_consumed.start_ticket) * 10
+                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 10
+                new_consumed.remittance_form = rem_form
                 new_consumed.save()
 
                 rem_form.total += new_consumed.total
@@ -923,16 +927,20 @@ class SubmitRemittance(APIView):
         for ticket_used in data["twelve_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
-            if not ticket_used["value"]:
+            if ticket_used["value"]:
                 # Get current tickets
-                consumed_tickets = ConsumedTickets.objects.filter(assigned_ticket=assigned)
-                last_consumed = consumed_tickets.order_by('-end_tickets').first()
+                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_ticket').first()
 
                 new_consumed = ConsumedTicket()
                 new_consumed.assigned_ticket = assigned
-                new_consumed.start_ticket = last_consumed.end_ticket + 1
+                if last_consumed is not None:
+                    new_consumed.start_ticket = last_consumed.end_ticket + 1
+                else:
+                    new_consumed.start_ticket = assigned.range_from
                 new_consumed.end_ticket = ticket_used["value"]
-                new_consumed.total = (new_consumed.end_ticket - new_consumed.start_ticket) * 12
+                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 12
+                new_consumed.remittance_form = rem_form
                 new_consumed.save()
 
                 rem_form.total += new_consumed.total
@@ -945,16 +953,20 @@ class SubmitRemittance(APIView):
         for ticket_used in data["fifteen_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
-            if not ticket_used["value"]:
+            if ticket_used["value"]:
                 # Get current tickets
-                consumed_tickets = ConsumedTickets.objects.filter(assigned_ticket=assigned)
-                last_consumed = consumed_tickets.order_by('-end_tickets').first()
+                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_ticket').first()
 
                 new_consumed = ConsumedTicket()
                 new_consumed.assigned_ticket = assigned
-                new_consumed.start_ticket = last_consumed.end_ticket + 1
+                if last_consumed is not None:
+                    new_consumed.start_ticket = last_consumed.end_ticket + 1
+                else:
+                    new_consumed.start_ticket = assigned.range_from
                 new_consumed.end_ticket = ticket_used["value"]
-                new_consumed.total = (new_consumed.end_ticket - new_consumed.start_ticket) * 15
+                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 15
+                new_consumed.remittance_form = rem_form
                 new_consumed.save()
 
                 rem_form.total += new_consumed.total
@@ -971,6 +983,46 @@ class SubmitRemittance(APIView):
         return Response(data={
             "remittance_form": serialized_rem_form.data
         }, status=status.HTTP_200_OK)
+
+
+class ViewRemittance(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id)
+
+        rem_form = RemittanceForm.objects.get(deployment=deployment)
+
+        ten_tickets = ViewRemittance.getTickets('A', rem_form)
+        twelve_tickets = ViewRemittance.getTickets('B', rem_form)
+        fifteen_tickets = ViewRemittance.getTickets('C', rem_form)
+
+        serialized_remittance = RemittanceFormSerializer(rem_form)
+
+        return Response(data={
+            "remittance_form": serialized_remittance.data,
+            "ten_tickets": ten_tickets,
+            "twelve_tickets": twelve_tickets,
+            "fifteen_tickets": fifteen_tickets
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def getTickets(ticket_type, remittance_form):
+        tickets = ConsumedTicket.objects.filter(
+                                remittance_form=remittance_form,
+                                assigned_ticket__type=ticket_type
+                                )
+
+        data = []
+
+        for ticket in tickets:
+            data.append({
+                "id": ticket.id,
+                "start_ticket": ticket.start_ticket,
+                "end_ticket": ticket.end_ticket,
+                "total": ticket.total
+            })
+        
+        return data
 
 
 class RemittanceUtilities():
