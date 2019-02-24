@@ -3,6 +3,7 @@ import { Header } from '../../components/header/remittance_header';
 import { Row, Col, Tag, Drawer, Button, List, Divider, Form, Input, Tooltip, Icon } from 'antd';
 
 import './revised-style.css'
+import { list } from 'react-icons-kit/feather';
 
 export class DriverRemittance extends React.Component {
     constructor(props) {
@@ -141,6 +142,8 @@ class SubmitRemittance extends React.Component {
         this.state = {
             drawer_visibility: false,
         }
+
+        this.onClose = this.onClose.bind(this);
     }
 
     showDrawer = () => {
@@ -175,15 +178,11 @@ class SubmitRemittance extends React.Component {
                     visible={this.state.drawer_visibility}
                     width={600}
                 >
-                    <RemForm deployment_id={this.props.deployment_id} />
-                    <div className="form-footer" >
-                        <Button onClick={this.onClose} style={{ marginRight: 8 }}>
-                            Cancel
-                        </Button>
-                        <Button onClick={this.onClose} type="primary">
-                            Submit
-                        </Button>
-                    </div>
+                    <RemForm 
+                        deployment_id={this.props.deployment_id}
+                        onClose={this.onClose}
+                    
+                    />
                 </Drawer>
             </div>
         );
@@ -212,6 +211,60 @@ class RemittanceForm extends React.Component {
 
     componentDidMount() {
         this.fetchTickets();
+    }
+
+    handleSubmit = (e) => {
+        this.props.form.validateFields((err, values) => {
+            if(!err){
+                var list_of_keys = Object.keys(values);
+                
+                var x = 0;
+                values["ten_peso_tickets"] = [];
+                while(x < list_of_keys.length){
+                    var str = list_of_keys[x]
+                    if(str.includes("ten_peso")){
+                        var parts = str.split("-", 2);
+                        values["ten_peso_tickets"].push({
+                            "id": parts[1],
+                            "value": values[list_of_keys[x]]
+                        });
+                    }
+                    x++;
+                }
+
+                var x = 0;
+                values["twelve_peso_tickets"] = [];
+                while(x < list_of_keys.length){
+                    var str = list_of_keys[x]
+                    if(str.includes("twelve_peso")){
+                        console.log("entered_here if twelve")
+                        var parts = str.split("-", 2);
+                        values["twelve_peso_tickets"].push({
+                            "id": parts[1],
+                            "value": values[list_of_keys[x]]
+                        }); 
+                    }
+                    x++;
+                }
+
+                var x = 0;
+                values["fifteen_peso_tickets"] = [];
+                while(x < list_of_keys.length){
+                    var str = list_of_keys[x]
+                    if(str.includes("fifteen_peso")){
+                        console.log("entered_here if fifteen")
+                        var parts = str.split("-", 2);
+                        values["fifteen_peso_tickets"].push({
+                            "id": parts[1],
+                            "value": values[list_of_keys[x]]
+                        }); 
+                    }
+                    x++;
+                }
+
+                console.log('Received values of form:', values);
+            }
+        });
     }
 
     fetchTickets() {
@@ -279,7 +332,7 @@ class RemittanceForm extends React.Component {
                             rules: [{
                                 required: true,
                                 message: "Please input the shuttle's current mileage"
-                            }]
+                            },]
                         })(
                             <Input />
                         )
@@ -300,12 +353,11 @@ class RemittanceForm extends React.Component {
                                             Ticket No. {item.start_ticket} to
                                         </span>
                                     }
+                                    key={item.id}
                                 >
                                     {
-                                        getFieldDecorator('ten_peso_'.concat(item.id), {
-                                            rules: [{
-                                                message: "Please input the shuttle's current mileage"
-                                            }]
+                                        getFieldDecorator('ten_peso-'.concat(item.id), {
+                                            rules: []
                                         })(
                                             <Input />
                                         )
@@ -330,12 +382,11 @@ class RemittanceForm extends React.Component {
                                             Ticket No. {item.start_ticket} to
                                         </span>
                                     }
+                                    key={item.id}
                                 >
                                     {
-                                        getFieldDecorator('twelve_peso_'.concat(item.id), {
-                                            rules: [{
-                                                message: "Please input the shuttle's current mileage"
-                                            }]
+                                        getFieldDecorator('twelve_peso-'.concat(item.id), {
+                                            rules: []
                                         })(
                                             <Input />
                                         )
@@ -360,12 +411,11 @@ class RemittanceForm extends React.Component {
                                             Ticket No. {item.start_ticket} to
                                         </span>
                                     }
+                                    key={item.id}
                                 >
                                     {
-                                        getFieldDecorator('fifteen_peso_'.concat(item.id), {
-                                            rules: [{
-                                                message: "Please input the shuttle's current mileage"
-                                            }]
+                                        getFieldDecorator('fifteen_peso-'.concat(item.id), {
+                                            rules: []
                                         })(
                                             <Input />
                                         )
@@ -389,9 +439,7 @@ class RemittanceForm extends React.Component {
                 >
                     {
                         getFieldDecorator('fuel_costs', {
-                            rules: [{
-                                message: "Please input the shuttle's current mileage"
-                            }]
+                            rules: [ ]
                         })(
                             <Input />
                         )
@@ -410,9 +458,7 @@ class RemittanceForm extends React.Component {
                 >
                     {
                         getFieldDecorator('or_number', {
-                            rules: [{
-                                message: "Please input the shuttle's current mileage"
-                            }]
+                            rules: []
                         })(
                             <Input />
                         )
@@ -431,14 +477,20 @@ class RemittanceForm extends React.Component {
                 >
                     {
                         getFieldDecorator('other_costs', {
-                            rules: [{
-                                message: "Please input the shuttle's current mileage"
-                            }]
+                            rules: []
                         })(
                             <Input />
                         )
                     }
                 </Form.Item>
+                <div className="form-footer" >
+                    <Button onClick={this.props.onClose} style={{ marginRight: 8 }}>
+                        Cancel
+                    </Button>
+                    <Button onClick={this.handleSubmit} type="primary">
+                        Submit
+                    </Button>
+                </div>
             </Form>
         );
     }
