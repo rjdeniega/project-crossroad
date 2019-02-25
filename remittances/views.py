@@ -63,6 +63,7 @@ class GetDateSchedule(APIView):
         end_date = start_date + timedelta(days=14)
 
         return Response(data={
+            "current_schedule": ScheduleSerializer(schedule).data,
             "expected_start_date": start_date,
             "expected_end_date": end_date
         }, status=status.HTTP_200_OK)

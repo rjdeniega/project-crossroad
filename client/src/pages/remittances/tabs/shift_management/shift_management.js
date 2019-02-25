@@ -1,7 +1,7 @@
 /**
  * Created by JasonDeniega on 05/07/2018.
  */
-import React, { Component } from 'react';
+import React, { Fragment, Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import users from '../../../../images/default.png'
@@ -10,7 +10,7 @@ import { clockO } from 'react-icons-kit/fa/clockO'
 import { Icon } from 'react-icons-kit'
 import { DatePicker } from 'antd';
 import moment from 'moment';
-import { Select, Table, Avatar, Dropdown, Menu, message } from 'antd';
+import { Select, Table, Avatar, Dropdown, Menu, message, Tag } from 'antd';
 import { Icon as AntIcon } from 'antd';
 import { getData, postData } from "../../../../network_requests/general";
 
@@ -82,6 +82,7 @@ export class ShiftManagementPane extends Component {
         this.fetchSupervisors();
         this.fetchShuttles();
         this.fetchCurrentSched();
+        this.fetchCurrentSchedShifts()
 
     }
 
@@ -107,6 +108,34 @@ export class ShiftManagementPane extends Component {
                 console.log(data["error"]);
             }
         });
+
+    }
+
+    fetchCurrentSchedShifts() {
+        return getData('remittances/schedules/active').then(data => {
+            if (!data["error"]) {
+                //for each entry in drivers data, append data as a dictionary in tableData
+                //ant tables accept values {"key": value, "column_name" : "value" } format
+                //I cant just pass the raw array since its a collection of objects
+                //append drivers with their ids as key
+                console.log(data);
+                if (!data.error) {
+                    this.setState({
+                        current_start_date: data['start_date'],
+                        current_end_date: data['end_date'],
+                        current_am: data['shifts'][0],
+                        current_pm: data['shifts'][1],
+                        current_am_supervisor: data['shifts'][0]['drivers'],
+                        current_pm_supervisor: data['shifts'][1]['drivers'],
+                    })
+                }
+            }
+            else {
+                console.log(data["error"]);
+            }
+        });
+        console.log(this.state.current_am)
+        console.log(this.state.current_pm)
     }
 
     fetchDrivers() {
@@ -246,13 +275,14 @@ export class ShiftManagementPane extends Component {
             }
             else {
                 let removed_driver = null;
-                console.log(this.state.am_shift_drivers);
+                console.log(this.state.drivers);
                 console.log(current);
-                this.state.am_shift_drivers.forEach(x => {
-                    if (x.driver_id == current) {
+                this.state.drivers.forEach(x => {
+                    if (x.key == current) {
                         removed_driver = x;
                     }
                 });
+                console.log(removed_driver);
                 let index = this.state.am_shift_drivers.indexOf(removed_driver);
                 let array = [...this.state.am_shift_drivers];
                 array.splice(index, 1);
@@ -278,22 +308,44 @@ export class ShiftManagementPane extends Component {
                     driver_selected: current,
                     selected_shift_type: "PM"
                 });
-                this.showModal()
-            }
-            else {
+                this.showModal();
                 let removed_driver = null;
-                this.state.pm_shift_drivers.forEach(x => {
-                    if (x.driver_id == current) {
+                this.state.am_drivers_display.forEach(x => {
+                    if (x.key == current) {
                         removed_driver = x;
                     }
                 });
-                let index = this.state.pm_shift_drivers.indexOf(removed_driver);
-                let array = this.state.pm_shift_drivers;
-                array.splice(index);
+                let index = this.state.am_drivers_display.indexOf(removed_driver);
+                let array1 = [...this.state.am_drivers_display];
+                console.log(index);
+                console.log(array1);
+                array1.splice(index, 1);
+                console.log(array1);
                 this.setState({
-                    pm_shift_drivers: array
+                    am_drivers_display: array1,
                 }, () => {
-                    console.log(this.state.pm_shift_drivers)
+                    console.log(this.state.am_drivers_display)
+                })
+            }
+            else {
+                let removed_driver = null;
+                console.log(this.state.drivers);
+                console.log(current);
+                this.state.drivers.forEach(x => {
+                    if (x.key == current) {
+                        removed_driver = x;
+                    }
+                });
+                console.log(removed_driver);
+                let index = this.state.am_shift_drivers.indexOf(removed_driver);
+                let array = [...this.state.am_shift_drivers];
+                array.splice(index, 1);
+                this.setState({
+                    pm_shift_drivers: array,
+                    am_drivers_display: [...this.state.am_drivers_display, removed_driver]
+                }, () => {
+                    console.log(this.state.am_shift_drivers);
+                    console.log(this.state.pm_drivers_display);
                 })
             }
         },
@@ -468,8 +520,10 @@ export class ShiftManagementPane extends Component {
             <Modal
                 title="Assign this driver to a shuttle"
                 visible={this.state.visible}
-                onOk={this.handleConfirm}
-                onCancel={this.handleCancel}
+                maskClosable={false}
+                closable={false}
+                destroyOnClose={true}
+                footer={<Button onClick={this.handleConfirm}> Confirm </Button>}
 
             >
                 {this.state.selected_shift_type == "AM" &&
@@ -522,49 +576,76 @@ export class ShiftManagementPane extends Component {
             </div>
             <div className="current-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label-type">Current Shift Details</div>
+                    <div className="tab-label-type">Current Shift Details
+
+                    </div>
+                    <div style = {{'margin-left': '10px'}}>
+                        Tags: <Tag color="green">Shuttle</Tag>
+                        <Tag color="blue">Deployment Type</Tag>
+
+                    </div>
+
                 </div>
                 <div className="current-shift-tables">
                     <Collapse defaultActiveKey={['1']}>
                         <Panel header="Details" key="1">
-                            <p>{text}</p>
+                            <p>Start date: {this.state.current_start_date}</p>
+                            <p>Start date: {this.state.current_end_date}</p>
                         </Panel>
                         <Panel header="AM Shift Drivers" key="2">
                             <div className="AM-current">
+                                {this.state.current_am &&
                                 <List
                                     itemLayout="horizontal"
                                     size="small"
-                                    dataSource={data}
+                                    dataSource={this.state.current_am.drivers}
                                     renderItem={item => (
                                         <List.Item>
                                             <List.Item.Meta
+                                                key={item.driver_id}
                                                 avatar={<Avatar
-                                                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                                                title={<a href="https://ant.design">{item.title}</a>}
-                                                description="Shuttle = ABSDADA Deployment Type = Regular"
+                                                    src={users}/>}
+                                                title={item.driver_name}
+                                                description={
+                                                    <Fragment>
+                                                        <Tag color="green">{item.shuttle_id}
+                                                            - {item.shuttle_plate_number}</Tag>
+                                                        <Tag color="blue">{item.deployment_type}</Tag>
+                                                    </Fragment>
+                                                }
                                             />
                                         </List.Item>
                                     )}
                                 />
+                                }
                             </div>
                         </Panel>
                         <Panel header="PM Shift Drivers" key="3">
                             <div className="PM-current">
+                                {this.state.current_pm &&
                                 <List
                                     itemLayout="horizontal"
                                     size="small"
-                                    dataSource={data}
+                                    dataSource={this.state.current_pm.drivers}
                                     renderItem={item => (
                                         <List.Item>
                                             <List.Item.Meta
+                                                key={item.driver_id}
                                                 avatar={<Avatar
-                                                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>}
-                                                title={<a href="https://ant.design">{item.title}</a>}
-                                                description="Shuttle = ABSDADA Deployment Type = Regular"
+                                                    src={users}/>}
+                                                title={item.driver_name}
+                                                description={
+                                                    <Fragment>
+                                                        <Tag color="green">{item.shuttle_id}
+                                                            - {item.shuttle_plate_number}</Tag>
+                                                        <Tag color="blue">{item.deployment_type}</Tag>
+                                                    </Fragment>
+                                                }
                                             />
                                         </List.Item>
                                     )}
                                 />
+                                }
                             </div>
                         </Panel>
                     </Collapse>,
