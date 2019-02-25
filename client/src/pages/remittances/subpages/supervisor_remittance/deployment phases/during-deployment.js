@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip, Divider } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip, Divider, Tag, Popover, Badge, Empty } from 'antd';
 import '../revised-style.css';
 import { postData } from '../../../../../network_requests/general';
 
@@ -55,6 +55,9 @@ function DeploymentList(props) {
                                     tickets="130pcs"
                                     photo={item.driver.photo}
                                     absent_driver={item.absent_driver}
+                                    ten_tickets={item.ten_peso_tickets}
+                                    twelve_tickets={item.twelve_peso_tickets}
+                                    fifteen_tickets={item.fifteen_peso_tickets}
                                 />
                             </List.Item>
                         </div>
@@ -72,6 +75,13 @@ function DeploymentListDetails(props) {
     const supervisor = JSON.parse(localStorage.user_staff);
     const absent_driver = props.absent_driver
 
+    if (props.route == 'Main Road' || props.route == 'Main Route')
+        var tag_color = 'blue';
+    else if (props.route == 'Kaliwa')
+        var tag_color = 'orange';
+    else
+        var tag_color = 'green'
+
     if (typeof absent_driver == "undefined") {
         return (
             <div>
@@ -80,6 +90,9 @@ function DeploymentListDetails(props) {
                     <span className="deployment-name">
                         {props.name}
                     </span>
+                    <Tag color={tag_color} className="route-tag">
+                            {props.route}
+                    </Tag>
                 </div>
 
                 <div className="deployment-list-container">
@@ -88,17 +101,26 @@ function DeploymentListDetails(props) {
                         value={props.shuttle}
                     />
                     <DetailItems
-                        title="Route"
-                        value={props.route}
-                    />
-                    <DetailItems
                         title="Start Time"
                         value={props.start_time}
                     />
-                    <DetailItems
-                        title="Tickets Onhand"
-                        value={props.tickets}
-                    />
+
+                    <div className="ticket-tags-container">
+                        <TicketDisplay
+                            amount="₱10"
+                            tickets={props.ten_tickets}
+                        />
+                        <TicketDisplay
+                            amount="₱12"
+                            tickets={props.twelve_tickets}
+                        />
+                        {props.route == 'Main Road' || props.route == 'Main Route' &&
+                            <TicketDisplay
+                                amount="₱15"
+                                tickets={props.fifteen_tickets}
+                            />
+                        }
+                    </div>
                 </div>
 
                 <StopDeploymentButton
@@ -124,6 +146,9 @@ function DeploymentListDetails(props) {
                         <span className="deployment-name">
                             {props.name}
                         </span>
+                        <Tag color={tag_color} className="route-tag">
+                            {props.route}
+                        </Tag>
                     </Tooltip>
                 </div>
 
@@ -140,10 +165,23 @@ function DeploymentListDetails(props) {
                         title="Start Time"
                         value={props.start_time}
                     />
-                    <DetailItems
-                        title="Tickets Onhand"
-                        value={props.tickets}
-                    />
+
+                    <div className="ticket-tags-container">
+                        <TicketDisplay
+                            amount="₱10"
+                            tickets={props.ten_tickets}
+                        />
+                        <TicketDisplay
+                            amount="₱12"
+                            tickets={props.twelve_tickets}
+                        />
+                        {props.route == 'Main Road' || props.route == 'Main Route' &&
+                            <TicketDisplay
+                                amount="₱15"
+                                tickets={props.fifteen_tickets}
+                            />
+                        }
+                    </div>
                 </div>
 
                 <StopDeploymentButton
@@ -157,6 +195,61 @@ function DeploymentListDetails(props) {
             </div>
         );
     }
+}
+
+function TicketDisplay(props) {
+
+    if (props.tickets.length > 0) {
+        var content = (
+            props.tickets.map((item) => (
+                <div className="ticket-wrapper">
+                    <span className="ticket-label">
+                        Ticket No.:
+                    </span>
+                    <span>
+                        {item.range_from} - {item.range_to}
+                    </span>
+                </div>
+            ))
+        )
+
+        return (
+            <span className="ticket-tag-wrapper">
+                <Popover content={content} title={props.amount + " tickets"}>
+                    <Tag className="ticket-tag">
+                        {props.amount}
+                    </Tag>
+                </Popover>
+            </span>
+    
+        );
+
+    } else {
+        var content = (
+            <Empty
+                description={(
+                    <a href={"http://localhost:3000/tickets"}>
+                        Assign tickets to driver
+                    </a>
+                )}
+            />
+        )
+
+        return (
+            <span className="ticket-tag-wrapper">
+                <Popover content={content} title={props.amount + " tickets"}>
+                    <Badge dot>
+                        <Tag className="ticket-tag">
+                            {props.amount}
+                        </Tag>
+                    </Badge>       
+                </Popover>
+            </span>
+    
+        );
+    }
+
+    
 }
 
 function DetailItems(props) {
