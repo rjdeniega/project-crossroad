@@ -359,20 +359,23 @@ class NonDeployedDrivers(APIView):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
         shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
-        deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
-
-        drivers = []
-        for deployed_driver in deployed_drivers:
-            drivers.append(deployed_driver)
-
+        
         query = DriversAssigned.objects.filter(shift=current_shift.id)
 
-        for driver in drivers:
-            query = query.exclude(driver=driver.driver.id)
+        # remove drivers already deployed
+        if shift_iteration:
+            deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
 
-        for driver in query:
-            if NonDeployedDrivers.did_deploy_a_sub(driver.id, shift_iteration.id):
+            drivers = []
+            for deployed_driver in deployed_drivers:
+                drivers.append(deployed_driver)
+
+            for driver in drivers:
                 query = query.exclude(driver=driver.driver.id)
+
+            for driver in query:
+                if NonDeployedDrivers.did_deploy_a_sub(driver.id, shift_iteration.id):
+                    query = query.exclude(driver=driver.driver.id)
 
         non_deployed_drivers = PlannedDriversSerializer(query, many=True)
         for item in non_deployed_drivers.data:
