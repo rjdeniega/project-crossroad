@@ -59,6 +59,8 @@ export class ShiftManagementPane extends Component {
         am_shift_drivers: [],
         pm_shift_drivers: [],
         mn_shift_drivers: [],
+        am_drivers_display: [],
+        pm_drivers_display: [],
         am_shift_supervisor: "select AM supervisor",
         am_shift_supervisor_key: null,
         pm_shift_supervisor: "select PM supervisor",
@@ -121,7 +123,11 @@ export class ShiftManagementPane extends Component {
                     "name": item.name,
                     "photo": item.photo
                 }));
-                this.setState({ drivers: tableData });
+                this.setState({
+                    drivers: tableData,
+                    am_drivers_display: tableData,
+                    pm_drivers_display: tableData,
+                });
             }
             else {
                 console.log(data["error"]);
@@ -210,38 +216,63 @@ export class ShiftManagementPane extends Component {
             console.log(record);
             console.log(selected);
             // get the last selected item
-            const current =  record.key;
+            const current = record.key;
             if (selected) {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "AM"
                 });
-                this.showModal()
+                this.showModal();
+                let removed_driver = null;
+                console.log(current);
+                console.log(this.state.pm_drivers_display);
+                this.state.pm_drivers_display.forEach(x => {
+                    if (x.key == current) {
+                        removed_driver = x;
+                    }
+                });
+                console.log(removed_driver);
+                let index = this.state.pm_drivers_display.indexOf(removed_driver);
+                let array1 = [...this.state.pm_drivers_display];
+                console.log(index);
+                console.log(array1);
+                array1.splice(index, 1);
+                console.log(array1);
+                this.setState({
+                    pm_drivers_display: array1,
+                }, () => {
+                    console.log(this.state.pm_drivers_display)
+                })
             }
             else {
                 let removed_driver = null;
+                console.log(this.state.am_shift_drivers);
+                console.log(current);
                 this.state.am_shift_drivers.forEach(x => {
                     if (x.driver_id == current) {
                         removed_driver = x;
                     }
                 });
                 let index = this.state.am_shift_drivers.indexOf(removed_driver);
-                let array = this.state.am_shift_drivers;
-                array.splice(index);
+                let array = [...this.state.am_shift_drivers];
+                array.splice(index, 1);
                 this.setState({
-                    am_shift_drivers: array
+                    am_shift_drivers: array,
+                    pm_drivers_display: [...this.state.pm_drivers_display, removed_driver]
                 }, () => {
-                    console.log(this.state.am_shift_drivers)
+                    console.log(this.state.am_shift_drivers);
+                    console.log(this.state.pm_drivers_display);
                 })
             }
         },
     };
+
     pmRowSelection = {
         onSelect: (record, selected, selectedRows, nativeEvent) => {
             console.log(record);
             console.log(selected);
             // get the last selected item
-            const current =  record.key;
+            const current = record.key;
             if (selected) {
                 this.setState({
                     driver_selected: current,
@@ -486,7 +517,7 @@ export class ShiftManagementPane extends Component {
                     {/*<Divider orientation="left">Select Drivers</Divider>*/}
                 </div>
                 <Table showHeader={false} rowSelection={this.pmRowSelection} pagination={false} columns={columns}
-                       dataSource={this.state.drivers}/>,
+                       dataSource={this.state.pm_drivers_display}/>,
 
             </div>
             <div className="current-shift-pane">
@@ -518,7 +549,7 @@ export class ShiftManagementPane extends Component {
                             </div>
                         </Panel>
                         <Panel header="PM Shift Drivers" key="3">
-                              <div className="PM-current">
+                            <div className="PM-current">
                                 <List
                                     itemLayout="horizontal"
                                     size="small"
