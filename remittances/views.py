@@ -390,6 +390,21 @@ class NonDeployedDrivers(APIView):
                 item['expected_departure'] = "2:00 PM"
             else:
                 item['expected_departure'] = "10:00 PM"
+            
+            tickets = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
+            
+            item["ten_peso_tickets"] = []
+            item["twelve_peso_tickets"] = []
+            item["fifteen_peso_tickets"] = []
+
+            for ticket in tickets:
+                if ticket["ticket_type"] == '10 Pesos':
+                    item["ten_peso_tickets"].append(ticket)
+                elif ticket["ticket_type"] == '12 Pesos':
+                    item["twelve_peso_tickets"].append(ticket)
+                else:
+                    item["fifteen_peso_tickets"].append(ticket)
+
 
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
@@ -675,6 +690,9 @@ class DeployedDrivers(APIView):
                 absent_driver_id = sub_deployment.absent_driver.driver.id
                 absent_driver_obj = DriverSerializer(Driver.objects.get(id=absent_driver_id))
                 item["absent_driver"] = absent_driver_obj.data
+                item["tickets"] = TicketUtilities.get_assigned_with_void_of_driver(absent_driver_id)
+            else:
+                item["tickets"] = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
 
             
         return Response(data={

@@ -23,6 +23,8 @@
 .deployment-name {
     font-weight: 600;
     margin-left: 5px;
+    font-size: 15px;
+    margin-right: 7px;
 }
 
 .list-container {
@@ -59,6 +61,28 @@ Col {
 .list-detail-container {
     position: relative;
 }
+
+.route-tag {
+    font-weight: 500;
+}
+
+.ticket-label {
+    font-weight: 450;
+    margin-right: 4px;
+}
+
+.ticket-tags-container {
+    margin-top: 7.5px;
+}
+
+.ticket-tag-wrapper {
+    margin-right: 5px;
+}
+
+.ticket-tag {
+    font-weight: 375;
+}
+
 
 .deployment-button-container {
     align-content: center;

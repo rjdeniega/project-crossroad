@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message, Select } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Tag, Popover, Empty, Badge } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
 import { postData } from '../../../../../network_requests/general';
@@ -50,8 +50,10 @@ function DeploymentList(props) {
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
                                     route={item.shuttle.route}
                                     expected_departure={item.expected_departure}
-                                    tickets="130pcs"
                                     photo={item.driver.photo}
+                                    ten_tickets={item.ten_peso_tickets}
+                                    twelve_tickets={item.twelve_peso_tickets}
+                                    fifteen_tickets={item.fifteen_peso_tickets}
                                 />
                             </List.Item>
                         </div>
@@ -67,6 +69,13 @@ function DeploymentListDetails(props) {
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
 
+    if (props.route == 'Main Road')
+        var tag_color = 'blue';
+    else if (props.route == 'Kaliwa')
+        var tag_color = 'orange';
+    else
+        var tag_color = 'green'
+
     return (
         <div>
             <div className="deployment-header">
@@ -74,6 +83,9 @@ function DeploymentListDetails(props) {
                 <span className="deployment-name">
                     {props.name}
                 </span>
+                <Tag color={tag_color} className="route-tag">
+                    {props.route}
+                </Tag>
             </div>
 
             <div className="deployment-list-container">
@@ -82,17 +94,26 @@ function DeploymentListDetails(props) {
                     value={props.shuttle}
                 />
                 <DetailItems
-                    title="Route"
-                    value={props.route}
-                />
-                <DetailItems
                     title="Expected Departure"
                     value={props.expected_departure}
                 />
-                <DetailItems
-                    title="Tickets Onhand"
-                    value={props.tickets}
-                />
+
+                <div className="ticket-tags-container">
+                    <TicketDisplay
+                        amount="₱10"
+                        tickets={props.ten_tickets}
+                    />
+                    <TicketDisplay
+                        amount="₱12"
+                        tickets={props.twelve_tickets}
+                    />
+                    {props.route == 'Main Road' &&
+                        <TicketDisplay
+                            amount="₱15"
+                            tickets={props.fifteen_tickets}
+                        />
+                    }
+                </div>
             </div>
 
             <DeploymentButtons
@@ -104,6 +125,61 @@ function DeploymentListDetails(props) {
             />
         </div>
     );
+}
+
+function TicketDisplay(props) {
+
+    if (props.tickets.length > 0) {
+        var content = (
+            props.tickets.map((item) => (
+                <div className="ticket-wrapper">
+                    <span className="ticket-label">
+                        Ticket No.:
+                    </span>
+                    <span>
+                        {item.range_from} - {item.range_to}
+                    </span>
+                </div>
+            ))
+        )
+
+        return (
+            <span className="ticket-tag-wrapper">
+                <Popover content={content} title={props.amount + " tickets"}>
+                    <Tag className="ticket-tag">
+                        {props.amount}
+                    </Tag>
+                </Popover>
+            </span>
+    
+        );
+
+    } else {
+        var content = (
+            <Empty
+                description={(
+                    <a href={"http://localhost:3000/tickets"}>
+                        Assign tickets to driver
+                    </a>
+                )}
+            />
+        )
+
+        return (
+            <span className="ticket-tag-wrapper">
+                <Popover content={content} title={props.amount + " tickets"}>
+                    <Badge dot>
+                        <Tag className="ticket-tag">
+                            {props.amount}
+                        </Tag>
+                    </Badge>       
+                </Popover>
+            </span>
+    
+        );
+    }
+
+    
 }
 
 function DetailItems(props) {
@@ -162,7 +238,7 @@ function DeploymentButtons(props) {
 
     return (
         <div className="deployment-button-container">
-            <SubButton 
+            <SubButton
                 shuttle={props.shuttle}
                 route={props.route}
                 driver_id={props.driver_id}
@@ -247,7 +323,7 @@ class SubButton extends React.Component {
                     onCancel={this.handleCancel}
                     okText="Deploy"
                 >
-                    <SubContent 
+                    <SubContent
                         onSelectChange={this.handleSubDriverChange}
                         supervisor_id={this.props.supervisor_id}
                         shuttle={this.props.shuttle}
@@ -270,7 +346,7 @@ class SubContent extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.fetchSubDrivers();
     }
 
