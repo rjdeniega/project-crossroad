@@ -273,6 +273,8 @@ function DeploymentButtons(props) {
                 <DeployWithDiffShuttle 
                     driver_id={props.driver_id}
                     shuttle_display={props.shuttle}
+                    supervisor_id={supervisor_id}
+                    driver_name={driver_name}
                 />
             )}
         </div>
@@ -297,6 +299,7 @@ class DeployWithDiffShuttle extends React.Component {
     }
 
     handleOk = () => {
+        this.handleDeploy();
 
         this.setState({
             'modal_is_visible': false,
@@ -309,23 +312,23 @@ class DeployWithDiffShuttle extends React.Component {
         });
     }
 
-    handleShuttleChange(shuttle_id) {
+    handleShuttleChange = (shuttle_id) => {
         this.setState({
-            'sub_driver_id': shuttle_id
+            'shuttle_id': shuttle_id
         });
     }
 
     handleDeploy() {
         let deploy = {
             'supervisor_id': this.props.supervisor_id,
-            'driver_id': this.state.sub_driver_id,
-            'absent_id': this.state.driver_id
+            'shuttle_id': this.state.shuttle_id,
+            'driver_id': this.state.driver_id
         }
 
-        postData('remittances/deployments/deploy-sub/', deploy)
+        postData('remittances/deployments/back-up-shuttles/deploy/', deploy)
             .then(response => {
                 if (!response.error) {
-                    message.success("A sub-driver has been deployed for " + this.props.driver_name);
+                    message.success(this.props.driver_name + " has been deployed with back-up shuttle");
                 } else {
                     console.log(response.error);
                 }
@@ -347,6 +350,7 @@ class DeployWithDiffShuttle extends React.Component {
                 >
                     <DeployShuttleContent 
                         shuttle_display={this.props.shuttle_display}
+                        handleShuttleChange={this.handleShuttleChange}
                     />
                 </Modal>
             </div>
@@ -361,14 +365,16 @@ class DeployShuttleContent extends React.Component {
         this.state = {
             "backUpShuttles": []
         }
+
+        this.handleChange = this.handleChange.bind(this);
     }
 
     componentDidMount() {
         this.fetchBackUpShuttles();
     }
 
-    handleChange() {
-
+    handleChange(value) {
+        this.props.handleShuttleChange(value);
     }
 
     fetchBackUpShuttles() {
