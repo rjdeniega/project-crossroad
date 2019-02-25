@@ -75,6 +75,13 @@ Col {
     margin-top: 7.5px;
 }
 
+.shuttle-label {
+    float: right;
+    font-size: 14px;
+    padding-top: 6px;
+    font-weight: 550;
+}
+
 .ticket-tag-wrapper {
     margin-right: 5px;
 }

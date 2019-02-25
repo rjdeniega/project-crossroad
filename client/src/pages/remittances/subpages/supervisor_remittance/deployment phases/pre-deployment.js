@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message, Select, Tag, Popover, Empty, Badge } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Tag, Popover, Empty, Badge, Row, Col, Divider } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
 import { postData } from '../../../../../network_requests/general';
@@ -54,6 +54,7 @@ function DeploymentList(props) {
                                     ten_tickets={item.ten_peso_tickets}
                                     twelve_tickets={item.twelve_peso_tickets}
                                     fifteen_tickets={item.fifteen_peso_tickets}
+                                    shuttle_obj={item.shuttle}
                                 />
                             </List.Item>
                         </div>
@@ -89,10 +90,24 @@ function DeploymentListDetails(props) {
             </div>
 
             <div className="deployment-list-container">
-                <DetailItems
-                    title="Shuttle"
-                    value={props.shuttle}
-                />
+                {props.shuttle_obj.status == 'A'? (
+                    <DetailItems
+                        title="Shuttle"
+                        value={props.shuttle}
+                    />
+                ) : (
+                    <div className="detail-container">
+                        <span className="detail-items-title">
+                            Shuttle:
+                        </span>
+                        <Badge dot>
+                            <span className="detail-items-value">
+                                {props.shuttle}
+                            </span>
+                        </Badge>
+                    </div>
+                )}
+                
                 <DetailItems
                     title="Expected Departure"
                     value={props.expected_departure}
@@ -122,6 +137,7 @@ function DeploymentListDetails(props) {
                 driver_name={driver_name}
                 shuttle={props.shuttle}
                 route={props.route}
+                shuttle_obj={props.shuttle_obj}
             />
         </div>
     );
@@ -245,15 +261,167 @@ function DeploymentButtons(props) {
                 supervisor_id={supervisor_id}
                 driver_name={driver_name}
             />
-            <Button
-                type="primary"
-                className="deployment-button"
-                onClick={showConfirm}
-            >
-                Deploy
-            </Button>
+            {props.shuttle_obj.status == 'A' ? (
+                <Button
+                    type="primary"
+                    className="deployment-button"
+                    onClick={showConfirm}
+                >
+                    Deploy
+                </Button>
+            ) : (
+                <DeployWithDiffShuttle 
+                    driver_id={props.driver_id}
+                    shuttle_display={props.shuttle}
+                />
+            )}
         </div>
     );
+}
+
+class DeployWithDiffShuttle extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            'modal_is_visible': false,
+            'shuttle_id': null,
+            'driver_id': this.props.driver_id,
+        }
+        this.handleShuttleChange = this.handleShuttleChange.bind(this);
+    }
+
+    showModal = () => {
+        this.setState({
+            'modal_is_visible': true,
+        });
+    }
+
+    handleOk = () => {
+
+        this.setState({
+            'modal_is_visible': false,
+        });
+    }
+
+    handleCancel = () => {
+        this.setState({
+            'modal_is_visible': false,
+        });
+    }
+
+    handleShuttleChange(shuttle_id) {
+        this.setState({
+            'sub_driver_id': shuttle_id
+        });
+    }
+
+    handleDeploy() {
+        let deploy = {
+            'supervisor_id': this.props.supervisor_id,
+            'driver_id': this.state.sub_driver_id,
+            'absent_id': this.state.driver_id
+        }
+
+        postData('remittances/deployments/deploy-sub/', deploy)
+            .then(response => {
+                if (!response.error) {
+                    message.success("A sub-driver has been deployed for " + this.props.driver_name);
+                } else {
+                    console.log(response.error);
+                }
+            });
+    }
+
+    render() {
+        return (
+            <div className="subButton-container">
+                <Button className="deployment-button" type="primary" onClick={this.showModal}>
+                    Deploy
+                </Button>
+                <Modal
+                    title="Deploy with a Back-up Shuttle"
+                    visible={this.state.modal_is_visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                    okText="Deploy"
+                >
+                    <DeployShuttleContent 
+                        shuttle_display={this.props.shuttle_display}
+                    />
+                </Modal>
+            </div>
+        );
+    }
+}
+
+class DeployShuttleContent extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            "backUpShuttles": []
+        }
+    }
+
+    componentDidMount() {
+        this.fetchBackUpShuttles();
+    }
+
+    handleChange() {
+
+    }
+
+    fetchBackUpShuttles() {
+        fetch('/remittances/deployments/back-up-shuttles/')
+        .then(response => {
+            return response;
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.error) {
+                this.setState({
+                    backUpShuttles: data.shuttles
+                });
+            }
+            else {
+                console.log(data.error)
+            }
+        }).catch(error => console.log(error));
+    }
+
+    render() {
+        return (
+            <div>
+                <div>
+                    <span>
+                        {"Shuttle No." + this.props.shuttle_display + " "}
+                    </span>
+                    <span>
+                        is currently <b>under maintenance</b>
+                    </span>
+                </div>
+                <Divider></Divider>
+                <Row gutter={16}>
+                    <Col span={8}>
+                        <label className="shuttle-label">
+                            Back-Up Shuttle:
+                        </label>
+                    </Col>
+                    <Col span={16}>
+                        <Select onChange={this.handleChange} style={{ width: 200 }}>
+                            {
+                                this.state.backUpShuttles.map((item) => (
+                                    <option value={item.id} key={item.id}>
+                                        Shuttle#{item.shuttle_number} - {item.plate_number}
+                                    </option>
+                                ))
+                            }
+                        </Select>
+                    </Col>
+                </Row>
+            </div>
+        );
+    }
 }
 
 class SubButton extends React.Component {
