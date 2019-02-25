@@ -1,0 +1,152 @@
+.phase-container {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 1px 20px -5px rgba(51, 71, 91, 0.12);
+    min-height: 100px;
+    padding: 20px;
+}
+
+.remittance-body {
+    padding: 16px;
+}
+
+.phase-header-title {
+    font-weight: 550;
+    font-size: x-large;
+    margin: 0px;
+}
+
+
+.deployment-header {
+    align-content: center;
+}
+
+.deployment-name {
+    font-weight: 600;
+    margin-left: 5px;
+    font-size: 15px;
+    margin-right: 7px;
+}
+
+.list-container {
+    margin-top: 20px;
+}
+
+.deployment-list-container {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.detail-container {
+    padding-left: 5px;
+    padding-top: 2px;
+}
+
+.detail-items-title {
+    font-weight: 450;
+    font-size: 12px;
+}
+
+.detail-items-value {
+    font-weight: 350;
+    margin-left: 3px;
+    font-size: 12px;
+}
+
+Col {
+    margin: 16px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+.list-detail-container {
+    position: relative;
+}
+
+.route-tag {
+    font-weight: 500;
+}
+
+.ticket-label {
+    font-weight: 450;
+    margin-right: 4px;
+}
+
+.ticket-tags-container {
+    margin-top: 7.5px;
+}
+
+.shuttle-label {
+    float: right;
+    font-size: 14px;
+    padding-top: 6px;
+    font-weight: 550;
+}
+
+.ticket-tag-wrapper {
+    margin-right: 5px;
+}
+
+.ticket-tag {
+    font-weight: 375;
+}
+
+
+.deployment-button-container {
+    align-content: center;
+    right: 0;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 15px;
+    margin-right: 10px;
+}
+
+.deployment-button {
+    margin-left: 5px;
+}
+
+.subButton-container {
+    display: inline;
+}
+
+.sub-arrow {
+    margin-left: 3px;
+    margin-right: 3px
+}
+
+.reason-label {
+    margin-right: 5px;
+}
+
+.info-circle {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.modal-detail-title {
+    font-weight: bold;
+}
+
+.modal-detail-value {
+    margin-left: 5px;
+    margin-right: 5px;
+    font-weight: 300;
+}
+
+.confirm-input-number {
+    width: 100%;
+}
+
+.form-footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #e9e9e9;
+    padding: 10px 16px;
+    background: #fff;
+    text-align: right;
+}
+
+.confirm-remittance-container {
+    margin-top: 100px;
+}

@@ -14,7 +14,8 @@ import {ClerkRemittancePage} from './subpages/clerk_remittance/clerk_remittance'
 import {SupervisorRemittancePage} from './subpages/supervisor_remittance/supervisor_remittance'
 import {DriverRemittancePage} from './subpages/driver_remittance/driver_remittance'
 import {OMRemittancePage} from './subpages/om_remittance/om_remittance'
-
+import {SupervisorRemittance} from './subpages/supervisor_remittance/revised_supervisor_remittance'
+import {DriverRemittance} from './subpages/driver_remittance/revised_driver_remittance'
 
 const TabPane = Tabs.TabPane;
 
@@ -23,10 +24,12 @@ export class RemittancePage extends Component {
         const {photo} = JSON.parse(localStorage.user_staff);
         const user_type = JSON.parse(localStorage.user_type);
         if (user_type === "driver") {
-            return <DriverRemittancePage/>
+            //return <DriverRemittancePage/>
+            return <DriverRemittance />
         }
         if (user_type === "supervisor") {
-            return <SupervisorRemittancePage/>
+            //return <SupervisorRemittancePage/>
+            return <SupervisorRemittance />
         }
         if (user_type === "clerk") {
             return <ClerkRemittancePage/>

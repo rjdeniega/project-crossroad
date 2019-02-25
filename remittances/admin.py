@@ -12,7 +12,9 @@ admin.site.register(Deployment)
 admin.site.register(VoidTicket)
 admin.site.register(RemittanceForm)
 admin.site.register(ShiftIteration)
-
+admin.site.register(SubbedDeployments)
+admin.site.register(ConsumedTicket)
+admin.site.register(AssignedTicket)
 
 @admin.register(BeepTransaction)
 class BeepTransactionAdmin(ImportExportModelAdmin):

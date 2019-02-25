@@ -5,13 +5,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from members.serializers import MemberSerializer
+from members.serializers import MemberSerializer, DriverSerializer
 from remittances.resources import BeepTransactionResource
 from remittances.serializers import *
+from inventory.serializers import ShuttlesSerializer
 from .models import *
 import json
 from datetime import datetime
 from tablib import Dataset
+from time import time
 
 
 class ScheduleView(APIView):
@@ -400,25 +402,138 @@ class NonDeployedDrivers(APIView):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
         shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
-        deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
-
-        drivers = []
-        for deployed_driver in deployed_drivers:
-            drivers.append(deployed_driver)
-
+        
         query = DriversAssigned.objects.filter(shift=current_shift.id)
 
-        for driver in drivers:
-            query = query.exclude(driver=driver.driver.id)
+        # remove drivers already deployed
+        if shift_iteration:
+            deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
+
+            drivers = []
+            for deployed_driver in deployed_drivers:
+                drivers.append(deployed_driver)
+
+            for driver in drivers:
+                query = query.exclude(driver=driver.driver.id)
+
+            for driver in query:
+                if NonDeployedDrivers.did_deploy_a_sub(driver.id, shift_iteration.id):
+                    query = query.exclude(driver=driver.driver.id)
 
         non_deployed_drivers = PlannedDriversSerializer(query, many=True)
         for item in non_deployed_drivers.data:
             item["driver"]["shuttle_id"] = item["shuttle"]["id"]
             item["driver"]["shuttle_plate_number"] = item["shuttle"]["plate_number"]
 
+            if item['deployment_type'] is 'E' and item['shift']['type'] is 'A':
+                item['expected_departure'] = "5:00 AM"
+            elif item['deployment_type'] is 'R' and item['shift']['type'] is 'A':
+                item['expected_departure'] = "7:00 AM"
+            elif item['deployment_type'] is 'R' and item['shift']['type'] is 'P':
+                item['expected_departure'] = "2:00 PM"
+            else:
+                item['expected_departure'] = "10:00 PM"
+            
+            tickets = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
+            
+            item["ten_peso_tickets"] = []
+            item["twelve_peso_tickets"] = []
+            item["fifteen_peso_tickets"] = []
+
+            for ticket in tickets:
+                if ticket["ticket_type"] == '10 Pesos':
+                    item["ten_peso_tickets"].append(ticket)
+                elif ticket["ticket_type"] == '12 Pesos':
+                    item["twelve_peso_tickets"].append(ticket)
+                else:
+                    item["fifteen_peso_tickets"].append(ticket)
+
+
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
         }, status=status.HTTP_200_OK)
+    
+    @staticmethod
+    def did_deploy_a_sub(driver_id, shift_iteration_id):
+        deployments = Deployment.objects.filter(shift_iteration_id=shift_iteration_id)
+        print(driver_id)
+        for deployment in deployments:
+            subbed_deployment = SubbedDeployments.objects.filter(deployment=deployment, absent_driver_id=driver_id).first()
+            
+            if subbed_deployment:
+                print(subbed_deployment)
+                print("entered here")
+                return True
+        
+        return False
+ 
+
+class BackUpShuttles(APIView):
+    @staticmethod
+    def get(request):
+        shuttles = Shuttle.objects.filter(status='B')
+
+        serialized_shuttles = ShuttlesSerializer(shuttles, many=True)
+
+        return Response(data={
+            "shuttles": serialized_shuttles.data
+        }, status=status.HTTP_200_OK)
+    
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        is_valid = True
+
+        supervisor_id = data['supervisor_id']
+        driver_id = data['driver_id']
+        shuttle_id = data['shuttle_id']
+
+        # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
+        if DeploymentView.is_first_deployment(supervisor_id):
+            iteration = ShiftIteration()
+            
+            active_sched = RemittanceUtilities.get_active_schedule();
+            for shift in Shift.objects.filter(schedule=active_sched.id):
+                print(shift.supervisor.id)
+                print(supervisor_id)
+                if shift.supervisor.id == supervisor_id:
+                    shift_id = shift.id
+            
+            iteration.shift_id = shift_id
+            iteration.date = datetime.now()
+            iteration.save()
+
+        else:
+            iteration = ShiftIteration.objects.filter(
+                shift__supervisor=supervisor_id
+                ).order_by("-date").first()
+
+        
+        driver_assigned = DriversAssigned.objects.get(
+                shift_id=iteration.shift,
+                driver_id=driver_id
+            )
+
+        
+        #CREATE DEPLOYMENT
+        if is_valid:
+            deployment = Deployment.objects.create(
+                driver_id = driver_id,
+                shuttle_id = shuttle_id,
+                route = driver_assigned.shuttle.route,
+                shift_iteration_id = iteration.id
+            )
+
+            serialized_deployment = DeploymentSerializer(deployment)
+
+            return Response(data={
+                'deployment': serialized_deployment.data
+            }, status=status.HTTP_200_OK)
+
+        else:
+            return Response(data={
+                "errors": error_message
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SubDrivers(APIView):
@@ -514,46 +629,45 @@ class DeploymentView(APIView):
     def post(request):
         data = json.loads(request.body)
         is_valid = True
+        
+        supervisor_id = data['supervisor_id']
+        driver_id = data['driver_id']
 
-        # VALIDATIONS
-        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor_id=data['supervisor']).order_by(
-            '-date').first()
-
-        if DeploymentView.is_in_shift(data['driver'], current_shift_iteration.shift.id):
-            driver_assigned = DriversAssigned.objects.get(
-                shift_id=current_shift_iteration.shift,
-                driver_id=data['driver']
-            )
-
-            if driver_assigned.shuttle.status is 'UM':
-                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
-                is_valid = False
+        # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
+        if DeploymentView.is_first_deployment(supervisor_id):
+            iteration = ShiftIteration()
+            
+            active_sched = RemittanceUtilities.get_active_schedule();
+            for shift in Shift.objects.filter(schedule=active_sched.id):
+                if shift.supervisor.id == supervisor_id:
+                    shift_id = shift.id
+            
+            iteration.shift_id = shift_id
+            iteration.date = datetime.now()
+            iteration.save()
 
         else:
-            active_sched = RemittanceUtilities.get_active_schedule()
-            shifts = Shift.objects.filter(schedule=active_sched)
+            iteration = ShiftIteration.objects.filter(
+                shift__supervisor=supervisor_id
+                ).order_by("-date").first()
 
-            for shift in shifts:
-                if shift.id != current_shift_iteration.shift.id:
-                    other_shift = shift
-
-            driver_assigned = DriversAssigned.objects.get(
-                shift_id=other_shift.id,
-                driver_id=data['driver']
+        # VALIDATIONS
+        driver_assigned = DriversAssigned.objects.get(
+                shift_id=iteration.shift,
+                driver_id=driver_id
             )
 
-            if driver_assigned.shuttle.status == 'UM':
+        if driver_assigned.shuttle.status is 'UM':
                 error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
                 is_valid = False
 
         # CREATE DEPLOYMENT
         if is_valid:
-            print(driver_assigned.shuttle)
             deployment = Deployment.objects.create(
-                driver_id=data['driver'],
-                shuttle_id=driver_assigned.shuttle.id,
-                route=driver_assigned.shuttle.route,
-                shift_iteration_id=current_shift_iteration.id
+                driver_id = driver_id,
+                shuttle_id = driver_assigned.shuttle.id,
+                route = driver_assigned.shuttle.route,
+                shift_iteration_id = iteration.id
             )
 
             serialized_deployment = DeploymentSerializer(deployment)
@@ -579,7 +693,87 @@ class DeploymentView(APIView):
             if driver.driver.id == driver_id:
                 return True
         return False
+    
+    @staticmethod
+    def is_first_deployment(supervisor_id):
+        print(type(supervisor_id))
+        shift_iteration = ShiftIteration.objects.filter(
+            shift__supervisor_id=supervisor_id,
+            date=datetime.now() 
+            )
+        print(type(shift_iteration))
+        print(shift_iteration)
+        if not shift_iteration:
+            return True
+        else:
+            return False
 
+
+class DeploySubDriver(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        is_valid = True
+        
+        supervisor_id = data['supervisor_id']
+        driver_id = data['driver_id']
+        absent_id = data['absent_id']
+
+        # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
+        if DeploymentView.is_first_deployment(supervisor_id):
+            iteration = ShiftIteration()
+            
+            active_sched = RemittanceUtilities.get_active_schedule();
+            for shift in Shift.objects.filter(schedule=active_sched.id):
+                print(shift.supervisor.id)
+                print(supervisor_id)
+                if shift.supervisor.id == supervisor_id:
+                    shift_id = shift.id
+            
+            iteration.shift_id = shift_id
+            iteration.date = datetime.now()
+            iteration.save()
+
+        else:
+            iteration = ShiftIteration.objects.filter(
+                shift__supervisor=supervisor_id
+                ).order_by("-date").first()
+
+        # VALIDATIONS
+        driver_assigned = DriversAssigned.objects.get(
+                shift_id=iteration.shift,
+                driver_id=absent_id
+            )
+
+        if driver_assigned.shuttle.status is 'UM':
+                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+                is_valid = False
+        
+        #CREATE DEPLOYMENT
+        if is_valid:
+            deployment = Deployment.objects.create(
+                driver_id = driver_id,
+                shuttle_id = driver_assigned.shuttle.id,
+                route = driver_assigned.shuttle.route,
+                shift_iteration_id = iteration.id
+            )
+
+            sub_deployment = SubbedDeployments.objects.create(
+                deployment = deployment,
+                absent_driver = driver_assigned
+            )
+
+            serialized_deployment = DeploymentSerializer(deployment)
+
+            return Response(data={
+                'deployment': serialized_deployment.data
+            }, status=status.HTTP_200_OK)
+
+        else:
+            return Response(data={
+                "errors": error_message
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class DeployedDrivers(APIView):
     # this function returns all ongoing deployments for the latest shift iteration of the supervisor
@@ -589,12 +783,458 @@ class DeployedDrivers(APIView):
             "-date").first()
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='O')
         deployments_serializer = DeploymentSerializer(deployments, many=True)
+
+        #INSERT NEEDED DATA FOR LIST
         for item in deployments_serializer.data:
-            driver = Driver.objects.get(id=item.get('driver'))
-            item["driver_name"] = driver.name
+            driver = DriverSerializer(Driver.objects.get(id=item.get('driver')))
+            shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle')))
+            deployment = Deployment.objects.get(id=item["id"]);
+            time = deployment.start_time
+            item["driver"] = driver.data
+            item["shuttle"] = shuttle.data
+            item["start_time"] = time.strftime("%I:%M %p") 
+
+            if DeployedDrivers.is_sub(item['id']):
+                sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()
+                absent_driver_id = sub_deployment.absent_driver.driver.id
+                absent_driver_obj = DriverSerializer(Driver.objects.get(id=absent_driver_id))
+                item["absent_driver"] = absent_driver_obj.data
+                tickets = TicketUtilities.get_assigned_with_void_of_driver(absent_driver_id)
+
+                item["ten_peso_tickets"] = []
+                item["twelve_peso_tickets"] = []
+                item["fifteen_peso_tickets"] = []
+
+                for ticket in tickets:
+                    if ticket["ticket_type"] == '10 Pesos':
+                        item["ten_peso_tickets"].append(ticket)
+                    elif ticket["ticket_type"] == '12 Pesos':
+                        item["twelve_peso_tickets"].append(ticket)
+                    else:
+                        item["fifteen_peso_tickets"].append(ticket)
+            else:
+                tickets = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
+                
+                item["ten_peso_tickets"] = []
+                item["twelve_peso_tickets"] = []
+                item["fifteen_peso_tickets"] = []
+
+                for ticket in tickets:
+                    if ticket["ticket_type"] == '10 Pesos':
+                        item["ten_peso_tickets"].append(ticket)
+                    elif ticket["ticket_type"] == '12 Pesos':
+                        item["twelve_peso_tickets"].append(ticket)
+                    else:
+                        item["fifteen_peso_tickets"].append(ticket)
+
         return Response(data={
             "deployed_drivers": deployments_serializer.data
         }, status=status.HTTP_200_OK)
+    
+    @staticmethod
+    def is_sub(deployment_id):
+        for item in SubbedDeployments.objects.filter(deployment_id=deployment_id):
+            return True
+        return False
+
+class ShuttleBreakdown(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id);
+        shift_iteration = ShiftIteration.objects.get(id=deployment.shift_iteration.id)
+        
+        shuttles = Shuttle.objects.filter().exclude(id=deployment.shuttle.id, status="UM")
+
+        deployments = Deployment.objects.filter(shift_iteration=shift_iteration.id)
+
+        for deployment in deployments:
+            shuttles = shuttles.exclude(id=deployment.shuttle.id)
+
+        serialized_shuttle = ShuttlesSerializer(shuttles, many=True)
+        return Response(data={
+            "shuttles": serialized_shuttle.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        deployment = Deployment.objects.get(id=data["deployment_id"])
+        shuttle = Shuttle.objects.get(id=data["shuttle_id"])
+
+        new_deployment = Deployment.objects.create(
+            driver=deployment.driver,
+            shuttle=shuttle,
+            route=deployment.route,
+            shift_iteration=deployment.shift_iteration,
+        )
+
+        redeployment = Redeployments.objects.create(
+            deployment=new_deployment,
+            prior_deployment=deployment
+        )
+
+        deployment.set_deployment_breakdown()
+        deployment.end_deployment()
+
+        shuttle.status = 'UM'
+        shuttle.save()
+        
+        serialized_deployment = DeploymentSerializer(new_deployment)
+
+        return Response(data={
+            "redeployment": serialized_deployment.data
+        }, status=status.HTTP_200_OK)
+
+
+class RedeployDriver(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id)
+        shift_iteration = ShiftIteration.objects.get(id=deployment.shift_iteration.id)
+
+        drivers = Driver.objects.filter(is_supervisor=False)
+
+        deployments = Deployment.objects.filter(shift_iteration=shift_iteration.id)
+
+        for deployment in deployments:
+            drivers = drivers.exclude(id=deployment.driver.id)
+
+        serialized_drivers = DriverSerializer(drivers, many=True)
+        return Response(data={
+            "available_drivers": serialized_drivers.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        deployment = Deployment.objects.get(id=data["deployment_id"])
+        driver = Driver.objects.get(id=data["driver_id"])
+
+        new_deployment = Deployment.objects.create(
+            driver=driver,
+            shuttle=deployment.shuttle,
+            route=deployment.route,
+            shift_iteration=deployment.shift_iteration,
+        )
+
+        redeployment = Redeployments.objects.create(
+            deployment=new_deployment,
+            prior_deployment=deployment
+        )
+
+        deployment.set_deployment_early()
+        deployment.end_deployment()
+
+        serialized_deployment = DeploymentSerializer(new_deployment)
+
+        return Response(data={
+            "redeployment": serialized_deployment.data
+        }, status=status.HTTP_200_OK)
+
+class DriverDeployment(APIView):
+    @staticmethod
+    def get(request, driver_id):
+        deployments = Deployment.objects.filter(driver_id=driver_id).order_by('-start_time')
+
+        data = []
+
+        for deployment in deployments:
+            endtime = None
+            if deployment.end_time:
+                endtime = deployment.end_time.strftime("%I:%M %p")
+            
+            shuttle = "#" + str(deployment.shuttle.shuttle_number) + " - " + deployment.shuttle.plate_number
+
+            data.append({
+                'id': deployment.id,
+                'shift_date': deployment.shift_iteration.date.strftime("%b %d %Y"),
+                'start_time': deployment.start_time.strftime("%I:%M %p"),
+                'end_time': endtime,
+                'status': deployment.status,
+                'shuttle': shuttle
+            })
+        
+        print(data)
+        return Response(data={
+            'deployments': data
+        }, status=status.HTTP_200_OK)
+
+
+class DeploymentTickets(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id);
+        
+        ten_tickets = AssignedTicket.objects.filter(
+            driver=deployment.driver,
+            type="A",
+            is_consumed=False
+            )
+
+        twelve_tickets = AssignedTicket.objects.filter(
+            driver=deployment.driver,
+            type="B",
+            is_consumed=False
+            )
+
+        fifteen_tickets = AssignedTicket.objects.filter(
+            driver=deployment.driver,
+            type="C",
+            is_consumed=False
+            )
+        
+        ten_list = []
+        twelve_list = []
+        fifteen_list = []
+
+        for ten in ten_tickets:
+            ten_list.append(DeploymentTickets.getUsableTickets(ten))
+        
+        for twelve in twelve_tickets:
+            twelve_list.append(DeploymentTickets.getUsableTickets(twelve))
+        
+        for fifteen in fifteen_tickets:
+            fifteen_list.append(DeploymentTickets.getUsableTickets(fifteen))
+
+        return Response(data={
+            "ten_tickets": ten_list,
+            "twelve_tickets": twelve_list,
+            "fifteen_tickets": fifteen_list
+        }, status=status.HTTP_200_OK)
+
+    
+    @staticmethod
+    def getUsableTickets(ticket):
+        consumed = ConsumedTicket.objects.filter(assigned_ticket=ticket).order_by('-end_ticket').first()
+
+        if consumed is not None:
+            tickets_left = {
+                'id': ticket.id,
+                'start_ticket': consumed.end_ticket + 1,
+                'end_ticket': ticket.range_to
+            }
+        else:
+            tickets_left = {
+                'id': ticket.id,
+                'start_ticket': ticket.range_from,
+                'end_ticket': ticket.range_to
+            }
+        
+        return tickets_left
+
+
+class SubmitRemittance(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body);
+        
+        deployment = Deployment.objects.get(id=data["deployment_id"]);
+
+        #create remittance form
+        rem_form = RemittanceForm()
+        rem_form.deployment = deployment
+        if data["fuel_costs"]:
+            rem_form.fuel_cost = data["fuel_costs"]
+        else:
+            rem_form.fuel_cost = 0
+
+        if data["or_number"]:
+            rem_form.fuel_receipt = data["or_number"]
+
+        if data["other_costs"]:
+            rem_form.other_cost = data["other_costs"]
+        else:
+            rem_form.fuel_cost = 0
+        
+        rem_form.km_from = deployment.shuttle.mileage
+        rem_form.km_to = data["mileage"]
+
+        deployment.shuttle.mileage = data["mileage"]
+
+        rem_form.save()
+
+        for ticket_used in data["ten_peso_tickets"]:
+            assigned = AssignedTicket.objects.get(id=ticket_used["id"])
+
+            if ticket_used["value"]:
+                # Get current tickets
+                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_ticket').first()
+
+                new_consumed = ConsumedTicket()
+                new_consumed.assigned_ticket = assigned
+                if last_consumed is not None:
+                    new_consumed.start_ticket = last_consumed.end_ticket + 1
+                else:
+                    new_consumed.start_ticket = assigned.range_from
+                new_consumed.end_ticket = ticket_used["value"]
+                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 10
+                new_consumed.remittance_form = rem_form
+                new_consumed.save()
+
+                rem_form.total += new_consumed.total
+
+                if assigned.range_to == new_consumed.end_ticket:
+                    assigned.is_consumed = True
+                    assigned.save()
+        
+
+        for ticket_used in data["twelve_peso_tickets"]:
+            assigned = AssignedTicket.objects.get(id=ticket_used["id"])
+
+            if ticket_used["value"]:
+                # Get current tickets
+                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_ticket').first()
+
+                new_consumed = ConsumedTicket()
+                new_consumed.assigned_ticket = assigned
+                if last_consumed is not None:
+                    new_consumed.start_ticket = last_consumed.end_ticket + 1
+                else:
+                    new_consumed.start_ticket = assigned.range_from
+                new_consumed.end_ticket = ticket_used["value"]
+                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 12
+                new_consumed.remittance_form = rem_form
+                new_consumed.save()
+
+                rem_form.total += new_consumed.total
+
+                if assigned.range_to == new_consumed.end_ticket:
+                    assigned.is_consumed = True
+                    assigned.save()
+
+        
+        for ticket_used in data["fifteen_peso_tickets"]:
+            assigned = AssignedTicket.objects.get(id=ticket_used["id"])
+
+            if ticket_used["value"]:
+                # Get current tickets
+                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_ticket').first()
+
+                new_consumed = ConsumedTicket()
+                new_consumed.assigned_ticket = assigned
+                if last_consumed is not None:
+                    new_consumed.start_ticket = last_consumed.end_ticket + 1
+                else:
+                    new_consumed.start_ticket = assigned.range_from
+                new_consumed.end_ticket = ticket_used["value"]
+                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 15
+                new_consumed.remittance_form = rem_form
+                new_consumed.save()
+
+                rem_form.total += new_consumed.total
+
+                if assigned.range_to == new_consumed.end_ticket:
+                    assigned.is_consumed = True
+                    assigned.save()
+
+
+        rem_form.total -= (rem_form.fuel_cost + rem_form.other_cost)
+        deployment.shuttle.save()
+        deployment.end_deployment()
+        rem_form.save()
+
+        serialized_rem_form = RemittanceFormSerializer(rem_form)
+        return Response(data={
+            "remittance_form": serialized_rem_form.data
+        }, status=status.HTTP_200_OK)
+
+
+class PendingRemittances(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
+            "-date").first()
+        deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='F')
+
+        #only serialize those that have pending remittances
+        to_serialize = []
+        for deployment in deployments:
+            remittance = RemittanceForm.objects.filter(deployment=deployment, status='P').first()
+
+            if remittance:
+                to_serialize.append(deployment)
+
+        deployments_serializer = DeploymentSerializer(to_serialize, many=True)
+
+        #INSERT NEEDED DATA FOR LIST
+        for item in deployments_serializer.data:
+            driver = DriverSerializer(Driver.objects.get(id=item.get('driver')))
+            shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle')))
+            deployment = Deployment.objects.get(id=item["id"]);
+            start_time = deployment.start_time
+            end_time = deployment.end_time
+
+            item["driver"] = driver.data
+            item["shuttle"] = shuttle.data
+            item["start_time"] = start_time.strftime("%I:%M %p") 
+            item["end_time"] = end_time.strftime("%I:%M %p")
+
+            if DeployedDrivers.is_sub(item['id']):
+                sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()
+                absent_driver_id = sub_deployment.absent_driver.driver.id
+                absent_driver_obj = DriverSerializer(Driver.objects.get(id=absent_driver_id))
+                item["absent_driver"] = absent_driver_obj.data
+
+        return Response(data={
+            'deployments': deployments_serializer.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, remittance_id):
+        data = json.loads(request.body);
+
+        rem_form = RemittanceForm.objects.get(id=remittance_id)
+        rem_form.discrepancy = abs(data["actual"] - rem_form.total)
+        rem_form.status = 'C'
+        rem_form.save()
+
+        return Response(data={
+            "remittance_form": [],
+        }, status=status.HTTP_200_OK)
+
+class ViewRemittance(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id)
+
+        rem_form = RemittanceForm.objects.get(deployment=deployment)
+
+        ten_tickets = ViewRemittance.getTickets('A', rem_form)
+        twelve_tickets = ViewRemittance.getTickets('B', rem_form)
+        fifteen_tickets = ViewRemittance.getTickets('C', rem_form)
+
+        serialized_remittance = RemittanceFormSerializer(rem_form)
+
+        return Response(data={
+            "remittance_form": serialized_remittance.data,
+            "ten_tickets": ten_tickets,
+            "twelve_tickets": twelve_tickets,
+            "fifteen_tickets": fifteen_tickets
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def getTickets(ticket_type, remittance_form):
+        tickets = ConsumedTicket.objects.filter(
+                                remittance_form=remittance_form,
+                                assigned_ticket__type=ticket_type
+                                )
+
+        data = []
+
+        for ticket in tickets:
+            data.append({
+                "id": ticket.id,
+                "start_ticket": ticket.start_ticket,
+                "end_ticket": ticket.end_ticket,
+                "total": ticket.total
+            })
+        
+        return data
 
 
 class RemittanceUtilities():

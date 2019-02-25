@@ -97,6 +97,17 @@ class Shift(models.Model):
         self.modified = timezone.now()
         return super(Shift, self).save(*args, **kwargs)
 
+    def get_type_display(self):
+        if self.type is 'A':
+            return 'AM'
+        return 'PM'
+
+    def __str__(self):
+        shift_name = self.get_type_display() + " shift"
+        schedule = self.schedule.start_date.strftime('%m/%d/%Y') + " to " + self.schedule.end_date.strftime('%m/%d/%Y')
+        supervisor = self.supervisor.name
+        return (shift_name + " - " + schedule + " - " + supervisor) 
+
 
 class DriversAssigned(models.Model):
     driver = ForeignKey(Driver, related_name='driver_name', on_delete=models.CASCADE)
@@ -104,12 +115,26 @@ class DriversAssigned(models.Model):
     deployment_type = CharField(max_length=16)
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return (self.driver.name + ' driving ')
+
 
 class ShiftIteration(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
     date = DateField(default=timezone.now)
     status = CharField(max_length=1, choices=ITERATION_STATUS, default='O')
     remarks = CharField(max_length=64, null=True)
+
+    def __str__(self):
+        shift_type = self.shift.get_type_display()
+        date = self.date.strftime('%m/%d/%Y')
+        status = self.get_status_display()
+        return (shift_type + ' Shift on ' + date + ' (' + status + ')' ) 
+
+    def get_status_display(self):
+        if self.status == 'O':
+            return 'Ongoing'
+        return 'Finished'
 
     def finish_shift(self):
         self.status = 'F'
@@ -125,9 +150,29 @@ class Deployment(models.Model):
     start_time = DateTimeField(default=timezone.now, editable=False)
     end_time = DateTimeField(null=True)
     result = CharField(max_length=1, choices=DEPLOYMENT_RESULTS, null=True)
-    reason = CharField(max_length=64, null=True)
+    reason = CharField(max_length=64, blank=True)
     created = models.DateTimeField(editable=False, default=timezone.now)
     modified = models.DateTimeField(null=True)
+
+    def __str__(self):
+        driver_name = self.driver.name
+        shuttle = str(self.shuttle.shuttle_number) + " - " + self.shuttle.plate_number
+        route = self.get_route_display()
+        status = self.get_status_display()
+        date = self.shift_iteration.date.strftime('%m/%d/%Y')
+        return (driver_name + " driving shuttle#" + shuttle + " on route " + route + "(" + status + ") on " + date) 
+
+    def get_status_display(self):
+        if self.status is 'O':
+            return 'Ongoing'
+        return 'Finished'
+
+    def get_route_display(self):
+        if self.route is 'M':
+            return 'Main Road'
+        elif self.route is 'R':
+            return 'Kanan'
+        return 'Kaliwa'
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -137,6 +182,7 @@ class Deployment(models.Model):
 
     def end_deployment(self):
         self.end_time = datetime.now()
+        self.status = 'F'
         self.save()
 
     def set_deployment_success(self):
@@ -156,6 +202,9 @@ class SubbedDeployments(models.Model):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE)
     absent_driver = ForeignKey(DriversAssigned, on_delete=models.CASCADE)
 
+    def __str__(self):
+        date = self.deployment.shift_iteration.date.strftime('%m/%d/%Y')
+        return (self.deployment.driver.name + " subbbed in for " + self.absent_driver.driver.name + " (" + date + ")")
 
 class Redeployments(models.Model):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
@@ -167,6 +216,7 @@ class AssignedTicket(models.Model):
     range_from = IntegerField(null=True)
     range_to = IntegerField(null=True)
     type = CharField(max_length=1, choices=TICKET_TYPE)
+    is_consumed = BooleanField(default=False)
     created = models.DateTimeField(editable=False, default=timezone.now)
     modified = models.DateTimeField(null=True)
 
