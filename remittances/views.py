@@ -425,6 +425,17 @@ class NonDeployedDrivers(APIView):
         return False
  
 
+class BackUpShuttles(APIView):
+    @staticmethod
+    def get(request):
+        shuttles = Shuttle.objects.filter(status='B')
+
+        serialized_shuttles = ShuttlesSerializer(shuttles, many=True)
+
+        return Response(data={
+            "shuttles": serialized_shuttles.data
+        }, status=status.HTTP_200_OK)
+
 
 class SubDrivers(APIView):
     @staticmethod
