@@ -188,7 +188,9 @@ function TicketDisplay(props) {
 
         );
 
-    } else if (props.total> 0 && props.total < 100) {
+    } else if (props.total> 0 && props.total < 130) {
+        var badge_status = props.total >= 100 ? 'warning' : 'error';
+
         var content = (
             <div className="popover-container">
                 {
@@ -221,7 +223,7 @@ function TicketDisplay(props) {
         return (
             <span className="ticket-tag-wrapper">
                 <Popover content={content} title={props.amount + " tickets"}>
-                    <Badge dot status="warning">
+                    <Badge dot status={badge_status}>
                         <Tag className="ticket-tag">
                             {props.amount}
                         </Tag>
