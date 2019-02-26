@@ -1,0 +1,23 @@
+.printout{
+    display: none;
+}
+
+@media print {
+    .printout{
+        display: inline;
+    }
+
+    .whole-page{
+        height: 11in;
+        width: 8.5in;
+    }
+
+    .item-sticker{
+        height: 1.7in;
+        width: 3.5in;
+    }
+
+    .page-divider{
+        page-break-after: always;
+    }
+}

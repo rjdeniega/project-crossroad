@@ -6,6 +6,7 @@ import NumberFormat from 'react-number-format';
 import ReactToPrint from 'react-to-print';
 import {Icon} from 'react-icons-kit';
 import {printer} from 'react-icons-kit/icomoon/printer';
+import {ItemCodePrintout} from "../item_code_printout/item_code_printout";
 
 function pad(num) {
     let digits = 6 - num.toString().length;
@@ -136,6 +137,7 @@ export class PurchaseOrderView extends Component {
 
     render() {
         const {po_number, vendor_name, vendor_address, vendor_contact, special_instructions, order_date, items} = this.state;
+        const {status} = this.props;
         return (
             <span>
                 <a onClick={this.showModal}>View</a>
@@ -149,12 +151,22 @@ export class PurchaseOrderView extends Component {
                         <ReactToPrint key={1}
                                       trigger={() => <Button htmlType="button" type="primary"><Icon className="print"
                                                                                                     icon={printer}
-                                                                                                    size={14}/> &nbsp; Print
-                                          this out!</Button>}
+                                                                                                    size={14}/> &nbsp;
+                                          Print Purchase Order </Button>}
                                       content={() => this.componentRef}
-                        />
+                        />, status === "Complete" ?
+                            <ReactToPrint key={2}
+                                          trigger={() => <Button htmlType='button'
+                                                                 type="primary">
+                                              <Icon
+                                                  className="print"
+                                                  icon={printer}
+                                                  size={14}/>&nbsp;Print Item Codes</Button>}
+                                          content={() => this.componentRef2}/> : ''
+
                     ]}
                 >
+                    <ItemCodePrintout ref={el => (this.componentRef2 = el)} po_id={po_number}/>
                     <div className="purchase-order-view" ref={el => (this.componentRef = el)}>
                         <Row type="flex" justify="space-between" align="bottom">
                             <Col span={12}>

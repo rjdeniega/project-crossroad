@@ -43,6 +43,8 @@ export class UpdatePurchaseOrder extends Component {
                         generic_name: item.item,
                         quantity: item.quantity,
                         unit_price: item.unit_price,
+                        measurement: null,
+                        unit: null,
                         item_type: "Single Item",
                         item_code: generateCode(),
                     };
@@ -101,12 +103,12 @@ export class UpdatePurchaseOrder extends Component {
             update: "accepted",
             items: final_items,
         };
-         postData('inventory/purchase_order/update/' + id, data).then(data => {
-             if (data.error){
-                 console.log(data.error)
-             }
-             message.success("Purchase order has been confirmed");
-             // this.props.load_purchase_orders()
+        postData('inventory/purchase_order/update/' + id, data).then(data => {
+            if (data.error) {
+                console.log(data.error)
+            }
+            message.success("Purchase order has been confirmed");
+            // this.props.load_purchase_orders()
         })
     };
 

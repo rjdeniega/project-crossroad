@@ -653,7 +653,8 @@ class UpdatePurchaseOrder(APIView):
                 inventory_item = Item(name=item['name'], description=item['description'], quantity=item['quantity'],
                                       unit_price=item['unit_price'], item_type=item['item_type'],
                                       measurement=item['measurement'], unit=item['unit'], brand=item['brand'],
-                                      item_code=item['item_code'], vendor=purchase_order.vendor)
+                                      item_code=item['item_code'], vendor=purchase_order.vendor,
+                                      purchase_order=purchase_order)
                 inventory_item.save()
                 item_movement = ItemMovement(item=inventory_item, type="B", quantity=item['quantity'],
                                              unit_price=item['unit_price'])
@@ -661,3 +662,14 @@ class UpdatePurchaseOrder(APIView):
             return Response(data={
                 'foo': 'bar'
             }, status=status.HTTP_200_OK)
+
+
+class GetPurchaseOrderItems(APIView):
+    @staticmethod
+    def get(request, pk):
+        purchase_order = PurchaseOrder.objects.get(id=pk)
+        items = ItemSerializer(Item.objects.all()
+                               .filter(purchase_order=purchase_order), many=True)
+        return Response(data={
+            'items': items.data
+        }, status=status.HTTP_200_OK)

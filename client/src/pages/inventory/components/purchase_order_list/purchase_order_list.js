@@ -110,7 +110,7 @@ export class PurchaseOrderList extends Component {
                                              load_purchase_orders={this.props.load_purchase_orders}/>
                         <Divider type='vertical'/>
                     </span> : ""}
-                <PurchaseOrderView po_id={value}/>
+                <PurchaseOrderView po_id={value} status={row.status}/>
         </span>)
     }];
 

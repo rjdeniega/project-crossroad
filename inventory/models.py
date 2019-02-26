@@ -87,6 +87,22 @@ class Shuttle(SoftDeletionModel):
         return self.all()[random_index]
 
 
+class PurchaseOrderItem(SoftDeletionModel):
+    item = CharField(max_length=64)
+    quantity = PositiveIntegerField()
+    unit_price = DecimalField(max_digits=10, decimal_places=2)
+
+
+class PurchaseOrder(SoftDeletionModel):
+    po_number = CharField(max_length=6)
+    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
+    order_date = models.DateTimeField(editable=False)
+    delivery_date = models.DateTimeField(null=True)
+    po_items = ManyToManyField(PurchaseOrderItem)
+    special_instruction = CharField(max_length=256)
+    status = CharField(max_length=64)
+
+
 class Item(SoftDeletionModel):
     name = CharField(max_length=64)
     description = CharField(max_length=255)
@@ -100,6 +116,7 @@ class Item(SoftDeletionModel):
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     item_code = CharField(max_length=8)
+    purchase_order = ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if not self.id:
@@ -167,19 +184,3 @@ class ItemMovement(SoftDeletionModel):
             self.modified = timezone.now()
         self.modified = timezone.now()
         return super(ItemMovement, self).save(*args, **kwargs)
-
-
-class PurchaseOrderItem(SoftDeletionModel):
-    item = CharField(max_length=64)
-    quantity = PositiveIntegerField()
-    unit_price = DecimalField(max_digits=10, decimal_places=2)
-
-
-class PurchaseOrder(SoftDeletionModel):
-    po_number = CharField(max_length=6)
-    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
-    order_date = models.DateTimeField(editable=False)
-    delivery_date = models.DateTimeField(null=True)
-    po_items = ManyToManyField(PurchaseOrderItem)
-    special_instruction = CharField(max_length=256)
-    status = CharField(max_length=64)
