@@ -2113,7 +2113,7 @@ class BeepTransactionView(APIView):
         print("not the same")
         beep_shift = BeepShift()
         beep_shift.type = shift_type
-        beep_shift.date = datetime.now()
+        beep_shift.date = datetime.strptime(date, '%Y-%m-%d').date()
         beep_shift.save()
         return beep_shift
 
