@@ -549,7 +549,7 @@ export class ShiftHistoryPane extends Component {
                 format="YYYY-MM-DD"
                 value={this.state.endDateObject}
             />
-            <div className="sched-am-shift-pane">
+            <div className="history-am-shift-pane">
                 <div className="shifts-label-div">
                     <div className="tab-label-type">AM Shift</div>
                     <Dropdown overlay={this.supervisors("AM")}>
@@ -663,7 +663,7 @@ export class ShiftPrint extends Component {
     render() {
         return (
             <div className="history-tables-wrapper">
-                <div className="am-shift-pane">
+                <div className="sched-am-shift-pane">
                     <div className="shifts-label-div">
                         <div className="tab-label-type">AM</div>
                         <p className="supervisor-select"><b>{this.props.data.amSupervisor}</b></p>
@@ -682,7 +682,7 @@ export class ShiftPrint extends Component {
                         )}
                     />
                 </div>
-                <div className="pm-shift-pane">
+                <div className="history-pm-shift-pane">
                     <div className="shifts-label-div">
                         <div className="tab-label-type">PM</div>
                         <p className="supervisor-select"><b>{this.props.data.pmSupervisor}</b></p>

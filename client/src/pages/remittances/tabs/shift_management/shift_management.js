@@ -548,9 +548,52 @@ export class ShiftManagementPane extends Component {
                     ))}
                 </Select>
             </Modal>
+            <div className="current-shift-pane">
+                <div className="label-div">
+                    {/*<div style={{ color: 'var(--darkgreen)' }}>*/}
+                    <div>
+                        <Icon icon={clockO} size={30} style={{ marginRight: '10px', marginTop: '5px' }}/>
+                    </div>
+                    <div className="tab-label">
+                        Create Schedule
+                    </div>
+                </div>
+                <div className="expiration-label">expiring in 7 days</div>
+
+                <div className="date-grid">
+                    {this.state.currentSched &&
+                    <DatePicker
+                        className="date-picker"
+                        disabled
+                        format="YYYY-MM-DD"
+                        value={this.state.startDateObject}
+                        placeholder="Start Date"
+                        onChange={(date, dateString) => this.handleDateChange(date, dateString)}
+                    />
+                    }
+                    {!this.state.currentSched &&
+                    <DatePicker
+                        className="date-picker"
+                        format="YYYY-MM-DD"
+                        placeholder="Start Date"
+                        onChange={(date, dateString) => this.handleDateChange(date, dateString)}
+                    />
+                    }
+                    <DatePicker
+                        className="date-picker"
+                        disabled
+                        placeholder="End Date"
+                        format="YYYY-MM-DD"
+                        value={this.state.endDateObject}
+                    />
+                </div>
+                <div className="create-shift-button">
+                    <Button type="primary" onClick={this.handleShiftCreate}>Save Schedule</Button>
+                </div>
+            </div>
             <div className="am-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label-type">AM Shift</div>
+                    <div className="tab-label-type">Assign AM Shift</div>
                     <Dropdown overlay={this.supervisors("AM")}>
                         <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.am_shift_supervisor} <AntIcon type="down"/>
@@ -558,11 +601,11 @@ export class ShiftManagementPane extends Component {
                     </Dropdown>
                 </div>
                 <Table showHeader={false} rowSelection={this.amRowSelection} pagination={false} columns={columns}
-                       dataSource={this.state.drivers}/>,
+                       dataSource={this.state.am_drivers_display}/>,
             </div>
             <div className="pm-shift-pane">
                 <div className="shifts-label-div">
-                    <div className="tab-label-type">PM Shift</div>
+                    <div className="tab-label-type">Assign PM Shift</div>
                     <Dropdown overlay={this.supervisors("PM")}>
                         <Button className="supervisor-select" style={{ marginLeft: 8 }}>
                             {this.state.pm_shift_supervisor}<AntIcon type="down"/>
@@ -574,84 +617,7 @@ export class ShiftManagementPane extends Component {
                        dataSource={this.state.pm_drivers_display}/>,
 
             </div>
-            <div className="current-shift-pane">
-                <div className="shifts-label-div">
-                    <div className="tab-label-type">Current Shift Details
 
-                    </div>
-                    <div style = {{'margin-left': '10px'}}>
-                        Tags: <Tag color="green">Shuttle</Tag>
-                        <Tag color="blue">Deployment Type</Tag>
-
-                    </div>
-
-                </div>
-                <div className="current-shift-tables">
-                    <Collapse defaultActiveKey={['1']}>
-                        <Panel header="Details" key="1">
-                            <p>Start date: {this.state.current_start_date}</p>
-                            <p>Start date: {this.state.current_end_date}</p>
-                        </Panel>
-                        <Panel header="AM Shift Drivers" key="2">
-                            <div className="AM-current">
-                                {this.state.current_am &&
-                                <List
-                                    itemLayout="horizontal"
-                                    size="small"
-                                    dataSource={this.state.current_am.drivers}
-                                    renderItem={item => (
-                                        <List.Item>
-                                            <List.Item.Meta
-                                                key={item.driver_id}
-                                                avatar={<Avatar
-                                                    src={users}/>}
-                                                title={item.driver_name}
-                                                description={
-                                                    <Fragment>
-                                                        <Tag color="green">{item.shuttle_id}
-                                                            - {item.shuttle_plate_number}</Tag>
-                                                        <Tag color="blue">{item.deployment_type}</Tag>
-                                                    </Fragment>
-                                                }
-                                            />
-                                        </List.Item>
-                                    )}
-                                />
-                                }
-                            </div>
-                        </Panel>
-                        <Panel header="PM Shift Drivers" key="3">
-                            <div className="PM-current">
-                                {this.state.current_pm &&
-                                <List
-                                    itemLayout="horizontal"
-                                    size="small"
-                                    dataSource={this.state.current_pm.drivers}
-                                    renderItem={item => (
-                                        <List.Item>
-                                            <List.Item.Meta
-                                                key={item.driver_id}
-                                                avatar={<Avatar
-                                                    src={users}/>}
-                                                title={item.driver_name}
-                                                description={
-                                                    <Fragment>
-                                                        <Tag color="green">{item.shuttle_id}
-                                                            - {item.shuttle_plate_number}</Tag>
-                                                        <Tag color="blue">{item.deployment_type}</Tag>
-                                                    </Fragment>
-                                                }
-                                            />
-                                        </List.Item>
-                                    )}
-                                />
-                                }
-                            </div>
-                        </Panel>
-                    </Collapse>,
-
-                </div>
-            </div>
         </div>
     );
 
@@ -660,47 +626,82 @@ export class ShiftManagementPane extends Component {
             <div className="om-tab-body">
                 <div className="content-body">
                     <div className="shift-creation-body">
-                        <div className="label-div">
-                            {/*<div style={{ color: 'var(--darkgreen)' }}>*/}
-                            <div>
-                                <Icon icon={clockO} size={30} style={{ marginRight: '10px', marginTop: '5px' }}/>
-                            </div>
-                            <div className="tab-label">
-                                Create Schedule
-                            </div>
-                        </div>
-                        <div className="expiration-label">expiring in 7 days</div>
+                        <div className="shifts-label-div">
+                            <div className="tab-label-type">Current Sched Details
 
-                        <div className="date-grid">
-                            {this.state.currentSched &&
-                            <DatePicker
-                                className="date-picker"
-                                disabled
-                                format="YYYY-MM-DD"
-                                value={this.state.startDateObject}
-                                placeholder="Start Date"
-                                onChange={(date, dateString) => this.handleDateChange(date, dateString)}
-                            />
-                            }
-                            {!this.state.currentSched &&
-                            <DatePicker
-                                className="date-picker"
-                                format="YYYY-MM-DD"
-                                placeholder="Start Date"
-                                onChange={(date, dateString) => this.handleDateChange(date, dateString)}
-                            />
-                            }
-                            <DatePicker
-                                className="date-picker"
-                                disabled
-                                placeholder="End Date"
-                                format="YYYY-MM-DD"
-                                value={this.state.endDateObject}
-                            />
+                            </div>
+                            <div style={{ 'margin-left': '25px' }}>
+                                Tags: <Tag color="green">Shuttle</Tag>
+                                <Tag color="blue">Deployment Type</Tag>
+
+                            </div>
+
                         </div>
-                        <div className="create-shift-button">
-                            <Button type="primary" onClick={this.handleShiftCreate}>Save Schedule</Button>
+                        <div className="current-shift-tables">
+                            <Collapse defaultActiveKey={['1']}>
+                                <Panel header="Details" key="1">
+                                    <p>Start date: {this.state.current_start_date}</p>
+                                    <p>Start date: {this.state.current_end_date}</p>
+                                </Panel>
+                                <Panel header="AM Shift Drivers" key="2">
+                                    <div className="AM-current">
+                                        {this.state.current_am &&
+                                        <List
+                                            itemLayout="horizontal"
+                                            size="small"
+                                            dataSource={this.state.current_am.drivers}
+                                            renderItem={item => (
+                                                <List.Item>
+                                                    <List.Item.Meta
+                                                        key={item.driver_id}
+                                                        avatar={<Avatar
+                                                            src={users}/>}
+                                                        title={item.driver_name}
+                                                        description={
+                                                            <Fragment>
+                                                                <Tag color="green">{item.shuttle_id}
+                                                                    - {item.shuttle_plate_number}</Tag>
+                                                                <Tag color="blue">{item.deployment_type}</Tag>
+                                                            </Fragment>
+                                                        }
+                                                    />
+                                                </List.Item>
+                                            )}
+                                        />
+                                        }
+                                    </div>
+                                </Panel>
+                                <Panel header="PM Shift Drivers" key="3">
+                                    <div className="PM-current">
+                                        {this.state.current_pm &&
+                                        <List
+                                            itemLayout="horizontal"
+                                            size="small"
+                                            dataSource={this.state.current_pm.drivers}
+                                            renderItem={item => (
+                                                <List.Item>
+                                                    <List.Item.Meta
+                                                        key={item.driver_id}
+                                                        avatar={<Avatar
+                                                            src={users}/>}
+                                                        title={item.driver_name}
+                                                        description={
+                                                            <Fragment>
+                                                                <Tag color="green">{item.shuttle_id}
+                                                                    - {item.shuttle_plate_number}</Tag>
+                                                                <Tag color="blue">{item.deployment_type}</Tag>
+                                                            </Fragment>
+                                                        }
+                                                    />
+                                                </List.Item>
+                                            )}
+                                        />
+                                        }
+                                    </div>
+                                </Panel>
+                            </Collapse>
                         </div>
+
                     </div>
                     <div className="driver-selection">
                         {/*<div className="table-label-div">*/}

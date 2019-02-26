@@ -167,14 +167,14 @@
     align-self: center;
     }
 
-.am-shift-pane {
+.history-am-shift-pane {
     grid-column: 1/2;
     /*grid-row: 2/3;*/
     height: 100%;
     }
 
-.pm-shift-pane {
-    grid-column: 2/2;
+.history-pm-shift-pane {
+    grid-column: 2/3;
     /*grid-row: 2/3;*/
     height: 100%;
     }

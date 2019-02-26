@@ -1134,7 +1134,7 @@ class SubmitRemittance(APIView):
                     assigned.save()
 
 
-        rem_form.total -= (rem_form.fuel_cost + rem_form.other_cost)
+        rem_form.total -= (float(rem_form.fuel_cost) + float(rem_form.other_cost))
         deployment.shuttle.save()
         deployment.end_deployment()
         rem_form.save()

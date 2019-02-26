@@ -164,23 +164,21 @@
     }
 
 .am-shift-pane {
-    grid-column: 1/2;
-    /*grid-row: 2/3;*/
-    height: 100%;
-    }
-
-.pm-shift-pane {
     grid-column: 2/3;
     /*grid-row: 2/3;*/
     height: 100%;
     }
 
-.current-shift-pane {
+.pm-shift-pane {
     grid-column: 3/4;
     /*grid-row: 2/3;*/
     height: 100%;
-    background: rgb(209, 209, 209);
-    margin-top: 50px;
+    }
+
+.current-shift-pane {
+    grid-column: 1/2;
+    /*grid-row: 2/3;*/
+    height: 100%;
     border-radius: 10px;
     }
 
@@ -210,6 +208,7 @@
 
 .current-shift-tables {
     height: 300px;
+    width: 80%!important;
     }
 
 .AM-current {
