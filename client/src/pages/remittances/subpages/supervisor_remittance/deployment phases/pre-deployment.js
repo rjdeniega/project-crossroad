@@ -73,12 +73,21 @@ function DeploymentListDetails(props) {
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
 
-    if (props.route == 'Main Road')
+    if (props.route == 'Main Road'){
         var tag_color = 'blue';
-    else if (props.route == 'Kaliwa')
+        if(props.ten_total >= 100 && props.twelve_total >= 100 && props.fifteen_total >= 100)
+            var is_disabled =  false;
+        else
+            var is_disabled = true;
+    } else if (props.route == 'Kaliwa') {
         var tag_color = 'orange';
-    else
-        var tag_color = 'green'
+        var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
+    } else {
+        var tag_color = 'green';
+        var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
+    }
+        
+
 
     return (
         <div>
@@ -144,6 +153,7 @@ function DeploymentListDetails(props) {
                 shuttle={props.shuttle}
                 route={props.route}
                 shuttle_obj={props.shuttle_obj}
+                is_disabled={is_disabled}
             />
         </div>
     );
@@ -327,6 +337,7 @@ function DeploymentButtons(props) {
                     type="primary"
                     className="deployment-button"
                     onClick={showConfirm}
+                    disabled={props.is_disabled}
                 >
                     Deploy
                 </Button>
@@ -336,6 +347,7 @@ function DeploymentButtons(props) {
                         shuttle_display={props.shuttle}
                         supervisor_id={supervisor_id}
                         driver_name={driver_name}
+                        is_disabled={props.is_disabled}
                     />
                 )}
         </div>
@@ -399,7 +411,12 @@ class DeployWithDiffShuttle extends React.Component {
     render() {
         return (
             <div className="subButton-container">
-                <Button className="deployment-button" type="primary" onClick={this.showModal}>
+                <Button 
+                    className="deployment-button" 
+                    type="primary" 
+                    onClick={this.showModal}
+                    disabled={this.props.is_disabled}
+                    >
                     Deploy
                 </Button>
                 <Modal
