@@ -475,7 +475,7 @@ class DeployShuttleContent extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="modal-container">
                 <div>
                     <span>
                         {"Shuttle No." + this.props.shuttle_display + " "}
