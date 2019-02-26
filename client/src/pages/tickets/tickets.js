@@ -98,7 +98,11 @@ export class TicketsPage extends Component {
                 data["drivers"].forEach(item => tableData.push({
                     "key": item.id,
                     "name": item.name,
-                    "photo": item.photo
+                    "photo": item.photo,
+                    "ten_total": item.ten_total,
+                    "twelve_total": item.twelve_total,
+                    "fifteen_total": item.fifteen_total,
+                    "has_missing": item.has_missing,
                 }));
                 this.setState({ drivers: tableData });
             }
@@ -215,9 +219,9 @@ export class TicketsPage extends Component {
                         avatar={<Avatar src={item.driver_photo ? item.driver_photo : users}/>}
                         description={
                             <div>
-                                <Tag>₱10</Tag>
-                                <Tag>₱12</Tag>
-                                <Tag>₱15</Tag>
+                                <Tag>₱10-{item.ten_total} </Tag>
+                                <Tag>₱12-{item.twelve_total} </Tag>
+                                <Tag>₱15-{item.fifteen_total} </Tag>
                             </div>
                         }
                         title={<b>{!item.has_missing &&
