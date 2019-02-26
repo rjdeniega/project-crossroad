@@ -7,7 +7,22 @@ import logo from '../../images/crossroad_logo.png'
 import colors from '../../utilities/colorsFonts.css'
 import { Icon } from 'react-icons-kit'
 import { groupOutline } from 'react-icons-kit/typicons/groupOutline'
-import { Icon as AntIcon, message, Select, Input,InputNumber, Modal, Table, Button, Avatar, List, Tag, Tabs, TimePicker } from 'antd'
+import {
+    Icon as AntIcon,
+    message,
+    Select,
+    Input,
+    InputNumber,
+    Modal,
+    Table,
+    Button,
+    Avatar,
+    Alert,
+    List,
+    Tag,
+    Tabs,
+    TimePicker
+} from 'antd'
 import './style.css'
 import { money } from 'react-icons-kit/fa/money'
 import { UserAvatar } from "../../components/avatar/avatar"
@@ -55,7 +70,8 @@ export class TicketsPage extends Component {
     }
 
     fetchTicketHistory() {
-        getData('/remittances/tickets/').then(data => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        getData('/remittances/tickets_per_supervisor/' + id).then(data => {
             console.log(data);
             if (!data.error) {
                 console.log(data);
@@ -70,7 +86,8 @@ export class TicketsPage extends Component {
     }
 
     fetchDrivers() {
-        return getData('/members/drivers').then(data => {
+        const { id } = JSON.parse(localStorage.user_staff);
+        return getData('/members/assigned_drivers/' + id).then(data => {
             if (!data["error"]) {
                 //for each entry in drivers data, append data as a dictionary in tableData
                 //ant tables accept values {"key": value, "column_name" : "value" } format
@@ -101,7 +118,7 @@ export class TicketsPage extends Component {
 
         }, () => this.setState({
             visible: true,
-        }) );
+        }));
     };
 
     handleOk = (e) => {
@@ -178,6 +195,15 @@ export class TicketsPage extends Component {
             void_visible: false,
         });
     };
+    renderDescription = () => {
+        return (
+            <div>
+                <Tag color="green">10</Tag>
+                <Tag color="geekblue">12</Tag>
+                <Tag color="purple">15</Tag>
+            </div>
+        )
+    };
     renderDriverList = () => (
         <List
             className="ticket-drivers-list"
@@ -187,8 +213,15 @@ export class TicketsPage extends Component {
                 <List.Item>
                     <List.Item.Meta
                         avatar={<Avatar src={item.driver_photo ? item.driver_photo : users}/>}
-                        description="2 tickets left"
-                        title={<b>{item.name}</b>}
+                        description={
+                            <div>
+                                <Tag>₱10</Tag>
+                                <Tag>₱12</Tag>
+                                <Tag>₱15</Tag>
+                            </div>
+                        }
+                        title={<b>{!item.has_missing &&
+                                        <AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />}{item.name}</b>}
                     />
                     <Button type="primary" size="small" onClick={() => this.showModal(item.key, item.name)}>Assign
                         Ticket</Button>
@@ -210,7 +243,7 @@ export class TicketsPage extends Component {
             </Select>
             <Input onChange={this.handleRangeChange} className="user-input"
                    type="text"
-                   value ={this.state.range_from}
+                   value={this.state.range_from}
                    placeholder="enter ticket range start"/>
             <Modal
                 title="Magdagdag ng void"
@@ -223,9 +256,9 @@ export class TicketsPage extends Component {
                              onChange={this.handleAddVoidChange}/>
             </Modal>
             <Button size="small" className="first-add-void-button"
-                                onClick={this.showAddVoid}><AntIcon
-                            className="plus-icon" type="plus-circle-o"/>Add
-                            Void</Button>
+                    onClick={this.showAddVoid}><AntIcon
+                className="plus-icon" type="plus-circle-o"/>Add
+                Void</Button>
             <div className="void-tickets">
                 <p><b>Void tickets</b></p>
                 {this.state.void_tickets.length != 0 && <List

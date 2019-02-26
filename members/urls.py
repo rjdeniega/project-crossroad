@@ -4,6 +4,7 @@ from members.views import *
 
 members_urls = [
     path('drivers/', DriverView.as_view()),
+    path('assigned_drivers/<int:supervisor_id>', AssignedDriverView.as_view()),
     path('supervisors/', SupervisorView.as_view()),
     path('operations-managers/', OperationsManagerView.as_view()),
     path('clerks/', ClerkView.as_view()),

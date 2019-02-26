@@ -1,6 +1,7 @@
 from datetime import datetime
 from rest_framework.serializers import ModelSerializer
 from .models import *
+from remittances.models import *
 
 
 class DriverSerializer(ModelSerializer):
@@ -10,6 +11,21 @@ class DriverSerializer(ModelSerializer):
         # and we want all fields to be included
 
         model = Driver
+        fields = "__all__"
+
+        # def create(self, validated_data):
+        #     # this overrides the parent class' create function
+        #     # by default, it takes in the model's (in this case Driver) --
+        #     # fields and creates an object
+
+
+class AssignedDriversSerializer(ModelSerializer):
+    class Meta:
+        # these are the settings that come with the class
+        # we specify that this serializes the driver class
+        # and we want all fields to be included
+
+        model = DriversAssigned
         fields = "__all__"
 
         # def create(self, validated_data):

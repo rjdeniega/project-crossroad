@@ -7,7 +7,8 @@ from rest_framework import status
 
 from members.serializers import *
 from remittances.models import *
-from remittances.serializers import BeepTransactionSerializer
+from remittances.serializers import BeepTransactionSerializer, DriversAssignedSerializer
+from remittances.views import TicketUtilities
 from .models import *
 import json
 
@@ -92,6 +93,54 @@ class DriverView(APIView):
 
         return Response(data={
             "drivers": drivers.data
+        }, status=status.HTTP_200_OK)
+        # Using bare status codes in your responses isn't recommended. REST framework
+        # includes a set of named constants that you can use to make your code more obvious and readable.
+
+    @staticmethod
+    def post(request):
+        # extracts the body from the request
+        data = json.loads(request.body)
+
+        # transform JSON into python object
+        # please read serializers.py Person and Driver serializer
+        driver_serializer = DriverSerializer(data=data)
+
+        if driver_serializer.is_valid():
+            # Serializer class has a built in function that creates
+            #  an object attributed to it
+            # I pass the validated data and it creates the object
+            driver = driver_serializer.create(validated_data=
+                                              driver_serializer.validated_data)
+            return Response(data={
+                'driver': driver.name
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={
+                "errors": driver_serializer.errors
+            })
+
+
+class AssignedDriverView(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        # transform django objects to JSON (so it can be interpreted in the front-end_
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
+        shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
+
+        drivers = DriversAssigned.objects.filter(shift=current_shift.id)
+        drivers = [item.driver for item in drivers]
+        drivers = DriverSerializer(drivers, many=True).data
+        for driver in drivers:
+            tickets = TicketUtilities.get_assigned_with_void_of_driver(driver["id"])
+            driver['ten_total'] = len([item for item in tickets if item['ticket_type'] == '10 Pesos'])
+            driver['twelve_total'] = len([item for item in tickets if item['ticket_type'] == '12 Pesos'])
+            driver['fifteen_total'] = len([item for item in tickets if item['ticket_type'] == '15 Pesos'])
+            driver['has_missing'] = False if driver['ten_total'] == 0 or driver['twelve_total'] == 0 or driver['fifteen_total'] == 0 else True
+
+        return Response(data={
+            "drivers": drivers
         }, status=status.HTTP_200_OK)
         # Using bare status codes in your responses isn't recommended. REST framework
         # includes a set of named constants that you can use to make your code more obvious and readable.

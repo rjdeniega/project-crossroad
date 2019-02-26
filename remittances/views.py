@@ -357,6 +357,43 @@ class AssignedTicketHistory(APIView):
             "ticket_assignments": ticket_assignments
         }, status=status.HTTP_200_OK)
 
+class AssignedTicketHistoryPerSupervisor(APIView):
+    @staticmethod
+    def get(request,supervisor_id):
+        tickets = AssignedTicket.objects.all().order_by('-created')  # TODO order by date created
+
+        ticket_assignments = []
+
+        for ticket in tickets:
+
+            number_of_voids = 0
+            for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
+                number_of_voids += 1
+
+            ticket_assignments.append({
+                "driver_id": ticket.driver.pk,
+                "driver_name": ticket.driver.name,
+                "range_from": ticket.range_from,
+                "range_to": ticket.range_to,
+                "date": ticket.created.date(),
+                "type": ticket.get_type_display(),
+                "number_of_voids": number_of_voids
+            })
+            active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(),
+                                                end_date__gte=datetime.now().date())
+            current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
+            shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
+
+            drivers = DriversAssigned.objects.filter(shift=current_shift.id)
+            drivers = [item.driver.pk for item in drivers]
+
+            #get assigned drivers only
+            ticket_assignments = [item for item in ticket_assignments if item['driver_id'] in drivers]
+
+        return Response(data={
+            "ticket_assignments": ticket_assignments
+        }, status=status.HTTP_200_OK)
+
 
 class ShiftIterationView(APIView):
     @staticmethod
