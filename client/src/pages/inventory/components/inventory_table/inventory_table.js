@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import {Table} from 'antd'
 import './style.css'
 import {getData} from "../../../../network_requests/general";
+import _ from 'lodash';
+import update from 'react-addons-update'
+
 
 export class InventoryTable extends Component {
     constructor(props) {
@@ -23,11 +26,26 @@ export class InventoryTable extends Component {
             }, () => {
                 console.log(this.state.items)
             })
+        });
+        this.state.items.forEach(function (item, key) {
+            let vendor;
+            getData('inventory/vendors/' + item.vendor).then(datum => {
+                vendor = datum.name
+            }, () => {
+                this.setState({
+                    items: update(this.state.items, {
+                        [key]: {
+                            vendor: {$set: vendor}
+                        }
+                    })
+                })
+            });
         })
     }
 
 
     expandedRowRender = (category) => {
+        const {items} = this.state;
         const columns = [
             {title: 'Delivery Date', dataIndex: 'created', key: 'created'},
             {title: 'Brand', dataIndex: 'brand', key: 'brand'},
@@ -37,37 +55,53 @@ export class InventoryTable extends Component {
             {title: 'Measurement', dataIndex: 'measurement', key: 'measurement'},
         ];
 
-        const data = [];
-        this.state.items.forEach(function (item, key) {
-            let vendor;
-            getData('inventory/vendors/' + item.vendor).then(data => {
-                vendor = data.vendor.name
-            }).then(() => {
-                if (item.name === category) {
+        let data = [];
+        items.forEach(function (item, key) {
+            if (item.name === category) {
                     data.push({
                         key: key,
-                        delivery_date: item.created,
+                        created: new Date(item.created).toLocaleDateString(),
                         brand: item.brand,
                         description: item.description,
-                        vendor: vendor,
                         quantity: item.quantity,
-                        measurement: item.measurement + item.unit
+                        measurement: item.measurement + item.unit,
                     })
                 }
-            });
+
         });
         console.log(data);
         return <Table columns={columns} dataSource={data} pagination={false}/>
     };
 
     columns = [
-        {}
+        {title: "Item", dataIndex: "item_name", key: "item_name"},
+        {title: "Quantity", dataIndex: "total_quantity", key: "total_quantity"},
     ];
+
+    groupedItems = () => {
+        let items = this.state.items;
+        let data = [];
+        let groupedItems = _.groupBy(items, function (d) {
+            return d.name
+        });
+        _.map(groupedItems, function (value, key) {
+            let quantity = 0;
+            value.forEach(function (item) {
+                quantity = quantity + item.quantity;
+            });
+            data.push({
+                item_name: key,
+                total_quantity: quantity,
+            })
+        });
+        return data;
+    };
 
     render() {
         return (
             <div>
-                {this.expandedRowRender("Oil")}
+                <Table columns={this.columns} dataSource={this.groupedItems()}
+                       expandedRowRender={record => this.expandedRowRender(record.item_name)}/>
             </div>
         )
     }

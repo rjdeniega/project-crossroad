@@ -6,6 +6,7 @@
     "@opuscapita/react-perfect-scrollbar": "^3.0.3",
     "antd": "latest",
     "chart.js": "^2.7.3",
+    "lodash": "^4.17.11",
     "moment": "latest",
     "rc-form": "latest",
     "react": "^16.6.3",
