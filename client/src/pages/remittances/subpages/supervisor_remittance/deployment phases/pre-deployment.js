@@ -55,9 +55,6 @@ function DeploymentList(props) {
                                     twelve_tickets={item.twelve_peso_tickets}
                                     fifteen_tickets={item.fifteen_peso_tickets}
                                     shuttle_obj={item.shuttle}
-                                    ten_total={item.ten_total}
-                                    fifteen_total={item.fifteen_total}
-                                    twelve_total={item.twelve_total}
                                 />
                             </List.Item>
                         </div>
@@ -73,21 +70,12 @@ function DeploymentListDetails(props) {
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
 
-    if (props.route == 'Main Road'){
+    if (props.route == 'Main Road')
         var tag_color = 'blue';
-        if(props.ten_total >= 100 && props.twelve_total >= 100 && props.fifteen_total >= 100)
-            var is_disabled =  false;
-        else
-            var is_disabled = true;
-    } else if (props.route == 'Kaliwa') {
+    else if (props.route == 'Kaliwa')
         var tag_color = 'orange';
-        var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
-    } else {
-        var tag_color = 'green';
-        var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
-    }
-        
-
+    else
+        var tag_color = 'green'
 
     return (
         <div>
@@ -102,24 +90,24 @@ function DeploymentListDetails(props) {
             </div>
 
             <div className="deployment-list-container">
-                {props.shuttle_obj.status == 'A' ? (
+                {props.shuttle_obj.status == 'A'? (
                     <DetailItems
                         title="Shuttle"
                         value={props.shuttle}
                     />
                 ) : (
-                        <div className="detail-container">
-                            <span className="detail-items-title">
-                                Shuttle:
+                    <div className="detail-container">
+                        <span className="detail-items-title">
+                            Shuttle:
                         </span>
-                            <Badge dot>
-                                <span className="detail-items-value">
-                                    {props.shuttle}
-                                </span>
-                            </Badge>
-                        </div>
-                    )}
-
+                        <Badge dot>
+                            <span className="detail-items-value">
+                                {props.shuttle}
+                            </span>
+                        </Badge>
+                    </div>
+                )}
+                
                 <DetailItems
                     title="Expected Departure"
                     value={props.expected_departure}
@@ -129,18 +117,15 @@ function DeploymentListDetails(props) {
                     <TicketDisplay
                         amount="₱10"
                         tickets={props.ten_tickets}
-                        total={props.ten_total}
                     />
                     <TicketDisplay
                         amount="₱12"
                         tickets={props.twelve_tickets}
-                        total={props.twelve_total}
                     />
                     {props.route == 'Main Road' &&
                         <TicketDisplay
                             amount="₱15"
                             tickets={props.fifteen_tickets}
-                            total={props.fifteen_total}
                         />
                     }
                 </div>
@@ -153,7 +138,6 @@ function DeploymentListDetails(props) {
                 shuttle={props.shuttle}
                 route={props.route}
                 shuttle_obj={props.shuttle_obj}
-                is_disabled={is_disabled}
             />
         </div>
     );
@@ -161,30 +145,18 @@ function DeploymentListDetails(props) {
 
 function TicketDisplay(props) {
 
-    if (props.total >= 100) {
+    if (props.tickets.length > 0) {
         var content = (
-            <div className="popover-container">
-                {
-                    props.tickets.map((item) => (
-                        <div className="ticket-wrapper">
-                            <span className="ticket-label">
-                                Ticket No.:
-                            </span>
-                            <span>
-                                {item.range_from} - {item.range_to}
-                            </span>
-                        </div>
-                    ))
-                }
-                <div className="ticket-total-wrapper">
-                    <span className="ticket-total-label">
-                        Total:
+            props.tickets.map((item) => (
+                <div className="ticket-wrapper">
+                    <span className="ticket-label">
+                        Ticket No.:
                     </span>
-                    <span className="ticket-total">
-                        {props.total}
+                    <span>
+                        {item.range_from} - {item.range_to}
                     </span>
                 </div>
-            </div>
+            ))
         )
 
         return (
@@ -195,52 +167,7 @@ function TicketDisplay(props) {
                     </Tag>
                 </Popover>
             </span>
-
-        );
-
-    } else if (props.total> 0 && props.total < 130) {
-        var badge_status = props.total >= 100 ? 'warning' : 'error';
-
-        var content = (
-            <div className="popover-container">
-                {
-                    props.tickets.map((item) => (
-                        <div className="ticket-wrapper">
-                            <span className="ticket-label">
-                                Ticket No.:
-                            </span>
-                            <span>
-                                {item.range_from} - {item.range_to}
-                            </span>
-                        </div>
-                    ))
-                }
-                <div className="ticket-total-wrapper">
-                    <span className="ticket-total-label">
-                        Total:
-                    </span>
-                    <span className="ticket-total">
-                        {props.total} pcs
-                    </span>
-                    <Divider type="vertical"></Divider>
-                    <a href={"http://localhost:3000/tickets"} className="link-to-tickets">
-                        assign tickets
-                    </a>
-                </div>
-            </div>
-        )
-
-        return (
-            <span className="ticket-tag-wrapper">
-                <Popover content={content} title={props.amount + " tickets"}>
-                    <Badge dot status={badge_status}>
-                        <Tag className="ticket-tag">
-                            {props.amount}
-                        </Tag>
-                    </Badge>
-                </Popover>
-            </span>
-
+    
         );
 
     } else {
@@ -261,14 +188,14 @@ function TicketDisplay(props) {
                         <Tag className="ticket-tag">
                             {props.amount}
                         </Tag>
-                    </Badge>
+                    </Badge>       
                 </Popover>
             </span>
-
+    
         );
     }
 
-
+    
 }
 
 function DetailItems(props) {
@@ -290,7 +217,9 @@ function DeploymentButtons(props) {
     const driver_name = props.driver_name
 
     function showConfirm() {
-        Modal.confirm({
+        const confirm = Modal.confirm;
+
+        confirm({
             title: 'Are you sure you want to deploy this driver?',
             content: 'Deploying this driver would start his/her time for the shift.',
 
@@ -337,19 +266,17 @@ function DeploymentButtons(props) {
                     type="primary"
                     className="deployment-button"
                     onClick={showConfirm}
-                    disabled={props.is_disabled}
                 >
                     Deploy
                 </Button>
             ) : (
-                    <DeployWithDiffShuttle
-                        driver_id={props.driver_id}
-                        shuttle_display={props.shuttle}
-                        supervisor_id={supervisor_id}
-                        driver_name={driver_name}
-                        is_disabled={props.is_disabled}
-                    />
-                )}
+                <DeployWithDiffShuttle 
+                    driver_id={props.driver_id}
+                    shuttle_display={props.shuttle}
+                    supervisor_id={supervisor_id}
+                    driver_name={driver_name}
+                />
+            )}
         </div>
     );
 }
@@ -411,12 +338,7 @@ class DeployWithDiffShuttle extends React.Component {
     render() {
         return (
             <div className="subButton-container">
-                <Button 
-                    className="deployment-button" 
-                    type="primary" 
-                    onClick={this.showModal}
-                    disabled={this.props.is_disabled}
-                    >
+                <Button className="deployment-button" type="primary" onClick={this.showModal}>
                     Deploy
                 </Button>
                 <Modal
@@ -426,7 +348,7 @@ class DeployWithDiffShuttle extends React.Component {
                     onCancel={this.handleCancel}
                     okText="Deploy"
                 >
-                    <DeployShuttleContent
+                    <DeployShuttleContent 
                         shuttle_display={this.props.shuttle_display}
                         handleShuttleChange={this.handleShuttleChange}
                     />
@@ -457,25 +379,25 @@ class DeployShuttleContent extends React.Component {
 
     fetchBackUpShuttles() {
         fetch('/remittances/deployments/back-up-shuttles/')
-            .then(response => {
-                return response;
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    this.setState({
-                        backUpShuttles: data.shuttles
-                    });
-                }
-                else {
-                    console.log(data.error)
-                }
-            }).catch(error => console.log(error));
+        .then(response => {
+            return response;
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.error) {
+                this.setState({
+                    backUpShuttles: data.shuttles
+                });
+            }
+            else {
+                console.log(data.error)
+            }
+        }).catch(error => console.log(error));
     }
 
     render() {
         return (
-            <div className="modal-container">
+            <div>
                 <div>
                     <span>
                         {"Shuttle No." + this.props.shuttle_display + " "}
@@ -627,25 +549,23 @@ class SubContent extends React.Component {
 
     render() {
         return (
-            <div className="modal-container">
-                <div className="select-group">
-                    <label className="sub-driver-label">
-                        Subdrivers:
-                    </label>
-                    <Select onChange={this.handleChange} style={{ width: 200 }}>
-                        {
-                            this.state.subDrivers.map((item) => (
-                                <option value={item.driver.id} key={item.driver.id}>
-                                    {item.driver.name}
-                                </option>
-                            ))
-                        }
-                    </Select>
+            <div>
+                <div>
+                    <span className="select-group">
+                        <label>Subdrivers: </label>
+                        <Select onChange={this.handleChange} style={{ width: 200 }}>
+                            {
+                                this.state.subDrivers.map((item) => (
+                                    <option value={item.driver.id} key={item.driver.id}>
+                                        {item.driver.name}
+                                    </option>
+                                ))
+                            }
+                        </Select>
+                    </span>
                 </div>
-                <div className="sub-deployment-details">
-                    <Divider orientation="left">
-                        Deployment Details
-                    </Divider>
+                <div>
+                    <span>Deployment Details</span>
                     <DetailItems
                         title="Subbing in for "
                         value={this.props.driver_name}

@@ -150,35 +150,3 @@ Col {
 .confirm-remittance-container {
     margin-top: 100px;
 }
-
-.sub-deployment-details {
-    margin-left: 10px;
-}
-
-.sub-driver-label {
-    font-weight: 550;
-    margin-right: 16px;
-}
-
-.select-group {
-    margin-left: 20px;
-}
-
-.modal-container {
-    padding: 15px;
-}
-
-.ticket-total-label {
-    font-weight: 550;
-    font-size: 12px;
-    margin-right: 3.5px;
-}
-
-.ticket-total {
-    font-size: 12px;
-}
-
-.link-to-tickets {
-    font-size: 11px;
-}
-

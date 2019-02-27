@@ -478,24 +478,13 @@ class NonDeployedDrivers(APIView):
             item["twelve_peso_tickets"] = []
             item["fifteen_peso_tickets"] = []
 
-            ten_total = 0
-            twelve_total = 0
-            fifteen_total = 0
-
             for ticket in tickets:
                 if ticket["ticket_type"] == '10 Pesos':
-                    ten_total += ticket["range_to"] - ticket["range_from"] + 1
                     item["ten_peso_tickets"].append(ticket)
                 elif ticket["ticket_type"] == '12 Pesos':
-                    twelve_total += ticket["range_to"] - ticket["range_from"] + 1
                     item["twelve_peso_tickets"].append(ticket)
                 else:
-                    fifteen_total += ticket["range_to"] - ticket["range_from"] + 1
                     item["fifteen_peso_tickets"].append(ticket)
-            
-            item["ten_total"] = ten_total
-            item["twelve_total"] = twelve_total
-            item["fifteen_total"] = fifteen_total
 
 
         return Response(data={
