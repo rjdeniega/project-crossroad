@@ -147,16 +147,18 @@ export class ShiftManagementPane extends Component {
                 const tableData = [];
                 //append drivers with their ids as key
                 console.log(data);
-                data["drivers"].forEach(item => tableData.push({
-                    "key": item.id,
-                    "name": item.name,
-                    "photo": item.photo
-                }));
-                this.setState({
-                    drivers: tableData,
-                    am_drivers_display: tableData,
-                    pm_drivers_display: tableData,
-                });
+                if(data['drivers'].length > 0) {
+                    data["drivers"].forEach(item => tableData.push({
+                        "key": item.id,
+                        "name": item.name,
+                        "photo": item.photo
+                    }));
+                    this.setState({
+                        drivers: tableData,
+                        am_drivers_display: tableData,
+                        pm_drivers_display: tableData,
+                    });
+                }
             }
             else {
                 console.log(data["error"]);
