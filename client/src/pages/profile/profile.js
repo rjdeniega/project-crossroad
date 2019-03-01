@@ -48,7 +48,6 @@ const formItemLayout = {
     },
 };
 
-const antIcon = <Icon type="loading" style={{ fontSize: 70, color: 'var(--darkgreen)' }} spin/>;
 const share_columns = [{
     title: 'Date of Update',
     dataIndex: 'date_of_update',
@@ -58,25 +57,35 @@ const share_columns = [{
             {text}
         </div>
     )
-}, {
-    title: 'Share Value',
-    dataIndex: 'value',
-    key: 'value',
-    render: (text) => (
-        <div className="rem-status">
-            {parseInt(text)}
-        </div>
-    ),
-}, {
-    title: 'Peso value',
-    dataIndex: 'peso_value',
-    key: 'peso_value',
-    render: (text) => (
-        <div className="rem-status">
-            <p><b>Php {parseInt(text)}</b></p>
-        </div>
-    ),
-}];
+},
+    {
+        title: 'Transaction Type',
+        dataIndex: 'value',
+        key: 'value',
+        render: (text) => (
+            <div className="rem-status">
+                {parseInt(text) >= 0 ? <p>Add</p> : <p style={{ 'color': 'red' }}>Withraw</p>}
+            </div>
+        ),
+    }, {
+        title: 'Share Value',
+        dataIndex: 'value',
+        key: 'value',
+        render: (text) => (
+            <div className="rem-status">
+                {parseInt(text)}
+            </div>
+        ),
+    }, {
+        title: 'Peso value',
+        dataIndex: 'peso_value',
+        key: 'peso_value',
+        render: (text) => (
+            <div className="rem-status">
+                <p><b>Php {parseInt(text)}</b></p>
+            </div>
+        ),
+    }];
 const columns = [{
     title: 'Card Number',
     dataIndex: 'can',
@@ -199,8 +208,8 @@ export class ProfilePage extends Component {
         console.log(this.state.can);
         console.log(this.state.register_date);
         let data = {
-            'can' : this.state.can,
-            'register_date' : this.state.register_date,
+            'can': this.state.can,
+            'register_date': this.state.register_date,
         };
 
         postData('/members/cards/' + id, data)
@@ -514,7 +523,6 @@ export class ProfilePage extends Component {
 
                         <Icon className="page-icon" icon={driversLicenseO} size={42}/>
                         <div className="page-title"> My Profile</div>
-                        <Button className="add-user" onClick={this.showModal}> Edit Profile </Button>
                         <div className="rem-page-description"> Manage your profile</div>
                     </div>
                     <UserAvatar/>
@@ -529,6 +537,9 @@ export class ProfilePage extends Component {
                                         <img className="profile-image"
                                              src={this.renderListItemPhoto(activeUser.photo)}/>
                                         <div className="basic-info">
+                                            <div className="info-row">
+                                                <Button className="add-user " onClick={this.showModal}> Edit Profile </Button>
+                                            </div>
                                             <div className="info-row"><b>Name:</b> {activeUser.name}</div>
                                             <div className="info-row"><b>Contact Number:</b> {activeUser.contact_no}
                                             </div>
@@ -662,6 +673,9 @@ export class ProfilePage extends Component {
                                            className="remittance-table profile-shares-table"
                                            columns={share_columns}
                                            dataSource={this.state.shares}
+                                           pagination={{
+                                               pageSize: 4,
+                                           }}
                                     />
                                 </div>
 

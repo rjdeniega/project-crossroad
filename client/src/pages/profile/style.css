@@ -4,7 +4,7 @@
 
 .member-profile-container {
     display: grid;
-    grid-template-columns: 60% 40%;
+    grid-template-columns: 55% 45%;
     width: 100%;
 
     }
@@ -31,7 +31,7 @@
     margin-top: 20px;
     }
 .profile-shares-table{
-    height: 200px!important;
+    height: 320px!important;
     }
 .beep-button{
     width: 200px!important;

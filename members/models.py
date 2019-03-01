@@ -111,7 +111,11 @@ class Share(SoftDeletionModel):
     member = ForeignKey(Member, on_delete=models.CASCADE)
     value = DecimalField(max_digits=6, decimal_places=2)
     date_of_update = DateField(null=True)
+    photo = FileField(default='client/src/images/default.png', null=True)
     receipt = CharField(max_length=64)
+
+    def get_total(self):
+        return self.item_set.all().aggregate(Sum('value'))
 
 
 class ShareCertificate(SoftDeletionModel):

@@ -357,9 +357,10 @@ class AssignedTicketHistory(APIView):
             "ticket_assignments": ticket_assignments
         }, status=status.HTTP_200_OK)
 
+
 class AssignedTicketHistoryPerSupervisor(APIView):
     @staticmethod
-    def get(request,supervisor_id):
+    def get(request, supervisor_id):
         tickets = AssignedTicket.objects.all().order_by('-created')  # TODO order by date created
 
         ticket_assignments = []
@@ -387,7 +388,7 @@ class AssignedTicketHistoryPerSupervisor(APIView):
             drivers = DriversAssigned.objects.filter(shift=current_shift.id)
             drivers = [item.driver.pk for item in drivers]
 
-            #get assigned drivers only
+            # get assigned drivers only
             ticket_assignments = [item for item in ticket_assignments if item['driver_id'] in drivers]
 
         return Response(data={
@@ -440,7 +441,7 @@ class NonDeployedDrivers(APIView):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
         shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
-        
+
         query = DriversAssigned.objects.filter(shift=current_shift.id)
 
         # remove drivers already deployed
@@ -471,9 +472,9 @@ class NonDeployedDrivers(APIView):
                 item['expected_departure'] = "2:00 PM"
             else:
                 item['expected_departure'] = "10:00 PM"
-            
+
             tickets = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
-            
+
             item["ten_peso_tickets"] = []
             item["twelve_peso_tickets"] = []
             item["fifteen_peso_tickets"] = []
@@ -492,30 +493,30 @@ class NonDeployedDrivers(APIView):
                 else:
                     fifteen_total += ticket["range_to"] - ticket["range_from"] + 1
                     item["fifteen_peso_tickets"].append(ticket)
-            
+
             item["ten_total"] = ten_total
             item["twelve_total"] = twelve_total
             item["fifteen_total"] = fifteen_total
 
-
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
         }, status=status.HTTP_200_OK)
-    
+
     @staticmethod
     def did_deploy_a_sub(driver_id, shift_iteration_id):
         deployments = Deployment.objects.filter(shift_iteration_id=shift_iteration_id)
         print(driver_id)
         for deployment in deployments:
-            subbed_deployment = SubbedDeployments.objects.filter(deployment=deployment, absent_driver_id=driver_id).first()
-            
+            subbed_deployment = SubbedDeployments.objects.filter(deployment=deployment,
+                                                                 absent_driver_id=driver_id).first()
+
             if subbed_deployment:
                 print(subbed_deployment)
                 print("entered here")
                 return True
-        
+
         return False
- 
+
 
 class BackUpShuttles(APIView):
     @staticmethod
@@ -527,7 +528,7 @@ class BackUpShuttles(APIView):
         return Response(data={
             "shuttles": serialized_shuttles.data
         }, status=status.HTTP_200_OK)
-    
+
     @staticmethod
     def post(request):
         data = json.loads(request.body)
@@ -540,14 +541,14 @@ class BackUpShuttles(APIView):
         # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
         if DeploymentView.is_first_deployment(supervisor_id):
             iteration = ShiftIteration()
-            
+
             active_sched = RemittanceUtilities.get_active_schedule();
             for shift in Shift.objects.filter(schedule=active_sched.id):
                 print(shift.supervisor.id)
                 print(supervisor_id)
                 if shift.supervisor.id == supervisor_id:
                     shift_id = shift.id
-            
+
             iteration.shift_id = shift_id
             iteration.date = datetime.now()
             iteration.save()
@@ -555,22 +556,20 @@ class BackUpShuttles(APIView):
         else:
             iteration = ShiftIteration.objects.filter(
                 shift__supervisor=supervisor_id
-                ).order_by("-date").first()
+            ).order_by("-date").first()
 
-        
         driver_assigned = DriversAssigned.objects.get(
-                shift_id=iteration.shift,
-                driver_id=driver_id
-            )
+            shift_id=iteration.shift,
+            driver_id=driver_id
+        )
 
-        
-        #CREATE DEPLOYMENT
+        # CREATE DEPLOYMENT
         if is_valid:
             deployment = Deployment.objects.create(
-                driver_id = driver_id,
-                shuttle_id = shuttle_id,
-                route = driver_assigned.shuttle.route,
-                shift_iteration_id = iteration.id
+                driver_id=driver_id,
+                shuttle_id=shuttle_id,
+                route=driver_assigned.shuttle.route,
+                shift_iteration_id=iteration.id
             )
 
             serialized_deployment = DeploymentSerializer(deployment)
@@ -678,19 +677,19 @@ class DeploymentView(APIView):
     def post(request):
         data = json.loads(request.body)
         is_valid = True
-        
+
         supervisor_id = data['supervisor_id']
         driver_id = data['driver_id']
 
         # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
         if DeploymentView.is_first_deployment(supervisor_id):
             iteration = ShiftIteration()
-            
+
             active_sched = RemittanceUtilities.get_active_schedule();
             for shift in Shift.objects.filter(schedule=active_sched.id):
                 if shift.supervisor.id == supervisor_id:
                     shift_id = shift.id
-            
+
             iteration.shift_id = shift_id
             iteration.date = datetime.now()
             iteration.save()
@@ -698,25 +697,25 @@ class DeploymentView(APIView):
         else:
             iteration = ShiftIteration.objects.filter(
                 shift__supervisor=supervisor_id
-                ).order_by("-date").first()
+            ).order_by("-date").first()
 
         # VALIDATIONS
         driver_assigned = DriversAssigned.objects.get(
-                shift_id=iteration.shift,
-                driver_id=driver_id
-            )
+            shift_id=iteration.shift,
+            driver_id=driver_id
+        )
 
         if driver_assigned.shuttle.status is 'UM':
-                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
-                is_valid = False
+            error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+            is_valid = False
 
         # CREATE DEPLOYMENT
         if is_valid:
             deployment = Deployment.objects.create(
-                driver_id = driver_id,
-                shuttle_id = driver_assigned.shuttle.id,
-                route = driver_assigned.shuttle.route,
-                shift_iteration_id = iteration.id
+                driver_id=driver_id,
+                shuttle_id=driver_assigned.shuttle.id,
+                route=driver_assigned.shuttle.route,
+                shift_iteration_id=iteration.id
             )
 
             serialized_deployment = DeploymentSerializer(deployment)
@@ -742,14 +741,14 @@ class DeploymentView(APIView):
             if driver.driver.id == driver_id:
                 return True
         return False
-    
+
     @staticmethod
     def is_first_deployment(supervisor_id):
         print(type(supervisor_id))
         shift_iteration = ShiftIteration.objects.filter(
             shift__supervisor_id=supervisor_id,
-            date=datetime.now() 
-            )
+            date=datetime.now()
+        )
         print(type(shift_iteration))
         print(shift_iteration)
         if not shift_iteration:
@@ -763,7 +762,7 @@ class DeploySubDriver(APIView):
     def post(request):
         data = json.loads(request.body)
         is_valid = True
-        
+
         supervisor_id = data['supervisor_id']
         driver_id = data['driver_id']
         absent_id = data['absent_id']
@@ -771,14 +770,14 @@ class DeploySubDriver(APIView):
         # CREATE SHIFT-ITERATION WHEN THERE IS NOTHING FOR THE DAY YET
         if DeploymentView.is_first_deployment(supervisor_id):
             iteration = ShiftIteration()
-            
+
             active_sched = RemittanceUtilities.get_active_schedule();
             for shift in Shift.objects.filter(schedule=active_sched.id):
                 print(shift.supervisor.id)
                 print(supervisor_id)
                 if shift.supervisor.id == supervisor_id:
                     shift_id = shift.id
-            
+
             iteration.shift_id = shift_id
             iteration.date = datetime.now()
             iteration.save()
@@ -786,30 +785,30 @@ class DeploySubDriver(APIView):
         else:
             iteration = ShiftIteration.objects.filter(
                 shift__supervisor=supervisor_id
-                ).order_by("-date").first()
+            ).order_by("-date").first()
 
         # VALIDATIONS
         driver_assigned = DriversAssigned.objects.get(
-                shift_id=iteration.shift,
-                driver_id=absent_id
-            )
+            shift_id=iteration.shift,
+            driver_id=absent_id
+        )
 
         if driver_assigned.shuttle.status is 'UM':
-                error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
-                is_valid = False
-        
-        #CREATE DEPLOYMENT
+            error_message = driver_assigned.driver.name + "'s shuttle is currently " + driver_assigned.shuttle.get_status_display()
+            is_valid = False
+
+        # CREATE DEPLOYMENT
         if is_valid:
             deployment = Deployment.objects.create(
-                driver_id = driver_id,
-                shuttle_id = driver_assigned.shuttle.id,
-                route = driver_assigned.shuttle.route,
-                shift_iteration_id = iteration.id
+                driver_id=driver_id,
+                shuttle_id=driver_assigned.shuttle.id,
+                route=driver_assigned.shuttle.route,
+                shift_iteration_id=iteration.id
             )
 
             sub_deployment = SubbedDeployments.objects.create(
-                deployment = deployment,
-                absent_driver = driver_assigned
+                deployment=deployment,
+                absent_driver=driver_assigned
             )
 
             serialized_deployment = DeploymentSerializer(deployment)
@@ -822,7 +821,7 @@ class DeploySubDriver(APIView):
             return Response(data={
                 "errors": error_message
             }, status=status.HTTP_400_BAD_REQUEST)
-        
+
 
 class DeployedDrivers(APIView):
     # this function returns all ongoing deployments for the latest shift iteration of the supervisor
@@ -833,7 +832,7 @@ class DeployedDrivers(APIView):
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='O')
         deployments_serializer = DeploymentSerializer(deployments, many=True)
 
-        #INSERT NEEDED DATA FOR LIST
+        # INSERT NEEDED DATA FOR LIST
         for item in deployments_serializer.data:
             driver = DriverSerializer(Driver.objects.get(id=item.get('driver')))
             shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle')))
@@ -841,7 +840,7 @@ class DeployedDrivers(APIView):
             time = deployment.start_time
             item["driver"] = driver.data
             item["shuttle"] = shuttle.data
-            item["start_time"] = time.strftime("%I:%M %p") 
+            item["start_time"] = time.strftime("%I:%M %p")
 
             if DeployedDrivers.is_sub(item['id']):
                 sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()
@@ -863,7 +862,7 @@ class DeployedDrivers(APIView):
                         item["fifteen_peso_tickets"].append(ticket)
             else:
                 tickets = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
-                
+
                 item["ten_peso_tickets"] = []
                 item["twelve_peso_tickets"] = []
                 item["fifteen_peso_tickets"] = []
@@ -879,19 +878,20 @@ class DeployedDrivers(APIView):
         return Response(data={
             "deployed_drivers": deployments_serializer.data
         }, status=status.HTTP_200_OK)
-    
+
     @staticmethod
     def is_sub(deployment_id):
         for item in SubbedDeployments.objects.filter(deployment_id=deployment_id):
             return True
         return False
 
+
 class ShuttleBreakdown(APIView):
     @staticmethod
     def get(request, deployment_id):
         deployment = Deployment.objects.get(id=deployment_id);
         shift_iteration = ShiftIteration.objects.get(id=deployment.shift_iteration.id)
-        
+
         shuttles = Shuttle.objects.filter().exclude(id=deployment.shuttle.id, status="UM")
 
         deployments = Deployment.objects.filter(shift_iteration=shift_iteration.id)
@@ -928,7 +928,7 @@ class ShuttleBreakdown(APIView):
 
         shuttle.status = 'UM'
         shuttle.save()
-        
+
         serialized_deployment = DeploymentSerializer(new_deployment)
 
         return Response(data={
@@ -982,6 +982,7 @@ class RedeployDriver(APIView):
             "redeployment": serialized_deployment.data
         }, status=status.HTTP_200_OK)
 
+
 class DriverDeployment(APIView):
     @staticmethod
     def get(request, driver_id):
@@ -993,7 +994,7 @@ class DriverDeployment(APIView):
             endtime = None
             if deployment.end_time:
                 endtime = deployment.end_time.strftime("%I:%M %p")
-            
+
             shuttle = "#" + str(deployment.shuttle.shuttle_number) + " - " + deployment.shuttle.plate_number
 
             data.append({
@@ -1004,7 +1005,7 @@ class DriverDeployment(APIView):
                 'status': deployment.status,
                 'shuttle': shuttle
             })
-        
+
         print(data)
         return Response(data={
             'deployments': data
@@ -1015,35 +1016,35 @@ class DeploymentTickets(APIView):
     @staticmethod
     def get(request, deployment_id):
         deployment = Deployment.objects.get(id=deployment_id);
-        
+
         ten_tickets = AssignedTicket.objects.filter(
             driver=deployment.driver,
             type="A",
             is_consumed=False
-            )
+        )
 
         twelve_tickets = AssignedTicket.objects.filter(
             driver=deployment.driver,
             type="B",
             is_consumed=False
-            )
+        )
 
         fifteen_tickets = AssignedTicket.objects.filter(
             driver=deployment.driver,
             type="C",
             is_consumed=False
-            )
-        
+        )
+
         ten_list = []
         twelve_list = []
         fifteen_list = []
 
         for ten in ten_tickets:
             ten_list.append(DeploymentTickets.getUsableTickets(ten))
-        
+
         for twelve in twelve_tickets:
             twelve_list.append(DeploymentTickets.getUsableTickets(twelve))
-        
+
         for fifteen in fifteen_tickets:
             fifteen_list.append(DeploymentTickets.getUsableTickets(fifteen))
 
@@ -1053,7 +1054,6 @@ class DeploymentTickets(APIView):
             "fifteen_tickets": fifteen_list
         }, status=status.HTTP_200_OK)
 
-    
     @staticmethod
     def getUsableTickets(ticket):
         consumed = ConsumedTicket.objects.filter(assigned_ticket=ticket).order_by('-end_ticket').first()
@@ -1070,7 +1070,7 @@ class DeploymentTickets(APIView):
                 'start_ticket': ticket.range_from,
                 'end_ticket': ticket.range_to
             }
-        
+
         return tickets_left
 
 
@@ -1078,10 +1078,10 @@ class SubmitRemittance(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body);
-        
+
         deployment = Deployment.objects.get(id=data["deployment_id"]);
 
-        #create remittance form
+        # create remittance form
         rem_form = RemittanceForm()
         rem_form.deployment = deployment
         if data["fuel_costs"]:
@@ -1096,7 +1096,7 @@ class SubmitRemittance(APIView):
             rem_form.other_cost = data["other_costs"]
         else:
             rem_form.fuel_cost = 0
-        
+
         rem_form.km_from = deployment.shuttle.mileage
         rem_form.km_to = data["mileage"]
 
@@ -1128,7 +1128,6 @@ class SubmitRemittance(APIView):
                 if assigned.range_to == new_consumed.end_ticket:
                     assigned.is_consumed = True
                     assigned.save()
-        
 
         for ticket_used in data["twelve_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
@@ -1155,7 +1154,6 @@ class SubmitRemittance(APIView):
                     assigned.is_consumed = True
                     assigned.save()
 
-        
         for ticket_used in data["fifteen_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
@@ -1181,7 +1179,6 @@ class SubmitRemittance(APIView):
                     assigned.is_consumed = True
                     assigned.save()
 
-
         rem_form.total -= (float(rem_form.fuel_cost) + float(rem_form.other_cost))
         deployment.shuttle.save()
         deployment.end_deployment()
@@ -1200,7 +1197,7 @@ class PendingRemittances(APIView):
             "-date").first()
         deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='F')
 
-        #only serialize those that have pending remittances
+        # only serialize those that have pending remittances
         to_serialize = []
         for deployment in deployments:
             remittance = RemittanceForm.objects.filter(deployment=deployment, status='P').first()
@@ -1210,7 +1207,7 @@ class PendingRemittances(APIView):
 
         deployments_serializer = DeploymentSerializer(to_serialize, many=True)
 
-        #INSERT NEEDED DATA FOR LIST
+        # INSERT NEEDED DATA FOR LIST
         for item in deployments_serializer.data:
             driver = DriverSerializer(Driver.objects.get(id=item.get('driver')))
             shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle')))
@@ -1220,7 +1217,7 @@ class PendingRemittances(APIView):
 
             item["driver"] = driver.data
             item["shuttle"] = shuttle.data
-            item["start_time"] = start_time.strftime("%I:%M %p") 
+            item["start_time"] = start_time.strftime("%I:%M %p")
             item["end_time"] = end_time.strftime("%I:%M %p")
 
             if DeployedDrivers.is_sub(item['id']):
@@ -1246,6 +1243,7 @@ class PendingRemittances(APIView):
             "remittance_form": [],
         }, status=status.HTTP_200_OK)
 
+
 class ViewRemittance(APIView):
     @staticmethod
     def get(request, deployment_id):
@@ -1269,9 +1267,9 @@ class ViewRemittance(APIView):
     @staticmethod
     def getTickets(ticket_type, remittance_form):
         tickets = ConsumedTicket.objects.filter(
-                                remittance_form=remittance_form,
-                                assigned_ticket__type=ticket_type
-                                )
+            remittance_form=remittance_form,
+            assigned_ticket__type=ticket_type
+        )
 
         data = []
 
@@ -1282,7 +1280,7 @@ class ViewRemittance(APIView):
                 "end_ticket": ticket.end_ticket,
                 "total": ticket.total
             })
-        
+
         return data
 
 
@@ -2183,7 +2181,13 @@ class CarwashTransactionView(APIView):
 
     @staticmethod
     def post(request):
-        data = json.loads(request.body)
+        data = {
+            "date": request.POST.get('date'),
+            "member": request.POST.get('member'),
+            "receipt": request.POST.get('receipt'),
+            "total": request.POST.get('total'),
+            "photo": request.FILES.get('image')
+        }
         transaction_serializer = CarwashTransactionSerializer(data=data)
         if transaction_serializer.is_valid():
             transaction = transaction_serializer.create(validated_data=transaction_serializer.validated_data)

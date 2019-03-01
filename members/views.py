@@ -137,7 +137,8 @@ class AssignedDriverView(APIView):
             driver['ten_total'] = len([item for item in tickets if item['ticket_type'] == '10 Pesos'])
             driver['twelve_total'] = len([item for item in tickets if item['ticket_type'] == '12 Pesos'])
             driver['fifteen_total'] = len([item for item in tickets if item['ticket_type'] == '15 Pesos'])
-            driver['has_missing'] = False if driver['ten_total'] == 0 or driver['twelve_total'] == 0 or driver['fifteen_total'] == 0 else True
+            driver['has_missing'] = False if driver['ten_total'] == 0 or driver['twelve_total'] == 0 or driver[
+                                                                                                            'fifteen_total'] == 0 else True
 
         return Response(data={
             "drivers": drivers
@@ -345,14 +346,27 @@ class MemberSharesView(APIView):
 
     @staticmethod
     def post(request, member_id):
-        body = json.loads(request.body)
         share = None
+
+        total_value = Share.objects.all().aggregate(Sum('value'))
+        total_value = int(total_value['value__sum'])
+        value = int(request.POST.get('value'))
+        action = request.POST.get('action')
+        print(action)
+
+        if action == "withraw":
+            if value > total_value:
+                return Response(data={
+                    "error": "Not enough shares to be withrawn"
+                }, status=400)
+            value = -value
 
         data = {
             "member": Member.objects.get(pk=member_id),
-            "value": body["value"],
-            "date_of_update": body["date"],
-            "receipt": body["receipt"],
+            "date_of_update": request.POST.get('date'),
+            "receipt": request.POST.get('receipt'),
+            "value": value,
+            "photo": request.FILES.get('image')
         }
         share_serializer = ShareSerializer(data=data)
 

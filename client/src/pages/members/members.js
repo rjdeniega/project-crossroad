@@ -14,7 +14,7 @@ import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form } from "antd";
+import { message,Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form } from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
@@ -233,7 +233,7 @@ export class TransactionsPane extends Component {
                 {activeUser &&
                 <div className="transaction-tables">
                     <Modal
-                        title="Add a carwash transaction for this member"
+                        title={"Add a carwash transaction for " + this.props.activeUser.name}
                         visible={this.state.visible}
                         onOk={this.handleOk}
                         onCancel={this.handleCancel}
@@ -290,7 +290,6 @@ export class TransactionsPane extends Component {
                                className="remittance-table"
                                columns={carwash_columns}
                                dataSource={this.state.carwash_transactions}
-
                         />
                     </div>
                 </div>
@@ -310,7 +309,8 @@ export class SharesManagementPane extends Component {
         total_peso_value: null,
         visible: false,
         date: null,
-        date_object: moment('2015/01/01', dateFormat)
+        date_object: moment('2015/01/01', dateFormat),
+        action: null,
     };
 
     componentDidMount() {
@@ -348,12 +348,19 @@ export class SharesManagementPane extends Component {
     };
     handleConfirm = (e) => {
         const { activeUser } = this.props;
-        const data = {
-            "date": this.state.date,
-            "receipt": this.state.receipt,
-            "value": this.state.add_share_value,
-        };
-        postData('/members/shares/' + activeUser.id, data).then(data => {
+        const formData = new FormData();
+        formData.append('action', this.state.function);
+        formData.append('value', this.state.add_share_value);
+        formData.append('date', this.state.date);
+        formData.append('receipt', this.state.receipt);
+        formData.append('image', this.state.image);
+        console.log(formData);
+
+        postDataWithFile('/members/shares/' + activeUser.id, formData).then(data => {
+            if(data.error){
+                message.error(data.error)
+            }
+            console.log(data);
             console.log(data.share);
             this.setState({
                 total_shares: this.computeValue(this.state.total_shares, data.share.value),
@@ -362,6 +369,9 @@ export class SharesManagementPane extends Component {
                 visible: false,
             })
         });
+        this.setState({
+            visible: false
+        })
     };
     convertToDefaultShare = (share) => {
         console.log(share);
@@ -407,6 +417,15 @@ export class SharesManagementPane extends Component {
                 {text}
             </div>
         )
+    },{
+        title: 'Transaction Type',
+        dataIndex: 'value',
+        key: 'value',
+        render: (text) => (
+            <div className="rem-status">
+                {parseInt(text)>=0 ? <p>Add</p> : <p style={{'color': 'red'}}>Withraw</p>}
+            </div>
+        ),
     }, {
         title: 'Share Value',
         dataIndex: 'value',
@@ -440,7 +459,7 @@ export class SharesManagementPane extends Component {
                 {activeUser &&
                 <div>
                     <Modal
-                        title="Add shares for this member"
+                        title={"Add/Withraw shares for " + this.props.activeUser.name}
                         visible={this.state.visible}
                         onOk={this.handleConfirm}
                         onCancel={this.handleCancel}
@@ -470,6 +489,13 @@ export class SharesManagementPane extends Component {
                             </Form.Item>
                             <Form.Item
                                 {...formItemLayout}
+                                label="Upload Receipt Image:"
+                            >
+                                <Input className="upload-input" type="file" placeholder="select image"
+                                       onChange={this.handleFileChange}/>
+                            </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
                                 label="Shares Added:"
                             >
                                 <InputNumber onChange={this.handleShareChange}/>
@@ -481,7 +507,7 @@ export class SharesManagementPane extends Component {
                     <p> total shares (in Php): <b>Php {this.state.total_peso_value}</b></p>
 
                     <Table bordered size="medium"
-                           className="remittance-table"
+                           className="remittance-table share-table"
                            columns={this.share_columns}
                            dataSource={this.state.shares}
                     />
