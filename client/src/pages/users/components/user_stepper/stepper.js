@@ -233,7 +233,7 @@ export class SecondContent extends Component {
     };
     renderStaffInfo = () => (
         <div>
-            <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
+            <Input className="upload-input" type="file" placeholder="select image" onChange={this.handleFileChange}/>
             <Input onChange={this.handleFormChange("name")} value={this.state.name} className="user-input"
                    type="text"
                    placeholder="enter name"/>

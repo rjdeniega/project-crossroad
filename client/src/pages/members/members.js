@@ -14,18 +14,19 @@ import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker } from "antd";
+import { Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form } from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
 import { BeepPane } from "../../pages/remittances/tabs/beep/beep";
 import { OverviewPane } from "../../pages/remittances/tabs/overview/overview";
 import { ShiftManagementPane } from "../../pages/remittances/tabs/shift_management/shift_management";
-import { getData, postData } from '../../network_requests/general'
+import { getData, postData, postDataWithFile } from '../../network_requests/general'
 import moment from "moment";
 
 const TabPane = Tabs.TabPane;
-
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
 const antIcon = (
     <AntIcon
         type="loading"
@@ -33,6 +34,16 @@ const antIcon = (
         spin
     />
 );
+const formItemLayout = {
+    labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 },
+    },
+    wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+    },
+};
 const columns = [{
     title: 'Date',
     dataIndex: 'shift_date',
@@ -98,7 +109,8 @@ export class TransactionsPane extends Component {
         receipt: null,
         visible: false,
         date: null,
-        date_object: moment('2015/01/01', dateFormat)
+        date_object: moment('2015/01/01', dateFormat),
+        function: 'add'
     };
 
     componentDidMount() {
@@ -142,15 +154,30 @@ export class TransactionsPane extends Component {
         });
     };
     handleOk = (e) => {
-        const data = {
-            "member": this.props.activeUser.id,
-            "total": this.state.total,
-            "receipt": this.state.receipt,
-            "date": this.state.date,
-        };
-        postData('/remittances/carwash_transaction/', data).then(data => {
-            console.log(data)
-        });
+
+        const formData = new FormData();
+        formData.append('member', this.props.activeUser.id);
+        formData.append('total', this.state.total);
+        formData.append('date', this.state.date);
+        formData.append('receipt', this.state.receipt);
+        formData.append('image', this.state.receipt);
+        console.log(formData);
+
+        postDataWithFile('/remittances/carwash_transaction/', formData)
+            .then(data => {
+                if (data.error) {
+                    console.log("theres an error");
+                    this.setState({
+                        error: data["error"],
+                    });
+                    console.log(this.state.error);
+                }
+                else {
+                    console.log(data);
+                    console.log(data.user_staff);
+                }
+            })
+            .catch(error => console.log(error));
         this.setState({
             visible: false,
         });
@@ -188,6 +215,11 @@ export class TransactionsPane extends Component {
             receipt: event.target.value
         })
     };
+    handleFileChange = (e) => {
+        this.setState({
+            image: e.target.files[0]
+        })
+    };
 
     render() {
         const { activeUser } = this.props;
@@ -206,10 +238,35 @@ export class TransactionsPane extends Component {
                         onOk={this.handleOk}
                         onCancel={this.handleCancel}
                     >
-                        <DatePicker className="user-input" onChange={this.handleDateChange} format={dateFormat}/>
-                        <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
-                        <InputNumber className="user-input" addOnBefore="Php" placeholder="value"
-                                     onChange={this.formListener("total")}/>
+                        <Form className="login-form">
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Date of Transaction:"
+                            >
+                                <DatePicker className="user-input" onChange={this.handleDateChange}
+                                            format={dateFormat}/>
+                            </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Receipt Number:"
+                            >
+                                <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
+                            </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Upload Receipt Image:"
+                            >
+                                <Input className="upload-input" type="file" placeholder="select image"
+                                       onChange={this.handleFileChange}/>
+                            </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Value of Transaction:"
+                            >
+                                <InputNumber className="user-input" addOnBefore="Php" placeholder="value"
+                                             onChange={this.formListener("total")}/>
+                            </Form.Item>
+                        </Form>
                     </Modal>
                     <div className="table-container">
                         <div className="tab-label">
@@ -369,6 +426,12 @@ export class SharesManagementPane extends Component {
             </div>
         ),
     }];
+    onChange = (e) => {
+        this.setState({
+            function: e.target.value
+        })
+        console.log(`radio checked:${e.target.value}`);
+    }
 
     render() {
         const { activeUser } = this.props;
@@ -382,9 +445,36 @@ export class SharesManagementPane extends Component {
                         onOk={this.handleConfirm}
                         onCancel={this.handleCancel}
                     >
-                        <DatePicker className="user-input" onChange={this.handleDateChange} format={dateFormat}/>
-                        <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
-                        <InputNumber onChange={this.handleShareChange}/>
+                        <Form className="login-form">
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Choose Action:"
+                            >
+                                <RadioGroup onChange={this.onChange} defaultValue="add">
+                                    <RadioButton value="add">Add</RadioButton>
+                                    <RadioButton value="withraw">Withraw</RadioButton>
+                                </RadioGroup>
+                            </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Date of Payment:"
+                            >
+                                <DatePicker className="user-input" onChange={this.handleDateChange}
+                                            format={dateFormat}/>
+                            </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Receipt Number:"
+                            >
+                                <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
+                            </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Shares Added:"
+                            >
+                                <InputNumber onChange={this.handleShareChange}/>
+                            </Form.Item>
+                        </Form>
                     </Modal>
                     <Button onClick={this.showModal}>Add Shares</Button>
                     <p> total shares: <b>{this.state.total_shares}</b></p>
