@@ -18,6 +18,7 @@ import ReactToPrint from 'react-to-print'
 import {ic_save} from 'react-icons-kit/md/ic_save'
 import {getData} from "../../network_requests/general";
 import {InventoryTable} from "./components/inventory_table/inventory_table";
+import {PhysicalCount} from "./components/physical_count/physical_count";
 
 const data = [];
 
@@ -117,6 +118,7 @@ export class InventoryPage extends Component {
                 <div className='table-style'>
                     <Tabs activeKey={this.state.activeTab} onChange={this.changeTab}>
                         <Tabs.TabPane tab="Inventory" key="1" onClick={() => this.changeTab("1")}>
+                            <PhysicalCount />
                             <InventoryTable />
                         </Tabs.TabPane>
                         <Tabs.TabPane tab="Purchase Order" onClick={() => this.changeTab("2")} className='full-table'>

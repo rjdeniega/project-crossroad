@@ -254,14 +254,6 @@ export class UpdatePurchaseOrder extends Component {
                                       <Tag color="green">Php{item.unit_price}</Tag>
                                   </span>)} size="small"
                                       className="item-form-container">
-                                    <Form.Item label="Type" {...formItemLayout}>
-                                        <Select defaultValue="Single Item" style={{width: 210}}
-                                                onSelect={e => this.changeItemType(index, e)}>
-                                            <Option value="Single Item">Single Item</Option>
-                                            <Option value="Physical Measurement">Physical Measurement</Option>
-                                            <Option value="Liquid Measurement">Liquid Measurement</Option>
-                                        </Select>
-                                    </Form.Item>
                                     <Form.Item label="Item Name" {...formItemLayout}>
                                         <Input value={item.generic_name}
                                                onChange={e => this.updateFields(index, e.target.value, "name")}/>
@@ -273,6 +265,14 @@ export class UpdatePurchaseOrder extends Component {
                                     <Form.Item label="Brand" {...formItemLayout}>
                                         <Input value={item.brand}
                                                onChange={e => this.updateFields(index, e.target.value, "brand")}/>
+                                    </Form.Item>
+                                    <Form.Item label="Type" {...formItemLayout}>
+                                        <Select defaultValue="Single Item" style={{width: 210}}
+                                                onSelect={e => this.changeItemType(index, e)}>
+                                            <Option value="Single Item">Single Item</Option>
+                                            <Option value="Physical Measurement">Physical Measurement</Option>
+                                            <Option value="Liquid Measurement">Liquid Measurement</Option>
+                                        </Select>
                                     </Form.Item>
                                     {item.item_type === "Liquid Measurement" ?
                                         <Form.Item label="Measurement" {...formItemLayout}>

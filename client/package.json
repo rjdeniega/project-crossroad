@@ -5,9 +5,9 @@
   "dependencies": {
     "@opuscapita/react-perfect-scrollbar": "^3.0.3",
     "antd": "^3.13.6",
-    "chart.js": "^2.7.3",
-    "lodash": "^4.17.11",
+    "chart.js": "^1.1.1",
     "latest": "^0.2.0",
+    "lodash": "^4.17.11",
     "moment": "latest",
     "rc-form": "^2.4.2",
     "react": "^16.8.3",

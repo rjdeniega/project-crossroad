@@ -23,8 +23,6 @@ export class InventoryTable extends Component {
         getData('inventory/items/').then(data => {
             this.setState({
                 items: data.items
-            }, () => {
-                console.log(this.state.items)
             })
         });
         this.state.items.forEach(function (item, key) {

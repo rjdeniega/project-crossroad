@@ -57,16 +57,6 @@ export class Header extends Component {
                     <Icon className="page-icon" icon={cube} size={42}/>
                     <div className="page-title">Inventory</div>
                     <div className="current-date"> Manage item stocks</div>
-                    <Button className="add-item" onClick={this.showModal}>Add Item</Button>
-                    <Modal
-                        className="add-item-modal"
-                        title="Add Item"
-                        visible={this.state.visible}
-                        onOk={this.handleOk}
-                        onCancel={this.handleCancel}
-                        footer={null}>
-                        <ItemForm handleOk={this.handleOk}/>
-                    </Modal>
                 </div>
                 <UserAvatar/>
                 </div>

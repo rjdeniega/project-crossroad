@@ -3,8 +3,7 @@ import json
 from django.db import models
 # Create your models here.
 from django.db.models import (BooleanField, CharField, DateField, DecimalField,
-                              FileField, ForeignKey, IntegerField,
-                              ManyToManyField, PositiveIntegerField, TextField)
+                              ForeignKey, IntegerField, ManyToManyField, PositiveIntegerField, TextField)
 from django.utils import timezone
 
 from django.db.models.aggregates import Count
@@ -87,10 +86,17 @@ class Shuttle(SoftDeletionModel):
         return self.all()[random_index]
 
 
+class ItemCategory(SoftDeletionModel):
+    category = CharField(max_length=64)
+    code_prefix = CharField(max_length=3)
+    quantity = PositiveIntegerField()
+
+
 class PurchaseOrderItem(SoftDeletionModel):
     item = CharField(max_length=64)
     quantity = PositiveIntegerField()
     unit_price = DecimalField(max_digits=10, decimal_places=2)
+    category = ForeignKey(ItemCategory, on_delete=models.PROTECT)
 
 
 class PurchaseOrder(SoftDeletionModel):
@@ -107,6 +113,7 @@ class Item(SoftDeletionModel):
     name = CharField(max_length=64)
     description = CharField(max_length=255)
     quantity = PositiveIntegerField()
+    category = ForeignKey(ItemCategory, on_delete=models.PROTECT)
     unit_price = DecimalField(max_digits=10, decimal_places=2)
     item_type = CharField(max_length=255)
     measurement = PositiveIntegerField(null=True)
@@ -115,7 +122,7 @@ class Item(SoftDeletionModel):
     vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
-    item_code = CharField(max_length=8)
+    item_code = CharField(max_length=4)
     purchase_order = ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -173,6 +180,7 @@ class ItemMovement(SoftDeletionModel):
     item = ForeignKey(Item, on_delete=models.CASCADE)
     type = CharField(max_length=1, choices=MOVEMENT_TYPE)
     quantity = PositiveIntegerField()
+    remarks = CharField(max_length=64, null=True)
     unit_price = DecimalField(max_digits=10, decimal_places=2, null=True)
     repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
     created = models.DateTimeField(editable=False, null=True)
