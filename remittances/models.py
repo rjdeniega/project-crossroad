@@ -2,7 +2,6 @@ from django.db import models
 from django.db.models import *
 from django.utils import timezone
 from datetime import datetime
-from core.models import SoftDeletionModel
 from members.models import *
 from inventory.models import *
 

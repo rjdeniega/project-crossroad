@@ -53,13 +53,13 @@ class PopulateRemittances():
         # create shifts for every schedule
         shifts = ['A', 'P']
 
-        supervisor_ids = [1, 2, 3]
-        driver_ids_odd = [4, 5, 6, 7, 8, 9, 10]
-        driver_ids_even = [11, 12, 13, 14, 15, 16, 17]
+        supervisor_ids = [1, 2]
+        driver_ids_odd = [3, 4, 5, 6, 7, 8, 9]
+        driver_ids_even = [10, 11, 12, 13, 14, 15, 16]
 
         ctr = 1
         for shift in shifts:
-            supervisor = Supervisor.objects.get(id=supervisor_ids[ctr-1])
+            supervisor = Driver.objects.get(id=supervisor_ids[ctr-1])
 
             if ctr % 2 == 0:
                 drivers = driver_ids_even
@@ -90,9 +90,16 @@ class PopulateRemittances():
         shuttle_ids = [1,2,3,4,5,6,7]
         ctr = 0
         for driver in drivers:
+            if (ctr == 1 or ctr == 2) and type == 'A':
+                dep_type = "Early"
+            elif (ctr == 1 or ctr == 2) and type == 'P':
+                dep_type = "Late"
+            else:
+                dep_type = 'Regular'
+
             DriversAssigned.objects.create(
                 driver_id=driver,
-                deployment_type="Regular",
+                deployment_type=dep_type,
                 shift=shift,
                 shuttle_id=shuttle_ids[ctr]
             )
@@ -145,12 +152,19 @@ class PopulateRemittances():
     def deploy_drivers(shift_iteration, date):
         for driver in DriversAssigned.objects.filter(shift=shift_iteration.shift):
             # driver can be absent sometimes
-            num = randint(1, 10)
-            if num <= 9:
+            num = randint(1, 15)
+            if num <= 14:
+                if driver.shuttle.route == 'Main Road':
+                    route = 'M'
+                elif driver.shuttle.route == 'Kaliwa':
+                    route = 'L'
+                else:
+                    route = 'R'
+
                 deployment = Deployment.objects.create(
                     driver=driver.driver,
                     shuttle=driver.shuttle,
-                    route=driver.shuttle.route,
+                    route=route,
                     shift_iteration=shift_iteration,
                     created=date
                 )
@@ -207,6 +221,7 @@ class PopulateRemittances():
         remittance_form.km_to = pop.generate_new_mileage(deployment.shuttle)
 
         deployment.shuttle.mileage = remittance_form.km_to
+        deployment.shuttle.save()
         remittance_form.save()
 
         # TODO generate consumed
@@ -232,15 +247,15 @@ class PopulateRemittances():
         # compute totals
         if pop.is_main_road(deployment):
             print('I am main road')
-            consumed_a = pop.generate_consumed(ticket_a, remittance_form)
-            consumed_b = pop.generate_consumed(ticket_b, remittance_form)
-            consumed_c = pop.generate_consumed(ticket_c, remittance_form)
+            consumed_a = pop.generate_consumed(ticket_a, remittance_form, date)
+            consumed_b = pop.generate_consumed(ticket_b, remittance_form, date)
+            consumed_c = pop.generate_consumed(ticket_c, remittance_form, date)
 
             remittance_form.total = consumed_a.total + consumed_b.total + consumed_c.total
         else:
-            print('I am ' + remittance_form.deployment.shuttle.get_route_display())
-            consumed_a = pop.generate_consumed(ticket_a, remittance_form)
-            consumed_b = pop.generate_consumed(ticket_b, remittance_form)
+            print('I am ' + remittance_form.deployment.get_route_display())
+            consumed_a = pop.generate_consumed(ticket_a, remittance_form, date)
+            consumed_b = pop.generate_consumed(ticket_b, remittance_form, date)
 
             remittance_form.total = consumed_a.total + consumed_b.total
 
@@ -271,20 +286,27 @@ class PopulateRemittances():
 
     @staticmethod
     def is_main_road(deployment):
-        if deployment.route is 'M':
+        if deployment.route is 'Main Road':
             return True
         else:
             return False
 
     @staticmethod
-    def generate_consumed(assigned_ticket, remittance_form):
+    def generate_consumed(assigned_ticket, remittance_form, date):
         if PopulateRemittances.has_consumed(assigned_ticket):
             consumed = PopulateRemittances.get_last_consumed(assigned_ticket)
             start_ticket = consumed.end_ticket + 1
         else:
             start_ticket = assigned_ticket.range_from
 
-        number_of_passengers = randint(20, 50)
+        day = date.weekday()
+        if day == 0 or day == 6:
+            number_of_passengers = randint(15, 30)
+        elif day == 1 or day == 5:
+            number_of_passengers = randint(25, 60)
+        else:
+            number_of_passengers = randint(20, 40)
+
         if PopulateRemittances.is_tickets_enough(assigned_ticket, number_of_passengers):
             end_ticket = start_ticket + number_of_passengers
         else:
