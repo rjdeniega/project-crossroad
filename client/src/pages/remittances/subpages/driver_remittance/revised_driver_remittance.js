@@ -52,7 +52,14 @@ class DeploymentList extends React.Component {
     }
 
     fetchDeployments() {
-        const driver = JSON.parse(localStorage.user_staff);
+        let driver = null;
+        console.log(this.props.driver);
+        if (this.props.driver == undefined || this.props.driver == null) {
+            driver = JSON.parse(localStorage.user_staff);
+        }
+        else {
+            driver = this.props.driver
+        }
         fetch('/remittances/deployments/driver/' + driver.id)
             .then(response => {
                 return response;
@@ -101,16 +108,17 @@ class DeploymentList extends React.Component {
     }
 }
 
-function DeploymentListDetails(props) {
+export function DeploymentListDetails(props) {
     let tag_color = props.status == 'O' ? 'blue' : 'green';
     let status = props.status == 'O' ? 'Ongoing' : 'Finished';
     let end_time = props.end_time == null ? 'N/A' : props.end_time;
+    console.log(props.driver_object);
     if (status == 'Ongoing') {
         return (
             <div className="deployment-list-container">
                 <div className="list-header">
                     <span className="list-header-date">
-                        {props.date}
+                        {props.driver_object ? props.driver_object.name : props.date}
                     </span>
                     <Tag color={tag_color}>
                         {status}
@@ -121,6 +129,7 @@ function DeploymentListDetails(props) {
                         title="Shuttle"
                         value={props.shuttle}
                     />
+
                     <DetailItem
                         title="Start Time"
                         value={props.start_time}
@@ -135,12 +144,13 @@ function DeploymentListDetails(props) {
                 />
             </div>
         );
-    } else {
+    }
+    else {
         return (
             <div className="deployment-list-container">
                 <div className="list-header">
                     <span className="list-header-date">
-                        {props.date}
+                        {props.driver_object ? props.driver_object.name : props.date}
                     </span>
                     <Tag color={tag_color}>
                         {status}
@@ -288,133 +298,133 @@ class RemittanceInfo extends React.Component {
                     </Col>
                 </Row>
                 {ten_isEmpty == false &&
-                    <Divider>
-                        10 Peso Tickets
-                    </Divider>
+                <Divider>
+                    10 Peso Tickets
+                </Divider>
                 }
                 {ten_isEmpty == false &&
-                    this.state.ten_tickets.map((item) => (
-                        <Row gutter={16}>
-                            <Col span={8}>
+                this.state.ten_tickets.map((item) => (
+                    <Row gutter={16}>
+                        <Col span={8}>
                                 <span className="view-remittances-tag">
                                     Ticket No:
                             </span>
-                            </Col>
-                            <Col span={8}>
+                        </Col>
+                        <Col span={8}>
                                 <span>
                                     {item.start_ticket}
                                 </span>
-                                <span> - </span>
-                                <span>
+                            <span> - </span>
+                            <span>
                                     {item.end_ticket}
                                 </span>
-                            </Col>
-                            <Col span={8}>
-                                <Divider type="vertical" />
-                                <Tooltip
-                                    title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 10"}
-                                    placement="topRight"
-                                >
+                        </Col>
+                        <Col span={8}>
+                            <Divider type="vertical"/>
+                            <Tooltip
+                                title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 10"}
+                                placement="topRight"
+                            >
                                     <span className="item-total">
                                         {parseFloat(Math.round(item.total * 100) / 100).toFixed(2)}
                                     </span>
-                                </Tooltip>
-                            </Col>
-                        </Row>
-                    ))
+                            </Tooltip>
+                        </Col>
+                    </Row>
+                ))
                 }
 
                 {twelve_isEmpty == false &&
-                    <Divider>
-                        12 Peso Tickets
-                    </Divider>
+                <Divider>
+                    12 Peso Tickets
+                </Divider>
                 }
                 {twelve_isEmpty == false &&
-                    this.state.twelve_tickets.map((item) => (
-                        <Row gutter={16}>
-                            <Col span={8}>
+                this.state.twelve_tickets.map((item) => (
+                    <Row gutter={16}>
+                        <Col span={8}>
                                 <span className="view-remittances-tag">
                                     Ticket No:
                             </span>
-                            </Col>
-                            <Col span={8}>
+                        </Col>
+                        <Col span={8}>
                                 <span>
                                     {item.start_ticket}
                                 </span>
-                                <span> - </span>
-                                <span>
+                            <span> - </span>
+                            <span>
                                     {item.end_ticket}
                                 </span>
-                            </Col>
-                            <Col span={8}>
-                                <Divider type="vertical" />
-                                <Tooltip
-                                    title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 12"}
-                                    placement="topRight"
-                                >
+                        </Col>
+                        <Col span={8}>
+                            <Divider type="vertical"/>
+                            <Tooltip
+                                title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 12"}
+                                placement="topRight"
+                            >
                                     <span className="item-total">
                                         {parseFloat(Math.round(item.total * 100) / 100).toFixed(2)}
                                     </span>
-                                </Tooltip>
-                            </Col>
-                        </Row>
-                    ))
+                            </Tooltip>
+                        </Col>
+                    </Row>
+                ))
                 }
 
                 {fifteen_isEmpty == false &&
-                    <Divider>
-                        15 Peso Tickets
-                    </Divider>
+                <Divider>
+                    15 Peso Tickets
+                </Divider>
                 }
                 {fifteen_isEmpty == false &&
-                    this.state.fifteen_tickets.map((item) => (
-                        <Row gutter={16}>
-                            <Col span={8}>
+                this.state.fifteen_tickets.map((item) => (
+                    <Row gutter={16}>
+                        <Col span={8}>
                                 <span className="view-remittances-tag">
                                     Ticket No:
                                 </span>
-                            </Col>
-                            <Col span={8}>
+                        </Col>
+                        <Col span={8}>
                                 <span>
                                     {item.start_ticket}
                                 </span>
-                                <span> - </span>
-                                <span>
+                            <span> - </span>
+                            <span>
                                     {item.end_ticket}
                                 </span>
-                            </Col>
-                            <Col span={8}>
-                                <Divider type="vertical" />
-                                <Tooltip
-                                    title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 15"}
-                                    placement="topRight"
-                                >
+                        </Col>
+                        <Col span={8}>
+                            <Divider type="vertical"/>
+                            <Tooltip
+                                title={"number of tickets (" + String(item.end_ticket - item.start_ticket) + " pcs) * 15"}
+                                placement="topRight"
+                            >
                                     <span className="item-total">
                                         {parseFloat(Math.round(item.total * 100) / 100).toFixed(2)}
                                     </span>
-                                </Tooltip>
-                            </Col>
-                        </Row>
-                    ))
+                            </Tooltip>
+                        </Col>
+                    </Row>
+                ))
                 }
 
                 <Divider orientation="left">Other Information</Divider>
                 <Row gutter={16}>
                     <Col span={16}>
                         {this.state.remittance_form.fuel_cost != 0 ? (
-                            <Tooltip title={"Receipt No.: " + this.state.remittance_form.fuel_receipt}>
+                                <Tooltip title={"Receipt No.: " + this.state.remittance_form.fuel_receipt}>
                                 <span className="view-remittances-tag">
                                     Fuel Costs:
                                 </span>
-                            </Tooltip>
-                        ) : (
-                            <span className="view-remittances-tag">
+                                </Tooltip>
+                            ) : (
+                                <span className="view-remittances-tag">
                                 Fuel Costs:
                             </span>
-                        )}
+                            )}
                     </Col>
                     <Col span={8}>
-                        <Divider type="vertical" />
+                        <Divider type="vertical"/>
                         <span className="item-total">
                             ({parseFloat(Math.round(this.state.remittance_form.fuel_cost * 100) / 100).toFixed(2)})
                         </span>
@@ -427,7 +437,7 @@ class RemittanceInfo extends React.Component {
                         </span>
                     </Col>
                     <Col span={8}>
-                        <Divider type="vertical" />
+                        <Divider type="vertical"/>
                         <span className="item-total">
                             ({parseFloat(Math.round(this.state.remittance_form.other_cost * 100) / 100).toFixed(2)})
                         </span>
@@ -440,7 +450,7 @@ class RemittanceInfo extends React.Component {
                         </span>
                     </Col>
                     <Col span={8}>
-                        <Divider type="vertical" />
+                        <Divider type="vertical"/>
                         <span className="item-rem-total">
                             (Php) {parseFloat(Math.round(this.state.remittance_form.total * 100) / 100).toFixed(2)}
                         </span>
@@ -586,7 +596,8 @@ class RemittanceForm extends React.Component {
                     .then(response => {
                         if (!response.error) {
                             message.success("Remittance form has been submitted");
-                        } else {
+                        }
+                        else {
                             console.log(response.error);
                         }
                     });
@@ -648,7 +659,7 @@ class RemittanceForm extends React.Component {
                     label={
                         <span>
                             <Tooltip title="Input current mileage of the shuttle">
-                                <Icon type="question-circle-o" className="field-guide" />
+                                <Icon type="question-circle-o" className="field-guide"/>
                             </Tooltip>
                             Mileage
                         </span>
@@ -666,91 +677,91 @@ class RemittanceForm extends React.Component {
                     }
                 </Form.Item>
                 {this.state.tenPesoTickets && this.state.tenPesoTickets.length &&
-                    <div>
-                        <Divider>10 Peso Tickets</Divider>
-                        {
-                            this.state.tenPesoTickets.map((item) => (
-                                <Form.Item
-                                    {...formItemLayout}
-                                    label={
-                                        <span>
+                <div>
+                    <Divider>10 Peso Tickets</Divider>
+                    {
+                        this.state.tenPesoTickets.map((item) => (
+                            <Form.Item
+                                {...formItemLayout}
+                                label={
+                                    <span>
                                             <Tooltip title="Input the last consumed ticket of this bundle">
-                                                <Icon type="question-circle-o" className="field-guide" />
+                                                <Icon type="question-circle-o" className="field-guide"/>
                                             </Tooltip>
                                             Ticket No. {item.start_ticket} to
                                         </span>
-                                    }
-                                    key={item.id}
-                                >
-                                    {
-                                        getFieldDecorator('ten_peso-'.concat(item.id), {
-                                            rules: []
-                                        })(
-                                            <Input />
-                                        )
-                                    }
-                                </Form.Item>
-                            ))
-                        }
-                    </div>
+                                }
+                                key={item.id}
+                            >
+                                {
+                                    getFieldDecorator('ten_peso-'.concat(item.id), {
+                                        rules: []
+                                    })(
+                                        <Input />
+                                    )
+                                }
+                            </Form.Item>
+                        ))
+                    }
+                </div>
                 }
                 {this.state.twelvePesoTickets && this.state.twelvePesoTickets.length &&
-                    <div>
-                        <Divider>12 Peso Tickets</Divider>
-                        {
-                            this.state.twelvePesoTickets.map((item) => (
-                                <Form.Item
-                                    {...formItemLayout}
-                                    label={
-                                        <span>
+                <div>
+                    <Divider>12 Peso Tickets</Divider>
+                    {
+                        this.state.twelvePesoTickets.map((item) => (
+                            <Form.Item
+                                {...formItemLayout}
+                                label={
+                                    <span>
                                             <Tooltip title="Input the last consumed ticket of this bundle">
-                                                <Icon type="question-circle-o" className="field-guide" />
+                                                <Icon type="question-circle-o" className="field-guide"/>
                                             </Tooltip>
                                             Ticket No. {item.start_ticket} to
                                         </span>
-                                    }
-                                    key={item.id}
-                                >
-                                    {
-                                        getFieldDecorator('twelve_peso-'.concat(item.id), {
-                                            rules: []
-                                        })(
-                                            <Input />
-                                        )
-                                    }
-                                </Form.Item>
-                            ))
-                        }
-                    </div>
+                                }
+                                key={item.id}
+                            >
+                                {
+                                    getFieldDecorator('twelve_peso-'.concat(item.id), {
+                                        rules: []
+                                    })(
+                                        <Input />
+                                    )
+                                }
+                            </Form.Item>
+                        ))
+                    }
+                </div>
                 }
                 {this.state.fifteenPesoTickets && this.state.fifteenPesoTickets.length &&
-                    <div>
-                        <Divider>15 Peso Tickets</Divider>
-                        {
-                            this.state.fifteenPesoTickets.map((item) => (
-                                <Form.Item
-                                    {...formItemLayout}
-                                    label={
-                                        <span>
+                <div>
+                    <Divider>15 Peso Tickets</Divider>
+                    {
+                        this.state.fifteenPesoTickets.map((item) => (
+                            <Form.Item
+                                {...formItemLayout}
+                                label={
+                                    <span>
                                             <Tooltip title="Input the last consumed ticket of this bundle">
-                                                <Icon type="question-circle-o" className="field-guide" />
+                                                <Icon type="question-circle-o" className="field-guide"/>
                                             </Tooltip>
                                             Ticket No. {item.start_ticket} to
                                         </span>
-                                    }
-                                    key={item.id}
-                                >
-                                    {
-                                        getFieldDecorator('fifteen_peso-'.concat(item.id), {
-                                            rules: []
-                                        })(
-                                            <Input />
-                                        )
-                                    }
-                                </Form.Item>
-                            ))
-                        }
-                    </div>
+                                }
+                                key={item.id}
+                            >
+                                {
+                                    getFieldDecorator('fifteen_peso-'.concat(item.id), {
+                                        rules: []
+                                    })(
+                                        <Input />
+                                    )
+                                }
+                            </Form.Item>
+                        ))
+                    }
+                </div>
                 }
                 <Divider orientation="left"> Other Information </Divider>
                 <Form.Item
@@ -758,7 +769,7 @@ class RemittanceForm extends React.Component {
                     label={
                         <span>
                             <Tooltip title="Input costs made from buying fuel">
-                                <Icon type="question-circle-o" className="field-guide" />
+                                <Icon type="question-circle-o" className="field-guide"/>
                             </Tooltip>
                             Fuel Costs
                         </span>
@@ -777,7 +788,7 @@ class RemittanceForm extends React.Component {
                     label={
                         <span>
                             <Tooltip title="Input the OR number of the receipt acquired from buying fuel">
-                                <Icon type="question-circle-o" className="field-guide" />
+                                <Icon type="question-circle-o" className="field-guide"/>
                             </Tooltip>
                             OR Number
                         </span>
@@ -796,7 +807,7 @@ class RemittanceForm extends React.Component {
                     label={
                         <span>
                             <Tooltip title="Input other costs acquired during deployment">
-                                <Icon type="question-circle-o" className="field-guide" />
+                                <Icon type="question-circle-o" className="field-guide"/>
                             </Tooltip>
                             Other Costs
                         </span>
@@ -810,7 +821,7 @@ class RemittanceForm extends React.Component {
                         )
                     }
                 </Form.Item>
-                <div className="form-footer" >
+                <div className="form-footer">
                     <Button onClick={this.props.onClose} style={{ marginRight: 8 }}>
                         Cancel
                     </Button>

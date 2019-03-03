@@ -11,6 +11,7 @@ import React, { Component, Fragment } from "react"
 import '../../utilities/colorsFonts.css'
 import { List, Avatar, Alert } from 'antd'
 import './style.css'
+import {DeploymentListDetails} from '../remittances/subpages/driver_remittance/revised_driver_remittance'
 import emptyStateImage from '../../images/empty state record.png'
 import users from '../../images/default.png'
 import {
@@ -43,45 +44,6 @@ function onChange(date, dateString) {
     console.log(date, dateString);
 }
 
-const columns = [{
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: text => <a href="javascript:;">{text}</a>,
-}, {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-}, {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-}, {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: tags => (
-        <span>
-      {tags.map(tag => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-              color = 'volcano';
-          }
-          return <Tag color={color} key={tag}>{tag.toUpperCase()}</Tag>;
-      })}
-    </span>
-    ),
-}, {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-        <span>
-      <a href="javascript:;">Invite {record.name}</a>
-      <Divider type="vertical"/>
-      <a href="javascript:;">Delete</a>
-    </span>
-    ),
-}];
 
 const data = [{
     key: '1',
@@ -104,20 +66,85 @@ const data = [{
 }];
 export class HistoryPage extends Component {
     state = {
-        users: null,
+        activeSelection: null,
         visible: false,
-        transactions_visible: false,
-        name: null,
-        address: null,
-
     };
 
     componentDidMount() {
+        this.fetchShifts()
     }
 
     componentDidUpdate() {
     }
 
+    columns = [{
+        title: 'Date',
+        dataIndex: 'shift_iteration.date',
+        key: 'shift_iteration.date',
+        render: text => <a href="javascript:;">{text}</a>,
+    }, {
+        title: 'Type',
+        dataIndex: 'shift.type',
+        key: 'shift.type',
+    }, {
+        title: 'No. Of Drivers Deployed',
+        dataIndex: 'address',
+        key: 'address',
+    }, {
+        title: 'No. Of Sub Drivers',
+        key: 'tags',
+        dataIndex: 'tags'
+
+    }, {
+        title: 'Action',
+        key: 'action',
+        render: (text, record) => (
+            <a onClick={() => this.handleSelect(record)} href="javascript:;">View</a>
+        )
+    }];
+
+    fetchShifts() {
+        const { id } = JSON.parse(localStorage.user_staff);
+        getData('/remittances/shifts/' + id).then(data => {
+            console.log(data);
+            this.setState({
+                shifts: data.shifts,
+            })
+        });
+    }
+
+    fetchDeployments() {
+        const { id } = JSON.parse(localStorage.user_staff);
+        getData('/remittances/specific_deployments' + id).then(data => {
+            console.log(data);
+            this.setState({
+                cards: data.cards,
+            })
+        });
+    }
+
+    fetchDeployment = (event) => {
+        getData('/remittances/supervisor_remittances' + event.target.value).then(data => {
+            console.log(data);
+            this.setState({
+                cards: data.cards,
+            })
+        });
+    }
+    handleSelect = (item) => {
+        console.log("this got clicked");
+        console.log(item);
+        getData('/remittances/specific_deployments/' + item.shift_iteration.id).then(data => {
+            console.log(data);
+            this.setState({
+                activeSelected: true,
+                deployments: data.deployments,
+            })
+        });
+        this.setState({
+            visible: true
+        })
+    }
     handleOk = () => {
 
     };
@@ -134,94 +161,38 @@ export class HistoryPage extends Component {
             visible: true,
         });
     };
-    showTransactions = () => {
-        this.setState({
-            transactions_visible: true,
-        });
-    };
-
-    fetchMemberShares() {
-        const { id } = JSON.parse(localStorage.user_staff);
-        getData('/members/shares/' + id).then(data => {
-            console.log(data);
-            this.setState({
-                shares: data.shares,
-                total_shares: data.total_shares,
-                total_peso_value: data.total_peso_value,
-            })
-        });
-    }
-
-    fetchMemberTransactions() {
-        const { id } = JSON.parse(localStorage.user_staff);
-        getData('/members/transactions/' + id).then(data => {
-            console.log(data.transactions);
-            this.setState({
-                transactions: data.transactions,
-                total_transactions: data.total_transactions
-            })
-        });
-        getData('/remittances/get_carwash_transaction/' + id).then(data => {
-            console.log(data);
-            this.setState({
-                carwash_transactions: data.carwash_transactions,
-                total_carwash_transactions: parseInt(data.carwash_transaction_total),
-            })
-        });
-    }
-
-    handleFormChange = fieldName => event => {
-        return this.handleSelectChange(fieldName)(event.target.value);
-        //this is asynchronous, it does not execute in order
-        //if console.log is not in callback, it might execute before state is updated
-    };
-    handleSelectChange = fieldName => value => {
-        // this function is to handle drop-downs
-        const state = { ...this.state };
-        state[fieldName] = value;
-        this.setState({
-            ...state
-        });
-    };
-    handleNumberFormChange = fieldName => value => {
-        return this.handleSelectChange(fieldName)(value);
-        //this is asynchronous, it does not execute in order
-        //if console.log is not in callback, it might execute before state is updated
-    };
-
-    fetchUsers() {
-        return fetch('/staff_accounts').then(response => response.json()).then(data => {
-            this.setState({
-                users: data["people"].reverse()
-            }, () => console.log(this.state.users));
-        });
-    }
-
-    renderListItemPhoto = photoSrc => {
-        console.log("Photo src", photoSrc);
-        return <Avatar className="list-avatar" size="large"
-                       src={photoSrc ? photoSrc : users}/>;
-    };
-
-    renderList = () => (
-        <List
-            className="user-list"
-            itemLayout="horizontal"
-            dataSource={(() => {
-                console.log(this.state.users);
-                return this.state.users;
-            })()}
-            renderItem={item => (
-                <List.Item className="list-item">
-                    <List.Item.Meta
-                        avatar={this.renderListItemPhoto(item.photo)}
-                        title={<p className="list-title">{item.name}</p>}
-                        description={<p className="list-description"> operations manager</p>}
-                    />
-                </List.Item>
-            )}
-        />
-    );
+    renderDeploymentListModal = () => (
+        <Modal
+            title="Basic Modal"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+        >
+            <List
+                header={<div> List of Deployments </div>}
+                dataSource={this.state.deployments}
+                bordered={true}
+                renderItem={
+                    item => (
+                        <div className="list-detail-container">
+                            <List.Item>
+                                <DeploymentListDetails
+                                    driver_object={item.driver_object}
+                                    driver={item.driver}
+                                    id={item.id}
+                                    date={item.shift_date}
+                                    start_time={item.start_time}
+                                    end_time={item.end_time}
+                                    status={item.status}
+                                    shuttle={item.shuttle}
+                                />
+                            </List.Item>
+                        </div>
+                    )
+                }
+            />
+        </Modal>
+    )
 
     render() {
         return (
@@ -236,17 +207,20 @@ export class HistoryPage extends Component {
                 </div>
                 <div className="driver-history-page-body">
                     <div className="driver-history-body">
+                        {this.state.activeSelected && this.renderDeploymentListModal()}
                         <Row className="dates-div">
-                            <Col span={12} style={{'margin-top': '20px'}}>
+                            <Col span={12} style={{ 'margin-top': '20px' }}>
                                 <RangePicker onChange={onChange}/>
                             </Col>
                             <Col span={12}>
-                                <Alert className="history-alert" message="If end date is not selected, The table will show remittances for 1 week from the start date" type="info" showIcon/>
+                                <Alert className="history-alert"
+                                       message="If end date is not selected, The table will show remittances for 1 week from the start date"
+                                       type="info" showIcon/>
                             </Col>
                         </Row>
                         <Row>
                             <div className="driver-history-table-div">
-                                <Table columns={columns} dataSource={data}/>
+                                <Table columns={this.columns} dataSource={this.state.shifts}/>
                             </div>
                         </Row>
                     </div>

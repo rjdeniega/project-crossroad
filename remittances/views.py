@@ -580,7 +580,7 @@ class BackUpShuttles(APIView):
 
         else:
             return Response(data={
-                "errors": error_message
+                "errors": ""
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -662,6 +662,23 @@ class SpecificDriver(APIView):
             "driver_id": driver_assigned.driver.id,
             "is_under_maintenance": is_under_maintenance,
             "tickets": assigned_tickets
+        }, status=status.HTTP_200_OK)
+
+
+class SpecificDeploymentView(APIView):
+    @staticmethod
+    def get(request, shift_id):
+        deployments = Deployment.objects.filter(shift_iteration__id=shift_id)
+        deployments = DeploymentSerializer(deployments, many=True)
+        for item in deployments.data:
+            x = Deployment.objects.get(pk=item['id'])
+            item['shift_date'] =  x.shift_iteration.date.strftime("%b %d %Y")
+            item['start_time'] = x.start_time.strftime("%I:%M %p")
+            item['end_time'] = x.end_time.strftime("%I:%M %p")
+            item['driver_object'] = DriverSerializer(Driver.objects.get(pk=item['driver'])).data
+
+        return Response(data={
+            "deployments": deployments.data,
         }, status=status.HTTP_200_OK)
 
 
@@ -1284,6 +1301,32 @@ class ViewRemittance(APIView):
         return data
 
 
+class ViewRemittancePerSupervisor(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        deployment_list = []
+
+        deployments = [item for item in Deployment.objects.all() if
+                       item.shift_iteration.shift.supervisor.id == supervisor_id]
+        # for deployment in deployments:
+        #     rem_form = RemittanceForm.objects.get(deployment=deployment)
+        #     ten_tickets = ViewRemittance.getTickets('A', rem_form)
+        #     twelve_tickets = ViewRemittance.getTickets('B', rem_form)
+        #     fifteen_tickets = ViewRemittance.getTickets('C', rem_form)
+        #     deployment_list.append({
+        #         "remittance_form": RemittanceFormSerializer(rem_form),
+        #         "supervisor": deployment.shift_iteration.shift.supervisor.id,
+        #         "deployment": DeploymentSerializer(deployment).data,
+        #         "ten_tickets": ten_tickets,
+        #         "twelve_tickets": twelve_tickets,
+        #         "fifteen_tickets": fifteen_tickets
+        #     })
+
+        return Response(data={
+            "deployments": DeploymentSerializer(deployments, many=True).data
+        }, status=status.HTTP_200_OK)
+
+
 class RemittanceUtilities():
     @staticmethod
     def get_active_schedule():
@@ -1535,6 +1578,24 @@ class TicketUtilities():
             })
 
         return final
+
+
+class ShiftView(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        shifts = []
+        shift_iterations = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-date")
+
+        for shift_iteration in shift_iterations:
+            shift_data = {
+                'shift': ShiftSerializer(shift_iteration.shift).data,
+                'shift_iteration': ShiftIterationSerializer(shift_iteration).data
+            }
+            shifts.append(shift_data)
+
+        return Response(data={
+            "shifts": shifts
+        }, status=status.HTTP_200_OK)
 
 
 class ShiftRemarks(APIView):

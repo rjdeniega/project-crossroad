@@ -17,6 +17,7 @@ remittance_urls = [
 
     path('deployments/', DeploymentView.as_view()),
     path('deployments/<int:pk>', DeploymentView.as_view()),
+    path('specific_deployments/<int:shift_id>', SpecificDeploymentView.as_view()),
     path('deployments/back-up-shuttles/', BackUpShuttles.as_view()),
     path('deployments/back-up-shuttles/deploy/', BackUpShuttles.as_view()),
     path('deployments/deployed_drivers/<int:supervisor_id>', DeployedDrivers.as_view()),
@@ -29,6 +30,7 @@ remittance_urls = [
     path('deployments/early-leave/redeploy/', RedeployDriver.as_view()),
     path('deployments/driver/<int:driver_id>', DriverDeployment.as_view()),
 
+    path('shifts/<int:supervisor_id>', ShiftView.as_view()),
     path('shifts/remarks', ShiftRemarks.as_view()),
     path('shifts/remarks/<int:supervisor_id>', ShiftRemarks.as_view()),
     path('shifts/assigned_drivers/<int:supervisor_id>', PlannedDrivers.as_view()),
@@ -39,6 +41,7 @@ remittance_urls = [
     path('remittance_form/view/<int:deployment_id>', ViewRemittance.as_view()),
     path('remittance_form/pending/<int:supervisor_id>', PendingRemittances.as_view()),
     path('remittance_form/<int:remittance_id>/confirm/', PendingRemittances.as_view()),
+    path('supervisor_remittances/<int:supervisor_id>', ViewRemittancePerSupervisor.as_view()),
 
     path('remittance_form/driver/<int:driver_id>', DeploymentDetails.as_view()),
     path('remittance_form/', RemittanceFormView.as_view()),
