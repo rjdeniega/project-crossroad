@@ -1494,7 +1494,8 @@ class SupervisorWeeklyReport(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        supervisor = Supervisor.objects.get(id=data["supervisor_id"])  # requests supervisor id
+        print(data['supervisor_id'])
+        supervisor = Driver.objects.get(id=data["supervisor_id"])  # requests supervisor id
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
         end_date = start_date + timedelta(days=6)  # for one week
 
