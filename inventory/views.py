@@ -590,8 +590,11 @@ class PurchaseOrderView(APIView):
         purchase_order.save()
 
         for item in data['items']:
-            purchase_order_item = PurchaseOrderItem(item=item['detail'], quantity=item['quantity'],
-                                                    unit_price=item['unit_price'])
+            category = ItemCategory.objects.get(category=item['category'])
+            purchase_order_item = PurchaseOrderItem(quantity=item['quantity'], description=item['description'],
+                                                    unit_price=item['unit_price'], category=category,
+                                                    item_type=item['item_type'], measurement=item['measurement'],
+                                                    unit=item["unit"], brand=item["brand"])
             purchase_order_item.save()
             purchase_order.po_items.add(purchase_order_item)
 
@@ -606,11 +609,16 @@ class PurchaseOrderSpecific(APIView):
         purchase_order = PurchaseOrder.objects.get(id=pk)
         purchase_order_details = PurchaseOrderSerializer(purchase_order)
         items = PurchaseOrderItemSerializer(purchase_order.po_items.all(), many=True)
+        categories = {}
+        for item in purchase_order.po_items.all():
+            category = ItemCategory.objects.get(id=item.category.id)
+            categories[item.id] = category.category
         vendor = VendorSerializer(Vendor.objects.get(id=purchase_order.vendor.id))
         return Response(data={
             'purchase_order': purchase_order_details.data,
             'items': items.data,
             'vendor': vendor.data,
+            'categories': categories
         }, status=status.HTTP_200_OK)
 
 
@@ -645,11 +653,11 @@ class UpdatePurchaseOrder(APIView):
                 'foo': 'bar'
             }, status=status.HTTP_200_OK)
         else:
+            purchase_order.status = "Complete"
+            purchase_order.delivery_date = datetime.now()
+            purchase_order.save()
             for item in data['items']:
                 print(item)
-                purchase_order.status = "Complete"
-                purchase_order.delivery_date = datetime.now()
-                purchase_order.save()
                 inventory_item = Item(name=item['name'], description=item['description'], quantity=item['quantity'],
                                       unit_price=item['unit_price'], item_type=item['item_type'],
                                       measurement=item['measurement'], unit=item['unit'], brand=item['brand'],
@@ -672,4 +680,22 @@ class GetPurchaseOrderItems(APIView):
                                .filter(purchase_order=purchase_order), many=True)
         return Response(data={
             'items': items.data
+        }, status=status.HTTP_200_OK)
+
+
+class ItemCategoryView(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        item_category = ItemCategory(category=data['category'], code_prefix=data['code_prefix'], quantity=0)
+        item_category.save()
+        return Response(data={
+            'success': 'success'
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get(request):
+        item_category = ItemCategorySerializer(ItemCategory.objects.all(), many=True)
+        return Response(data={
+            'item_category': item_category.data
         }, status=status.HTTP_200_OK)

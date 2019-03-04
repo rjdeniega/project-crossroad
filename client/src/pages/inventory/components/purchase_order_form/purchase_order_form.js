@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table, Row, Col, Input, AutoComplete, Divider, message} from 'antd';
+import {Table, Row, Col, Input, AutoComplete, Divider, message, Select, Icon, Popover, Button, Form} from 'antd';
 import update from 'react-addons-update';
 import './style.css';
 import NumberFormat from 'react-number-format';
@@ -9,7 +9,7 @@ import {getData, postData} from "../../../../network_requests/general";
 function pad(num) {
     let digits = 6 - num.toString().length;
     let output = '';
-    for(let i = 0; i < digits; i++){
+    for (let i = 0; i < digits; i++) {
         output += '0';
     }
     output = output + num;
@@ -22,6 +22,7 @@ function createState() {
         state[i] = {
             key: i,
             detail: null,
+            category: null,
             quantity: null,
             unit_price: null,
             total: null,
@@ -38,45 +39,24 @@ function getGrandTotal(rows) {
     return total;
 }
 
-function createRows(items, grand_total, updateItems) {
-    let rows = [];
-    for (let i = 1; i <= 8; i++) {
-        rows.push({
-            key: i + '',
-            details: <Input className={"item" + i} value={items[i].detail}
-                            onChange={e => updateItems(i, e.target.value, "detail")}/>,
-            quantity: <Input className={"quantity" + i} value={items[i].quantity} type="number" min={0}
-                             onChange={e => updateItems(i, e.target.value, "quantity")}/>,
-            unit_price: <Input className={"unit_price" + i} value={items[i].unit_price} type="number" min={0}
-                               onChange={e => updateItems(i, e.target.value, "unit_price")}/>,
-            total: <NumberFormat value={items[i].total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
-                                 decimalScale={2} fixedDecimalScale={true}/>,
-        })
-    }
-    rows.push({
-        key: '9',
-        unit_price: "Total: ",
-        total: <NumberFormat value={grand_total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
-                             decimalScale={2} fixedDecimalScale={true}/>,
-    });
-    return rows;
-}
-
 const columns = [{
     title: "Item",
     dataIndex: 'details',
     key: 'details',
-    width: '3.5in',
+    width: '5in',
+    align: 'left',
 }, {
     title: "Quantity",
     dataIndex: 'quantity',
     key: 'quantity',
     align: 'center',
+    width: '0.5in',
 }, {
     title: "Unit Price",
     dataIndex: 'unit_price',
     key: 'unit_price',
     align: 'right',
+    width: '1in',
 }, {
     title: "Total",
     dataIndex: 'total',
@@ -84,6 +64,188 @@ const columns = [{
     align: 'right',
     width: '1.5in',
 }];
+
+class ItemForm extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            quantity: null,
+            description: null,
+            unit_price: null,
+            category: null,
+            categories: [],
+            item_type: "Single Item",
+            measurement: null,
+            unit: null,
+            brand: null,
+        };
+
+        this.selectOptions = this.selectOptions.bind(this);
+        this.submitItem = this.submitItem.bind(this);
+    }
+
+    componentDidMount() {
+        getData('inventory/items/item_category/').then(data => {
+            this.setState({
+                categories: data.item_category,
+            })
+        });
+    }
+
+    updateField = (value, field) => {
+        this.setState({
+            [field]: value
+        });
+        if (field === 'item_type' && value === "Physical Measurement") {
+            this.setState({
+                unit: 'pieces',
+            })
+        } else if (field === 'item_type' && value === "Liquid Measurement") {
+            this.setState({
+                unit: "mL",
+            })
+        } else if (field === 'item_type' && value === "Single Item") {
+            this.setState({
+                measurement: null,
+                unit: null
+            })
+        }
+    };
+
+    submitItem() {
+        const {quantity, description, unit_price, category, item_type, measurement, brand, unit} = this.state;
+        if (!quantity || !description || !unit_price || !category || !item_type || !brand ||
+            ((item_type === 'Physical Measurement' || item_type === 'Liquid Measurement') && !measurement)) {
+            message.error("Please complete fields!");
+        } else {
+            let item = {
+                quantity: quantity,
+                description: description,
+                unit_price: unit_price,
+                category: category,
+                item_type: item_type,
+                measurement: measurement,
+                brand: brand,
+                unit: unit,
+            };
+            this.props.add_item(item);
+        }
+    }
+
+    selectOptions() {
+        const {categories} = this.state;
+        let select_options = [];
+        let low_inventory = [];
+        let normal_stock = [];
+        categories.forEach(function (category) {
+            if (category.quantity < 4) {
+                low_inventory.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
+            } else {
+                normal_stock.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
+            }
+        });
+        if (low_inventory) {
+            select_options.push(<Select.OptGroup label={<span>
+                      <p><Icon type="warning"
+                               theme="twoTone"
+                               twoToneColor="#FFCC00"/>&nbsp;Low Inventory</p>
+            </span>}>
+                {low_inventory}
+            </Select.OptGroup>);
+            if (normal_stock) {
+                select_options.push(<Select.OptGroup label={"Above Maintaining"}>
+                    {normal_stock}
+                </Select.OptGroup>)
+            }
+        } else {
+            select_options.push(normal_stock)
+        }
+
+        return select_options;
+    }
+
+    render() {
+        const {quantity, description, unit_price, category, item_type, measurement, unit, brand} = this.state;
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 8},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 16},
+            },
+        };
+        const tailFormItemLayout = {
+            wrapperCol: {
+                xs: {
+                    span: 24,
+                    offset: 0,
+                },
+                sm: {
+                    span: 16,
+                    offset: 8,
+                },
+            },
+        };
+
+        return (
+            <div style={{width: "25vw"}}>
+                <Form.Item label="Category" {...formItemLayout}>
+                    <Select placeholder="Select category" style={{width: '100%'}}
+                            onSelect={e => this.updateField(e, 'category')}>
+                        {this.selectOptions()}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="Brand" {...formItemLayout}>
+                    <Input value={brand} onChange={e => this.updateField(e.target.value, 'brand')}/>
+                </Form.Item>
+                <Form.Item label="Description" {...formItemLayout}>
+                    <Input value={description} onChange={e => this.updateField(e.target.value, 'description')}/>
+                </Form.Item>
+                <Form.Item label="Quantity" {...formItemLayout}>
+                    <Input value={quantity} type='number' min={0}
+                           onChange={e => this.updateField(e.target.value, 'quantity')}/>
+                </Form.Item>
+                <Form.Item label="Unit Price" {...formItemLayout}>
+                    <Input value={unit_price} type='number' min={0}
+                           onChange={e => this.updateField(e.target.value, 'unit_price')}/>
+                </Form.Item>
+                <Form.Item label="Type" {...formItemLayout}>
+                    <Select defaultValue="Single Item" style={{width: "100%"}}
+                            onSelect={e => this.updateField(e, 'item_type')}>
+                        <Select.Option value="Single Item">Single Item</Select.Option>
+                        <Select.Option value="Physical Measurement">Physical Measurement</Select.Option>
+                        <Select.Option value="Liquid Measurement">Liquid Measurement</Select.Option>
+                    </Select>
+                </Form.Item>
+                {item_type === "Physical Measurement" &&
+                <Form.Item label="Measurement" {...formItemLayout}>
+                    <Input addonAfter={(
+                        <Select defaultValue="pieces" style={{width: 95}} onSelect={e => this.updateField(e, 'unit')}>
+                            <Select.Option value="pieces">pieces</Select.Option>
+                            <Select.Option value="meters">meters</Select.Option>
+                        </Select>
+                    )} value={measurement} onChange={e => this.updateField(e.target.value, 'measurement')}/>
+                </Form.Item>}
+                {item_type === "Liquid Measurement" &&
+                <Form.Item label="Measurement" {...formItemLayout}>
+                    <Input addonAfter={(
+                        <Select defaultValue="mL" style={{width: 75}}
+                                onSelect={e => this.updateField(e, 'unit')}>
+                            <Select.Option value="mL">mL</Select.Option>
+                            <Select.Option value="L">L</Select.Option>
+                            <Select.Option value="fl. oz">fl. oz</Select.Option>
+                        </Select>
+                    )} value={measurement} onChange={e => this.updateField(e.target.value, 'measurement')}/>
+                </Form.Item>}
+                <Form.Item {...tailFormItemLayout}>
+                    <Button type="primary" htmlType="button" onClick={this.submitItem}>Add</Button>
+                </Form.Item>
+            </div>)
+    }
+}
 
 export class PurchaseOrderForm extends Component {
     constructor(props) {
@@ -99,10 +261,15 @@ export class PurchaseOrderForm extends Component {
             grand_total: '',
             autofill_data: [],
             data_source: [],
+            categories: [],
+            visible_form: false,
+            items_submit: [],
         };
 
         this.updateFields = this.updateFields.bind(this);
         this.updateDetails = this.updateDetails.bind(this);
+        this.updatedCreateRows = this.updatedCreateRows.bind(this);
+        this.addItem = this.addItem.bind(this);
     }
 
     componentDidMount() {
@@ -130,7 +297,7 @@ export class PurchaseOrderForm extends Component {
     }
 
     getVendorInfo = (vendor) => {
-        const { autofill_data} = this.state;
+        const {autofill_data} = this.state;
         autofill_data.map(instance => {
             if (instance.name === vendor) {
                 this.setState({
@@ -141,26 +308,72 @@ export class PurchaseOrderForm extends Component {
         })
     };
 
+    createRows(items, grand_total, updateItems, categories) {
+        let rows = [];
+        let select_options = [];
+        let low_inventory = [];
+        let normal_stock = [];
+        categories.forEach(function (category) {
+            if (category.quantity < 4) {
+                low_inventory.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
+            } else {
+                normal_stock.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
+            }
+        });
+        if (low_inventory) {
+            select_options.push(<Select.OptGroup label={<span>
+                      <p><Icon type="warning"
+                               theme="twoTone"
+                               twoToneColor="#FFCC00"/>&nbsp;Low Inventory</p>
+            </span>}>
+                {low_inventory}
+            </Select.OptGroup>);
+            if (normal_stock) {
+                select_options.push(<Select.OptGroup label={"Above Maintaining"}>
+                    {normal_stock}
+                </Select.OptGroup>)
+            }
+        } else {
+            select_options.push(normal_stock)
+        }
+        for (let i = 1; i <= 8; i++) {
+            rows.push({
+                key: i + '',
+                details: <span>
+                <Col span={12}>
+                    <Select style={{width: 190}} onSelect={e => updateItems(i, e, 'category')} placeholder={"Category"}>
+                        {select_options}
+                    </Select>
+                </Col>
+                <Col span={12}>
+                    <Input className={"item" + i} value={items[i].detail} placeholder={"Item Details"}
+                           onChange={e => updateItems(i, e.target.value, "detail")}/>
+                </Col>
+            </span>,
+                quantity: <Input className={"quantity" + i} value={items[i].quantity} type="number" min={0}
+                                 onChange={e => updateItems(i, e.target.value, "quantity")}/>,
+                unit_price: <Input className={"unit_price" + i} value={items[i].unit_price} type="number" min={0}
+                                   onChange={e => updateItems(i, e.target.value, "unit_price")}/>,
+                total: <NumberFormat value={items[i].total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
+                                     decimalScale={2} fixedDecimalScale={true}/>,
+            })
+        }
+        rows.push({
+            key: '9',
+            unit_price: "Total: ",
+            total: <NumberFormat value={grand_total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
+                                 decimalScale={2} fixedDecimalScale={true}/>,
+        });
+        return rows;
+    }
 
     saveForm() {
         const {items, vendorName, vendorAddress, vendorContact, po_num, special_instructions} = this.state;
-        let empty_field = false;
-        let no_items = 0;
-        for (let i = 1; i <= 8; i++) {
-            let missing_detail = !items[i].detail;
-            let missing_quantity = !items[i].quantity;
-            let missing_price = !items[i].unit_price;
-            if (!missing_detail && !missing_quantity && !missing_price) {
-                no_items++;
-            } else if (!(missing_detail && missing_price && missing_quantity)) {
-                empty_field = true;
-            }
-        }
 
-        if (empty_field === false && no_items > 0 && vendorName && vendorAddress && vendorContact && po_num) {
+        if (vendorName && vendorAddress && vendorContact && po_num && items[1].brand) {
             let final_items = [];
-            items.forEach(function (item){
-                if(item.detail){
+            items.forEach(function (item) {
+                if (item.brand) {
                     final_items.push(item)
                 }
             });
@@ -175,7 +388,7 @@ export class PurchaseOrderForm extends Component {
             console.log(data);
             postData('inventory/purchase_order/', data).then(data => {
                 console.log(data);
-                message.success(no_items.toString() + " " + empty_field.toString());
+                message.success("Purchase order successfully added!");
                 this.props.load_purchase_order();
                 this.props.close();
             });
@@ -207,6 +420,10 @@ export class PurchaseOrderForm extends Component {
                     special_instructions: value,
                 })
         }
+    };
+
+    handleVisibleChange = (visible_form) => {
+        this.setState({visible_form});
     };
 
     updateFields = (key, desc, attribute) => {
@@ -268,11 +485,111 @@ export class PurchaseOrderForm extends Component {
                     });
                 }
             });
+        } else if (attribute === "category") {
+            this.setState({
+                items: update(this.state.items, {
+                    [key]: {
+                        category: {$set: desc}
+                    }
+                })
+            }, () => {
+                console.log(this.state.items)
+            })
         }
     };
 
+    addItem = (item) => {
+        console.log(item);
+        const {items} = this.state;
+        let id = 0;
+        items.every(function (ite, key) {
+            if (!ite.brand) {
+                id = key;
+                return false;
+            } else {
+                return true;
+            }
+        });
+        this.setState({
+            items: update(items, {
+                [id]: {
+                    $set: {
+                        key: id,
+                        brand: item.brand,
+                        description: item.description,
+                        category: item.category,
+                        quantity: item.quantity,
+                        item_type: item.item_type,
+                        measurement: item.measurement,
+                        unit: item.unit,
+                        unit_price: item.unit_price,
+                        total: item.quantity * item.unit_price,
+                    }
+                }
+            })
+        }, () => {
+            console.log(this.state.items);
+            this.setState({
+                visible_form: false,
+            })
+        });
+    };
+
+    updatedCreateRows(items) {
+        let rows = [];
+        let self = this;
+        items.every(function (item, key) {
+            if (!item.brand) {
+                rows.push({
+                    key: key,
+                    details:
+                        <span>
+                            <Popover
+                                placement='bottom'
+                                content={<ItemForm add_item={self.addItem}/>}
+                                trigger="click"
+                                visible={self.state.visible_form}
+                                onVisibleChange={self.handleVisibleChange}
+                            >
+                                <Button type="primary" htmlType='button'>Add Item</Button>
+                            </Popover>
+                        </span>,
+                });
+                return false;
+            } else {
+                let measurement = "";
+                if(item.measurement){
+                    measurement = item.measurement + item.unit;
+                }
+                rows.push({
+                    key: key,
+                    details: item.brand + " " + measurement + " - " + item.description,
+                    quantity: item.quantity,
+                    unit_price: <NumberFormat value={item.unit_price} displayType={'text'} thousandSeparator={true} prefix={'Php'}
+                                     decimalScale={2} fixedDecimalScale={true}/>,
+                    total: <NumberFormat value={item.total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
+                                     decimalScale={2} fixedDecimalScale={true}/>
+                });
+                return true;
+            }
+        });
+        if(items[1].brand){
+            let total = 0;
+            items.forEach(function(item){
+                total = total + item.total;
+            });
+            rows.push({
+                key: 9,
+                unit_price: "Total:",
+                total: <NumberFormat value={total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
+                                     decimalScale={2} fixedDecimalScale={true}/>,
+            })
+        }
+        return rows;
+    }
+
     render() {
-        const {po_num, vendorName, vendorAddress, vendorContact, items, grand_total, data_source} = this.state;
+        const {po_num, vendorName, vendorAddress, vendorContact, items, grand_total, data_source, categories} = this.state;
         return (
             <div className="purchase-order-form">
                 <Row type="flex" justify="space-between" align="bottom">
@@ -352,7 +669,7 @@ export class PurchaseOrderForm extends Component {
                 <Row>
                     <Col span={24}>
                         <Table pagination={false} columns={columns} bordered size="small"
-                               dataSource={createRows(items, grand_total, this.updateFields)}/>
+                               dataSource={this.updatedCreateRows(items)}/>
                     </Col>
                 </Row>
                 <br/>

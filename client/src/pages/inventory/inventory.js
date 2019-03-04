@@ -19,6 +19,7 @@ import {ic_save} from 'react-icons-kit/md/ic_save'
 import {getData} from "../../network_requests/general";
 import {InventoryTable} from "./components/inventory_table/inventory_table";
 import {PhysicalCount} from "./components/physical_count/physical_count";
+import {AddCategory} from "./components/add_category/add_category";
 
 const data = [];
 
@@ -50,15 +51,26 @@ export class InventoryPage extends Component {
         this.state = {
             modalVisible: false,
             activeTab: "1",
-            purchase_order_list: []
+            purchase_order_list: [],
+            items: [],
         };
         this.poComponent = React.createRef();
+        this.inventoryTable = React.createRef();
         this.changeTab = this.changeTab.bind(this);
         this.loadPurchaseOrders = this.loadPurchaseOrders.bind(this);
     }
 
     componentDidMount() {
         this.loadPurchaseOrders();
+        this.getItems();
+    }
+
+    getItems() {
+        getData('inventory/items/').then(data => {
+            this.setState({
+                items: data.items
+            })
+        })
     }
 
     loadPurchaseOrders() {
@@ -109,17 +121,24 @@ export class InventoryPage extends Component {
         })
     };
 
+    reloadItems = () => {
+        this.inventoryTable.current.loadItems();
+    };
+
     render() {
 
-        const {purchase_order_list} = this.state;
+        const {purchase_order_list, items} = this.state;
         return (
             <div className="body-wrapper">
                 <Header/>
                 <div className='table-style'>
                     <Tabs activeKey={this.state.activeTab} onChange={this.changeTab}>
                         <Tabs.TabPane tab="Inventory" key="1" onClick={() => this.changeTab("1")}>
-                            <PhysicalCount />
-                            <InventoryTable />
+                            {items.length ? <PhysicalCount />: null}
+                            <AddCategory reload_items={this.reloadItems}/>
+                            <br/>
+                            <br/>
+                            <InventoryTable ref={this.inventoryTable}/>
                         </Tabs.TabPane>
                         <Tabs.TabPane tab="Purchase Order" onClick={() => this.changeTab("2")} className='full-table'>
                             <Button type="primary" onClick={this.showModal} htmlType="button" className="poButton">

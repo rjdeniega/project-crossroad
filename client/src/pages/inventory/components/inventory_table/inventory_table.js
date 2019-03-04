@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table} from 'antd'
+import {Table, Empty} from 'antd'
 import './style.css'
 import {getData} from "../../../../network_requests/general";
 import _ from 'lodash';
@@ -11,8 +11,11 @@ export class InventoryTable extends Component {
         super(props);
 
         this.state = {
+            item_categories: [],
             items: [],
         };
+
+        this.loadItems = this.loadItems.bind(this)
     }
 
     componentDidMount() {
@@ -20,6 +23,12 @@ export class InventoryTable extends Component {
     }
 
     loadItems() {
+        /** @namespace data.item_category **/
+        getData('inventory/items/item_category/').then(data => {
+            this.setState({
+                item_categories: data.item_category,
+            })
+        });
         getData('inventory/items/').then(data => {
             this.setState({
                 items: data.items
@@ -56,15 +65,15 @@ export class InventoryTable extends Component {
         let data = [];
         items.forEach(function (item, key) {
             if (item.name === category) {
-                    data.push({
-                        key: key,
-                        created: new Date(item.created).toLocaleDateString(),
-                        brand: item.brand,
-                        description: item.description,
-                        quantity: item.quantity,
-                        measurement: item.measurement + item.unit,
-                    })
-                }
+                data.push({
+                    key: key,
+                    created: new Date(item.created).toLocaleDateString(),
+                    brand: item.brand,
+                    description: item.description,
+                    quantity: item.quantity,
+                    measurement: item.measurement + item.unit,
+                })
+            }
 
         });
         console.log(data);
@@ -72,8 +81,8 @@ export class InventoryTable extends Component {
     };
 
     columns = [
-        {title: "Item", dataIndex: "item_name", key: "item_name"},
-        {title: "Quantity", dataIndex: "total_quantity", key: "total_quantity"},
+        {title: "Item", dataIndex: "category", key: "category", align: 'left'},
+        {title: "Quantity", dataIndex: "quantity", key: "quantity", align: 'center'},
     ];
 
     groupedItems = () => {
@@ -96,9 +105,13 @@ export class InventoryTable extends Component {
     };
 
     render() {
+        const {item_categories} = this.state;
         return (
             <div>
-                <Table columns={this.columns} dataSource={this.groupedItems()}
+                <Table columns={this.columns} dataSource={item_categories} locale={{
+                    emptyText:
+                        <Empty description="No data. Add categories and add items through purchase orders."/>
+                }}
                        expandedRowRender={record => this.expandedRowRender(record.item_name)}/>
             </div>
         )

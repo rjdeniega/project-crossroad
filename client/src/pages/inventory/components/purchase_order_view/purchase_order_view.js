@@ -42,17 +42,21 @@ const columns = [{
     width: '1.5in',
 }];
 
-function createRows(items) {
+function createRows(items, categories) {
     let rows = [];
     let grand_total = 0;
     for (let i = 0; i <= 7; i++) {
         let total = 0;
+        let measurement = "";
         if (items[i]) {
             total = parseInt(items[i].quantity) * parseInt(items[i].unit_price)
+            if (items[i].measurement) {
+                measurement = items[i].measurement + items[i].unit;
+            }
         }
         rows.push({
             key: i,
-            details: items[i] ? items[i].item : <p></p>,
+            details: items[i] ? (items[i].brand + " " + measurement + " - " + items[i].description) : '',
             quantity: items[i] ? items[i].quantity : ' ',
             unit_price: items[i] ?
                 <NumberFormat value={items[i].unit_price} displayType={'text'} thousandSeparator={true} prefix={'Php'}
@@ -83,6 +87,7 @@ export class PurchaseOrderView extends Component {
             vendor_contact: '',
             special_instructions: '',
             items: [],
+            categories: [],
             grand_total: '',
             date: '',
         }
@@ -130,13 +135,16 @@ export class PurchaseOrderView extends Component {
                 vendor_contact: data.vendor.contact_number,
                 special_instructions: data.purchase_order.special_instruction,
                 items: data.items,
-                order_date: data.purchase_order.order_date
+                order_date: data.purchase_order.order_date,
+                categories: data.categories
+            }, () => {
+                console.log(this.state.categories)
             })
         })
     }
 
     render() {
-        const {po_number, vendor_name, vendor_address, vendor_contact, special_instructions, order_date, items} = this.state;
+        const {po_number, vendor_name, vendor_address, vendor_contact, special_instructions, order_date, items, categories} = this.state;
         const {status} = this.props;
         return (
             <span>
@@ -222,7 +230,7 @@ export class PurchaseOrderView extends Component {
                         <Row>
                             <Col span={24}>
                                 <Table pagination={false} columns={columns} bordered size="small"
-                                       dataSource={createRows(items)}/>
+                                       dataSource={createRows(items, categories)}/>
                             </Col>
                         </Row>
                         <br/>

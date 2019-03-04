@@ -87,16 +87,20 @@ class Shuttle(SoftDeletionModel):
 
 
 class ItemCategory(SoftDeletionModel):
-    category = CharField(max_length=64)
+    category = CharField(max_length=64, unique=True)
     code_prefix = CharField(max_length=3)
     quantity = PositiveIntegerField()
 
 
 class PurchaseOrderItem(SoftDeletionModel):
-    item = CharField(max_length=64)
     quantity = PositiveIntegerField()
+    description = CharField(max_length=64)
     unit_price = DecimalField(max_digits=10, decimal_places=2)
     category = ForeignKey(ItemCategory, on_delete=models.PROTECT)
+    item_type = CharField(max_length=255)
+    measurement = PositiveIntegerField(null=True)
+    unit = CharField(max_length=10, null=True)
+    brand = CharField(max_length=64)
 
 
 class PurchaseOrder(SoftDeletionModel):
@@ -110,7 +114,6 @@ class PurchaseOrder(SoftDeletionModel):
 
 
 class Item(SoftDeletionModel):
-    name = CharField(max_length=64)
     description = CharField(max_length=255)
     quantity = PositiveIntegerField()
     category = ForeignKey(ItemCategory, on_delete=models.PROTECT)

@@ -10,6 +10,7 @@ inventory_urls = [
     path('items/specific/<int:pk>', SpecificItemView.as_view()),
     path('items/restock/<int:pk>', QuantityRestock.as_view()),
     path('items/item_movement_report', ItemMovementReport.as_view()),
+    path('items/item_category/', ItemCategoryView.as_view()),
 
     # Purchase Order URLS
     path('vendors/', VendorsView.as_view()),
