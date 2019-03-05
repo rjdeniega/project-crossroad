@@ -58,7 +58,7 @@ urlpatterns = [
     path('beep_tickets/', BeepTickets.as_view()),
     path('patronage_refund/', PatronageRefund.as_view()),
     path('remittance_for_the_month/', RemittanceForTheMonth.as_view()),
-
+    path('passenger_per_route/', PassengerPerRoute.as_view())
 ]
 
 if settings.DEBUG:
