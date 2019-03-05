@@ -37,6 +37,7 @@ import {ShuttleValueChart} from './content/shuttle_value_chart/shuttle_value_cha
 import {TicketStack} from './content/ticket_stack/ticket_stack'
 import {InventoryReport} from './content/inventory_report/inventory_report'
 import {ItemMovementReport} from './content/item_movement/inventory_movement'
+import { PassengerPerRoute } from './content/passenger_per_route/passenger_per_route';
 
 
 
@@ -92,7 +93,14 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <BeepTickets/>
+},{
+    'title': 'Passenger Per Route',
+    'description': 'view the weekly remittance per route comparison',
+    'icon': money,
+    'content': <PassengerPerRoute />
 }];
+
+
 const MAINTENANCE_CARDS = [{
     'title': 'Maintenance Report',
     'description': 'view maintenance cost per shuttle',
