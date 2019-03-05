@@ -46,7 +46,8 @@ class ComponentToPrint extends React.Component {
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
                         <th>Date</th>
-                        <th>Shift #</th>
+                        <th>Shift</th>
+                        <th>Shuttle #</th>
                         <th>10 Peso</th>
                         <th>12 Peso</th>
                         <th>15 Peso</th>
@@ -60,41 +61,62 @@ class ComponentToPrint extends React.Component {
                                     <tr>
                                         <td>{item.date}</td>
                                     </tr>
+                                    {item.shuttles.map(item => (
+                                        <Fragment>
+                                            <tr>
+                                                <td></td>
+                                                <td>{item.shuttle_id}</td>
+                                                <td>AM</td>
+                                                <td>{item.am_ten}</td>
+                                                <td>{item.am_twelve}</td>
+                                                <td>{item.am_fifteen}</td>
+                                                <td>{item.am_total}</td>
+                                            </tr>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td>PM</td>
+                                                <td>{item.pm_ten}</td>
+                                                <td>{item.pm_twelve}</td>
+                                                <td>{item.pm_fifteen}</td>
+                                                <td>{item.pm_total}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div>&nbsp;</div>
+                                                </td>
+                                                <td>
+                                                    <div>&nbsp;</div>
+                                                </td>
+                                                <td>
+                                                    <div>&nbsp;</div>
+                                                </td>
+                                                <td>
+                                                    <div>&nbsp;</div>
+                                                </td>
+                                                <td>
+                                                    <div>&nbsp;</div>
+                                                </td>
+                                                <td>
+                                                    <div>&nbsp;</div>
+                                                </td>
+                                            </tr>
+                                        </Fragment>
+                                    ))}
                                     <tr>
-                                        <td></td>
-                                        <td>AM</td>
-                                        <td>{item.am_ten}</td>
-                                        <td>{item.am_twelve}</td>
-                                        <td>{item.am_fifteen}</td>
-                                        <td>{item.am_total}</td>
-                                    </tr>
-                                    <tr>
-                                        <td></td>
-                                        <td>PM</td>
-                                        <td>{item.pm_ten}</td>
-                                        <td>{item.pm_twelve}</td>
-                                        <td>{item.pm_fifteen}</td>
-                                        <td>{item.pm_total}</td>
-                                    </tr>
-                                    <tr>
                                         <td>
-                                            <div>&nbsp;</div>
                                         </td>
                                         <td>
-                                            <div>&nbsp;</div>
                                         </td>
-                                        <td>
-                                            <div>&nbsp;</div>
-                                        </td>
-                                        <td>
-                                            <div>&nbsp;</div>
-                                        </td>
-                                        <td>
-                                            <div>&nbsp;</div>
-                                        </td>
-                                        <td>
-                                            <div>&nbsp;</div>
-                                        </td>
+                                        <td><b> Day Total </b></td>
+                                        <td className="total-line"><b> {item.ten_total}
+                                        </b></td>
+                                        <td className="total-line"><b> {item.twelve_total}
+                                        </b></td>
+                                        <td className="total-line"><b> {item.fifteen_total}
+                                        </b></td>
+                                        <td className="total-line"><b> {item.day_total}
+                                        </b></td>
                                     </tr>
 
                                 </Fragment>
@@ -103,7 +125,29 @@ class ComponentToPrint extends React.Component {
                         </Fragment>
                         }
                         <tr>
+                            <td>
+                                <div>&nbsp;</div>
+                            </td>
+                            <td>
+                                <div>&nbsp;</div>
+                            </td>
+                            <td>
+                                <div>&nbsp;</div>
+                            </td>
+                            <td>
+                                <div>&nbsp;</div>
+                            </td>
+                            <td>
+                                <div>&nbsp;</div>
+                            </td>
+                            <td>
+                                <div>&nbsp;</div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td><b> Grand AM Total </b></td>
+                            <td className="total-line"><b>
+                            </b></td>
                             <td className="total-line"><b>
                             </b></td>
                             <td className="total-line"><b>
@@ -122,10 +166,12 @@ class ComponentToPrint extends React.Component {
                             <td></td>
                             <td></td>
                             <td></td>
+                            <td></td>
                             <td><b> {this.props.data.grand_pm_total}</b></td>
                         </tr>
                         <tr>
                             <td><b> Grand Total </b></td>
+                            <td></td>
                             <td></td>
                             <td><b>
                                 {this.props.data.grand_ten_total}
