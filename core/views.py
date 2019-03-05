@@ -1824,3 +1824,54 @@ class ChangeNotificationStatus(APIView):
 
         notification.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PassengerPerRoute(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = start_date + timedelta(days=7)
+
+        data = []
+
+        temp_date = start_date
+        while temp_date <= end_date:
+            
+            data.append({
+                "day": temp_date.strftime("%A"),
+                "Main Road": PassengerPerRoute.getPassengersFromDate('M', temp_date),
+                "Kaliwa": PassengerPerRoute.getPassengersFromDate('L', temp_date),
+                "Kanan": PassengerPerRoute.getPassengersFromDate('R', temp_date)
+            })
+
+            temp_date = temp_date + timedelta(days=1)
+        
+
+        return Response(data={
+            "data": data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def getPassengersFromDate(route, date):
+        remittances = RemittanceForm.objects.filter(
+                deployment__shift_iteration__date=date,
+                deployment__route=route
+                )
+
+        amount = 0
+        for remittance in remittances:
+            consumed_tickets = ConsumedTicket.objects.filter(remittance_form=remittance)
+
+            for consumed_ticket in consumed_tickets:
+                if consumed_ticket.assigned_ticket.type is 'A':
+                    price = 10
+                elif consumed_ticket.assigned_ticket.type is 'B':
+                    price = 12
+                else:
+                    price = 15
+                
+                amount += consumed_ticket.total / price
+        
+        return amount
+
