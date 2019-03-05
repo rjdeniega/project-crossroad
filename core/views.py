@@ -1833,23 +1833,23 @@ class PassengerPerRoute(APIView):
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
         end_date = start_date + timedelta(days=7)
 
-        data = []
+        values = []
 
         temp_date = start_date
-        while temp_date <= end_date:
+        while temp_date < end_date:
             
-            data.append({
+            values.append({
                 "day": temp_date.strftime("%A"),
-                "Main Road": PassengerPerRoute.getPassengersFromDate('M', temp_date),
-                "Kaliwa": PassengerPerRoute.getPassengersFromDate('L', temp_date),
-                "Kanan": PassengerPerRoute.getPassengersFromDate('R', temp_date)
+                "main_road": PassengerPerRoute.getPassengersFromDate('M', temp_date),
+                "kaliwa": PassengerPerRoute.getPassengersFromDate('L', temp_date),
+                "kanan": PassengerPerRoute.getPassengersFromDate('R', temp_date)
             })
 
             temp_date = temp_date + timedelta(days=1)
         
 
         return Response(data={
-            "data": data
+            "values": values
         }, status=status.HTTP_200_OK)
 
     @staticmethod
