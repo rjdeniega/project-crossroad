@@ -672,7 +672,7 @@ class SpecificDeploymentView(APIView):
         deployments = DeploymentSerializer(deployments, many=True)
         for item in deployments.data:
             x = Deployment.objects.get(pk=item['id'])
-            item['shift_date'] =  x.shift_iteration.date.strftime("%b %d %Y")
+            item['shift_date'] = x.shift_iteration.date.strftime("%b %d %Y")
             item['start_time'] = x.start_time.strftime("%I:%M %p")
             item['end_time'] = x.end_time.strftime("%I:%M %p")
             item['driver_object'] = DriverSerializer(Driver.objects.get(pk=item['driver'])).data
@@ -1591,7 +1591,8 @@ class ShiftView(APIView):
             end_date = start_date + timedelta(days=6)
         supervisor_id = data['id']
         shifts = []
-        shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date,shift__supervisor=supervisor_id).order_by("-date")
+        shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date,
+                                                         shift__supervisor=supervisor_id).order_by("-date")
 
         for shift_iteration in shift_iterations:
             shift_data = {
@@ -1599,6 +1600,35 @@ class ShiftView(APIView):
                 'shift_iteration': ShiftIterationSerializer(shift_iteration).data
             }
             shifts.append(shift_data)
+
+        return Response(data={
+            "shifts": shifts
+        }, status=status.HTTP_200_OK)
+
+
+class GeneralShiftView(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date + timedelta(days=6)
+
+        supervisors = [item for item in Driver.objects.all() if item.is_supervisor]
+        shifts = []
+
+        for supervisor in supervisors:
+            shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date,
+                                                             shift__supervisor=supervisor.id).order_by("-date")
+
+            for shift_iteration in shift_iterations:
+                shift_data = {
+                    'shift': ShiftSerializer(shift_iteration.shift).data,
+                    'shift_iteration': ShiftIterationSerializer(shift_iteration).data
+                }
+                shifts.append(shift_data)
 
         return Response(data={
             "shifts": shifts
