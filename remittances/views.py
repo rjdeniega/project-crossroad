@@ -1582,9 +1582,16 @@ class TicketUtilities():
 
 class ShiftView(APIView):
     @staticmethod
-    def get(request, supervisor_id):
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date + timedelta(days=6)
+        supervisor_id = data['id']
         shifts = []
-        shift_iterations = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by("-date")
+        shift_iterations = ShiftIteration.objects.filter(date__gte=start_date, date__lte=end_date,shift__supervisor=supervisor_id).order_by("-date")
 
         for shift_iteration in shift_iterations:
             shift_data = {

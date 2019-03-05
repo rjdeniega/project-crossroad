@@ -125,7 +125,7 @@ export class SharesAccumulationReport extends Component {
     fetchTransactions() {
         let data = {
             start_date: this.state.start_date
-        }
+        };
         postData('/accumulated_shares_report/', data).then(data => {
             console.log(data);
             if (!data.error) {
