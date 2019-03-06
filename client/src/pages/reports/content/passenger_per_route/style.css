@@ -1,0 +1,19 @@
+.report-title-container {
+    text-align: center;
+}
+
+.report-header {
+    font-weight: 550;
+    font-size: 20px;
+    display: block;
+}
+
+.report-date {
+    font-style: italic;
+}
+
+.date-select-label {
+    font-weight: 450;
+    margin-right: 10px;
+    margin-left: 10px;
+}

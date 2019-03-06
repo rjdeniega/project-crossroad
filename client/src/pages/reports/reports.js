@@ -95,7 +95,7 @@ const REMITTANCE_CARDS = [{
     'content': <BeepTickets/>
 },{
     'title': 'Passenger Per Route',
-    'description': 'view the weekly remittance per route comparison',
+    'description': 'view the remittance per route comparison',
     'icon': money,
     'content': <PassengerPerRoute />
 }];
@@ -200,7 +200,7 @@ export class ReportsPage extends Component {
             className="report-item"
             onClick={this.changeModalContent(item.content, item.title)}
             hoverable
-            style={{ width: 240 }}
+            style={{ width: 240, marginBottom: 20 }}
             cover={<div style={{ color: 'var(--darkgreen)' }}><Icon icon={item.icon} size={42}/></div>}
         >
             <Meta
