@@ -1,6 +1,8 @@
 import React from 'react';
+import moment from 'moment';
 
 import { postData } from '../../../../network_requests/general';
+import './style.css';
 
 import { Select, Divider, DatePicker } from 'antd';
 
@@ -10,12 +12,26 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 
 am4core.useTheme(am4themes_animated);
 
+Date.prototype.addDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+Date.prototype.minusDays = function(days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() - days);
+    return date;
+}
+
 export class PassengerPerRoute extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            "chart_data": []
+            "chart_data": [],
+            "start_date": null,
+            "end_date": null
         };
 
         this.fetchChartData = this.fetchChartData.bind(this);
@@ -33,6 +49,19 @@ export class PassengerPerRoute extends React.Component {
         console.log(start_date);
         let request = { "start_date": start_date };
         console.log("fetching this date: " + date);
+
+        let to_date = date;
+        console.log(to_date);
+        to_date = to_date.addDays(6);
+        console.log(to_date);
+        let end_date = to_date.getFullYear() + "-" + (to_date.getMonth()+1) + "-" + to_date.getDate();
+
+        console.log(start_date, " - ", end_date);
+
+        this.setState({
+            start_date: start_date,
+            end_date: end_date
+        })
 
         // Add data
         postData('passenger_per_route/', request)
@@ -56,7 +85,11 @@ export class PassengerPerRoute extends React.Component {
             <div style={{ padding: "10px" }}>  
                 <DateSelect onDateChange={this.onDateChange} />
                 <Divider />
-                <span className="report-title">Passenger Count Per Day</span>
+                <ReportTitle 
+                    report_title="Passenger Count Per Route"
+                    start_date={ this.state.start_date }
+                    end_date={ this.state.end_date }
+                />
                 <ReportBody data={this.state.chart_data}/>
             </div>
         );
@@ -172,17 +205,31 @@ class DateSelect extends React.Component {
         this.props.onDateChange(new_date);
     }
 
+    disabledDate = (current) => {
+        return current > moment().endOf('day');
+    }
+
     render() {
         return (
             <div>
-                <label>Start Date: </label>
-                <DatePicker onChange={this.onChange} placeholder="Select Date"/>
+                <label className="date-select-label">Start Date: </label>
+                <DatePicker 
+                    onChange={this.onChange} 
+                    placeholder="Select Date"
+                    disabledDate={this.disabledDate}
+                    />
             </div>
         );
     }
 }
 
 function ReportTitle(props){
+    return (
+        <div className="report-title-container">
+            <span className="report-header">{ props.report_title }</span>
+            <span className="report-date">({props.start_date} - {props.end_date})</span>
+        </div>
+    );
 }
 
 export default PassengerPerRoute;
