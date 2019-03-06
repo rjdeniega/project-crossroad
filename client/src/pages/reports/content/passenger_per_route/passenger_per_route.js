@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { postData } from '../../../../network_requests/general'
+import { postData } from '../../../../network_requests/general';
+
+import { Select, Divider, DatePicker } from 'antd';
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
@@ -13,24 +15,66 @@ export class PassengerPerRoute extends React.Component {
         super(props);
 
         this.state = {
-        }
+            "chart_data": []
+        };
+
+        this.fetchChartData = this.fetchChartData.bind(this);
+        this.onDateChange = this.onDateChange.bind(this);
     }
 
     componentDidMount() {
-
-        // Create chart instance
-        let chart = am4core.create("chartdiv", am4charts.XYChart);
-
-        let request = { "start_date": "2019-02-25" };
+        let dt = new Date();
+        dt.setDate( dt.getDate() - 6 );
+        this.fetchChartData(dt);
+    }
+        
+    fetchChartData(date) {
+        let start_date = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + date.getDate();
+        console.log(start_date);
+        let request = { "start_date": start_date };
+        console.log("fetching this date: " + date);
 
         // Add data
         postData('passenger_per_route/', request)
             .then(data => {
                 if (!data.error) {
-                    chart.data = data.values;
+                    this.setState({
+                        chart_data: data.values
+                    });
+                    console.log(this.state.chart_data);
                 }
-            });
+        });
+    }
+    
+    onDateChange = (date) => {
+        console.log("entered onDateChange: " + date)
+        this.fetchChartData(date);
+    }
 
+    render() {
+        return (
+            <div style={{ padding: "10px" }}>  
+                <DateSelect onDateChange={this.onDateChange} />
+                <Divider />
+                <span className="report-title">Passenger Count Per Day</span>
+                <ReportBody data={this.state.chart_data}/>
+            </div>
+        );
+    }
+}
+
+class ReportBody extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+        // Create chart instance
+        let chart = am4core.create("chartdiv", am4charts.XYChart);
+
+        // Add data
+        chart.data = this.props.data
+        
         // Create category axis
         let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
         categoryAxis.dataFields.category = "day";
@@ -103,28 +147,42 @@ export class PassengerPerRoute extends React.Component {
         }
     }
 
-    fetchChartData() {
-        let request = { "start_date": "2019-02-25" };
-
-        postData('passenger_per_route/', request)
-            .then(data => {
-                if (!data.error) {
-                    this.setState({
-                    })
-                    console.log(data)
-                    console.log(this.state.main_road)
-                    console.log(this.state.kaliwa)
-                    console.log(this.state.kanan)
-                }
-            });
-    }
-
+    componentDidUpdate(oldProps) {
+        if(oldProps.data != this.props.data){
+            this.chart.data = this.props.data;
+        }
+    } 
 
     render() {
-        return (
+        return(
             <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>
         );
     }
+}
+
+class DateSelect extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.onChange = this.onChange.bind(this);
+    }
+
+    onChange = (date, dateString) => {
+        let new_date = new Date(date);
+        this.props.onDateChange(new_date);
+    }
+
+    render() {
+        return (
+            <div>
+                <label>Start Date: </label>
+                <DatePicker onChange={this.onChange} placeholder="Select Date"/>
+            </div>
+        );
+    }
+}
+
+function ReportTitle(props){
 }
 
 export default PassengerPerRoute;
