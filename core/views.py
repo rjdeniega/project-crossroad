@@ -1840,14 +1840,14 @@ class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type, user_id):
         # user type gotten from localStorage.get('user_type')
-        user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
 
+        user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
+        print(user_type)
         if user_type == 'member':
             NotificationItems.get_member_notifs(user)
             notifications = NotificationSerializer(Notification.objects.all()
                                                    .filter(type='M').order_by('-created'), many=True)
-            print(user_id)
-            print(Notification.objects.filter(user=User.objects.get(pk=user_id)))
+
 
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='M').filter(is_read=False).order_by('-created'), many=True)
@@ -1857,14 +1857,32 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
-            notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            NotificationItems.get_om_notifs(user)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
+            unread = NotificationSerializer(Notification.objects
+                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
+                '-created'), many=True)
+        elif user_type == 'system_admin':
+            NotificationItems.get_om_notifs(user)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'clerk':
-            notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            NotificationItems.get_om_notifs(user)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
@@ -1895,6 +1913,22 @@ class NotificationItems(APIView):
                 type='M',
                 description='You do not have enough accumulated shares'
             )
+        return notification
+
+    @staticmethod
+    def get_om_notifs(user):
+        member_id = user['id']
+        notification = None
+        for item in ItemCategory.objects.all():
+            if item.quantity < 3:
+                notification = Notification.objects.filter(user__id=user['id'],
+                                                           description=f'{item} is low on stocks ({item.quantity} pcs)')
+                if len(notification) == 0:
+                    notification = Notification.objects.create(
+                        user=User.objects.get(pk=user['id']),
+                        type='I',
+                        description=f'{item.category} is low on stocks ({item.quantity} pcs)'
+                    )
         return notification
 
 
