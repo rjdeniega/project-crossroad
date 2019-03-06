@@ -59,5 +59,6 @@ remittance_urls = [
     path('reports/shift_iterations/date', IterationsByDate.as_view()),
     path('reports/shift_iterations/schedule', IterationsBySchedule.as_view()),
     path('beep/', BeepTransactionView.as_view()),
-    path('beep_modified/', BeepCollapsedView.as_view())
+    path('beep_modified/', BeepCollapsedView.as_view()),
+    path('specific_beep/<int:beep_shift_id>', SpecificBeepView.as_view())
 ]

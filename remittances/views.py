@@ -2228,40 +2228,77 @@ class BeepTransactionView(APIView):
 class BeepCollapsedView(APIView):
     @staticmethod
     def get(request):
+        print("enters here")
         beep_shifts = []
         for shift in BeepShift.objects.all():
-            dict_transactions = []
-            transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.all() if
-                            item.shift.id == shift.id]
-            for transaction in transactions:
-                transaction_instance = transaction.data
-                try:
-                    card = IDCards.objects.get(can=int(transaction_instance["card_number"]))
-                except ObjectDoesNotExist:
-                    card = None
-                if card is not None:
-                    member = card.member
-                    transaction_instance["member"] = MemberSerializer(member).data
-                else:
-                    transaction_instance["member"] = None
+            transactions = BeepTransaction.objects.filter(shift=shift.id)
+            total = sum([item.total for item in transactions])
+            # dict_transactions = []
+            # transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.all() if
+            #                 item.shift.id == shift.id]
+            # for transaction in transactions:
+            #     transaction_instance = transaction.data
+            #     try:
+            #         card = IDCards.objects.get(can=int(transaction_instance["card_number"]))
+            #     except ObjectDoesNotExist:
+            #         card = None
+            #     if card is not None:
+            #         member = card.member
+            #         transaction_instance["member"] = MemberSerializer(member).data
+            #     else:
+            #         transaction_instance["member"] = None
+            #
+            #     does_exist = False
+            #     for item in dict_transactions:
+            #         if transaction_instance['card_number'] == item['card_number']:
+            #             item['total'] = float(item['total']) + float(transaction_instance['total'])
+            #             does_exist = True
+            #
+            #     if not does_exist:
+            #         dict_transactions.append(transaction_instance)
 
-                does_exist = False
-                for item in dict_transactions:
-                    if transaction_instance['card_number'] == item['card_number']:
-                        item['total'] = float(item['total']) + float(transaction_instance['total'])
-                        does_exist = True
-
-                if not does_exist:
-                    dict_transactions.append(transaction_instance)
-
+            # sum([float(item["total"]) for item in dict_transactions])
             beep_shifts.append({
-                "total": sum([float(item["total"]) for item in dict_transactions]),
+                "total": total,
                 "shift": BeepShiftSerializer(shift).data,
-                "transactions": dict_transactions
+                # "transactions": dict_transactions
             })
 
         return Response(data={
             "beep_shifts": beep_shifts
+        }, status=status.HTTP_200_OK)
+
+
+class SpecificBeepView(APIView):
+    @staticmethod
+    def get(request, beep_shift_id):
+        print("enters here")
+        dict_transactions = []
+        transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.all() if
+                        item.shift.id == beep_shift_id]
+        for transaction in transactions:
+            transaction_instance = transaction.data
+            try:
+                card = IDCards.objects.get(can=int(transaction_instance["card_number"]))
+            except ObjectDoesNotExist:
+                card = None
+            if card is not None:
+                member = card.member
+                transaction_instance["member"] = MemberSerializer(member).data
+            else:
+                transaction_instance["member"] = None
+
+            does_exist = False
+            for item in dict_transactions:
+                if transaction_instance['card_number'] == item['card_number']:
+                    item['total'] = float(item['total']) + float(transaction_instance['total'])
+                    does_exist = True
+
+            if not does_exist:
+                dict_transactions.append(transaction_instance)
+
+        return Response(data={
+            "transactions": dict_transactions,
         }, status=status.HTTP_200_OK)
 
 

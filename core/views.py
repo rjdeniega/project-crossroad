@@ -916,8 +916,8 @@ class BeepTickets(APIView):
                     total_per_day = total_remittance
 
                 try:
-                    beep_shift = BeepShift.objects.filter(date=temp_start.date())
-                    beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
+                    beep_shift = BeepShift.objects.filter(date=temp_start.date(),type=shift.shift.type)
+                    # beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
                 except ObjectDoesNotExist:
                     beep_shift = []
                 beep_total = sum([item.total for item in BeepTransaction.objects.all() if item.shift == beep_shift])
@@ -938,10 +938,12 @@ class BeepTickets(APIView):
                 total_fuel_for_day += total_fuel
 
             try:
-                am_beep = [item for item in BeepTransaction.objects.all() if
-                           item.shift.date == temp_start.date() and item.shift.type == 'A']
-                pm_beep = [item for item in BeepTransaction.objects.all() if
-                           item.shift.date == temp_start.date() and item.shift.type == 'P']
+                # am_beep = [item for item in BeepTransaction.objects.all() if
+                #            item.shift.date == temp_start.date() and item.shift.type == 'A']
+                am_beep = BeepTransaction.objects.filter(shift__date=temp_start.date(),shift__type='A')
+                pm_beep = BeepTransaction.objects.filter(shift__date=temp_start.date(), shift__type='P')
+                # pm_beep = [item for item in BeepTransaction.objects.all() if
+                #            item.shift.date == temp_start.date() and item.shift.type == 'P']
                 print(am_beep)
                 print(pm_beep)
 
