@@ -19,6 +19,7 @@ inventory_urls = [
     path('purchase_order/<int:pk>', PurchaseOrderSpecific.as_view()),
     path('purchase_order/update/<int:pk>', UpdatePurchaseOrder.as_view()),
     path('purchase_order/<int:pk>/items', GetPurchaseOrderItems.as_view()),
+    path('purchase_order/confirm_item/<int:po>/<int:pk>', PurchaseOrderItemView.as_view()),
 
     # Shuttles & Maintenance URLS
     path('shuttles/', ShuttlesView.as_view()),

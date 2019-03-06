@@ -13,9 +13,11 @@ export class InventoryTable extends Component {
         this.state = {
             item_categories: [],
             items: [],
+            vendors: [],
         };
 
-        this.loadItems = this.loadItems.bind(this)
+        this.loadItems = this.loadItems.bind(this);
+        this.expandedRowRender = this.expandedRowRender.bind(this);
     }
 
     componentDidMount() {
@@ -31,52 +33,43 @@ export class InventoryTable extends Component {
         });
         getData('inventory/items/').then(data => {
             this.setState({
-                items: data.items
+                items: data.items,
+                vendors: data.vendors,
             })
         });
-        this.state.items.forEach(function (item, key) {
-            let vendor;
-            getData('inventory/vendors/' + item.vendor).then(datum => {
-                vendor = datum.name
-            }, () => {
-                this.setState({
-                    items: update(this.state.items, {
-                        [key]: {
-                            vendor: {$set: vendor}
-                        }
-                    })
-                })
-            });
-        })
     }
 
 
     expandedRowRender = (category) => {
-        const {items} = this.state;
+        const {items, vendors} = this.state;
         const columns = [
-            {title: 'Delivery Date', dataIndex: 'created', key: 'created'},
-            {title: 'Brand', dataIndex: 'brand', key: 'brand'},
-            {title: 'Description', dataIndex: 'description', key: 'description'},
-            {title: 'Vendor', dataIndex: 'vendor', key: 'vendor'},
-            {title: 'Quantity', dataIndex: 'quantity', key: 'quantity'},
-            {title: 'Measurement', dataIndex: 'measurement', key: 'measurement'},
+            {title: 'Delivery Date', dataIndex: 'created', key: 'created', align: 'left'},
+            {title: 'Brand', dataIndex: 'brand', key: 'brand', align: 'left'},
+            {title: 'Description', dataIndex: 'description', key: 'description', align: 'left'},
+            {title: 'Vendor', dataIndex: 'vendor', key: 'vendor', align: 'left'},
+            {title: 'Quantity', dataIndex: 'quantity', key: 'quantity', align: 'center'},
+            {title: 'Measurement', dataIndex: 'measurement', key: 'measurement', align: 'center'},
         ];
 
         let data = [];
         items.forEach(function (item, key) {
-            if (item.name === category) {
+            let measurement = "N/A";
+            if(item.measurement){
+                measurement = item.measurement + item.unit
+            }
+            if (item.category === category) {
                 data.push({
                     key: key,
                     created: new Date(item.created).toLocaleDateString(),
                     brand: item.brand,
                     description: item.description,
+                    vendor: vendors[item.id],
                     quantity: item.quantity,
-                    measurement: item.measurement + item.unit,
+                    measurement: measurement,
                 })
             }
 
         });
-        console.log(data);
         return <Table columns={columns} dataSource={data} pagination={false}/>
     };
 
@@ -112,7 +105,7 @@ export class InventoryTable extends Component {
                     emptyText:
                         <Empty description="No data. Add categories and add items through purchase orders."/>
                 }}
-                       expandedRowRender={record => this.expandedRowRender(record.item_name)}/>
+                       expandedRowRender={record => this.expandedRowRender(record.id)}/>
             </div>
         )
     }

@@ -49,7 +49,7 @@ function createRows(items, categories) {
         let total = 0;
         let measurement = "";
         if (items[i]) {
-            total = parseInt(items[i].quantity) * parseInt(items[i].unit_price)
+            total = parseInt(items[i].quantity) * parseInt(items[i].unit_price);
             if (items[i].measurement) {
                 measurement = items[i].measurement + items[i].unit;
             }

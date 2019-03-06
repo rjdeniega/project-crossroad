@@ -52,6 +52,12 @@ export const putData = (url, data) =>
     fetch(url, makeFetchArgs(data, "PUT", true))
         .then(response => response.json());
 
+export const putDataWithImage = (url, data) =>
+    fetch(url, {body: data, credentials: 'same-origin', headers: {
+            'Accept': 'application/json, application/xml, text/plain, text/html, *.*',
+        }, method: 'PUT'})
+        .then(response => response.json());
+
 export const deleteData = (url, data) => {
     // Default options are marked with *
     return fetch(url, {

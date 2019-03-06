@@ -8,7 +8,23 @@ import {warning} from 'react-icons-kit/typicons/warning'
 import {arrowSortedDown} from 'react-icons-kit/typicons/arrowSortedDown'
 import {zoom} from 'react-icons-kit/typicons/zoom'
 import {printer} from 'react-icons-kit/icomoon/printer'
-import {Button, Modal, message, Table, Form, Menu, Dropdown, Input, InputNumber, Popconfirm, Tooltip, Tabs} from 'antd'
+import {
+    Row,
+    Col,
+    Button,
+    Modal,
+    message,
+    Table,
+    Form,
+    Menu,
+    Dropdown,
+    Input,
+    InputNumber,
+    Popconfirm,
+    Tooltip,
+    Tabs,
+    Divider
+} from 'antd'
 import {ItemMovementTable} from "./components/item_movement/item_movement_display";
 import {PurchaseOrderList} from "./components/purchase_order_list/purchase_order_list";
 import '../../utilities/colorsFonts.css'
@@ -40,7 +56,6 @@ function CheckItem(props) {
     else
         return null
 }
-
 
 
 export class InventoryPage extends Component {
@@ -84,7 +99,7 @@ export class InventoryPage extends Component {
                     key: purchase_order.po_number,
                     po_number: purchase_order.po_number,
                     order_date: purchase_order.order_date,
-                    delivery_date: purchase_order.delivery_date,
+                    completion_date: purchase_order.completion_date,
                     status: purchase_order.status,
                 };
                 getData('inventory/vendors/' + purchase_order.vendor).then(data => {
@@ -134,8 +149,11 @@ export class InventoryPage extends Component {
                 <div className='table-style'>
                     <Tabs activeKey={this.state.activeTab} onChange={this.changeTab}>
                         <Tabs.TabPane tab="Inventory" key="1" onClick={() => this.changeTab("1")}>
-                            {items.length ? <PhysicalCount />: null}
-                            <AddCategory reload_items={this.reloadItems}/>
+                            <Row type="flex" justify="start">
+                                {items.length ? (<Col span={6}><PhysicalCount/></Col>) : null}
+                                <Col span={6}> <AddCategory reload_items={this.reloadItems}/>
+                                </Col>
+                            </Row>
                             <br/>
                             <br/>
                             <InventoryTable ref={this.inventoryTable}/>
@@ -161,7 +179,8 @@ export class InventoryPage extends Component {
                                                    load_purchase_order={this.loadPurchaseOrders}
                                 />
                             </Modal>
-                            <PurchaseOrderList purchase_order_list={purchase_order_list} load_purchase_orders={this.loadPurchaseOrders}/>
+                            <PurchaseOrderList purchase_order_list={purchase_order_list}
+                                               load_purchase_orders={this.loadPurchaseOrders}/>
                         </Tabs.TabPane>
                     </Tabs>
 

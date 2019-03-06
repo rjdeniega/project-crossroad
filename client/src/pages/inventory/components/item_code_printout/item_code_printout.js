@@ -9,6 +9,7 @@ export class ItemCodePrintout extends Component {
 
         this.state = {
             items: [],
+            categories: [],
         };
     }
 
@@ -27,13 +28,14 @@ export class ItemCodePrintout extends Component {
             });
             console.log(items);
             this.setState({
+                categories: data.categories,
                 items: items,
             })
         })
     }
 
     itemRow = () => {
-        const {items} = this.state;
+        const {items, categories} = this.state;
         const pageBreak = {
             padding:'0.5in',
             height: '11in',
@@ -47,7 +49,7 @@ export class ItemCodePrintout extends Component {
             to_render.push(
                 <div>
                     <Card title={item.item_code} className="item-sticker">
-                        <p><strong>Item: </strong>{item.name}</p>
+                        <p><strong>Item: </strong>{item.brand} {categories[item.id]}</p>
                         <p><strong>Date Received: </strong>{new Date(item.created).toLocaleDateString()}</p>
                     </Card>
                     <br/>

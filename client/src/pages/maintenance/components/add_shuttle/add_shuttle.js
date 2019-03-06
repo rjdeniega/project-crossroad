@@ -292,7 +292,8 @@ export class AddShuttle extends Component {
     handleOk = () => {
         this.setState({
             visible: false,
-        })
+        });
+        this.props.reload_shuttles();
     };
 
     handleCancel = () => {

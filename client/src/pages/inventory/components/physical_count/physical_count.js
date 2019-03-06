@@ -27,6 +27,7 @@ export class PhysicalCount extends Component {
             active_category: [],
             new_quantity: [],
             remarks: [],
+            item_categories: [],
         }
     }
 
@@ -51,18 +52,7 @@ export class PhysicalCount extends Component {
             this.setState({
                 items: data.items
             }, () => {
-                let data = [];
-                const {items} = this.state;
-                let groupedItems = _.groupBy(items, function (d) {
-                    return d.name
-                });
-                _.map(groupedItems, function (value, key) {
-                    data.push(key);
-                });
-                this.setState({
-                    active_category: data[0]
-                });
-
+                let items = this.state.items;
                 let quantities = [];
                 items.forEach(function(item){
                     quantities.push({
@@ -77,6 +67,12 @@ export class PhysicalCount extends Component {
                 })
             })
         });
+        getData('inventory/items/item_category/').then(data => {
+            this.setState({
+                item_categories: data.item_category,
+                active_category: data.item_category[0].id,
+            })
+        });
     }
 
     changePage = (category) => {
@@ -88,7 +84,7 @@ export class PhysicalCount extends Component {
     changeQuantity = (id, value) => {
         this.setState({
             new_quantity: update(this.state.new_quantity, {
-                [id - 1]: {$set:value}
+                [id]: {$set:value}
             })
         }, () => {
             console.log(this.state)
@@ -124,18 +120,18 @@ export class PhysicalCount extends Component {
         let self = this;
 
         items.forEach(function (item) {
-            if (item.name === category) {
+            if (item.category === category) {
                 let set_quantity = item.quantity + 0;
                 rendered_items.push(
                     <div style={{marginTop: '15px'}}>
                         <Card size="small"
                               title={item.brand + " " + item.item_code}
-                                extra={self.state.new_quantity[item.id-1] && self.state.remarks[item.id - 1] ? <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />: ''}>
+                                extra={self.state.new_quantity[item.id] && self.state.remarks[item.id - 1] ? <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" />: ''}>
                             <Form.Item label="Quantity" {...formItemLayout}>
                                 <p>{set_quantity}</p>
                             </Form.Item>
                             <Form.Item label="Updated Quantity: " {...formItemLayout}>
-                                <InputNumber value={self.state.new_quantity[item.id - 1]} onChange={value => self.changeQuantity(item.id, value)}/>
+                                <InputNumber value={self.state.new_quantity[item.id]} onChange={value => self.changeQuantity(item.id, value)}/>
                             </Form.Item>
                             <Form.Item label="Remarks" {...formItemLayout}>
                                 <Input value={self.state.remarks[item.id - 1]} onChange={e => self.updateRemarks(item.id, e.target.value)}/>
@@ -149,23 +145,26 @@ export class PhysicalCount extends Component {
         return rendered_items
     };
 
-    groupedItems = (items) => {
+
+
+    groupedItems = (categories) => {
         let data = [];
-        let categories = [];
-        let groupedItems = _.groupBy(items, function (d) {
-            return d.name
+        let category_array = [];
+        if(categories){
+            categories.forEach(function(category){
+            data.push(category.id);
+            category_array.push(
+                <Option value={category.id}>
+                    {category.category}
+                </Option>
+            )
         });
-        _.map(groupedItems, function (value, key) {
-            data.push(key);
-            categories.push(<Option value={key}>
-                {key}
-            </Option>)
-        });
-        return <Select defaultValue={data[0]} style={{width: 140}} onSelect={this.changePage}>{categories}</Select>;
+        }
+        return <Select defaultValue={data[0]} style={{width: 140}} onSelect={this.changePage}>{category_array}</Select>;
     };
 
     render() {
-        const {items, active_category, remarks, new_quantity} = this.state;
+        const {items, active_category, remarks, new_quantity, item_categories} = this.state;
         return (
             <div>
                 <Button type="primary" onClick={this.showModal} htmlType="button">
@@ -176,7 +175,7 @@ export class PhysicalCount extends Component {
                     visible={this.state.visible}
                     onOk={() => this.confirmCount(items, remarks, new_quantity)}
                     onCancel={this.handleCancel} style={{padding: '15px', width: '600px'}}>
-                    {this.groupedItems(items)}
+                    {this.groupedItems(item_categories)}
                     {this.renderItem(items, active_category)}
                 </Modal>
             </div>
