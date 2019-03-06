@@ -11,7 +11,7 @@ import React, { Component, Fragment } from "react"
 import '../../utilities/colorsFonts.css'
 import { List, Avatar, Alert } from 'antd'
 import './style.css'
-import {DeploymentListDetails} from '../remittances/subpages/driver_remittance/revised_driver_remittance'
+import { DeploymentListDetails } from '../remittances/subpages/driver_remittance/revised_driver_remittance'
 import emptyStateImage from '../../images/empty state record.png'
 import users from '../../images/default.png'
 import {
@@ -45,25 +45,7 @@ function onChange(date, dateString) {
 }
 
 
-const data = [{
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-}, {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-}, {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-}];
+
 export class HistoryPage extends Component {
     state = {
         activeSelection: null,
@@ -71,7 +53,6 @@ export class HistoryPage extends Component {
     };
 
     componentDidMount() {
-        this.fetchShifts()
     }
 
     componentDidUpdate() {
@@ -105,12 +86,21 @@ export class HistoryPage extends Component {
 
     fetchShifts() {
         const { id } = JSON.parse(localStorage.user_staff);
-        getData('/remittances/shifts/' + id).then(data => {
-            console.log(data);
-            this.setState({
-                shifts: data.shifts,
-            })
-        });
+        let data = {
+            'id': id,
+            'start_date': this.state.start_date,
+            'end_date': this.state.end_date,
+        };
+        if(!this.state.start_date){
+            message.error("Start date must be selected")
+        }else {
+            postData('/remittances/shifts/', data).then(data => {
+                console.log(data);
+                this.setState({
+                    shifts: data.shifts,
+                })
+            });
+        }
     }
 
     fetchDeployments() {
@@ -161,6 +151,19 @@ export class HistoryPage extends Component {
             visible: true,
         });
     };
+
+    handleStartDateChange = (date, dateString) => {
+        this.setState({
+            start_date_object: date,
+            start_date: dateString
+        }, () => this.fetchShifts())
+    };
+    handleEndDateChange = (date, dateString) => {
+        this.setState({
+            end_date_object: date,
+            end_date: dateString
+        }, () => this.fetchShifts())
+    };
     renderDeploymentListModal = () => (
         <Modal
             title="Basic Modal"
@@ -210,7 +213,7 @@ export class HistoryPage extends Component {
                         {this.state.activeSelected && this.renderDeploymentListModal()}
                         <Row className="dates-div">
                             <Col span={12} style={{ 'margin-top': '20px' }}>
-                                <RangePicker onChange={onChange}/>
+                                <DatePicker placeholder="start date" onChange={this.handleStartDateChange}/> <DatePicker placeholder="end date"onChange={this.handleEndDateChange}/>
                             </Col>
                             <Col span={12}>
                                 <Alert className="history-alert"

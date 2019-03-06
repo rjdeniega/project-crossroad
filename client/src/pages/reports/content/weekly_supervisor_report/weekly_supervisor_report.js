@@ -13,7 +13,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Menu, Dropdown } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Menu, Dropdown, Col, Row } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -38,7 +38,8 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.start_date &&
-                        <p><b> {this.props.data.supervisor_name}'s weekly report for {this.props.data.start_date} to {this.props.data.end_date}</b> </p>
+                        <p><b> {this.props.data.supervisor_name}'s weekly report for {this.props.data.start_date}
+                            to {this.props.data.end_date}</b></p>
                         }
                     </Fragment>
                     }
@@ -46,41 +47,94 @@ class ComponentToPrint extends React.Component {
                 <div className="formatted-report-body">
                     {this.props.data &&
                     <Fragment>
-                        <table cellSpacing="50" cellPadding="3px">
+                        <table cellSpacing="50" className="weekly-report-table" cellPadding="3px">
                             <thead>
                             <th>Day</th>
                             <th>Date</th>
                             <th>Shift</th>
-                            <th>No.of Driver</th>
-                            <th>Daily Remittance</th>
-                            <th>Deployed Driver/s</th>
                             <th>Absent Driver/s</th>
                             <th>Remarks</th>
+                            <th>Deployed Driver</th>
+                            {/*<th>Daily Remittance</th>*/}
+                            <th>Remittance</th>
+
                             </thead>
                             <tbody>
                             {this.props.data &&
                             <Fragment>
                                 {this.props.data.rows.map(item => (
-                                    <tr>
-                                        <td>{item.day}</td>
-                                        <td>{item.date}</td>
-                                        <td>{item.shift}</td>
-                                        <td>{item.number_of_drivers}</td>
-                                        <td>{item.daily_remittance}</td>
-                                        <td>
-                                            {item.deployed_drivers.map(item => (
-                                                <p>{item.driver_name}</p>
-                                            ))}
-                                        </td>
-                                        <td>
-                                            {item.absent_drivers.map(item => (
-                                                <p>{item.driver_name}</p>
-                                            ))}
-                                        </td>
-                                        <td>
-                                            {item.remarks}
-                                        </td>
-                                    </tr>
+                                    <Fragment>
+                                        <tr>
+                                            <td>{item.day} </td>
+                                            <td>{item.date}</td>
+                                            <td>{item.shift}</td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            {/*<td>{item.number_of_drivers}</td>*/}
+                                            {/*<td>{item.daily_remittance}</td>*/}
+                                            {/*<td>*/}
+                                            {/*{item.absent_drivers.map(item => (*/}
+                                            {/*<p>{item.driver_name}</p>*/}
+                                            {/*))}*/}
+                                            {/*</td>*/}
+                                            {/*<td>*/}
+                                            {/*{item.remarks}*/}
+                                            {/*</td>*/}
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>
+                                                {item.absent_drivers.length > 0 ? item.absent_drivers.map(item => (
+                                                        <p>{item.absent_drivers}</p>
+                                                    )) : <p>None</p>}
+                                            </td>
+                                            <td>
+                                                {item.remarks ? item.remarks : <p>None</p>}
+                                            </td>
+                                            <td>
+                                                {item.deployed_drivers.map(item => (
+                                                    <p>{item.driver_name}</p>
+                                                ))}
+                                            </td>
+                                            <td>
+                                                {item.deployed_drivers.map(item => (
+                                                    <p>{item.remittance}</p>
+                                                ))}
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><b>Day total</b></td>
+                                            <td className="total-line">
+                                                <b>{item.daily_remittance}</b>
+                                            </td>
+                                        </tr>
+                                        {/*<tr>*/}
+                                        {/*<td>Absent Drivers</td>*/}
+                                        {/*<td></td>*/}
+                                        {/*<td></td>*/}
+                                        {/*<td>*/}
+                                        {/*{item.deployed_drivers.map(item => (*/}
+                                        {/*<p>{item.remittance}</p>*/}
+                                        {/*))}*/}
+                                        {/*</td>*/}
+                                        {/*</tr>*/}
+
+                                    </Fragment>
+
                                 ))}
                             </Fragment>
                             }

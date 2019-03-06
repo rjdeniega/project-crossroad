@@ -75,9 +75,6 @@ export class ShiftManagementPane extends Component {
     };
 
     componentDidMount() {
-        if (this.state.activeShift === null) {
-            this.openNotification()
-        }
         this.fetchDrivers();
         this.fetchSupervisors();
         this.fetchShuttles();
@@ -381,24 +378,7 @@ export class ShiftManagementPane extends Component {
     // };
 
     //normal action handlers
-    close = () => {
-        console.log('Notification was closed. Either the close button was clicked or duration time elapsed.');
-    };
-    openNotification = () => {
-        const key = `open${Date.now()}`;
-        const btn = (
-            <Button type="primary" size="small" onClick={() => notification.close(key)}>
-                Confirm
-            </Button>
-        );
-        notification.open({
-            message: 'Please set shift',
-            description: 'No shifts have been set for the next 15 days.',
-            btn,
-            key,
-            onClose: this.close,
-        });
-    };
+
     //component change handlers
     handleDateChange = (date, dateString) => {
         const endDateString = moment(date).add(15, 'days').format('YYYY-MM-DD');

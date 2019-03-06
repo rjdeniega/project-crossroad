@@ -1195,86 +1195,127 @@ class TicketTypePerDayReport(APIView):
             deployments = Deployment.objects.filter(shift_iteration__date=temp_start)
 
             # counts for the day
-            am_count = 0
-            pm_count = 0
-            am_ten = 0
-            am_twelve = 0
-            am_fifteen = 0
-            pm_ten = 0
-            pm_twelve = 0
-            pm_fifteen = 0
 
-            for deployment in deployments:
-                consumed_tickets = ConsumedTicket.objects.filter(remittance_form__deployment=deployment)
+            shuttles = []
 
-                for consumed_ticket in consumed_tickets:
-                    if deployment.shift_iteration.shift.type is 'A':
+            for shuttle in Shuttle.objects.all():
 
-                        if consumed_ticket.assigned_ticket.type is 'A':
-                            print(consumed_ticket.total)
-                            am_count += consumed_ticket.total / 10
-                            am_ten += consumed_ticket.total / 10
+                am_count = 0
+                pm_count = 0
+                am_ten = 0
+                am_twelve = 0
+                am_fifteen = 0
+                pm_ten = 0
+                pm_twelve = 0
+                pm_fifteen = 0
 
-                        elif consumed_ticket.assigned_ticket.type is 'B':
-                            print(consumed_ticket.total)
-                            am_count += consumed_ticket.total / 12
-                            am_twelve += consumed_ticket.total / 12
+                for deployment in deployments:
+                    consumed_tickets = ConsumedTicket.objects.filter(remittance_form__deployment=deployment,
+                                                                     remittance_form__deployment__shuttle_id=shuttle.id)
 
-                        else:
-                            print(consumed_ticket.total)
-                            am_count += consumed_ticket.total / 15
-                            am_fifteen += consumed_ticket.total / 15
+                    for consumed_ticket in consumed_tickets:
+                        if deployment.shift_iteration.shift.type is 'A':
 
-                    else:
+                            if consumed_ticket.assigned_ticket.type is 'A':
+                                print(consumed_ticket.total)
+                                am_ten += consumed_ticket.total / 10
+                                am_count += consumed_ticket.total / 10
 
-                        if consumed_ticket.assigned_ticket.type is 'A':
-                            print("A")
-                            print(consumed_ticket.total)
-                            pm_count += consumed_ticket.total / 10
-                            pm_ten += consumed_ticket.total / 10
+                            elif consumed_ticket.assigned_ticket.type is 'B':
+                                print(consumed_ticket.total)
+                                am_twelve += consumed_ticket.total / 12
+                                am_count += consumed_ticket.total / 12
 
-                        elif consumed_ticket.assigned_ticket.type is 'B':
-                            print("B")
-                            print(consumed_ticket.total)
-                            pm_count += consumed_ticket.total / 12
-                            pm_twelve += consumed_ticket.total / 12
+                            else:
+                                print(consumed_ticket.total)
+                                am_fifteen += consumed_ticket.total / 15
+                                am_count += consumed_ticket.total / 15
 
                         else:
-                            print("C")
-                            print(consumed_ticket.total)
-                            pm_count += consumed_ticket.total / 15
-                            pm_fifteen += consumed_ticket.total / 15
+
+                            if consumed_ticket.assigned_ticket.type is 'A':
+                                print("A")
+                                print(consumed_ticket.total)
+                                pm_ten += consumed_ticket.total / 10
+                                pm_count += consumed_ticket.total / 10
+
+                            elif consumed_ticket.assigned_ticket.type is 'B':
+                                print("B")
+                                print(consumed_ticket.total)
+                                pm_twelve += consumed_ticket.total / 12
+                                pm_count += consumed_ticket.total / 12
+
+                            else:
+                                print("C")
+                                print(consumed_ticket.total)
+                                pm_count += consumed_ticket.total / 15
+                                pm_fifteen += consumed_ticket.total / 15
+
+                shuttles.append({
+                    "shuttle_id": shuttle.id,
+                    "shuttle_number": shuttle.shuttle_number,
+                    "shuttle_make": shuttle.make,
+                    "shuttle_model": shuttle.model,
+                    "shuttle_route": shuttle.route,
+                    "am_total": am_count,
+                    "pm_total": pm_count,
+                    "am_ten": am_ten,
+                    "am_twelve": am_twelve,
+                    "am_fifteen": am_fifteen,
+                    "pm_ten": pm_ten,
+                    "pm_twelve": pm_twelve,
+                    "pm_fifteen": pm_fifteen
+                })
+            ten_total = sum([item['am_ten'] for item in shuttles]) + sum([item['pm_ten'] for item in shuttles])
+            twelve_total = sum([item['am_twelve'] for item in shuttles]) + sum([item['pm_twelve'] for item in shuttles])
+            fifteen_total = sum([item['am_fifteen'] for item in shuttles]) + sum([item['pm_fifteen'] for item in shuttles])
+
 
             days.append({
                 "date": temp_start.date(),
-                "am_total": am_count,
-                "pm_total": pm_count,
-                "am_ten": am_ten,
-                "am_twelve": am_twelve,
-                "am_fifteen": am_fifteen,
-                "pm_ten": pm_ten,
-                "pm_twelve": pm_twelve,
-                "pm_fifteen": pm_fifteen
+                "shuttles": shuttles,
+                "ten_total": ten_total,
+                "twelve_total": twelve_total,
+                "fifteen_total": fifteen_total,
+                "day_total": ten_total + twelve_total + fifteen_total
             })
 
-            grand_am_total += am_count
-            grand_pm_total += pm_count
-            grand_ten_total += am_ten + pm_ten
-            grand_twelve_total += am_twelve + pm_twelve
-            grand_fifteen_total += am_fifteen + pm_fifteen
+            # grand_am_total += am_count
+            # grand_pm_total += pm_count
+            # grand_ten_total += am_ten + pm_ten
+            # grand_twelve_total += am_twelve + pm_twelve
+            # grand_fifteen_total += am_fifteen + pm_fifteen
+            # "grand_total": grand_ten_total + grand_twelve_total + grand_fifteen_total,
+            # "grand_am_total": grand_am_total,
+            # "grand_pm_total": grand_pm_total,
+            # "grand_ten_total": grand_ten_total,
+            # "grand_twelve_total": grand_twelve_total,
+            # "grand_fifteen_total": grand_fifteen_total,
 
             temp_start = temp_start + timedelta(days=1)
+            grand_am_total = 0
+            grand_pm_total = 0
+            grand_ten_total =0
+            grand_twelve_total = 0
+            grand_fifteen_total = 0
+            grand_total = 0
+            for item in days:
+                grand_am_total += sum([shuttle['am_total'] for shuttle in item['shuttles']])
+                grand_pm_total += sum([shuttle['pm_total'] for shuttle in item['shuttles']])
+                grand_ten_total += item['ten_total']
+                grand_twelve_total += item['twelve_total']
+                grand_fifteen_total += item['fifteen_total']
 
         return Response(data={
             "start_date": start_date.date(),
             "end_date": end_date.date(),
-            "grand_total": grand_ten_total + grand_twelve_total + grand_fifteen_total,
+            "days": days,
             "grand_am_total": grand_am_total,
             "grand_pm_total": grand_pm_total,
             "grand_ten_total": grand_ten_total,
             "grand_twelve_total": grand_twelve_total,
             "grand_fifteen_total": grand_fifteen_total,
-            "days": days
+            "grand_total": grand_am_total + grand_pm_total,
         }, status=status.HTTP_200_OK)
 
 
@@ -1459,6 +1500,7 @@ class TicketTypePerShuttle(APIView):
 
             rows.append({
                 "shuttle_id": shuttle.id,
+                "shuttle_number": shuttle.shuttle_number,
                 "shuttle_make": shuttle.make,
                 "shuttle_model": shuttle.model,
                 "shuttle_route": shuttle.route,
@@ -1824,3 +1866,54 @@ class ChangeNotificationStatus(APIView):
 
         notification.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class PassengerPerRoute(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = start_date + timedelta(days=7)
+
+        values = []
+
+        temp_date = start_date
+        while temp_date < end_date:
+            
+            values.append({
+                "day": temp_date.strftime("%A"),
+                "main_road": PassengerPerRoute.getPassengersFromDate('M', temp_date),
+                "kaliwa": PassengerPerRoute.getPassengersFromDate('L', temp_date),
+                "kanan": PassengerPerRoute.getPassengersFromDate('R', temp_date)
+            })
+
+            temp_date = temp_date + timedelta(days=1)
+        
+
+        return Response(data={
+            "values": values
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def getPassengersFromDate(route, date):
+        remittances = RemittanceForm.objects.filter(
+                deployment__shift_iteration__date=date,
+                deployment__route=route
+                )
+
+        amount = 0
+        for remittance in remittances:
+            consumed_tickets = ConsumedTicket.objects.filter(remittance_form=remittance)
+
+            for consumed_ticket in consumed_tickets:
+                if consumed_ticket.assigned_ticket.type is 'A':
+                    price = 10
+                elif consumed_ticket.assigned_ticket.type is 'B':
+                    price = 12
+                else:
+                    price = 15
+                
+                amount += consumed_ticket.total / price
+        
+        return amount
+
