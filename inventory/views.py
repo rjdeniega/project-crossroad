@@ -44,10 +44,15 @@ class ItemView(APIView):
     def get(request):
         # transform django objects to JSON (so it can be interpreted in the front-end_
         items = ItemSerializer(Item.objects.all(), many=True)
+        vendors = {}
+        for item in Item.objects.all():
+            vendor = Vendor.objects.get(id=item.vendor_id)
+            vendors[item.id] = vendor.name
         # returns all item objects
         return Response(data={
             "items": items.data,
-            "date": datetime.now().date()
+            "date": datetime.now().date(),
+            "vendors": vendors,
         }, status=status.HTTP_200_OK)
         # Using bare status codes in your responses isn't recommended. REST framework
         # includes a set of named constants that you can use to make your code more obvious and readable.
@@ -621,6 +626,18 @@ class PurchaseOrderSpecific(APIView):
             'categories': categories
         }, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def put(request, pk):
+        purchase_order = PurchaseOrder.objects.get(id=pk)
+        if request.FILES.get('receipt'):
+            purchase_order.receipt = request.FILES['receipt']
+        else:
+            purchase_order.receipt = None
+        purchase_order.save()
+        return Response(data={
+            'foo': 'bar'
+        }, status=status.HTTP_200_OK)
+
 
 class VendorsView(APIView):
     @staticmethod
@@ -635,7 +652,6 @@ class VendorSpecific(APIView):
     @staticmethod
     def get(request, pk):
         vendor = VendorSerializer(Vendor.objects.get(id=pk))
-
         return Response(data={
             'vendor': vendor.data
         })
@@ -654,19 +670,8 @@ class UpdatePurchaseOrder(APIView):
             }, status=status.HTTP_200_OK)
         else:
             purchase_order.status = "Complete"
-            purchase_order.delivery_date = datetime.now()
+            purchase_order.completion_date = datetime.now()
             purchase_order.save()
-            for item in data['items']:
-                print(item)
-                inventory_item = Item(name=item['name'], description=item['description'], quantity=item['quantity'],
-                                      unit_price=item['unit_price'], item_type=item['item_type'],
-                                      measurement=item['measurement'], unit=item['unit'], brand=item['brand'],
-                                      item_code=item['item_code'], vendor=purchase_order.vendor,
-                                      purchase_order=purchase_order)
-                inventory_item.save()
-                item_movement = ItemMovement(item=inventory_item, type="B", quantity=item['quantity'],
-                                             unit_price=item['unit_price'])
-                item_movement.save()
             return Response(data={
                 'foo': 'bar'
             }, status=status.HTTP_200_OK)
@@ -678,8 +683,13 @@ class GetPurchaseOrderItems(APIView):
         purchase_order = PurchaseOrder.objects.get(id=pk)
         items = ItemSerializer(Item.objects.all()
                                .filter(purchase_order=purchase_order), many=True)
+        categories = {}
+        for item in Item.objects.all().filter(purchase_order=purchase_order):
+            category = ItemCategory.objects.get(id=item.category.id)
+            categories[item.id] = category.category
         return Response(data={
-            'items': items.data
+            'items': items.data,
+            'categories': categories
         }, status=status.HTTP_200_OK)
 
 
@@ -698,4 +708,33 @@ class ItemCategoryView(APIView):
         item_category = ItemCategorySerializer(ItemCategory.objects.all(), many=True)
         return Response(data={
             'item_category': item_category.data
+        }, status=status.HTTP_200_OK)
+
+
+class PurchaseOrderItemView(APIView):
+    @staticmethod
+    def put(request, pk, po):
+        item = PurchaseOrderItem.objects.get(id=pk)
+        purchase_order = PurchaseOrder.objects.get(id=po)
+        item.received = True
+        item.delivery_date = datetime.now()
+        item.save()
+        purchase_order.status = "Partially Delivered"
+        purchase_order.save()
+        category = ItemCategory.objects.get(id=item.category.id)
+        category.quantity = category.quantity + item.quantity
+        category.save()
+        vendor = Vendor.objects.get(id=purchase_order.vendor.id)
+        code = Item.objects.filter(category=category).count() + 1
+        string_code = "{0:0=3d}".format(code)
+        item_code = category.code_prefix + string_code
+        added_item = Item(description=item.description, quantity=item.quantity, category=category,
+                          unit_price=item.unit_price, item_type=item.item_type, measurement=item.measurement,
+                          unit=item.unit, brand=item.brand, vendor=vendor, created=datetime.now(),
+                          delivery_date=datetime.now(), purchase_order=purchase_order, item_code=item_code)
+        added_item.save()
+        item_movement = ItemMovement(item=added_item, type="B", quantity=item.quantity, unit_price=item.unit_price)
+        item_movement.save()
+        return Response(data={
+            'foo': added_item.description
         }, status=status.HTTP_200_OK)

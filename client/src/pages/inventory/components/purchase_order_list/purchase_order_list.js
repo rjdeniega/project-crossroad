@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Table, Divider, Tag, Modal, Button, message} from 'antd';
-import './style.css'
-import {getData} from "../../../../network_requests/general";
+import './style.css';
 import {PurchaseOrderView} from "../purchase_order_view/purchase_order_view";
 import {UpdatePurchaseOrder} from "../update_purchase_order/update_purchase_order";
 
@@ -21,7 +20,10 @@ function tagColour(status) {
         color = 'green';
     } else if (status === 'Processing') {
         color = 'blue';
-    } else if (status === 'Requires Payment') {
+    } else if (status === 'Partially Delivered'){
+        color = 'yellow'
+    }
+    else if (status === 'Requires Payment') {
         color = 'gold';
     } else {
         color = 'red';
@@ -57,12 +59,12 @@ export class PurchaseOrderList extends Component {
             <span>{new Date(date.substring(0, 10)).toLocaleDateString()}</span>
         )
     }, {
-        title: 'Delivery Date',
-        dataIndex: 'delivery_date',
-        key: 'delivery_date',
+        title: 'Completion Date',
+        dataIndex: 'completion_date',
+        key: 'completion_date',
         align: 'left',
         sorter: (a, b) => {
-            return new Date(a.delivery_date) > new Date(b.delivery_date)
+            return new Date(a.completion_date) > new Date(b.completion_date)
         },
         render: date => (
             <span>{date !== null ? new Date(date.substring(0, 10)).toLocaleDateString() : "N/A"}</span>
@@ -104,7 +106,7 @@ export class PurchaseOrderList extends Component {
         dataIndex: 'id',
         render: (value, row) => (
             <span>
-                {row.status === "Processing" ?
+                {row.status === "Processing" || row.status === "Partially Delivered"?
                     <span>
                         <UpdatePurchaseOrder po_id={value}
                                              load_purchase_orders={this.props.load_purchase_orders}/>

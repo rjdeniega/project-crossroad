@@ -101,16 +101,19 @@ class PurchaseOrderItem(SoftDeletionModel):
     measurement = PositiveIntegerField(null=True)
     unit = CharField(max_length=10, null=True)
     brand = CharField(max_length=64)
+    delivery_date = models.DateTimeField(null=True)
+    received = BooleanField(default=False)
 
 
 class PurchaseOrder(SoftDeletionModel):
     po_number = CharField(max_length=6)
     vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
     order_date = models.DateTimeField(editable=False)
-    delivery_date = models.DateTimeField(null=True)
+    completion_date = models.DateTimeField(null=True)
     po_items = ManyToManyField(PurchaseOrderItem)
     special_instruction = CharField(max_length=256)
     status = CharField(max_length=64)
+    receipt = models.ImageField(null=True, upload_to='media')
 
 
 class Item(SoftDeletionModel):
@@ -125,7 +128,8 @@ class Item(SoftDeletionModel):
     vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
-    item_code = CharField(max_length=4)
+    item_code = CharField(max_length=6)
+    delivery_date = models.DateTimeField(null=True)
     purchase_order = ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -136,7 +140,7 @@ class Item(SoftDeletionModel):
         return super(Item, self).save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.brand}"
 
 
 class UsedItem(SoftDeletionModel):

@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {Card, Form, Input, Select, Tag, Divider, Button, message, Modal} from 'antd'
+import {Card, Form, Input, Select, Tag, Divider, Button, message, Modal, Upload, Icon, Checkbox, Typography} from 'antd'
 import update from 'react-addons-update'
 import './style.css';
-import {getData, postData} from "../../../../network_requests/general";
-import Icon from 'react-icons-kit';
-import {ic_cached} from 'react-icons-kit/md/ic_cached'
+import {getData, postData, putData, putDataWithImage} from "../../../../network_requests/general";
+
+const { Text } = Typography;
 
 const Option = Select.Option;
 const Search = Input.Search;
@@ -24,18 +24,55 @@ export class UpdatePurchaseOrder extends Component {
         super(props);
 
         this.state = {
+            previewVisible: false,
+            previewImage: '',
+            fileList: [],
             update_modal: false,
             items: [],
+            categories: [],
+            confirmation: [],
+            confirm_disabled: 'disabled',
             item_details: [],
-        }
+        };
+
+        this.removeFile = this.removeFile.bind(this);
+        this.onChange = this.onChange.bind(this);
+        this.receiveItem = this.receiveItem.bind(this);
+        this.loadItems = this.loadItems.bind(this);
     }
 
     componentDidMount() {
+        this.loadItems()
+    }
+
+    loadItems(){
         let po_id = this.props.po_id;
         getData('inventory/purchase_order/' + po_id).then(data => {
+            let fileList = [];
+            if (data.purchase_order.receipt) {
+                fileList.push({
+                    uid: '-1',
+                    name: data.purchase_order.receipt,
+                    status: 'done',
+                    url: data.purchase_order.receipt,
+                });
+            }
             this.setState({
                 items: data.items,
+                fileList: fileList,
+                categories: data.categories,
             }, () => {
+                let checkboxes = [];
+                this.state.items.forEach(function () {
+                    checkboxes.push({
+                        checked: false
+                    })
+                });
+                this.setState({
+                    confirmation: checkboxes,
+                }, () => {
+                    console.log(this.state)
+                });
                 let item_details = [];
                 this.state.items.map(item => {
                     let item_detail = {
@@ -59,6 +96,27 @@ export class UpdatePurchaseOrder extends Component {
         })
     }
 
+    handleCancel = () => {
+        this.setState({previewVisible: false})
+    };
+
+    removeFile() {
+        let formData = new FormData();
+        console.log();
+        formData.append('receipt', null);
+        putDataWithImage('inventory/purchase_order/' + this.props.po_id, formData).then(data => {
+            console.log(data)
+        });
+    }
+
+    handleChange = ({fileList}) => this.setState({fileList});
+
+    handlePreview = (file) => {
+        this.setState({
+            previewImage: file.url || file.thumbUrl,
+            previewVisible: true,
+        });
+    };
 
     updateModal = () => {
         this.setState({
@@ -66,8 +124,7 @@ export class UpdatePurchaseOrder extends Component {
         })
     };
 
-    handleCancel2 = (e) => {
-        console.log(e);
+    handleCancel2 = () => {
         this.setState({
             update_modal: false,
         });
@@ -79,36 +136,22 @@ export class UpdatePurchaseOrder extends Component {
         };
         /** @namespace this.props.load_purchase_orders () **/
         postData('inventory/purchase_order/update/' + id, data).then(() => {
-            message.success("Purchase order has been cancelled");
-            this.props.load_purchase_orders()
+            message.success("Purchase order has been completed");
+            this.props.load_purchase_orders();
+            this.handleCancel2()
         })
     };
 
     approve = (id) => {
-        let final_items = [];
-        this.state.item_details.forEach(function (item) {
-            final_items.push({
-                name: item.generic_name,
-                description: item.description,
-                quantity: item.quantity,
-                unit_price: item.unit_price,
-                item_type: item.item_type,
-                measurement: item.measurement,
-                unit: item.unit,
-                brand: item.brand,
-                item_code: item.item_code
-            })
-        });
         let data = {
             update: "accepted",
-            items: final_items,
         };
         postData('inventory/purchase_order/update/' + id, data).then(data => {
             if (data.error) {
                 console.log(data.error)
             }
             message.success("Purchase order has been confirmed");
-            // this.props.load_purchase_orders()
+            this.props.load_purchase_orders()
         })
     };
 
@@ -213,9 +256,36 @@ export class UpdatePurchaseOrder extends Component {
         }
     };
 
+    uploadReceipt = (picture) => {
+        let formData = new FormData();
+        console.log(picture);
+        formData.append('receipt', picture);
+        putDataWithImage('inventory/purchase_order/' + this.props.po_id, formData).then(data => {
+            console.log(data)
+        })
+    };
+
+    onChange = (e, key) => {
+        console.log('checked = ', e.target.checked);
+        this.setState({
+            confirmation: update(this.state.confirmation, {
+                [key]: {
+                    checked: {$set: e.target.checked,}
+                }
+            })
+        });
+    };
+
+    receiveItem = (id) => {
+        let po = this.props.po_id;
+        putData('inventory/purchase_order/confirm_item/' + po + '/' + id, 'bogchi').then(data => {
+            console.log(data);
+            this.loadItems();
+        })
+    };
 
     render() {
-        const {item_details} = this.state;
+        const {items, previewVisible, previewImage, fileList, confirmation, categories, confirm_disabled} = this.state;
         const {po_id} = this.props;
         const formItemLayout = {
             labelCol: {
@@ -227,6 +297,13 @@ export class UpdatePurchaseOrder extends Component {
                 sm: {span: 16},
             },
         };
+
+        const uploadButton = (
+            <div>
+                <Icon type="plus"/>
+                <div className="ant-upload-text">Upload</div>
+            </div>
+        );
 
         return (
             <span>
@@ -240,13 +317,13 @@ export class UpdatePurchaseOrder extends Component {
                         <Button key={1} htmlType='button' type="danger"
                                 onClick={() => this.disapprove(po_id)}>Disapproved</Button>,
                         <Button key={2} htmlType='button' type="primary"
-                                onClick={() => this.approve(po_id)}>Confirm</Button>
+                                onClick={() => this.approve(po_id)}>Complete</Button>
                     ]}>
                     <div className="update-purchase-order-layout">
                         <h3>Add to Inventory</h3>
-                        {item_details.map((item, index) => {
+                        {items.map((item, index) => {
                             return (
-                                <Card title={item.name}
+                                <Card title={item.delivery_date ? "Delivery Date: " + new Date(item.delivery_date.substring(0, 10)).toLocaleDateString(): <Button htmlType='button' type="primary" onClick={() => this.receiveItem(item.id)}>Receive Item</Button>}
                                       extra={(
                                           <span>
                                       <Tag color="blue">{item.quantity} pc</Tag>
@@ -254,56 +331,30 @@ export class UpdatePurchaseOrder extends Component {
                                       <Tag color="green">Php{item.unit_price}</Tag>
                                   </span>)} size="small"
                                       className="item-form-container">
-                                    <Form.Item label="Item Name" {...formItemLayout}>
-                                        <Input value={item.generic_name}
-                                               onChange={e => this.updateFields(index, e.target.value, "name")}/>
-                                    </Form.Item>
-                                    <Form.Item label="Description" {...formItemLayout}>
-                                        <Input value={item.description}
-                                               onChange={e => this.updateFields(index, e.target.value, "description")}/>
-                                    </Form.Item>
-                                    <Form.Item label="Brand" {...formItemLayout}>
-                                        <Input value={item.brand}
-                                               onChange={e => this.updateFields(index, e.target.value, "brand")}/>
-                                    </Form.Item>
-                                    <Form.Item label="Type" {...formItemLayout}>
-                                        <Select defaultValue="Single Item" style={{width: 210}}
-                                                onSelect={e => this.changeItemType(index, e)}>
-                                            <Option value="Single Item">Single Item</Option>
-                                            <Option value="Physical Measurement">Physical Measurement</Option>
-                                            <Option value="Liquid Measurement">Liquid Measurement</Option>
-                                        </Select>
-                                    </Form.Item>
-                                    {item.item_type === "Liquid Measurement" ?
-                                        <Form.Item label="Measurement" {...formItemLayout}>
-                                            <Input addonAfter={(
-                                                <Select defaultValue="mL" style={{width: 75}}
-                                                        onSelect={e => this.changeMeasurement(index, e)}>
-                                                    <Option value="mL">mL</Option>
-                                                    <Option value="L">L</Option>
-                                                    <Option value="fl. oz">fl. oz</Option>
-                                                </Select>
-                                            )} onChange={e => this.updateFields(index, e.target.value, "measurement")}/>
-                                        </Form.Item> : ''}
-                                    {item.item_type === "Physical Measurement" ?
-                                        <Form.Item label="Measurement" {...formItemLayout}>
-                                            <Input addonAfter={(
-                                                <Select defaultValue="pieces" style={{width: 95}}
-                                                        onSelect={e => this.changeMeasurement(index, e)}>
-                                                    <Option value="pieces">pieces</Option>
-                                                    <Option value="meters">meters</Option>
-                                                </Select>
-                                            )} onChange={e => this.updateFields(index, e.target.value, "measurement")}/>
-                                        </Form.Item>
-                                        : ''}
-                                    <Form.Item label="Item Code" {...formItemLayout}>
-                                        <Search value={item.item_code} enterButton={<Icon icon={ic_cached}/>}
-                                                onSearch={() => this.updateFields(index, null, "item_code")}/>
-                                    </Form.Item>
+                                    <Text>{item.brand}&nbsp;{categories[item.id] && categories[item.id]}</Text>
+                                    <br/>
+                                    <Text>{item.description}</Text>
+                                    <br/>
+                                    <Text>{item.measurement != null && item.measurement}{item.unit != null && item.unit}</Text>
                                 </Card>
                             )
                         })}
                 </div>
+                    <Form.Item label="Receipt" {...formItemLayout}>
+                        <Upload
+                            action={e => this.uploadReceipt(e)}
+                            listType="picture-card"
+                            fileList={fileList}
+                            onPreview={this.handlePreview}
+                            onChange={this.handleChange}
+                            onRemove={this.removeFile}
+                        >
+                            {fileList.length >= 1 ? null : uploadButton}
+                        </Upload>
+                        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                            <img alt="example" style={{width: '100%'}} src={previewImage}/>
+                        </Modal>
+                        </Form.Item>
                 </Modal>
             </span>
         )

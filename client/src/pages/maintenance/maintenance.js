@@ -12,25 +12,36 @@ import {MechanicView} from './components/mechanic_view'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
 
 export class MaintenancePage extends Component {
+    constructor(props) {
+        super(props);
+
+        this.listOfShuttles = React.createRef();
+        this.reloadShuttles = this.reloadShuttles.bind(this)
+    }
+
+    reloadShuttles() {
+        this.listOfShuttles.current.fetchShuttles();
+    }
+
     render() {
         const user_type = JSON.parse(localStorage.user_type);
         return (
             <div className="body-wrapper" align="middle">
-                <Header />
+                <Header/>
                 {user_type === 'mechanic' ? (
                     <MechanicView/>
-                ):(
+                ) : (
                     <div className={'shuttles-div'} align="left"
-                        style={{overflowY: 'hidden', overflowX: 'hidden'}}>
+                         style={{overflowY: 'hidden', overflowX: 'hidden'}}>
                         <PerfectScrollbar>
                             <div className='upper'>
                                 <h1 className={'shuttles-title'}>Shuttles</h1>
-                                <div  style={{marginLeft: 15, marginTop: 27}}>
-                                    <AddShuttle/>
+                                <div style={{marginLeft: 15, marginTop: 27}}>
+                                    <AddShuttle reload_shuttles={this.reloadShuttles}/>
                                 </div>
                             </div>
                             <Divider/>
-                            <ListOfShuttles/>
+                            <ListOfShuttles ref={this.listOfShuttles}/>
                         </PerfectScrollbar>
                     </div>
                 )}
