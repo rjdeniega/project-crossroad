@@ -166,7 +166,7 @@ export class HistoryPage extends Component {
     };
     renderDeploymentListModal = () => (
         <Modal
-            title="Basic Modal"
+            title="Deployed Drivers"
             visible={this.state.visible}
             onOk={this.handleOk}
             onCancel={this.handleCancel}
