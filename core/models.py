@@ -1,6 +1,8 @@
 from django.db import models
+from django.db.models import ForeignKey
 from django.db.models import Model, QuerySet, Manager, CharField, DateTimeField, BooleanField
 from django.utils import timezone
+from django.contrib.auth.models import *
 
 
 # Create your models here.
@@ -81,6 +83,7 @@ NOTIFICATION_TYPE = [
 
 class Notification(SoftDeletionModel):
     type = CharField(max_length=1, choices=NOTIFICATION_TYPE)
+    user = ForeignKey(User,on_delete=models.CASCADE, null=True)
     description = CharField(max_length=255)
     is_read = BooleanField(default=False)
     created = models.DateTimeField(editable=False, null=True)

@@ -35,23 +35,27 @@ export class UserAvatar extends Component {
         history.replace('/sign-in');
     };
 
-    componentDidMount(){
+    componentDidMount() {
         this.fetchNotifications()
     }
 
     fetchNotifications() {
-        fetch('notifications/' + JSON.parse(localStorage.user_type))
+        const { id } = JSON.parse(localStorage.user);
+        console.log(id);
+        fetch('notifications/' + JSON.parse(localStorage.user_type) + "/" + id)
             .then(response => {
                 return response;
             })
             .then(response => response.json())
             .then(data => {
-                if(!data.error){
+                if (!data.error) {
+                    console.log(data);
                     this.setState({
                         notifications: data.notifications,
                         unread: data.unread
                     });
-                } else {
+                }
+                else {
                     console.log(data.error)
                 }
             }).catch(error => console.log(error));
@@ -59,7 +63,7 @@ export class UserAvatar extends Component {
 
     render() {
 
-        const {notifications, unread} = this.state;
+        const { notifications, unread } = this.state;
         const content = (
             <div>
                 <Button className="sign-out" onClick={this.signOut}>Sign-out</Button>
@@ -70,31 +74,31 @@ export class UserAvatar extends Component {
         return <div className="header-icons">
             <div className="user-full-name"> {username}</div>
             {/*<Tag className="user-type" color="var(--orange)">*/}
-              {/*OM*/}
+            {/*OM*/}
             {/*</Tag>*/}
             <Popover placement="bottomRight" content={content} title="User Settings" trigger="click">
-              <div className="user-avatar">
-                <Avatar className="avatar-photo" size="large" src={users} />
-              </div>
+                <div className="user-avatar">
+                    <Avatar className="avatar-photo" size="large" src={users}/>
+                </div>
             </Popover>
             <Popover placement="bottomRight" content={notifications.length == 0 ? <div className="notification-area">
                     <p centered>You have no notifications</p>
-                  </div> : <div className="notification-area">
+                </div> : <div className="notification-area">
                     <PerfectScrollbar>
-                      <List itemlayout="horizontal">
-                        {notifications.map(function (d, idx) {
-                            console.log(d)
-                            return (<Notification key={idx} title={d.type}
-                                    description={d.description} isRead={d.is_read} id={d.id}/>)
-                        })}
-                      </List>
+                        <List itemlayout="horizontal">
+                            {notifications.map(function (d, idx) {
+                                console.log(d)
+                                return (<Notification key={idx} title={d.type}
+                                                      description={d.description} isRead={d.is_read} id={d.id}/>)
+                            })}
+                        </List>
                     </PerfectScrollbar>
-                  </div>} title="Notifications" trigger="click">
-              <Badge count={unread.length} className="notification" size={5}>
-                <Icon icon={bell} size={25} />
-              </Badge>
+                </div>} title="Notifications" trigger="click">
+                <Badge count={unread.length} className="notification" size={5}>
+                    <Icon icon={bell} size={25}/>
+                </Badge>
             </Popover>
-          </div>;
+        </div>;
     }
 }
 

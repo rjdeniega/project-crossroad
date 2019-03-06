@@ -7,14 +7,14 @@
 import React, { Component } from "react";
 import { Header } from "./components/header/header";
 import "../../utilities/colorsFonts.css";
-import { List, Avatar } from "antd";
+import { Alert, List, Avatar } from "antd";
 import { Icon as AntIcon } from "antd";
 import { UserAvatar } from "../../components/avatar/avatar";
 import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { message,Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form } from "antd";
+import { message, Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form } from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
@@ -357,7 +357,7 @@ export class SharesManagementPane extends Component {
         console.log(formData);
 
         postDataWithFile('/members/shares/' + activeUser.id, formData).then(data => {
-            if(data.error){
+            if (data.error) {
                 message.error(data.error)
             }
             console.log(data);
@@ -417,13 +417,13 @@ export class SharesManagementPane extends Component {
                 {text}
             </div>
         )
-    },{
+    }, {
         title: 'Transaction Type',
         dataIndex: 'value',
         key: 'value',
         render: (text) => (
             <div className="rem-status">
-                {parseInt(text)>=0 ? <p>Add</p> : <p style={{'color': 'red'}}>Withraw</p>}
+                {parseInt(text) >= 0 ? <p>Add</p> : <p style={{ 'color': 'red' }}>Withraw</p>}
             </div>
         ),
     }, {
@@ -503,6 +503,11 @@ export class SharesManagementPane extends Component {
                         </Form>
                     </Modal>
                     <Button onClick={this.showModal}>Add Shares</Button>
+                    {this.state.total_shares < 50 &&
+                    <Alert
+                        message={this.props.activeUser.name + " has not enough accumulated shares (" + this.state.total_shares + "/50)"}
+                        type="warning" showIcon/>
+                    }
                     <p> total shares: <b>{this.state.total_shares}</b></p>
                     <p> total shares (in Php): <b>Php {this.state.total_peso_value}</b></p>
 
