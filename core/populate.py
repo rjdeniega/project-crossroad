@@ -223,7 +223,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="M")
+                           route="M"
+                           )
         shuttle1.save()
         shuttle2 = Shuttle(shuttle_number="2",
                             plate_number="XLZ502",

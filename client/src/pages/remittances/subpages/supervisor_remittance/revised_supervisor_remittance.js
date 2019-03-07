@@ -5,6 +5,8 @@ import { PreDeployment } from './deployment phases/pre-deployment';
 import { DuringDeployment } from './deployment phases/during-deployment';
 import { PostDeployment } from './deployment phases/post-deployment';
 
+import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
+
 import './revised-style.css'
 
 export class SupervisorRemittance extends React.Component {
@@ -87,24 +89,26 @@ export class SupervisorRemittance extends React.Component {
     render() {
         return (
             <div className="page-container">
-                <Header />
-                <Row className="remittance-body" gutter={16}>
-                    <Col span={8}>
-                        <PreDeployment 
-                            plannedDrivers={this.state.plannedDrivers}
-                        />
-                    </Col>
-                    <Col span={8}>
-                        <DuringDeployment 
-                            deployedDrivers={this.state.deployedDrivers}
-                        />
-                    </Col>
-                    <Col span={8}>
-                        <PostDeployment 
-                            pendingDeployments={this.state.pendingDeployments}
-                        />
-                    </Col>
-                </Row>
+                <PerfectScrollbar>
+                    <Header />
+                    <Row className="remittance-body" gutter={16}>
+                        <Col span={8}>
+                            <PreDeployment 
+                                plannedDrivers={this.state.plannedDrivers}
+                            />
+                        </Col>
+                        <Col span={8}>
+                            <DuringDeployment 
+                                deployedDrivers={this.state.deployedDrivers}
+                            />
+                        </Col>
+                        <Col span={8}>
+                            <PostDeployment 
+                                pendingDeployments={this.state.pendingDeployments}
+                            />
+                        </Col>
+                    </Row>
+                </PerfectScrollbar>
             </div>
         );
     }
