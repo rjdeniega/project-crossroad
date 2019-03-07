@@ -187,6 +187,11 @@ class PopulateRemittances():
                     created=date
                 )
 
+                SubbedDeployments.objects.create(
+                    deployment=deployment,
+                    absent_driver=driver
+                )
+
                 deployment.status = 'F'
                 deployment.save()
 
