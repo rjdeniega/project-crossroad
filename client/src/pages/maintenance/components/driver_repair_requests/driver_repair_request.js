@@ -8,12 +8,11 @@ export class DriverRepairRequest extends Component {
     }
 
     componentDidMount() {
-        console.log(JSON.parse(localStorage.user));
         this.submitRepairRequest();
     }
 
     submitRepairRequest(){
-        getData('inventory/repair_request/driver/' + JSON.parse(localStorage.user.id)).then(data =>{
+        getData('inventory/repair_request/driver/' + JSON.parse(localStorage.user).id).then(data =>{
             console.log(data)
         })
     }
