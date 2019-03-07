@@ -139,7 +139,7 @@ function DeploymentListDetails(props) {
                         tickets={props.twelve_tickets}
                         total={props.twelve_total}
                     />
-                    {props.route == 'Main Road' &&
+                    {route_label == 'Main Road' &&
                         <TicketDisplay
                             amount="₱15"
                             tickets={props.fifteen_tickets}
