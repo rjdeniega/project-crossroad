@@ -154,6 +154,24 @@ class PopulateRemittances():
             # driver can be absent sometimes
             num = randint(1, 15)
             if num <= 14:
+
+                deployment = Deployment.objects.create(
+                    driver=driver.driver,
+                    shuttle=driver.shuttle,
+                    route=driver.shuttle.route,
+                    shift_iteration=shift_iteration,
+                    created=date
+                )
+
+                deployment.status = 'F'
+                deployment.save()
+
+                remittance = PopulateRemittances.submit_remittance(deployment, date)
+                remittance.confirm_remittance()
+            else:
+                #deploy supervisor as sub
+                supervisor = Driver.objects.get(id=driver.shift.supervisor_id)
+
                 if driver.shuttle.route == 'Main Road':
                     route = 'M'
                 elif driver.shuttle.route == 'Kaliwa':
@@ -162,7 +180,7 @@ class PopulateRemittances():
                     route = 'R'
 
                 deployment = Deployment.objects.create(
-                    driver=driver.driver,
+                    driver=supervisor,
                     shuttle=driver.shuttle,
                     route=route,
                     shift_iteration=shift_iteration,
@@ -311,6 +329,9 @@ class PopulateRemittances():
             end_ticket = start_ticket + number_of_passengers
         else:
             end_ticket = start_ticket + PopulateRemittances.get_enough_amount(assigned_ticket)
+            assigned_ticket.is_consumed = True
+            assigned_ticket.save()
+            
             # if all tickets are consumed, assign new tickets for driver
             PopulateRemittances.assign_tickets(
                 remittance_form.deployment.driver,

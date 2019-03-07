@@ -216,6 +216,7 @@ class PopulateDatabase():
     @staticmethod
     def populate_shuttle():
         shuttle1 = Shuttle(plate_number="WGV636",
+                           shuttle_number="1",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -224,7 +225,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="M")
         shuttle1.save()
-        shuttle2 = Shuttle(plate_number="XLZ502",
+        shuttle2 = Shuttle(shuttle_number="2",
+                            plate_number="XLZ502",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -233,7 +235,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="M")
         shuttle2.save()
-        shuttle3 = Shuttle(plate_number="UF7087",
+        shuttle3 = Shuttle(shuttle_number="3",
+                            plate_number="UF7087",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -242,7 +245,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="M")
         shuttle3.save()
-        shuttle4 = Shuttle(plate_number="AB5225",
+        shuttle4 = Shuttle(shuttle_number="4",
+                            plate_number="AB5225",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -251,7 +255,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="L")
         shuttle4.save()
-        shuttle5 = Shuttle(plate_number="UF6862",
+        shuttle5 = Shuttle(shuttle_number="5",
+                            plate_number="UF6862",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -260,7 +265,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="L")
         shuttle5.save()
-        shuttle6 = Shuttle(plate_number="VO5030",
+        shuttle6 = Shuttle(shuttle_number="6",
+                            plate_number="VO5030",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -269,7 +275,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="R")
         shuttle6.save()
-        shuttle7 = Shuttle(plate_number="WD5363",
+        shuttle7 = Shuttle(shuttle_number="7",
+                            plate_number="WD5363",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -278,7 +285,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="R")
         shuttle7.save()
-        shuttle8 = Shuttle(plate_number="YR8953",
+        shuttle8 = Shuttle(shuttle_number="8",
+                            plate_number="YR8953",
                            make="Toyota",
                            model="L300",
                            status="A",
@@ -287,7 +295,8 @@ class PopulateDatabase():
                            mileage=500,
                            route="B")
         shuttle8.save()
-        shuttle9 = Shuttle(plate_number="DS2110",
+        shuttle9 = Shuttle(shuttle_number="9",
+                            plate_number="DS2110",
                            make="Toyota",
                            model="L300",
                            status="A",

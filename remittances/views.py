@@ -440,7 +440,7 @@ class NonDeployedDrivers(APIView):
     def get(request, supervisor_id):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
         current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
-        shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
+        shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id, date=datetime.now().date()).first()
 
         query = DriversAssigned.objects.filter(shift=current_shift.id)
 
@@ -1405,7 +1405,7 @@ class TicketUtilities():
 
             if consumed_tickets is not None:
                 # check if all tickets in bundle are consumed
-                if ticket.range_to > consumed_tickets.end_ticket:
+                if ticket.range_to == consumed_tickets.end_ticket:
                     voids = []
                     number_of_voids = 0
                     for void_ticket in VoidTicket.objects.filter(assigned_ticket=ticket):
@@ -1455,8 +1455,8 @@ class TicketUtilities():
         for ticket in tickets:
             # remove consumed tickets
             # retrieve highest end ticket for the bundle
-            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id).order_by("-end_ticket").first()
-
+            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id, assigned_ticket__is_consumed=False).order_by("-end_ticket").first()
+            
             if consumed_tickets is not None:
                 # check if all tickets in bundle are consumed
                 if ticket.range_to > consumed_tickets.end_ticket:
@@ -1468,7 +1468,7 @@ class TicketUtilities():
 
                     # change range_from to a ticket that hasn't been consumed
                     range_from = consumed_tickets.end_ticket + 1
-
+                    print(ticket.range_to, consumed_tickets.end_ticket)
                     final.append({
                         "ticket_id": ticket.id,
                         "driver_id": ticket.driver.id,

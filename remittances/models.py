@@ -278,6 +278,8 @@ class ConsumedTicket(models.Model):
     end_ticket = IntegerField()
     total = DecimalField(default=0, null=True, max_digits=19, decimal_places=10)
 
+    def __str__(self):
+        return str(self.assigned_ticket.id) +" - Tickets: (" + str(self.assigned_ticket.range_from) + "-" + str(self.assigned_ticket.range_to) + ") Consumed: (" + str(self.start_ticket) + "-" + str(self.end_ticket) + ")"
 
 class BeepShift(models.Model):
     type = CharField(max_length=1, choices=SHIFT_TYPE)
