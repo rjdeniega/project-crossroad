@@ -382,10 +382,8 @@ class AssignedTicketHistoryPerSupervisor(APIView):
             })
             active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(),
                                                 end_date__gte=datetime.now().date())
-            current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
-            shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id).order_by("-date").first()
 
-            drivers = DriversAssigned.objects.filter(shift=current_shift.id)
+            drivers = DriversAssigned.objects.filter(shift__schedule=active_sched)
             drivers = [item.driver.pk for item in drivers]
 
             # get assigned drivers only
@@ -1455,7 +1453,7 @@ class TicketUtilities():
         for ticket in tickets:
             # remove consumed tickets
             # retrieve highest end ticket for the bundle
-            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id, assigned_ticket__is_consumed=False).order_by("-end_ticket").first()
+            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id).order_by("-end_ticket").first()
             
             if consumed_tickets is not None:
                 # check if all tickets in bundle are consumed

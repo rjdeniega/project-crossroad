@@ -30,6 +30,8 @@ import { ic_receipt } from 'react-icons-kit/md/ic_receipt'
 import { getData, postData } from "../../network_requests/general";
 import users from '../../images/default.png'
 
+import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
+
 const Option = Select.Option;
 
 
@@ -289,6 +291,7 @@ export class TicketsPage extends Component {
         return (
             <div className="body-wrapper">
                 <div className="tickets-page-wrapper">
+                    <PerfectScrollbar>
                     <div className="driver-remittance-header">
                         <div className="header-text">
                             <Icon className="page-icon" icon={ic_receipt} size={42}/>
@@ -303,7 +306,7 @@ export class TicketsPage extends Component {
                             {this.renderDriverList()}
                         </div>
                         <div className="tickets-panel">
-                            <Table bordered size="medium"
+                            <Table 
                                    className="tickets-table"
                                    columns={columns}
                                    dataSource={this.state.tickets}
@@ -312,6 +315,7 @@ export class TicketsPage extends Component {
                             />
                         </div>
                     </div>
+                    </PerfectScrollbar>
                 </div>
             </div>
         )

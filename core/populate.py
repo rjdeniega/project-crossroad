@@ -223,7 +223,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="M"
+                           route="M",
+                           dayoff_date="Monday"
                            )
         shuttle1.save()
         shuttle2 = Shuttle(shuttle_number="2",
@@ -234,7 +235,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="M")
+                           route="M",
+                           dayoff_date="Tuesday")
         shuttle2.save()
         shuttle3 = Shuttle(shuttle_number="3",
                             plate_number="UF7087",
@@ -244,7 +246,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="M")
+                           route="M",
+                           dayoff_date="Wednesday")
         shuttle3.save()
         shuttle4 = Shuttle(shuttle_number="4",
                             plate_number="AB5225",
@@ -254,7 +257,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="L")
+                           route="L",
+                           dayoff_date="Thursday")
         shuttle4.save()
         shuttle5 = Shuttle(shuttle_number="5",
                             plate_number="UF6862",
@@ -264,7 +268,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="L")
+                           route="L",
+                           dayoff_date="Friday")
         shuttle5.save()
         shuttle6 = Shuttle(shuttle_number="6",
                             plate_number="VO5030",
@@ -274,7 +279,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="R")
+                           route="R",
+                           dayoff_date="Saturday")
         shuttle6.save()
         shuttle7 = Shuttle(shuttle_number="7",
                             plate_number="WD5363",
@@ -284,7 +290,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="R")
+                           route="R",
+                           dayoff_date="Sunday")
         shuttle7.save()
         shuttle8 = Shuttle(shuttle_number="8",
                             plate_number="YR8953",
@@ -294,7 +301,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="B")
+                           route="B",
+                           dayoff_date="Back-up")
         shuttle8.save()
         shuttle9 = Shuttle(shuttle_number="9",
                             plate_number="DS2110",
@@ -304,7 +312,8 @@ class PopulateDatabase():
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
-                           route="B")
+                           route="B",
+                           dayoff_date="Back-up")
         shuttle9.save()
 
     @staticmethod

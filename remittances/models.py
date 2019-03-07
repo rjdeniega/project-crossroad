@@ -170,8 +170,8 @@ class Deployment(models.Model):
         if self.route is 'M':
             return 'Main Road'
         elif self.route is 'R':
-            return 'Kanan'
-        return 'Kaliwa'
+            return 'Right Route'
+        return 'Left Route'
 
     def save(self, *args, **kwargs):
         if not self.id:

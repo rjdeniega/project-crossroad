@@ -73,16 +73,19 @@ function DeploymentListDetails(props) {
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
 
-    if (props.route == 'Main Road'){
+    if (props.route == 'Main Road' || props.route == 'M'){
+        var route_label = 'Main Road'
         var tag_color = 'blue';
         if(props.ten_total >= 100 && props.twelve_total >= 100 && props.fifteen_total >= 100)
             var is_disabled =  false;
         else
             var is_disabled = true;
-    } else if (props.route == 'Kaliwa') {
+    } else if (props.route == 'Kaliwa' || props.route == 'L') {
+        var route_label = "Left Route"
         var tag_color = 'orange';
         var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
     } else {
+        var route_label = "Right Route"
         var tag_color = 'green';
         var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
     }
@@ -97,7 +100,7 @@ function DeploymentListDetails(props) {
                     {props.name}
                 </span>
                 <Tag color={tag_color} className="route-tag">
-                    {props.route}
+                    {route_label}
                 </Tag>
             </div>
 
@@ -136,7 +139,7 @@ function DeploymentListDetails(props) {
                         tickets={props.twelve_tickets}
                         total={props.twelve_total}
                     />
-                    {props.route == 'Main Road' &&
+                    {route_label == 'Main Road' &&
                         <TicketDisplay
                             amount="₱15"
                             tickets={props.fifteen_tickets}
