@@ -98,6 +98,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view the remittance per route comparison',
     'icon': money,
     'content': <PassengerPerRoute />
+},{
+    'title': 'Peak Hours',
+    'description': 'view peak hours for beep transactions',
+    'icon': money,
+    'content': <PassengerPerRoute />
 }];
 
 
