@@ -39,6 +39,8 @@ import {TicketStack} from './content/ticket_stack/ticket_stack'
 import {InventoryReport} from './content/inventory_report/inventory_report'
 import {ItemMovementReport} from './content/item_movement/inventory_movement'
 import { PassengerPerRoute } from './content/passenger_per_route/passenger_per_route';
+import { DriverPerformance } from './content/driver_performance/driver_performance';
+
 
 
 
@@ -79,6 +81,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <TicketPerDay/>
+},{
+    'title': 'Driver Remittance & Payables',
+    'description': 'view driver deployment information',
+    'icon': money,
+    'content': <DriverPerformance/>
 },{
     'title': 'Supervisor Report',
     'description': 'view beep and ticketing passenger count',

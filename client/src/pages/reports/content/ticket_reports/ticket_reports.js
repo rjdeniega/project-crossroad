@@ -228,7 +228,7 @@ class ComponentToPrint extends React.Component {
                             </tbody>
                         </table>
                         {/*second table*/}
-                        <p className="week-label"><b>Week 2</b></p>
+                        {/*<p className="week-label"><b>Week 2</b></p>*/}
                         {/*<table cellSpacing="50" cellPadding="3px">*/}
                         {/*{this.props.data &&*/}
                         {/*<thead>*/}

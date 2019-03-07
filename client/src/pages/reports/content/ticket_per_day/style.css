@@ -1,3 +1,11 @@
 .ticket-day-table td{
     text-align: right;
     }
+
+@media print {
+  table { page-break-after:auto!important }
+  tr    { page-break-inside:avoid!important; page-break-after:auto!important }
+  td    { page-break-inside:avoid!important; page-break-after:auto!important }
+  thead { display:table-header-group }
+  tfoot { display:table-footer-group }
+}

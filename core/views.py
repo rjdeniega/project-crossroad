@@ -883,11 +883,30 @@ class RemittanceVersusFuelReport(APIView):
             grand_fuel_total += total_fuel_for_day
 
             temp_start = temp_start + timedelta(days=1)
-
+            am_total = 0
+            am_count = 0
+            pm_total = 0
+            pm_count = 0
+            for item in rows:
+                for x in item['shifts']:
+                    if x['type'] == "AM":
+                        am_total += float(x['remittance_minus_fuel'])
+                        am_count += 1
+                    elif x['type'] == "PM":
+                        pm_total += float(x['remittance_minus_fuel'])
+                        pm_count += 1
+            # am_sum = sum([int(item) for item in rows['shifts'] if item['type'] == 'AM'])
+            # print(am_sum)
+            am_average = am_total / am_count
+            pm_average = pm_total / pm_count
         return Response(data={
             "start_date": start_date.date(),
             "end_date": end_date.date(),
             "grand_remit_total": "{0:,.2f}".format(grand_total),
+            "grand_am_total": "{0:,.2f}".format(am_total),
+            "grand_pm_total": "{0:,.2f}".format(pm_total),
+            "am_average": "{0:,.2f}".format(am_average),
+            "pm_average": "{0:,.2f}".format(pm_average),
             "grand_fuel_total": "{0:,.2f}".format(grand_fuel_total),
             "grand_remit_minus_fuel": "{0:,.2f}".format(grand_total - grand_fuel_total),
             "rows": rows
@@ -934,11 +953,11 @@ class BeepTickets(APIView):
                     total_per_day = total_remittance
 
                 try:
-                    beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)
+                    beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)[0]
                     # beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
                 except ObjectDoesNotExist:
                     beep_shift = []
-                beep_total = sum([item.total for item in BeepTransaction.objects.all() if item.shift == beep_shift])
+                beep_total = sum([item.total for item in BeepTransaction.objects.filter(shift=beep_shift)])
                 shifts.append({
                     "type": shift.shift.get_type_display(),
                     "beep_total": "{0:,.2f}".format(beep_total),
@@ -1291,6 +1310,24 @@ class TicketTypePerDayReport(APIView):
             twelve_total = sum([item['am_twelve'] for item in shuttles]) + sum([item['pm_twelve'] for item in shuttles])
             fifteen_total = sum([item['am_fifteen'] for item in shuttles]) + sum(
                 [item['pm_fifteen'] for item in shuttles])
+            mr_total = sum([item['am_twelve'] for item in shuttles if item['shuttle_route'] == "Main Road"]) + sum(
+                [item['pm_twelve'] for item in shuttles if item['shuttle_route'] == "Main Road"]) + sum(
+                [item['am_fifteen'] for item in shuttles if item['shuttle_route'] == "Main Road"]) + sum(
+                [item['pm_fifteen'] for item in shuttles if item['shuttle_route'] == "Main Road"]) + sum(
+                [item['am_ten'] for item in shuttles if item['shuttle_route'] == "Main Road"]) + sum(
+                [item['pm_ten'] for item in shuttles if item['shuttle_route'] == "Main Road"])
+            kaliwa_total = sum([item['am_twelve'] for item in shuttles if item['shuttle_route'] == "Kaliwa"]) + sum(
+                [item['pm_twelve'] for item in shuttles if item['shuttle_route'] == "Kaliwa"]) + sum(
+                [item['am_fifteen'] for item in shuttles if item['shuttle_route'] == "Kaliwa"]) + sum(
+                [item['pm_fifteen'] for item in shuttles if item['shuttle_route'] == "Kaliwa"]) + sum(
+                [item['am_ten'] for item in shuttles if item['shuttle_route'] == "Kaliwa"]) + sum(
+                [item['pm_ten'] for item in shuttles if item['shuttle_route'] == "Kaliwa"])
+            kanan_total = sum([item['am_twelve'] for item in shuttles if item['shuttle_route'] == "Kanan"]) + sum(
+                [item['pm_twelve'] for item in shuttles if item['shuttle_route'] == "Kanan"]) + sum(
+                [item['am_fifteen'] for item in shuttles if item['shuttle_route'] == "Kanan"]) + sum(
+                [item['pm_fifteen'] for item in shuttles if item['shuttle_route'] == "Kanan"]) + sum(
+                [item['am_ten'] for item in shuttles if item['shuttle_route'] == "Kanan"]) + sum(
+                [item['pm_ten'] for item in shuttles if item['shuttle_route'] == "Kanan"])
 
             days.append({
                 "date": temp_start.date(),
@@ -1298,7 +1335,10 @@ class TicketTypePerDayReport(APIView):
                 "ten_total": ten_total,
                 "twelve_total": twelve_total,
                 "fifteen_total": fifteen_total,
-                "day_total": ten_total + twelve_total + fifteen_total
+                "day_total": ten_total + twelve_total + fifteen_total,
+                "mr_total": mr_total,
+                "kanan_total": kanan_total,
+                "kaliwa_total": kaliwa_total,
             })
 
             # grand_am_total += am_count
@@ -1784,8 +1824,8 @@ class ShuttleCostVRevenueReport(APIView):
         return Response(data={
             "shuttle_maintenance_costs": [(item['cost'] + item['fuel_cost']) for item in rows],
             "shuttle_revenues": [item['revenue'] for item in rows],
-            "start_date": start_date,
-            "end_date": end_date,
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
             "total_remittance": total_remittance,
             "total_costs": total_cost,
             "total_fuel": total_fuel,
@@ -1929,18 +1969,18 @@ class NotificationItems(APIView):
         return notification
 
     @staticmethod
-    def get_member_notifs(user_id):
-        member_id = user_id
+    def get_member_notifs(user):
+        member_id = user['id']
         shares = Share.objects.filter(member=Member.objects.get(pk=member_id))
         serialized_shares = ShareSerializer(shares, many=True)
 
         total_shares = sum([float(item["value"]) for item in serialized_shares.data])
-        notification = Notification.objects.filter(user__id=user_id,
+        notification = Notification.objects.filter(user__id=user['id'],
                                                    description="You do not have enough accumulated shares")
 
         if total_shares < 50 and len(notification) == 0:
             notification = Notification.objects.create(
-                user=User.objects.get(pk=user_id),
+                user=User.objects.get(pk=user['id']),
                 type='M',
                 description='You do not have enough accumulated shares'
             )
@@ -2062,8 +2102,10 @@ class PeakHourReport(APIView):
         twentytwo = 0
         twentythree = 0
         twentyfour = 0
-        print(BeepTransaction.objects.filter(shuttle__route=route,transaction_date_time__gte=start_date,transaction_date_time__lte=end_date))
-        for transaction in BeepTransaction.objects.filter(shuttle__route=route,transaction_date_time__gte=start_date,transaction_date_time__lte=end_date):
+        print(BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                             transaction_date_time__lte=end_date))
+        for transaction in BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                                          transaction_date_time__lte=end_date):
             if transaction.transaction_date_time.hour == 1:
                 one += 1
             elif transaction.transaction_date_time.hour == 2:
@@ -2133,17 +2175,17 @@ class PeakHourReport(APIView):
         week1_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', start_date, end_date)
         week1_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', start_date, end_date)
 
-        week2_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road',week2,week2_end)
-        week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa',week2,week2_end)
-        week2_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan',week2,week2_end)
+        week2_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', week2, week2_end)
+        week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', week2, week2_end)
+        week2_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', week2, week2_end)
 
-        week3_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road',week3,week3_end)
-        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa',week3,week3_end)
-        week3_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan',week3,week3_end)
+        week3_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', week3, week3_end)
+        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', week3, week3_end)
+        week3_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', week3, week3_end)
 
-        week4_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road',week4,week4_end)
-        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa',week4,week4_end)
-        week4_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan',week4,week4_end)
+        week4_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', week4, week4_end)
+        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', week4, week4_end)
+        week4_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', week4, week4_end)
 
         return Response(data={
             "week1_main_road_values": week1_main_road_values,
@@ -2160,4 +2202,42 @@ class PeakHourReport(APIView):
             "week4_kanan_values": week4_kanan_values,
             "start_date": start_date.date(),
             "end_date": week4_end.date(),
+        }, status=status.HTTP_200_OK)
+
+#
+# class RemittancePerMonth(APIView):
+#     @staticmethod
+#     def get(request):
+#         pass
+
+
+class DriverPerformance(APIView):
+    @staticmethod
+    def post(request):
+        print("enters here")
+        start_date = datetime.strptime(request.data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date + timedelta(days=6)
+
+        data = []
+
+        temp_date = start_date
+        while start_date < end_date:
+            for driver in Driver.objects.filter(is_supervisor=False):
+                remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
+                                                           created__lte=end_date)
+                total = sum([item.total for item in remittances])
+                payables = sum([item.discrepancy for item in remittances])
+                data.append({
+                    "driver": DriverSerializer(driver).data,
+                    "remittance": total,
+                    "payables": payables,
+                })
+
+            temp_date += timedelta(days=1)
+
+        return Response(data={
+            "data":data
         }, status=status.HTTP_200_OK)

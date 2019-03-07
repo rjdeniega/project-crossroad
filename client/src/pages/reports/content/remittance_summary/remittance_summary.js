@@ -48,7 +48,7 @@ class ComponentToPrint extends React.Component {
                         <tbody>
                         {this.props.data &&
                         <Fragment>
-                            {this.props.data.rows.map((item,index) => (
+                            {this.props.data.rows.map((item, index) => (
                                 <Fragment>
                                     <tr>
                                         <td>{item.date}</td>
@@ -69,7 +69,7 @@ class ComponentToPrint extends React.Component {
                                                 <td><b>{item.remittance_minus_fuel}</b></td>
                                             </tr>
                                             {/*{index%11 == 0 &&*/}
-                                                {/*<p className="page-break"></p>*/}
+                                            {/*<p className="page-break"></p>*/}
                                             {/*}*/}
 
                                         </Fragment>
@@ -77,21 +77,68 @@ class ComponentToPrint extends React.Component {
                                 </Fragment>
                             ))}
                             <tr>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
-                                <td><div>&nbsp;</div></td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
+                                <td>
+                                    <div>&nbsp;</div>
+                                </td>
                             </tr>
                             <tr>
-                                
-                                <td><b> Grand Total </b></td>
+
+                                <td><b> AM Total </b></td>
                                 <td className="total-line"></td>
-                                <td className="total-line"><b>{this.props.data.grand_remit_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_remit_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_fuel_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_remit_minus_fuel}</b></td>
+                                <td className="total-line"></td>
+                                <td className="total-line"></td>
+                                <td className="total-line"></td>
+                                <td className="total-line"><b>{this.props.data.grand_am_total}</b></td>
+                            </tr>
+                            <tr>
+
+                                <td><b> PM Total </b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><b>{this.props.data.grand_pm_total}</b></td>
+                            </tr>
+                            <tr>
+
+                                <td><b> Grand Total </b></td>
+                                <td></td>
+                                <td><b>{this.props.data.grand_remit_total}</b></td>
+                                <td><b>{this.props.data.grand_remit_total}</b></td>
+                                <td><b>{this.props.data.grand_fuel_total}</b></td>
+                                <td><b>{this.props.data.grand_remit_minus_fuel}</b></td>
+                            </tr>
+                            <tr>
+
+                                <td><b> AM Average</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><b>{this.props.data.am_average}</b></td>
+                            </tr>
+                            <tr>
+                                <td><b> PM Average</b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><b>{this.props.data.pm_average}</b></td>
                             </tr>
                         </Fragment>
                         }
