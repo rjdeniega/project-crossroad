@@ -1453,7 +1453,7 @@ class TicketUtilities():
         for ticket in tickets:
             # remove consumed tickets
             # retrieve highest end ticket for the bundle
-            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id, assigned_ticket__is_consumed=False).order_by("-end_ticket").first()
+            consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id).order_by("-end_ticket").first()
             
             if consumed_tickets is not None:
                 # check if all tickets in bundle are consumed
