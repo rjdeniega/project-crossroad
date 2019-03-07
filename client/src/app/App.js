@@ -12,6 +12,8 @@ import { ReportsPage } from "../pages/reports/reports";
 import { TicketsPage } from "../pages/tickets/tickets";
 import { ProfilePage } from "../pages/profile/profile";
 import { HistoryPage } from "../pages/driver_history/driver_history";
+import { OMDeployment } from "../pages/om_deployment/om_deployment";
+
 
 import {
     BrowserRouter,
@@ -192,6 +194,7 @@ export default class App extends Component {
                     <Route path="/tickets" render={() => <TicketsPage />}/>
                     <Route path="/profile" render={() => <ProfilePage />}/>
                     <Route path="/history" render={() => <HistoryPage />}/>
+                    <Route path="/om_deployment" render={() => <OMDeployment />}/>
 
 
                 </Switch>

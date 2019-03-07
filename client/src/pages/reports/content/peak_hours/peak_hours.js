@@ -37,7 +37,10 @@ class ComponentToPrint extends React.Component {
     renderChart = () => {
         console.log(this.props.data);
         const data = {
-            labels: this.props.data.days,
+            labels: ["12AM","1AM","2AM","3AM","4AM","5AM","6AM","7AM","8AM","9AM",
+                "10AM","11AM","12PM","1PM","2PM","3PM","4PM","5PM","6PM","7PM","8PM","9PM",
+                "10PM","11PM"
+            ],
             datasets: [
                 {
                     label: "",
@@ -65,7 +68,7 @@ class ComponentToPrint extends React.Component {
         return <Line data={data} options={{
             title: {
                 display: true,
-                text: "Remittance Trend for " + this.props.data.days[0] + " to " + this.props.data.days[29]
+                text: "Peak Hours for Beep Transactions "
             }}}/>
 
     };
@@ -96,14 +99,15 @@ export class PeakHours extends Component {
     state = {};
 
     componentDidMount() {
+        this.fetchTransactions()
     }
 
     fetchTransactions() {
-        let data = {
-            "start_date": this.state.start_date,
-            "end_date": this.state.end_date,
-        };
-        postData('/remittance_for_the_month/', data).then(data => {
+        // let data = {
+        //     "start_date": this.state.start_date,
+        //     "end_date": this.state.end_date,
+        // };
+        getData('/peak_hours/').then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({

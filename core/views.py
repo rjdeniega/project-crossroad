@@ -1,6 +1,6 @@
 import calendar
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 import rest_framework
 from django.contrib.auth import authenticate, login
@@ -1880,6 +1880,7 @@ class NotificationItems(APIView):
                 '-created'), many=True)
         elif user_type == 'clerk':
             NotificationItems.get_om_notifs(user)
+            NotificationItems.get_clerk_notifs(user)
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -1899,6 +1900,22 @@ class NotificationItems(APIView):
             'notifications': notifications.data,
             'unread': unread.data,
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def is_time_between(begin_time, end_time, check_time=None):
+        # If check time is not given, default to current UTC time
+        check_time = check_time or datetime.utcnow().time()
+        if begin_time < end_time:
+            return check_time >= begin_time and check_time <= end_time
+        else:  # crosses midnight
+            return check_time >= begin_time or check_time <= end_time
+
+    @staticmethod
+    def get_clerk_notifs(user):
+        member_id = user['id']
+        is_in_between = NotificationItems.is_time_between(time(15,30),time(16,30))
+        print(is_in_between)
+
 
     @staticmethod
     def get_member_notifs(user):
@@ -1974,11 +1991,20 @@ class PassengerPerRoute(APIView):
 
     @staticmethod
     def getPassengersFromDate(route, date):
+        print(date)
+        print(route)
+        if route == 'M':
+            route = 'Main Road'
+        if route == 'L':
+            route = 'Kaliwa'
+        if route == 'R':
+            route = 'Kanan'
         remittances = RemittanceForm.objects.filter(
             deployment__shift_iteration__date=date,
             deployment__route=route
         )
 
+        print(remittances)
         amount = 0
         for remittance in remittances:
             consumed_tickets = ConsumedTicket.objects.filter(remittance_form=remittance)
@@ -1998,8 +2024,91 @@ class PassengerPerRoute(APIView):
 
 class PeakHourReport(APIView):
     @staticmethod
+    def execute(value, hour):
+        for i in range(1, 25):
+            if hour == i:
+                return value + 1
+        return value
+
+    @staticmethod
     def get(request):
-        transactions = BeepTransaction.objects.all()
+        one = 0
+        two = 0
+        three = 0
+        four = 0
+        five = 0
+        six = 0
+        seven = 0
+        eight = 0
+        nine = 0
+        ten = 0
+        eleven = 0
+        twelve = 0
+        thirteen = 0
+        fourteen = 0
+        fifteen = 0
+        sixteen = 0
+        seventeen = 0
+        eighteen = 0
+        nineteen = 0
+        twenty = 0
+        twentyone = 0
+        twentytwo = 0
+        twentythree = 0
+        twentyfour = 0
 
+        for transaction in BeepTransaction.objects.all():
+            if transaction.transaction_date_time.hour == 1:
+                one += 1
+            elif transaction.transaction_date_time.hour == 2:
+                two += 1
+            elif transaction.transaction_date_time.hour == 3:
+                three += 1
+            elif transaction.transaction_date_time.hour == 4:
+                four += 1
+            elif transaction.transaction_date_time.hour == 5:
+                five += 1
+            elif transaction.transaction_date_time.hour == 6:
+                six += 1
+            elif transaction.transaction_date_time.hour == 7:
+                seven += 1
+            elif transaction.transaction_date_time.hour == 8:
+                eight += 1
+            elif transaction.transaction_date_time.hour == 9:
+                nine += 1
+            elif transaction.transaction_date_time.hour == 10:
+                ten += 1
+            elif transaction.transaction_date_time.hour == 11:
+                eleven += 1
+            elif transaction.transaction_date_time.hour == 12:
+                twelve += 1
+            elif transaction.transaction_date_time.hour == 13:
+                thirteen += 1
+            elif transaction.transaction_date_time.hour == 14:
+                fourteen += 1
+            elif transaction.transaction_date_time.hour == 15:
+                fifteen += 1
+            elif transaction.transaction_date_time.hour == 16:
+                sixteen += 1
+            elif transaction.transaction_date_time.hour == 17:
+                seventeen += 1
+            elif transaction.transaction_date_time.hour == 18:
+                eighteen += 1
+            elif transaction.transaction_date_time.hour == 19:
+                nineteen += 1
+            elif transaction.transaction_date_time.hour == 20:
+                twenty += 1
+            elif transaction.transaction_date_time.hour == 21:
+                twentyone += 1
+            elif transaction.transaction_date_time.hour == 22:
+                twentytwo += 1
+            elif transaction.transaction_date_time.hour == 23:
+                twentythree += 1
+            elif transaction.transaction_date_time.hour == 24:
+                twentyfour += 1
 
-        pass
+        return Response(data={
+            "values": [one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen,
+                       fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twentyone,
+                       twentytwo, twentythree, twentyfour]
+        }, status=status.HTTP_200_OK)
