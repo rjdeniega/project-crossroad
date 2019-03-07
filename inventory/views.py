@@ -6,7 +6,6 @@ from rest_framework import status
 # Create your views here.
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from inventory.serializers import *
 from remittances.models import *
 from members.serializers import *
@@ -799,8 +798,11 @@ class UpdateRepairStatus(APIView):
         data = json.loads(request.body)
         repair = Repair.objects.get(id=pk)
         repair.status = data['status']
+        if data['type'] == "Minor":
+            repair.schedule = datetime.strptime(data['schedule'], '%Y-%m-%d').date()
+            
         repair.save()
         repair = RepairSerializer(repair)
         return Response(data={
-            'repair': repair
+            'repair': repair.data
         }, status=status.HTTP_200_OK)

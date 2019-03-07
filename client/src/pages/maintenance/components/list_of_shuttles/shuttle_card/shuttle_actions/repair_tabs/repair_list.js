@@ -4,6 +4,7 @@ import {Table, Divider, Button, Row, Col} from 'antd'
 import {ic_pageview} from 'react-icons-kit/md/ic_pageview'
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_done} from 'react-icons-kit/md/ic_done'
+import {ic_date_range} from 'react-icons-kit/md/ic_date_range'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
 import {RepairDisplay} from './display_repair'
 import {getData} from '../../../../../../../network_requests/general'
@@ -47,7 +48,25 @@ export class RepairsTable extends Component{
                                     style={{color: '#E9C46A', verticalAlign: 'middle'}}/>
                                     &ensp;In Progress</span>
                     )
-                } else {
+                } else if (record === 'FO'){
+                    return(
+                        <span><Icon icon={ic_loop} size={24}
+                                    style={{color: '#E9C46A', verticalAlign: 'middle'}}/>
+                                    &ensp;For Outsource</span>
+                    )
+                } else if (record === 'FI'){
+                    return(
+                        <span><Icon icon={ic_pageview} size={24}
+                                    style={{color: '#E9C46A', verticalAlign: 'middle'}}/>
+                                    &ensp;For Investigation</span>
+                    )
+                } else if (record === 'SR'){
+                    return(
+                        <span><Icon icon={ic_date_range} size={24}
+                                    style={{color: '#E9C46A', verticalAlign: 'middle'}}/>
+                                    &ensp; Scheduled Repair</span>
+                    )
+                }  else {
                     return(
                         <span> <Icon icon={ic_done}
                                      size={24}

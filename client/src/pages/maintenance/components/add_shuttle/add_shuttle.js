@@ -39,6 +39,9 @@ class AddShuttleFormInit extends React.Component {
             mileage: this.props.mileage.value,
             route: this.props.route.value,
             dayoff_date: this.props.dayoff_date.value,
+            purchase_price: this.props.purchase_price.value,
+            lifespan: this.props.lifespan.value,
+            salvage_value: this.props.salvage_value.value
         };
 
         console.log(shuttle);
@@ -61,6 +64,9 @@ class AddShuttleFormInit extends React.Component {
         const plateNumberError = isFieldTouched('plate_number') && getFieldError('plate_number');
         const makeError = isFieldTouched('make') && getFieldError('make');
         const modelError = isFieldTouched('model') && getFieldError('model');
+        const purchasePrice = isFieldTouched('purchase_price') && getFieldError('purchase_price');
+        const salvageValue = isFieldTouched('salvage_value') && getFieldError('salvage_value');
+        const lifespan = isFieldTouched('lifespan') && getFieldError('lifespan');
         const mileageError = isFieldTouched('mileage') && getFieldError('mileage');
         const dateAcquiredError = isFieldTouched('date_acquired') && getFieldError('date_acquired');
 
@@ -138,12 +144,39 @@ class AddShuttleFormInit extends React.Component {
                             }],
                         })(<Input className='mileage' type='number' placeholder='Mileage' />)}
                     </FormItem>
+                    <FormItem label='Purchase Price' validateStatus={purchasePrice ? 'error' : ''}
+                        help={purchasePrice || ''} {...formItemLayout}>
+                        {getFieldDecorator('purchase_price', {
+                            rules: [{
+                                required: true,
+                                message: 'Purchase Price is required!'
+                            }],
+                        })(<Input className='purchase_price' type='number' placeholder='Purchase Price' />)}
+                    </FormItem>
+                    <FormItem label='Salvage Value' validateStatus={salvageValue ? 'error' : ''}
+                        help={salvageValue || ''} {...formItemLayout}>
+                        {getFieldDecorator('salvage_value', {
+                            rules: [{
+                                required: true,
+                                message: 'Salvage Value is required!'
+                            }],
+                        })(<Input className='salvage_value' type='number' placeholder='Salvage Value' />)}
+                    </FormItem>
+                    <FormItem label='Lifespan' validateStatus={lifespan ? 'error' : ''}
+                        help={purchasePrice || ''} {...formItemLayout}>
+                        {getFieldDecorator('lifespan', {
+                            rules: [{
+                                required: true,
+                                message: 'Lifespan is required!'
+                            }],
+                        })(<Input className='lifespan' type='number' placeholder='Lifespan' />)}
+                    </FormItem>
                     <FormItem label='Route' {...formItemLayout}>
-                        {getFieldDecorator('route')(<Select className="route" defaultValue="Main Road">
-                            <Select.Option value="Main Road" selected>Main Road</Select.Option>
-                            <Select.Option value="Kaliwa">Kaliwa</Select.Option>
-                            <Select.Option value="Kanan">Kanan</Select.Option>
-                            <Select.Option value="Back-up">Back-up</Select.Option>
+                        {getFieldDecorator('route')(<Select className="route" defaultValue="M">
+                            <Select.Option value="M" selected>Main Road</Select.Option>
+                            <Select.Option value="L">Left Route</Select.Option>
+                            <Select.Option value="R">Right Route</Select.Option>
+                            <Select.Option value="B">Back-up</Select.Option>
                         </Select>)}
                     </FormItem>
                     <FormItem label='Day-off Date' {...dayOffDateLayout}>
@@ -210,6 +243,18 @@ const AddShuttleForm = Form.create({
                 ...props.mileage,
                 value: props.mileage.value,
             }),
+            purchase_price: Form.createFormField({
+                ...props.purchase_price,
+                value: props.purchase_price.value,
+            }),
+            lifespan: Form.createFormField({
+                ...props.lifespan,
+                value: props.lifespan.value,
+            }),
+            salvage_value: Form.createFormField({
+                ...props.salvage_value,
+                value: props.salvage_value.value,
+            }),
             route: Form.createFormField({
                 ...props.route,
                 value: props.route.value,
@@ -244,6 +289,15 @@ class FinalForm extends Component {
                 value: ''
             },
             mileage: {
+                value: ''
+            },
+            purchase_price: {
+                value: ''
+            },
+            salvage_value: {
+                value: ''
+            },
+            lifespan: {
                 value: ''
             },
             route: {
