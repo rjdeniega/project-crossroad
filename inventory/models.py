@@ -26,10 +26,11 @@ SHUTTLE_STATUS = [
 ]
 
 REPAIR_STATUS = [
-    ('NS', 'Not Started'),
-    ('FI', 'For Investigation'),
-    ('IP', 'In Progress'),
-    ('C', 'Completed')
+    ('NS', 'Not Started'),  # Operations Manager (Determine what kind of repair)
+    ('FI', 'For Investigation'),  # Mechanic (Add findings)
+    ('IP', 'In Progress'),  # Mechanic (Start repairs)
+    ('C', 'Completed'),  # Operations manager
+    ('FO', 'For Outsource'),  # Mechanic (Add outsourced costs )
 ]
 ROUTE = [
     ('M', 'Main Road'),
@@ -177,6 +178,8 @@ class Repair(SoftDeletionModel):
     vendor = CharField(max_length=64, null=True)
     start_date = DateField(null=True)
     end_date = DateField(null=True)
+    degree = CharField(max_length=64, null=True)
+    schedule = DateField(null=True)
     status = CharField(max_length=2, choices=REPAIR_STATUS)
     labor_fee = DecimalField(max_digits=10, decimal_places=2, null=True)
     problems = ManyToManyField(RepairProblem)

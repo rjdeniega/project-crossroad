@@ -65,7 +65,7 @@ export class RepairDisplay extends Component{
                                   })}
                             </List>
                             <br/>
-                            {findings.length == 0 ? '' :
+                            {findings.length === 0 ? '' :
                                 (
                                     <List size='small' header={<h3>Findings</h3>}
                                           bordered>
@@ -76,7 +76,7 @@ export class RepairDisplay extends Component{
                                     </List>
                             )}
                             <br/>
-                            {modifications.length == 0 ? '' :
+                            {modifications.length === 0 ? '' :
                                 (
                                     <List size='small' header={<h3>Items Used</h3>}
                                           bordered>
@@ -104,6 +104,8 @@ export class RepairDisplay extends Component{
                                         })}
                                 </List>
                             )}
+                            <br/>
+                            {}
                         </PerfectScrollbar>
                     </div>
                 )}

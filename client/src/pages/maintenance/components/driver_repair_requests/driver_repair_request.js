@@ -81,9 +81,17 @@ export class DriverRepairRequest extends Component {
                                   <List.Item.Meta
                                       title={<span>
                                           <Typography.Text strong>
-                                              Shuttle no. {item.shuttle}{item.date_requested}
+                                              Shuttle no. {item.shuttle} - {item.date_requested}
                                           </Typography.Text>
-                                          <Tag>{item.status}</Tag>
+                                          <br/>
+                                          <Tag color={item.status === "FI" ? "blue" :
+                                                      item.status === "C" ? "green" :
+                                                      item.status === "IP" && "yellow"}
+                                          >{item.status === "FI" ? "For Investigation":
+                                                item.status === "C" ? "Complete":
+                                                item.status === "IP" ? "In Progress":
+                                                item.status === "NS" ? "Not Started":
+                                                item.status === "FO" && "For Outsource"}</Tag>
                                       </span>}
                                       description={item.findings}
                                   />
