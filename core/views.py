@@ -1844,6 +1844,7 @@ class NotificationItems(APIView):
         user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
         Notification.objects.all().hard_delete()
         notifications = []
+        unread = []
         print(user_type)
         if user_type == 'member':
             NotificationItems.get_member_notifs(user)

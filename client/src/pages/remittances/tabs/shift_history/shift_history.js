@@ -57,9 +57,6 @@ export class ShiftHistoryPane extends Component {
     };
 
     componentDidMount() {
-        if (this.state.activeShift === null) {
-            this.openNotification()
-        }
         this.fetchDrivers();
         this.fetchSupervisors();
         this.fetchShuttles();
