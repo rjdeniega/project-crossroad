@@ -519,6 +519,13 @@ class SubButton extends React.Component {
             'modal_is_visible': false,
             'driver_id': this.props.driver_id,
             'sub_driver_id': null,
+            'is_disabled': true,
+            'ten_peso_tickets': [],
+            'twelve_peso_tickets': [],
+            'fifteen_peso_tickets': [],
+            'ten_total': 0,
+            'twelve_total': 0,
+            'fifteen_total': 0
         }
 
         this.handleSubDriverChange = this.handleSubDriverChange.bind(this);
@@ -546,8 +553,49 @@ class SubButton extends React.Component {
 
     handleSubDriverChange(sub_driver_id) {
         this.setState({
-            'sub_driver_id': sub_driver_id
+            'sub_driver_id': sub_driver_id,
         });
+        this.fetchSubDriverTickets(sub_driver_id);
+    }
+
+    fetchSubDriverTickets(sub_driver_id) {
+        console.log('entered here', sub_driver_id)
+        fetch('/remittances/tickets/driver/' + sub_driver_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    if (this.props.route == 'Main Road'){
+                        console.log(this.state.ten_total)
+                        if (data.ten_total >= 100 && data.twelve_total >= 100 && data.fifteen_total >= 100)
+                            var is_disabled = false
+                        else
+                            var is_disabled = true
+                    } else {
+                        if (data.ten_total >= 100 && data.twelve_total >= 100)
+                            var is_disabled = false
+                        else
+                            var is_disabled = true
+                    }
+
+                    this.setState({
+                        ten_total: data.ten_total,
+                        ten_peso_tickets: data.ten_peso_tickets,
+                        twelve_total: data.twelve_total,
+                        twelve_peso_tickets: data.twelve_peso_tickets,
+                        fifteen_total: data.fifteen_total,
+                        fifteen_peso_tickets: data.fifteen_peso_tickets,
+                        is_disabled: is_disabled
+                    });
+
+                    console.log(this.state.ten_total)
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
     }
 
     handleDeploy() {
@@ -579,6 +627,9 @@ class SubButton extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     okText="Deploy"
+                    okButtonProps={this.state.is_disabled ?
+                        { disabled: true } : { disabled: false }
+                    }
                 >
                     <SubContent
                         onSelectChange={this.handleSubDriverChange}
@@ -586,6 +637,12 @@ class SubButton extends React.Component {
                         shuttle={this.props.shuttle}
                         driver_name={this.props.driver_name}
                         route={this.props.route}
+                        ten_total={this.state.ten_total}
+                        twelve_total={this.state.twelve_total}
+                        fifteen_total={this.state.fifteen_total}
+                        ten_peso_tickets={this.state.ten_peso_tickets}
+                        twelve_peso_tickets={this.state.twelve_peso_tickets}
+                        fifteen_peso_tickets={this.state.fifteen_peso_tickets}
                     />
                 </Modal>
             </div>
@@ -599,12 +656,6 @@ class SubContent extends React.Component {
         this.state = {
             'supervisor_id': this.props.supervisor_id,
             'subDrivers': [],
-            'ten_peso_tickets': [],
-            'twelve_peso_tickets': [],
-            'fifteen_peso_tickets': [],
-            'ten_total': 0,
-            'twelve_total': 0,
-            'fifteen_total': 0
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -633,8 +684,7 @@ class SubContent extends React.Component {
     }
 
     handleChange(value) {
-        this.props.onSelectChange(value);
-        this.fetchSubDriverTickets(value);
+        this.props.onSelectChange(value);  
     }
 
     fetchSubDriverTickets(sub_driver_id) {
@@ -699,19 +749,19 @@ class SubContent extends React.Component {
                     <div className="ticket-tags-container">
                         <TicketDisplay
                             amount="₱10"
-                            tickets={this.state.ten_peso_tickets}
-                            total={this.state.ten_total}
+                            tickets={this.props.ten_peso_tickets}
+                            total={this.props.ten_total}
                         />
                         <TicketDisplay
                             amount="₱12"
-                            tickets={this.state.twelve_peso_tickets}
-                            total={this.state.twelve_total}
+                            tickets={this.props.twelve_peso_tickets}
+                            total={this.props.twelve_total}
                         />
                         {this.props.route == 'Main Road' &&
                             <TicketDisplay
                                 amount="₱15"
-                                tickets={this.state.fifteen_peso_tickets}
-                                total={this.state.fifteen_total}
+                                tickets={this.props.fifteen_peso_tickets}
+                                total={this.props.fifteen_total}
                             />
                         }
                     </div>
