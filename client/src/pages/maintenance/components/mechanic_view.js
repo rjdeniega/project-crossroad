@@ -304,7 +304,7 @@ export class MechanicView extends Component{
             case 2:
                 return (
                     <div>
-                        {findings.length == 0 ? '' :
+                        {findings.length === 0 ? '' :
                             (
                                 <List size='small'
                                       bordered>
@@ -329,7 +329,7 @@ export class MechanicView extends Component{
             default:
                 return (
                     <div>
-                        {modifications.length == 0 ? '' :
+                        {modifications.length === 0 ? '' :
                             (
                                 <List size='small'
                                       bordered>
@@ -347,7 +347,7 @@ export class MechanicView extends Component{
                                 </List>
                         )}
                         <br/>
-                        <Button type='dashed' onClick={() => this.setItemsVisible(true)} hidden={loadedRepair.status === 'IP' ? 'true':''}
+                        <Button type='dashed' onClick={() => this.setItemsVisible(true)}
                             style={{width: '100%'}}>Add Item</Button>
                         <Modal
                             title='Add Items' width={450}
@@ -445,8 +445,12 @@ export class MechanicView extends Component{
                                             <Button type='primary' htmlType="button" onClick={() => this.forwardToOperations(loadedRepair.id)}>
                                                 Forward to Operation Manager
                                             </Button>
-                                        ): loadedRepair.status === 'NS' && (
+                                        ): loadedRepair.status === 'NS' ? (
                                             <Tag color="green">Forwarded to Operations manager</Tag>
+                                        ): loadedRepair.status === 'SR' && (
+                                            <div>
+                                                <Tag color='blue'> Schedule: {loadedRepair.schedule}</Tag>
+                                            </div>
                                         )}
                                         <Menu onClick={this.handleClick} selectedKeys={[this.state.currentTab]}
                                               mode='horizontal'>
@@ -456,10 +460,14 @@ export class MechanicView extends Component{
                                              <Menu.Item key={2}>
                                                  Findings
                                              </Menu.Item>
-                                            {loadedRepair.status === "IP" && (
+                                            {loadedRepair.status === "IP" ? (
                                              <Menu.Item key={3}>
                                                  Items Used
                                              </Menu.Item>
+                                            ):  loadedRepair.status === 'SR' && (
+                                                <Menu.Item key={3}>
+                                                    Items Used
+                                                </Menu.Item>
                                             )}
                                         </Menu>
                                         <br/>

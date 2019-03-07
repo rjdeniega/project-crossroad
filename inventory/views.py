@@ -255,14 +255,9 @@ class MechanicRepairs(APIView):
 class MechanicItems(APIView):
     @staticmethod
     def get(request, consume):
-        consumable = True
-        if consume == 1:
-            consumable = False
 
         items = ItemSerializer(Item.objects.all()
-                               .filter(consumable=consumable)
                                .filter(quantity__gte=0), many=True)
-
         return Response(data={
             'items': items.data
         }, status=status.HTTP_200_OK)
@@ -731,7 +726,7 @@ class PurchaseOrderItemView(APIView):
         added_item = Item(description=item.description, quantity=item.quantity, category=category,
                           unit_price=item.unit_price, item_type=item.item_type, measurement=item.measurement,
                           unit=item.unit, brand=item.brand, vendor=vendor, created=datetime.now(),
-                          delivery_date=datetime.now(), purchase_order=purchase_order, item_code=item_code)
+                          delivery_date=datetime.now(), purchase_order=purchase_order, item_code=item_code, current_measurement=item.measurement)
         added_item.save()
         item_movement = ItemMovement(item=added_item, type="B", quantity=item.quantity, unit_price=item.unit_price)
         item_movement.save()
