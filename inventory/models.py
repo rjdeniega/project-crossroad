@@ -137,6 +137,7 @@ class Item(SoftDeletionModel):
     modified = models.DateTimeField(null=True)
     item_code = CharField(max_length=6)
     delivery_date = models.DateTimeField(null=True)
+    current_measurement = PositiveIntegerField(null=True)
     purchase_order = ForeignKey(PurchaseOrder, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):

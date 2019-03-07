@@ -5,8 +5,8 @@ import {Form, Menu, Select, InputNumber, Button, Checkbox, message} from 'antd'
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class ConsumableItemFormInit extends Component{
-    constructor(props){
+class ConsumableItemFormInit extends Component {
+    constructor(props) {
         super(props)
         this.handleSubmit = this.handleSubmit.bind(this)
         this.state = {
@@ -16,13 +16,13 @@ class ConsumableItemFormInit extends Component{
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         getData('inventory/mechanic/items/2')
             .then(response => {
                 return response;
             })
             .then(data => {
-                console.log(data.items)
+                console.log(data.items);
                 this.setState({
                     items: data.items
                 })
@@ -30,13 +30,13 @@ class ConsumableItemFormInit extends Component{
     }
 
     toggleChecked = () => {
-        this.setState({depleted : !this.state.depleted})
+        this.setState({depleted: !this.state.depleted})
     }
 
-    handleSubmit(e){
+    handleSubmit(e) {
         e.preventDefault()
         this.props.form.validateFields((err, values) => {
-            if(!err){
+            if (!err) {
                 const data = {
                     selectedItem: this.state.selectedItem,
                     depleted: this.state.depleted,
@@ -44,9 +44,9 @@ class ConsumableItemFormInit extends Component{
 
                 postData('inventory/mechanic/items/add/' + this.props.repair, data)
                     .then(data => {
-                        if(!data.error){
+                        if (!data.error) {
                             this.props.loadItems(data.modifications)
-                        }else{
+                        } else {
                             console.log(data.error)
                         }
                     })
@@ -57,35 +57,35 @@ class ConsumableItemFormInit extends Component{
         })
     }
 
-    handleChange(value){
+    handleChange(value) {
         this.setState({
             selectedItem: value
         })
     }
 
-    render(){
+    render() {
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched, getFieldValue} = this.props.form;
         const {items} = this.state
         const formItemLayout = {
             labelCol: {
-                xs: { span: 24 },
-                sm: { span: 4 },
+                xs: {span: 24},
+                sm: {span: 4},
             },
             wrapperCol: {
-                xs: { span: 24 },
-                sm: { span: 20 },
+                xs: {span: 24},
+                sm: {span: 20},
             },
         };
         const formItemLayoutWithOutLabel = {
             wrapperCol: {
-                xs: { span: 24, offset: 0 },
-                sm: { span: 20, offset: 4 },
+                xs: {span: 24, offset: 0},
+                sm: {span: 20, offset: 4},
             },
         };
-        return(
+        return (
             <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
                 <FormItem {...formItemLayout} label='Item'>
-                    {getFieldDecorator('item',{
+                    {getFieldDecorator('item', {
                         rules: [{
                             required: true,
                             message: 'Please select an item'
@@ -100,7 +100,7 @@ class ConsumableItemFormInit extends Component{
                 </FormItem>
                 <FormItem {...formItemLayoutWithOutLabel} className='depleted-labed'>
                     &nbsp;
-                    {getFieldDecorator('depleted',{
+                    {getFieldDecorator('depleted', {
                         valuePropName: 'checked',
                     })(
                         <Checkbox className='depleted' onChange={this.toggleChecked}>Depleted</Checkbox>
@@ -114,10 +114,10 @@ class ConsumableItemFormInit extends Component{
     }
 }
 
-const ConsumableItemForm = Form.create()(ConsumableItemFormInit)
+const ConsumableItemForm = Form.create()(ConsumableItemFormInit);
 
-class NonConsumableItemFormInit extends Component{
-    constructor(props){
+class NonConsumableItemFormInit extends Component {
+    constructor(props) {
         super(props);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
@@ -128,23 +128,23 @@ class NonConsumableItemFormInit extends Component{
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         getData('inventory/mechanic/items/1')
             .then(response => {
                 return response;
             })
             .then(data => {
-                console.log(data.items)
+                console.log(data.items);
                 this.setState({
                     items: data.items
                 })
             }, () => console.log(this.state.items))
     }
 
-    handleSubmit(e){
+    handleSubmit(e) {
         e.preventDefault();
-        this.props.form.validateFields((err, values) =>{
-            if(!err){
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
                 const data = {
                     quantity: values['quantity'],
                     selectedItem: this.state.selectedItem
@@ -152,9 +152,9 @@ class NonConsumableItemFormInit extends Component{
 
                 postData('inventory/mechanic/items/add/' + this.props.repair, data)
                     .then(data => {
-                        if(!data.error){
+                        if (!data.error) {
                             this.props.loadItems(data.modifications)
-                        }else{
+                        } else {
                             console.log(data.error)
                         }
                     })
@@ -165,7 +165,7 @@ class NonConsumableItemFormInit extends Component{
         })
     }
 
-    handleChange(value, key){
+    handleChange(value, key) {
         this.setState({
             maxQuantity: value,
             selectedItem: key.key,
@@ -175,26 +175,26 @@ class NonConsumableItemFormInit extends Component{
         console.log(key.key)
     }
 
-    render(){
+    render() {
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched, getFieldValue} = this.props.form;
         const {items} = this.state
         const formItemLayout = {
             labelCol: {
-                xs: { span: 24 },
-                sm: { span: 4 },
+                xs: {span: 24},
+                sm: {span: 4},
             },
             wrapperCol: {
-                xs: { span: 24 },
-                sm: { span: 20 },
+                xs: {span: 24},
+                sm: {span: 20},
             },
         };
         const formItemLayoutWithOutLabel = {
             wrapperCol: {
-                xs: { span: 24, offset: 0 },
-                sm: { span: 20, offset: 4 },
+                xs: {span: 24, offset: 0},
+                sm: {span: 20, offset: 4},
             },
         };
-        return(
+        return (
             <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
                 <FormItem {...formItemLayout} label='Item'>
                     {getFieldDecorator('item', {
@@ -204,7 +204,7 @@ class NonConsumableItemFormInit extends Component{
                         }],
                     })(
                         <Select placeholder='Please select an item' onChange={this.handleChange.bind(this)}>
-                            {items.map((item,index) =>
+                            {items.map((item, index) =>
                                 (
                                     <Option value={item.quantity}
                                             key={item.id}>{item.quantity} - {item.name}</Option>
@@ -231,19 +231,26 @@ class NonConsumableItemFormInit extends Component{
     }
 }
 
-const NonConsumableItemForm = Form.create()(NonConsumableItemFormInit)
+const NonConsumableItemForm = Form.create()(NonConsumableItemFormInit);
 
-export class AddItems extends Component{
-    constructor(props){
+export class AddItems extends Component {
+    constructor(props) {
         super(props);
-        this.state ={
-            currentTab: 1,
+        this.state = {
+            categories: [],
+            items: [],
+            active_category: null,
+            active_item: null,
         }
+    }
+
+    componentDidMount() {
+        this.getItems()
     }
 
     handleClick = (e) => {
         let content;
-        switch (e.key){
+        switch (e.key) {
             case '1':
                 content = 1;
                 break;
@@ -254,34 +261,70 @@ export class AddItems extends Component{
         this.setState({
             currentTab: content
         })
+    };
+
+    onSelect(value) {
+        this.setState({
+            active_category: value,
+        }, () => {
+            console.log(this.state.active_category)
+        })
     }
 
-    renderCurrentPage = () => {
-        const {currentTab} = this.state;
-        switch (currentTab){
-            case 1:
-                return (<ConsumableItemForm repair={this.props.repair} loadItems={this.props.loadItems}
-                    close={this.props.close}/>)
-            case 2:
-                return (<NonConsumableItemForm repair={this.props.repair} loadItems={this.props.loadItems}
-                    close={this.props.close}/>)
-        }
+    onSelect2(value){
+        this.setState({
+            active_item: value
+        })
     }
 
-    render(){
-        return(
+    getItems() {
+        getData('inventory/items/item_category').then(data => {
+            this.setState({
+                categories: data.item_category
+            }, () => {
+                console.log(this.state.categories)
+            })
+        });
+        getData('inventory/items/').then(data => {
+            this.setState({
+                items: data.items,
+            })
+        })
+    }
+
+    render() {
+        const {categories, items, active_category} = this.state;
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 4},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 16},
+            },
+        };
+        return (
             <div>
-                <Menu onClick={this.handleClick} selectedKeys={[this.state.currentTab]}
-                      mode='horizontal'>
-                      <Menu.Item key={1}>
-                          Consumables
-                      </Menu.Item>
-                      <Menu.Item key={2}>
-                          Non-consumables
-                      </Menu.Item>
-                </Menu>
-                <br/>
-                {this.renderCurrentPage()}
+                <Form.Item label="Category" {...formItemLayout}>
+                    <Select style={{width: "100%"}} onSelect={e => this.onSelect(e)}>
+                        {categories.map(function (category) {
+                            return <Select.Option value={category.id}>{category.category}</Select.Option>
+                        })}
+                    </Select>
+                </Form.Item>
+                {active_category && (
+                    <Form.Item label="Item" {...formItemLayout}>
+                        <Select style={{width: "100%"}} onSelect={e => this.onSelect2(e)}>
+                            {items.map(function(item){
+                                console.log(categories[item.id]);
+                                if(item.category === active_category){
+                                    return <Select.Option value={item.item_code}>{item.item_code}</Select.Option>
+                                }
+                            })}
+                        </Select>
+                    </Form.Item>
+                )}
             </div>
         )
     }
