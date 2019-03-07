@@ -73,11 +73,11 @@ function DeploymentListDetails(props) {
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
 
-    if (props.route == 'Main Road' || props.route == 'M'){
+    if (props.route == 'Main Road' || props.route == 'M') {
         var route_label = 'Main Road'
         var tag_color = 'blue';
-        if(props.ten_total >= 100 && props.twelve_total >= 100 && props.fifteen_total >= 100)
-            var is_disabled =  false;
+        if (props.ten_total >= 100 && props.twelve_total >= 100 && props.fifteen_total >= 100)
+            var is_disabled = false;
         else
             var is_disabled = true;
     } else if (props.route == 'Kaliwa' || props.route == 'L') {
@@ -89,7 +89,7 @@ function DeploymentListDetails(props) {
         var tag_color = 'green';
         var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
     }
-        
+
 
 
     return (
@@ -154,7 +154,7 @@ function DeploymentListDetails(props) {
                 driver_id={driver_id}
                 driver_name={driver_name}
                 shuttle={props.shuttle}
-                route={props.route}
+                route={route_label}
                 shuttle_obj={props.shuttle_obj}
                 is_disabled={is_disabled}
             />
@@ -201,7 +201,7 @@ function TicketDisplay(props) {
 
         );
 
-    } else if (props.total> 0 && props.total < 130) {
+    } else if (props.total > 0 && props.total < 130) {
         var badge_status = props.total >= 100 ? 'warning' : 'error';
 
         var content = (
@@ -414,12 +414,12 @@ class DeployWithDiffShuttle extends React.Component {
     render() {
         return (
             <div className="subButton-container">
-                <Button 
-                    className="deployment-button" 
-                    type="primary" 
+                <Button
+                    className="deployment-button"
+                    type="primary"
                     onClick={this.showModal}
                     disabled={this.props.is_disabled}
-                    >
+                >
                     Deploy
                 </Button>
                 <Modal
@@ -514,11 +514,13 @@ class DeployShuttleContent extends React.Component {
 class SubButton extends React.Component {
     constructor(props) {
         super(props);
+
         this.state = {
             'modal_is_visible': false,
             'driver_id': this.props.driver_id,
             'sub_driver_id': null,
         }
+
         this.handleSubDriverChange = this.handleSubDriverChange.bind(this);
     }
 
@@ -597,6 +599,12 @@ class SubContent extends React.Component {
         this.state = {
             'supervisor_id': this.props.supervisor_id,
             'subDrivers': [],
+            'ten_peso_tickets': [],
+            'twelve_peso_tickets': [],
+            'fifteen_peso_tickets': [],
+            'ten_total': 0,
+            'twelve_total': 0,
+            'fifteen_total': 0
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -626,6 +634,32 @@ class SubContent extends React.Component {
 
     handleChange(value) {
         this.props.onSelectChange(value);
+        this.fetchSubDriverTickets(value);
+    }
+
+    fetchSubDriverTickets(sub_driver_id) {
+        console.log('entered here', sub_driver_id)
+        fetch('/remittances/tickets/driver/' + sub_driver_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        ten_total: data.ten_total,
+                        ten_peso_tickets: data.ten_peso_tickets,
+                        twelve_total: data.twelve_total,
+                        twelve_peso_tickets: data.twelve_peso_tickets,
+                        fifteen_total: data.fifteen_total,
+                        fifteen_peso_tickets: data.fifteen_peso_tickets,
+                    });
+                    console.log(this.state.ten_total)
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
     }
 
     render() {
@@ -661,6 +695,26 @@ class SubContent extends React.Component {
                         title="Route: "
                         value={this.props.route}
                     />
+
+                    <div className="ticket-tags-container">
+                        <TicketDisplay
+                            amount="₱10"
+                            tickets={this.state.ten_peso_tickets}
+                            total={this.state.ten_total}
+                        />
+                        <TicketDisplay
+                            amount="₱12"
+                            tickets={this.state.twelve_peso_tickets}
+                            total={this.state.twelve_total}
+                        />
+                        {this.props.route == 'Main Road' &&
+                            <TicketDisplay
+                                amount="₱15"
+                                tickets={this.state.fifteen_peso_tickets}
+                                total={this.state.fifteen_total}
+                            />
+                        }
+                    </div>
                 </div>
             </div>
         );

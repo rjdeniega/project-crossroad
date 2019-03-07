@@ -1370,6 +1370,39 @@ class RemittanceUtilities():
         return None
 
 
+class SpecificDriverTicket(APIView):
+    @staticmethod
+    def get(request, driver_id):
+        tickets = TicketUtilities.get_assigned_with_void_of_driver(driver_id)
+
+        ten_peso_tickets = list()
+        twelve_peso_tickets = list()
+        fifteen_peso_tickets = list()
+
+        ten_total = 0
+        twelve_total = 0
+        fifteen_total = 0
+
+        for ticket in tickets:
+            if ticket["ticket_type"] == '10 Pesos':
+                ten_total += ticket["range_to"] - ticket["range_from"] + 1
+                ten_peso_tickets.append(ticket)
+            elif ticket["ticket_type"] == '12 Pesos':
+                twelve_total += ticket["range_to"] - ticket["range_from"] + 1
+                twelve_peso_tickets.append(ticket)
+            else:
+                fifteen_total += ticket["range_to"] - ticket["range_from"] + 1
+                fifteen_peso_tickets.append(ticket)
+
+        return Response(data={
+            "ten_total": ten_total,
+            "twelve_total": twelve_total,
+            "fifteen_total": fifteen_total,
+            "ten_peso_tickets": ten_peso_tickets,
+            "twelve_peso_tickets": twelve_peso_tickets,
+            "fifteen_peso_tickets": fifteen_peso_tickets,
+        }, status=status.HTTP_200_OK)
+
 class TicketUtilities():
     @staticmethod
     def get_num_of_void(assigned_ticket_id):
