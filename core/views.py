@@ -109,6 +109,7 @@ class CreateUserView(APIView):
         users = User.objects.all()
         # returns all item objects
         data = serializers.serialize('json', users)
+
         return Response(data={
             "users": data
         }, status=status.HTTP_200_OK)
@@ -288,17 +289,34 @@ class UserView(APIView):
 
 class PersonView(APIView):
     @staticmethod
+    def get_userstaff_type(person):
+        if person.id in [driver.id for driver in Driver.objects.all() if driver.is_supervisor]:
+            return "supervisor"
+        if person.id in [driver.id for driver in Driver.objects.all()]:
+            return "driver"
+        if person.id in [operations_manager.id for operations_manager in OperationsManager.objects.all()]:
+            return "operations_manager"
+        if person.id in [clerk.id for clerk in Clerk.objects.all()]:
+            return "clerk"
+        if person.id in [member.id for member in Member.objects.all()]:
+            return "member"
+        if person.id in [mechanic.id for mechanic in Mechanic.objects.all()]:
+            return "mechanic"
+
+    @staticmethod
     def get(request):
-        people = PersonSerializer(Person.objects.all(), many=True)
+        people = PersonSerializer(Person.objects.all(), many=True).data
+        for person in people:
+            person["user_type"] = PersonView.get_userstaff_type(User.objects.get(pk=person['id']))
 
         return Response(data={
-            "people": people.data
+            "people": people
         }, status=status.HTTP_200_OK)
 
     def get_user_type(person):
         if person.id in [driver.user for driver in Driver.objects.all()]:
             return "driver"
-        if person.id in [supervisor.user for supervisor in Driver.objects.where(is_supervisor=True)]:
+        if person.id in [supervisor.user for supervisor in Driver.objects.filter(is_supervisor=True)]:
             return "supervisor"
         if person.id in [operations_manager.user for operations_manager in OperationsManager.objects.all()]:
             return "operations_manager"
@@ -916,8 +934,8 @@ class BeepTickets(APIView):
                     total_per_day = total_remittance
 
                 try:
-                    beep_shift = BeepShift.objects.filter(date=temp_start.date())
-                    beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
+                    beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)
+                    # beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
                 except ObjectDoesNotExist:
                     beep_shift = []
                 beep_total = sum([item.total for item in BeepTransaction.objects.all() if item.shift == beep_shift])
@@ -938,10 +956,12 @@ class BeepTickets(APIView):
                 total_fuel_for_day += total_fuel
 
             try:
-                am_beep = [item for item in BeepTransaction.objects.all() if
-                           item.shift.date == temp_start.date() and item.shift.type == 'A']
-                pm_beep = [item for item in BeepTransaction.objects.all() if
-                           item.shift.date == temp_start.date() and item.shift.type == 'P']
+                # am_beep = [item for item in BeepTransaction.objects.all() if
+                #            item.shift.date == temp_start.date() and item.shift.type == 'A']
+                am_beep = BeepTransaction.objects.filter(shift__date=temp_start.date(), shift__type='A')
+                pm_beep = BeepTransaction.objects.filter(shift__date=temp_start.date(), shift__type='P')
+                # pm_beep = [item for item in BeepTransaction.objects.all() if
+                #            item.shift.date == temp_start.date() and item.shift.type == 'P']
                 print(am_beep)
                 print(pm_beep)
 
@@ -1268,8 +1288,8 @@ class TicketTypePerDayReport(APIView):
                 })
             ten_total = sum([item['am_ten'] for item in shuttles]) + sum([item['pm_ten'] for item in shuttles])
             twelve_total = sum([item['am_twelve'] for item in shuttles]) + sum([item['pm_twelve'] for item in shuttles])
-            fifteen_total = sum([item['am_fifteen'] for item in shuttles]) + sum([item['pm_fifteen'] for item in shuttles])
-
+            fifteen_total = sum([item['am_fifteen'] for item in shuttles]) + sum(
+                [item['pm_fifteen'] for item in shuttles])
 
             days.append({
                 "date": temp_start.date(),
@@ -1295,7 +1315,7 @@ class TicketTypePerDayReport(APIView):
             temp_start = temp_start + timedelta(days=1)
             grand_am_total = 0
             grand_pm_total = 0
-            grand_ten_total =0
+            grand_ten_total = 0
             grand_twelve_total = 0
             grand_fifteen_total = 0
             grand_total = 0
@@ -1818,11 +1838,17 @@ class RemittanceForTheMonth(APIView):
 
 class NotificationItems(APIView):
     @staticmethod
-    def get(request, user_type):
+    def get(request, user_type, user_id):
         # user type gotten from localStorage.get('user_type')
+
+        user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
+        print(user_type)
         if user_type == 'member':
+            NotificationItems.get_member_notifs(user)
             notifications = NotificationSerializer(Notification.objects.all()
                                                    .filter(type='M').order_by('-created'), many=True)
+
+
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='M').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'supervisor':
@@ -1831,14 +1857,32 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
-            notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            NotificationItems.get_om_notifs(user)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
+            unread = NotificationSerializer(Notification.objects
+                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
+                '-created'), many=True)
+        elif user_type == 'system_admin':
+            NotificationItems.get_om_notifs(user)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'clerk':
-            notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            NotificationItems.get_om_notifs(user)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
@@ -1853,6 +1897,40 @@ class NotificationItems(APIView):
             'notifications': notifications.data,
             'unread': unread.data,
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get_member_notifs(user):
+        member_id = user['id']
+        shares = Share.objects.filter(member=Member.objects.get(pk=member_id))
+        serialized_shares = ShareSerializer(shares, many=True)
+
+        total_shares = sum([float(item["value"]) for item in serialized_shares.data])
+        notification = Notification.objects.filter(user__id=user['id'],description="You do not have enough accumulated shares")
+
+        if total_shares < 50 and len(notification) == 0:
+            notification = Notification.objects.create(
+                user=User.objects.get(pk=user['id']),
+                type='M',
+                description='You do not have enough accumulated shares'
+            )
+        return notification
+
+    @staticmethod
+    def get_om_notifs(user):
+        member_id = user['id']
+        notification = None
+        for item in ItemCategory.objects.all():
+            if item.quantity < 3:
+                notification = Notification.objects.filter(user__id=user['id'],
+                                                           description=f'{item} is low on stocks ({item.quantity} pcs)')
+                if len(notification) == 0:
+                    notification = Notification.objects.create(
+                        user=User.objects.get(pk=user['id']),
+                        type='I',
+                        description=f'{item.category} is low on stocks ({item.quantity} pcs)'
+                    )
+        return notification
+
 
 
 class ChangeNotificationStatus(APIView):
@@ -1879,7 +1957,6 @@ class PassengerPerRoute(APIView):
 
         temp_date = start_date
         while temp_date < end_date:
-            
             values.append({
                 "day": temp_date.strftime("%A"),
                 "main_road": PassengerPerRoute.getPassengersFromDate('M', temp_date),
@@ -1888,7 +1965,6 @@ class PassengerPerRoute(APIView):
             })
 
             temp_date = temp_date + timedelta(days=1)
-        
 
         return Response(data={
             "values": values
@@ -1897,9 +1973,9 @@ class PassengerPerRoute(APIView):
     @staticmethod
     def getPassengersFromDate(route, date):
         remittances = RemittanceForm.objects.filter(
-                deployment__shift_iteration__date=date,
-                deployment__route=route
-                )
+            deployment__shift_iteration__date=date,
+            deployment__route=route
+        )
 
         amount = 0
         for remittance in remittances:
@@ -1912,8 +1988,7 @@ class PassengerPerRoute(APIView):
                     price = 12
                 else:
                     price = 15
-                
-                amount += consumed_ticket.total / price
-        
-        return amount
 
+                amount += consumed_ticket.total / price
+
+        return amount

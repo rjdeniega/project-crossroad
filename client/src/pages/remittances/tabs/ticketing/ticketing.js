@@ -108,167 +108,180 @@ export class TicketingPane extends Component {
 
     }
 
-
-        fetchSupervisors()
-        {
-            console.log("entered here");
-            return fetch('/members/supervisors').then(response => response.json()).then(data => {
-                if (!data["error"]) {
-                    //Were not appending it to a table so no necessary adjustments needed
-                    this.setState({ supervisors: data["supervisors"] },
-                        () => console.log(this.state.supervisors));
-                }
-                else {
-                    console.log(data["error"]);
-                }
-            }, console.log(this.state.supervisors));
-        }
-        ;
-        handleStartDateChange = (date, dateString) => {
-            this.setState({
-                start_date_object: date,
-                start_date: dateString
-            }, () => this.fetchShifts())
-        };
-        handleEndDateChange = (date, dateString) => {
-            this.setState({
-                end_date_object: date,
-                end_date: dateString
-            }, () => this.fetchShifts())
-        };
-        handleCancel = (e) => {
-            console.log(e);
-            this.setState({
-                visible: false,
-                transactions_visible: false,
-            });
-        };
-
-        showModal = () => {
-            this.setState({
-                visible: true,
-            });
-        };
-        fetchShifts()
-        {
-            let data = {
-                'start_date': this.state.start_date,
-                'end_date': this.state.end_date,
-            };
-            if (!this.state.start_date) {
-                message.error("Start date must be selected")
+    fetchSupervisors() {
+        console.log("entered here");
+        return fetch('/members/supervisors').then(response => response.json()).then(data => {
+            if (!data["error"]) {
+                //Were not appending it to a table so no necessary adjustments needed
+                this.setState({ supervisors: data["supervisors"] },
+                    () => console.log(this.state.supervisors));
             }
             else {
-                postData('/remittances/shifts/all', data).then(data => {
-                    console.log(data);
-                    this.setState({
-                        original_shifts: data.shifts,
-                        temp_shifts: data.shifts,
-                    })
-                });
+                console.log(data["error"]);
             }
+        }, console.log(this.state.supervisors));
+    }
+    ;
+
+    handleStartDateChange = (date, dateString) => {
+        this.setState({
+            start_date_object: date,
+            start_date: dateString
+        }, () => this.fetchShifts())
+    };
+    handleEndDateChange = (date, dateString) => {
+        this.setState({
+            end_date_object: date,
+            end_date: dateString
+        }, () => this.fetchShifts())
+    };
+    handleCancel = (e) => {
+        console.log(e);
+        this.setState({
+            visible: false,
+            transactions_visible: false,
+        });
+    };
+
+    showModal = () => {
+        this.setState({
+            visible: true,
+        });
+    };
+
+    fetchShifts() {
+        let data = {
+            'start_date': this.state.start_date,
+            'end_date': this.state.end_date,
+        };
+        if (!this.state.start_date) {
+            message.error("Start date must be selected")
         }
-
-        renderSupervisors = () => {
-            console.log(this.state.supervisors);
-            return this.state.supervisors.map(item =>
-                <Option value={item.id}>{item.name}</Option>
-            )
-        }
-
-        renderDeploymentListModal = () => (
-            <Modal
-                title="Basic Modal"
-                visible={this.state.visible}
-                onOk={this.handleOk}
-                onCancel={this.handleCancel}
-            >
-                <List
-                    header={<div> List of Deployments </div>}
-                    dataSource={this.state.deployments}
-                    bordered={true}
-                    renderItem={
-                        item => (
-                            <div className="list-detail-container">
-                                <List.Item>
-                                    <DeploymentListDetails
-                                        driver_object={item.driver_object}
-                                        driver={item.driver}
-                                        id={item.id}
-                                        date={item.shift_date}
-                                        start_time={item.start_time}
-                                        end_time={item.end_time}
-                                        status={item.status}
-                                        shuttle={item.shuttle}
-                                    />
-                                </List.Item>
-                            </div>
-                        )
-                    }
-                />
-            </Modal>
-        )
-
-
-        render()
-        {
-            return (
-                <div className="ticketing-tab-body">
-                    <div className="filters">
-                        <ButtonGroup>
-                            <Button type="primary" className="shift-type">AM</Button>
-                            <Button className="shift-type">PM</Button>
-                        </ButtonGroup>
-                        <Divider orientation="left">Filters</Divider>
-                        {/*<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista*/}
-                        {/*probare, quae sunt a te dicta? Refert tamen, quo modo.</p>*/}
-                        <Row>
-                            <Alert className="history-alert"
-                                   message="If end date is not selected, The table will show remittances for 1 week from the start date"
-                                   type="info" showIcon/>
-                        </Row>
-                        <Row className="dates-div">
-                            <Col span={24} style={{ 'margin-top': '20px' }}>
-                                <Form className="login-form">
-                                    <Form.Item
-                                        {...formItemLayout}
-                                        label="Start Date:"
-                                    >
-                                        <DatePicker placeholder="start date" onChange={this.handleStartDateChange}/>
-                                    </Form.Item>
-                                    <Form.Item
-                                        {...formItemLayout}
-                                        label="End Date:"
-                                    >
-                                        <DatePicker placeholder="end date" onChange={this.handleEndDateChange}/>
-                                    </Form.Item>
-                                    <Form.Item
-                                        {...formItemLayout}
-                                        label="Supervisor:"
-                                    >
-
-                                        <Select onChange={this.handleSupervisorSelect}>
-                                            {
-                                                this.state.supervisors && this.renderSupervisors()
-                                            }
-                                        </Select>
-                                    </Form.Item>
-                                    <Button {...formItemLayout} type="primary" onClick={this.reset} size="small">Reset</Button>
-                                </Form>
-                            </Col>
-                        </Row>
-
-                    </div>
-
-                    {this.state.activeSelected && this.renderDeploymentListModal()}
-                    <div className="remittance-table">
-                        <Row>
-                            <div className="driver-history-table-div">
-                                <Table columns={this.columns} dataSource={this.state.temp_shifts}/>
-                            </div>
-                        </Row>
-                    </div>
-                </div>
-            );
+        else {
+            postData('/remittances/shifts/all', data).then(data => {
+                console.log(data);
+                this.setState({
+                    original_shifts: data.shifts,
+                    temp_shifts: data.shifts,
+                })
+            });
         }
     }
+    handleSelect = (item) => {
+        console.log("this got clicked");
+        console.log(item);
+        getData('/remittances/specific_deployments/' + item.shift_iteration.id).then(data => {
+            console.log(data);
+            this.setState({
+                activeSelected: true,
+                deployments: data.deployments,
+            })
+        });
+        this.setState({
+            visible: true
+        })
+    }
+
+    renderSupervisors = () => {
+        console.log(this.state.supervisors);
+        return this.state.supervisors.map(item =>
+            <Option value={item.id}>{item.name}</Option>
+        )
+    }
+
+    renderDeploymentListModal = () => (
+        <Modal
+            title="Basic Modal"
+            visible={this.state.visible}
+            onOk={this.handleOk}
+            onCancel={this.handleCancel}
+        >
+            <List
+                header={<div> List of Deployments </div>}
+                dataSource={this.state.deployments}
+                bordered={true}
+                renderItem={
+                    item => (
+                        <div className="list-detail-container">
+                            <List.Item>
+                                <DeploymentListDetails
+                                    driver_object={item.driver_object}
+                                    driver={item.driver}
+                                    id={item.id}
+                                    date={item.shift_date}
+                                    start_time={item.start_time}
+                                    end_time={item.end_time}
+                                    status={item.status}
+                                    shuttle={item.shuttle}
+                                />
+                            </List.Item>
+                        </div>
+                    )
+                }
+            />
+        </Modal>
+    )
+
+
+    render() {
+        return (
+            <div className="ticketing-tab-body">
+                <div className="filters">
+                    <ButtonGroup>
+                        <Button type="primary" className="shift-type">AM</Button>
+                        <Button className="shift-type">PM</Button>
+                    </ButtonGroup>
+                    <Divider orientation="left">Filters</Divider>
+                    {/*<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonne merninisti licere mihi ista*/}
+                    {/*probare, quae sunt a te dicta? Refert tamen, quo modo.</p>*/}
+                    <Row>
+                        <Alert className="history-alert"
+                               message="If end date is not selected, The table will show remittances for 1 week from the start date"
+                               type="info" showIcon/>
+                    </Row>
+                    <Row className="dates-div">
+                        <Col span={24} style={{ 'margin-top': '20px' }}>
+                            <Form className="login-form">
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label="Start Date:"
+                                >
+                                    <DatePicker placeholder="start date" onChange={this.handleStartDateChange}/>
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label="End Date:"
+                                >
+                                    <DatePicker placeholder="end date" onChange={this.handleEndDateChange}/>
+                                </Form.Item>
+                                <Form.Item
+                                    {...formItemLayout}
+                                    label="Supervisor:"
+                                >
+
+                                    <Select onChange={this.handleSupervisorSelect}>
+                                        {
+                                            this.state.supervisors && this.renderSupervisors()
+                                        }
+                                    </Select>
+                                </Form.Item>
+                                <Button {...formItemLayout} type="primary" onClick={this.reset}
+                                        size="small">Reset</Button>
+                            </Form>
+                        </Col>
+                    </Row>
+
+                </div>
+
+                {this.state.activeSelected && this.renderDeploymentListModal()}
+                <div className="remittance-table">
+                    <Row>
+                        <div className="driver-history-table-div">
+                            <Table columns={this.columns} dataSource={this.state.temp_shifts}/>
+                        </div>
+                    </Row>
+                </div>
+            </div>
+        );
+    }
+}

@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { Modal, Button, Input, Select, Icon, Table, Radio, Row, Col, Alert, Form, DatePicker, Pagination} from 'antd'
+import { Modal, Button, Input, Select, Icon, Table, Radio, Row, Col, Alert, Form, DatePicker, Pagination } from 'antd'
 import { postDataWithImage, postDataWithFile, getData } from "../../../../network_requests/general";
 import moment from "moment";
 
@@ -122,6 +122,8 @@ export class BeepPane extends Component {
         }).catch(error => console.log(error))
     };
     showModal = item => event => {
+        console.log(item);
+        console.log(event);
         this.setState({
             visible: true
         })
@@ -146,11 +148,20 @@ export class BeepPane extends Component {
     };
     fetchTransactionData = data => {
         console.log("entered here");
-        console.log(data);
+        getData('/remittances/specific_beep/'+ data.id).then(data => {
+            if (!data.error) {
+                console.log(data.transactions);
+                this.setState({
+                    transactions: data.transactions
+                })
+            }
+            else {
+                console.log(data);
+            }
+        }).catch(error => console.log(error));
         this.setState({
             report_visible: true,
-            transactions: data,
-        }, console.log(this.state.transactions));
+        });
     };
     handleReportConfirm = (e) => {
         this.setState({
@@ -281,14 +292,13 @@ export class BeepPane extends Component {
                            className="remittance-table"
                            columns={columns}
                            dataSource={this.state.shifts}
-                           pagination = {{
+                           pagination={{
                                pageSize: 5,
                            }}
                            onRow={(record) => {
                                return {
                                    onClick: () => {
-                                       console.log(record);
-                                       this.fetchTransactionData(record.transactions);
+                                       this.fetchTransactionData(record.shift);
                                    },       // click row
                                };
                            }}

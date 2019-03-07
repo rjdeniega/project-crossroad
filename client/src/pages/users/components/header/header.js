@@ -73,8 +73,8 @@ export class Header extends Component {
                     <div className="user-tabs-wrapper">
                         <Tabs className="user-tabs" defaultActiveKey="1" onChange={callback}>
                             <TabPane className="tab-item" tab="Overview" key="1"></TabPane>
-                            <TabPane className="tab-item" tab="History" key="2"></TabPane>
-                            <TabPane className="tab-item" tab="Something" key="3"></TabPane>
+                            {/*<TabPane className="tab-item" tab="History" key="2"></TabPane>*/}
+                            {/*<TabPane className="tab-item" tab="Something" key="3"></TabPane>*/}
                         </Tabs>
                     </div>
                 </div>

@@ -134,3 +134,37 @@ class PopulateMembers:
                                                   total=random.randint(200, 700))
 
             current_date += timedelta(days=1)
+
+    @staticmethod
+    def random_with_n_digits(n):
+        range_start = 10 ** (n - 1)
+        range_end = (10 ** n) - 1
+        return randint(range_start, range_end)
+
+    @staticmethod
+    def populate_beep():
+        current_date = datetime.now() - timedelta(days=2)
+        new_end_date = current_date + timedelta(days=30)
+        values = [10.00, 13.00, 15.00]
+
+        while current_date <= new_end_date:
+            am_shift = BeepShift.objects.create(type='A', date=current_date)
+            pm_shift = BeepShift.objects.create(type='P', date=current_date)
+
+            # current date + random time between 8AM - 3PM
+            am_today_random_time = current_date.replace(hour=randint(8, 14), minute=randint(0, 59))
+            pm_today_random_time = current_date.replace(hour=randint(14, 23), minute=randint(0, 59))
+            am_customers = randint(5, 31)
+            pm_customers = randint(5, 31)
+            for i in range(5, am_customers):
+                BeepTransaction.objects.create(shift=am_shift,
+                                               card_number=PopulateMembers.random_with_n_digits(8),
+                                               transaction_date_time=am_today_random_time,
+                                               total=values[random.randint(0, 2)])
+            for i in range(5, pm_customers):
+                BeepTransaction.objects.create(shift=pm_shift,
+                                               card_number=PopulateMembers.random_with_n_digits(8),
+                                               transaction_date_time=pm_today_random_time,
+                                               total=values[random.randint(0, 2)])
+
+            current_date += timedelta(days=1)
