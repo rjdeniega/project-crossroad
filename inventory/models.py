@@ -31,6 +31,7 @@ REPAIR_STATUS = [
     ('IP', 'In Progress'),  # Mechanic (Start repairs)
     ('C', 'Completed'),  # Operations manager
     ('FO', 'For Outsource'),  # Mechanic (Add outsourced costs )
+    ('SR', 'Scheduled Repair')
 ]
 ROUTE = [
     ('M', 'Main Road'),

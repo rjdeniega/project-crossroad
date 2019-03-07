@@ -364,7 +364,8 @@ export class MechanicView extends Component{
     forwardToOperations(id) {
         message.success("Forwarded to operations manager!");
         let data = {
-            status: 'NS'
+            status: 'NS',
+            type: ''
         };
 
         putData('inventory/repair/update_status/' + id, data).then(data => {
