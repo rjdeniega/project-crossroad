@@ -130,6 +130,9 @@ class AssignedDriverView(APIView):
         drivers = DriversAssigned.objects.filter(shift__schedule=active_sched)
         drivers = [item.driver for item in drivers]
         drivers = DriverSerializer(drivers, many=True).data
+
+        drivers.append(DriverSerializer(Driver.objects.get(id=supervisor_id)).data)
+
         for driver in drivers:
             tickets = TicketUtilities.get_assigned_with_void_of_driver(driver["id"])
             driver['ten_total'] = len([item for item in tickets if item['ticket_type'] == '10 Pesos'])
