@@ -16,6 +16,7 @@ import {InventoryPage} from '../../pages/inventory/inventory'
 import {MaintenancePage} from '../../pages/maintenance/maintenance'
 import {ReportsPage} from '../../pages/reports/reports'
 import {TicketsPage} from '../../pages/tickets/tickets'
+import {OMDeployment} from '../../pages/om_deployment/om_deployment'
 import {money} from 'react-icons-kit/fa/money'
 import {Link, withRouter} from "react-router-dom";
 import {wrench} from 'react-icons-kit/fa/wrench'
@@ -107,6 +108,13 @@ const SUPERVISOR_TABS = [
         path: '/history',
         component: HistoryPage,
         image: ic_history
+    },
+    {
+        name: "Deployment",
+        key: "Deployment",
+        path: '/om_deployment',
+        component: OMDeployment,
+        image: ic_receipt
     },
 ];
 const MEMBER_TABS = [

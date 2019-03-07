@@ -1,0 +1,82 @@
+.list-container {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 1px 20px -5px rgba(51, 71, 91, 0.12);
+    min-height: 100px;
+    padding: 20px;
+}
+
+.item-date {
+    font-weight: 700;
+}
+
+.list-header {
+    align-content: center;
+}
+
+.list-details {
+    margin-left: 10px;
+}
+
+.list-header-date {
+    font-weight: 600;
+    font-size: 18px;
+    margin-right: 8px;
+}
+
+.detail-item-title {
+    font-weight: 500;
+    margin-right: 5px;
+}
+
+.detail-item-value {
+    font-weight: 300;
+}
+
+.list-detail-container {
+    position: relative;
+}
+
+.button-container {
+    align-content: center;
+    right: 0;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: 15px;
+    margin-right: 10px;
+}
+
+.form-footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #e9e9e9;
+    padding: 10px 16px;
+    background: #fff;
+    text-align: right;
+}
+
+.field-guide {
+    margin-right: 5px;
+}
+
+.view-remittances-tag {
+    float: right;
+    font-weight: 550;
+}
+
+.item-total {
+    float: right;
+    font-weight: 500;
+}
+
+.item-rem-total {
+    float: right;
+    font-weight: 500;
+    border-top: solid gray;
+    border-top-width: thin;
+}
+
+.total-row {
+    margin-top: 15px;
+}
