@@ -2193,6 +2193,7 @@ class FinishShiftIteration(APIView):
 
 class BeepTransactionView(APIView):
     temp_shift = None
+    temp_shuttle = None
 
     @staticmethod
     def get(request):
@@ -2230,15 +2231,19 @@ class BeepTransactionView(APIView):
         shift_type = request.POST.get('shift_type')
         function = request.POST.get('function')
         beep_shift = BeepTransactionView.shift_get_or_create(request.POST.get('date'), shift_type)
+        shuttle = Shuttle.objects.order_by("?").first()
         if function == 'replace':
             [item.delete() for item in BeepTransaction.objects.all() if item.shift == beep_shift]
 
         BeepTransactionView.temp_shift = beep_shift
+        BeepTransactionView.temp_shuttle = shuttle
         beep_resource = BeepTransactionResource()
         dataset = Dataset()
         new_transactions = request.FILES['file']
         imported_data = dataset.load(new_transactions.read().decode('utf-8'), format='csv')
         dataset.append_col(BeepTransactionView.generate_column, header="shift")
+        dataset.append_col(BeepTransactionView.generate_shuttle_column, header="shuttle")
+
         print(dataset)
         result = beep_resource.import_data(dataset, dry_run=True)  # Test the data import
         if not result.has_errors():
@@ -2251,6 +2256,10 @@ class BeepTransactionView(APIView):
     @staticmethod
     def generate_column(row):
         return BeepTransactionView.temp_shift.id
+
+    @staticmethod
+    def generate_shuttle_column(row):
+        return BeepTransactionView.temp_shuttle.id
 
     @staticmethod
     def shift_get_or_create(date, shift_type):
@@ -2318,8 +2327,7 @@ class SpecificBeepView(APIView):
     def get(request, beep_shift_id):
         print("enters here")
         dict_transactions = []
-        transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.all() if
-                        item.shift.id == beep_shift_id]
+        transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.filter(shift__id=beep_shift_id)]
         for transaction in transactions:
             transaction_instance = transaction.data
             try:

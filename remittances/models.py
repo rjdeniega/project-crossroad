@@ -287,11 +287,12 @@ class BeepShift(models.Model):
 
 
 class BeepTransaction(models.Model):
-    shift = ForeignKey(BeepShift, on_delete=models.CASCADE, null=True)
+    shift = ForeignKey(BeepShift, on_delete=models.CASCADE)
     card_number = CharField(null=True, max_length=20)
     total = DecimalField(default=0, max_digits=19, decimal_places=10)
     transaction_date_time = DateTimeField()
     card_profile_name = CharField(null=True, max_length=56)
+    shuttle = ForeignKey(Shuttle,on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if not self.id:

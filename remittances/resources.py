@@ -5,7 +5,7 @@ from .models import BeepTransaction
 class BeepTransactionResource(ModelResource):
     class Meta:
         model = BeepTransaction
-        fields = ('total', 'card_number', 'id', 'shift', 'transaction_date_time', 'card_profile_name')
+        fields = ('total', 'card_number', 'id', 'shuttle', 'shift', 'transaction_date_time', 'card_profile_name')
         exclude = ('archiver', 'archived_at')
 
     def get_or_init_instance(self, instance_loader, row):

@@ -1914,7 +1914,7 @@ class NotificationItems(APIView):
 
     @staticmethod
     def get_clerk_notifs(user_id):
-        is_in_between = NotificationItems.is_time_between(time(15,00),time(16,30))
+        is_in_between = NotificationItems.is_time_between(time(15, 00), time(16, 30))
         print(f'the user id is {user_id}')
         print(is_in_between)
 
@@ -1927,7 +1927,6 @@ class NotificationItems(APIView):
                 description='Please upload beep CSV'
             )
         return notification
-
 
     @staticmethod
     def get_member_notifs(user_id):
@@ -2036,14 +2035,9 @@ class PassengerPerRoute(APIView):
 
 class PeakHourReport(APIView):
     @staticmethod
-    def execute(value, hour):
-        for i in range(1, 25):
-            if hour == i:
-                return value + 1
-        return value
-
-    @staticmethod
-    def get(request):
+    def get_passenger_per_hour(route, start_date, end_date):
+        print(start_date)
+        print(end_date)
         one = 0
         two = 0
         three = 0
@@ -2068,8 +2062,8 @@ class PeakHourReport(APIView):
         twentytwo = 0
         twentythree = 0
         twentyfour = 0
-
-        for transaction in BeepTransaction.objects.all():
+        print(BeepTransaction.objects.filter(shuttle__route=route,transaction_date_time__gte=start_date,transaction_date_time__lte=end_date))
+        for transaction in BeepTransaction.objects.filter(shuttle__route=route,transaction_date_time__gte=start_date,transaction_date_time__lte=end_date):
             if transaction.transaction_date_time.hour == 1:
                 one += 1
             elif transaction.transaction_date_time.hour == 2:
@@ -2119,8 +2113,51 @@ class PeakHourReport(APIView):
             elif transaction.transaction_date_time.hour == 24:
                 twentyfour += 1
 
+        return [one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen,
+                fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twentyone,
+                twentytwo, twentythree, twentyfour]
+
+    @staticmethod
+    def post(request):
+        data = json.loads(request.data)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = start_date + timedelta(days=7)
+        week2 = end_date + timedelta(days=1)
+        week2_end = week2 + timedelta(days=7)
+        week3 = week2_end + timedelta(days=1)
+        week3_end = week3 + timedelta(days=7)
+        week4 = week3_end + timedelta(days=1)
+        week4_end = week4 + timedelta(days=7)
+
+        week1_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', start_date, end_date)
+        week1_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', start_date, end_date)
+        week1_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', start_date, end_date)
+
+        week2_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road',week2,week2_end)
+        week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa',week2,week2_end)
+        week2_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan',week2,week2_end)
+
+        week3_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road',week3,week3_end)
+        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa',week3,week3_end)
+        week3_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan',week3,week3_end)
+
+        week4_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road',week4,week4_end)
+        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa',week4,week4_end)
+        week4_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan',week4,week4_end)
+
         return Response(data={
-            "values": [one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen,
-                       fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twentyone,
-                       twentytwo, twentythree, twentyfour]
+            "week1_main_road_values": week1_main_road_values,
+            "week1_kaliwa_values": week1_kaliwa_values,
+            "week1_kanan_values": week1_kanan_values,
+            "week2_main_road_values": week2_main_road_values,
+            "week2_kaliwa_values": week2_kaliwa_values,
+            "week2_kanan_values": week2_kanan_values,
+            "week3_main_road_values": week3_main_road_values,
+            "week3_kaliwa_values": week3_kaliwa_values,
+            "week3_kanan_values": week3_kanan_values,
+            "week4_main_road_values": week4_main_road_values,
+            "week4_kaliwa_values": week4_kaliwa_values,
+            "week4_kanan_values": week4_kanan_values,
+            "start_date": start_date.date(),
+            "end_date": week4_end.date(),
         }, status=status.HTTP_200_OK)
