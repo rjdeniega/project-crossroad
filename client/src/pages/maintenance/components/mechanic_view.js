@@ -464,6 +464,7 @@ export class MechanicView extends Component{
                                         ): loadedRepair.status === 'SR' && (
                                             <div>
                                                 <Tag color='blue'> Schedule: {loadedRepair.schedule}</Tag>
+                                                <br/>
                                                 {new Date(loadedRepair.schedule) < new Date() &&
                                                     <Button type='primary' onClick={() => this.completeRepair(loadedRepair.id)}>
                                                     <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
