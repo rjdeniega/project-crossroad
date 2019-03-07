@@ -1851,7 +1851,6 @@ class NotificationItems(APIView):
             notifications = NotificationSerializer(Notification.objects.all()
                                                    .filter(type='M').order_by('-created'), many=True)
 
-
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='M').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'supervisor':
@@ -1908,7 +1907,8 @@ class NotificationItems(APIView):
         serialized_shares = ShareSerializer(shares, many=True)
 
         total_shares = sum([float(item["value"]) for item in serialized_shares.data])
-        notification = Notification.objects.filter(user__id=user['id'],description="You do not have enough accumulated shares")
+        notification = Notification.objects.filter(user__id=user['id'],
+                                                   description="You do not have enough accumulated shares")
 
         if total_shares < 50 and len(notification) == 0:
             notification = Notification.objects.create(
@@ -1933,7 +1933,6 @@ class NotificationItems(APIView):
                         description=f'{item.category} is low on stocks ({item.quantity} pcs)'
                     )
         return notification
-
 
 
 class ChangeNotificationStatus(APIView):
@@ -1995,3 +1994,12 @@ class PassengerPerRoute(APIView):
                 amount += consumed_ticket.total / price
 
         return amount
+
+
+class PeakHourReport(APIView):
+    @staticmethod
+    def get(request):
+        transactions = BeepTransaction.objects.all()
+
+
+        pass

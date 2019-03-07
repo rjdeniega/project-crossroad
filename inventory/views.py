@@ -752,8 +752,7 @@ class DriverRepairRequest(APIView):
         for shift in Shift.objects.filter(schedule=active_schedule):
             for driver in DriversAssigned.objects.filter(shift=shift):
                 if driver.driver == logged_driver:
-                    shuttle = Shuttle.objects.get(shuttle=driver.shuttle)
-                    serialized_shuttle = ShuttlesSerializer(shuttle)
+                    serialized_shuttle = ShuttlesSerializer(driver.shuttle)
                     return Response(data={
                         'foo': serialized_shuttle.data
                     }, status=status.HTTP_200_OK)

@@ -18,6 +18,7 @@ import { money } from 'react-icons-kit/fa/money'
 import {wrench} from 'react-icons-kit/fa/wrench'
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { RemittanceReport } from './content/remittance_report/remittance_report'
+import { PeakHours } from './content/peak_hours/peak_hours'
 import { SharesReport } from './content/shares_report/shares_report'
 import { TransactionReport } from './content/transactions_report/transactions_report'
 import { RemittanceSummary } from './content/remittance_summary/remittance_summary'
@@ -102,7 +103,7 @@ const REMITTANCE_CARDS = [{
     'title': 'Peak Hours',
     'description': 'view peak hours for beep transactions',
     'icon': money,
-    'content': <PassengerPerRoute />
+    'content': <PeakHours />
 }];
 
 
