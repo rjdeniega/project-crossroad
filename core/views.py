@@ -2196,6 +2196,7 @@ class PeakHourReport(APIView):
             "end_date": week4_end.date(),
         }, status=status.HTTP_200_OK)
 
+
 #
 # class RemittancePerMonth(APIView):
 #     @staticmethod
@@ -2206,7 +2207,6 @@ class PeakHourReport(APIView):
 class DriverPerformance(APIView):
     @staticmethod
     def post(request):
-        print("enters here")
         start_date = datetime.strptime(request.data["start_date"], '%Y-%m-%d')
         if "end_date" in request.data:
             end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
@@ -2214,22 +2214,41 @@ class DriverPerformance(APIView):
             end_date = start_date + timedelta(days=6)
 
         data = []
+        print(start_date)
+        print(end_date)
+        sub_freq_total = 0
+        absences_total = 0
+        remittance_total = 0
+        payables_total = 0
 
-        temp_date = start_date
-        while start_date < end_date:
-            for driver in Driver.objects.filter(is_supervisor=False):
-                remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
-                                                           created__lte=end_date)
-                total = sum([item.total for item in remittances])
-                payables = sum([item.discrepancy for item in remittances])
-                data.append({
-                    "driver": DriverSerializer(driver).data,
-                    "remittance": total,
-                    "payables": payables,
-                })
+        for driver in Driver.objects.filter(is_supervisor=False):
+            remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
+                                                        created__lte=end_date)
+            sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver))
+            absences = len(SubbedDeployments.objects.filter(absent_driver__driver=driver))
+            total = sum([item.total for item in remittances])
+            payables = sum([item.discrepancy for item in remittances])
 
-            temp_date += timedelta(days=1)
+            sub_freq_total += sub_freq
+            absences_total  += absences
+            remittance_total += total
+            payables_total += payables
 
+            data.append({
+                "driver": DriverSerializer(driver).data,
+                "remittance": "{0:,.2f}".format(total),
+                "payables": "{0:,.2f}".format(payables),
+                "sub_freq": sub_freq,
+                "absences": absences,
+            })
+
+        print(data)
         return Response(data={
-            "data":data
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
+            "data": data,
+            "payables_total": "{0:,.2f}".format(payables_total),
+            "absences_total": absences_total,
+            "sub_freq_total": sub_freq_total,
+            "remittance_total": "{0:,.2f}".format(remittance_total)
         }, status=status.HTTP_200_OK)
