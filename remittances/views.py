@@ -590,8 +590,15 @@ class SubDrivers(APIView):
         drivers_assigned = PlannedDriversSerializer(
             DriversAssigned.objects.filter(shift__schedule=active_sched.id).exclude(shift=current_shift.id),
             many=True)
+
+        sub_drivers = drivers_assigned.data
+
+        supervisor = DriverSerializer(Driver.objects.get(id=supervisor_id))
+        sub_drivers.append({
+            "driver": supervisor.data
+        })
         return Response(data={
-            "sub_drivers": drivers_assigned.data
+            "sub_drivers": sub_drivers
         }, status=status.HTTP_200_OK)
 
 
@@ -965,8 +972,14 @@ class RedeployDriver(APIView):
             drivers = drivers.exclude(id=deployment.driver.id)
 
         serialized_drivers = DriverSerializer(drivers, many=True)
+        drivers = serialized_drivers.data
+
+        supervisor = DriverSerializer(Driver.objects.get(id=shift_iteration.shift.supervisor.id))
+        
+        drivers.append(supervisor.data)
+
         return Response(data={
-            "available_drivers": serialized_drivers.data
+            "available_drivers": drivers
         }, status=status.HTTP_200_OK)
 
     @staticmethod

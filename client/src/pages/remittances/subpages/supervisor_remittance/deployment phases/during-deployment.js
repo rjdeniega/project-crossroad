@@ -296,7 +296,7 @@ class StopDeploymentButton extends React.Component {
             content: shuttleBreakdown,
             shuttle_replacement: null,
             confirmLoading: false,
-            is_disabled: false,
+            is_disabled: true,
             'ten_peso_tickets': [],
             'twelve_peso_tickets': [],
             'fifteen_peso_tickets': [],
@@ -381,7 +381,8 @@ class StopDeploymentButton extends React.Component {
 
     handleShuttleChange(value) {
         this.setState({
-            shuttle_replacement: value
+            shuttle_replacement: value,
+            is_disabled: false
         });
     }
 

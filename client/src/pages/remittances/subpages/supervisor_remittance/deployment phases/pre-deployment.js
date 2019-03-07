@@ -687,31 +687,6 @@ class SubContent extends React.Component {
         this.props.onSelectChange(value);  
     }
 
-    fetchSubDriverTickets(sub_driver_id) {
-        console.log('entered here', sub_driver_id)
-        fetch('/remittances/tickets/driver/' + sub_driver_id)
-            .then(response => {
-                return response;
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    this.setState({
-                        ten_total: data.ten_total,
-                        ten_peso_tickets: data.ten_peso_tickets,
-                        twelve_total: data.twelve_total,
-                        twelve_peso_tickets: data.twelve_peso_tickets,
-                        fifteen_total: data.fifteen_total,
-                        fifteen_peso_tickets: data.fifteen_peso_tickets,
-                    });
-                    console.log(this.state.ten_total)
-                }
-                else {
-                    console.log(data.error)
-                }
-            }).catch(error => console.log(error));
-    }
-
     render() {
         return (
             <div className="modal-container">
