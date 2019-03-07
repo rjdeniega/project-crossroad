@@ -1842,12 +1842,14 @@ class NotificationItems(APIView):
         # user type gotten from localStorage.get('user_type')
 
         user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
+        Notification.objects.all().hard_delete()
+        notifications = NotificationSerializer(Notification.objects.all(), many=True)
+        unread = NotificationSerializer(Notification.objects.all(), many=True)
         print(user_type)
         if user_type == 'member':
             NotificationItems.get_member_notifs(user)
             notifications = NotificationSerializer(Notification.objects.all()
                                                    .filter(type='M').order_by('-created'), many=True)
-
 
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='M').filter(is_read=False).order_by('-created'), many=True)
@@ -1905,7 +1907,8 @@ class NotificationItems(APIView):
         serialized_shares = ShareSerializer(shares, many=True)
 
         total_shares = sum([float(item["value"]) for item in serialized_shares.data])
-        notification = Notification.objects.filter(user__id=user['id'],description="You do not have enough accumulated shares")
+        notification = Notification.objects.filter(user__id=user['id'],
+                                                   description="You do not have enough accumulated shares")
 
         if total_shares < 50 and len(notification) == 0:
             notification = Notification.objects.create(
@@ -1922,7 +1925,7 @@ class NotificationItems(APIView):
         for item in ItemCategory.objects.all():
             if item.quantity < 3:
                 notification = Notification.objects.filter(user__id=user['id'],
-                                                           description=f'{item} is low on stocks ({item.quantity} pcs)')
+                                                           description=f'{item.category} is low on stocks ({item.quantity} pcs)')
                 if len(notification) == 0:
                     notification = Notification.objects.create(
                         user=User.objects.get(pk=user['id']),
@@ -1930,7 +1933,6 @@ class NotificationItems(APIView):
                         description=f'{item.category} is low on stocks ({item.quantity} pcs)'
                     )
         return notification
-
 
 
 class ChangeNotificationStatus(APIView):
@@ -1992,3 +1994,12 @@ class PassengerPerRoute(APIView):
                 amount += consumed_ticket.total / price
 
         return amount
+
+
+class PeakHourReport(APIView):
+    @staticmethod
+    def get(request):
+        transactions = BeepTransaction.objects.all()
+
+
+        pass

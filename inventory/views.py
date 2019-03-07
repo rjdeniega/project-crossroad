@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from inventory.serializers import *
 from remittances.models import *
+from members.serializers import *
 
 from .models import *
 from core.models import Notification
@@ -739,4 +740,24 @@ class PurchaseOrderItemView(APIView):
             'foo': added_item.description
         }, status=status.HTTP_200_OK)
 
+
+class DriverRepairRequest(APIView):
+    @staticmethod
+    def get(request, pk):
+        user = User.objects.get(id=pk)
+        active_schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
+                                                  end_date__gte=datetime.now().date()).first()
+
+        logged_driver = Driver.objects.get(user=user)
+        for shift in Shift.objects.filter(schedule=active_schedule):
+            for driver in DriversAssigned.objects.filter(shift=shift):
+                if driver.driver == logged_driver:
+                    serialized_shuttle = ShuttlesSerializer(driver.shuttle)
+                    return Response(data={
+                        'foo': serialized_shuttle.data
+                    }, status=status.HTTP_200_OK)
+
+        return Response(data={
+            'foo': "There is no assigned shift for this driver"
+        }, status=status.HTTP_200_OK)
 

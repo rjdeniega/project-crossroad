@@ -38,5 +38,7 @@ inventory_urls = [
     path('shuttles/dayoffs', ShuttleDayOff.as_view()),
 
     # Maintenance Report
-    path('report/<int:pk>', MaintenanceReport.as_view())
+    path('report/<int:pk>', MaintenanceReport.as_view()),
+
+    path('repair_request/driver/<int:pk>', DriverRepairRequest.as_view()),
 ]

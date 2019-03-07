@@ -1,9 +1,20 @@
 import React, {Component} from 'react';
 import {Col, List, Empty} from 'antd'
+import {getData} from "../../../../network_requests/general";
 
 export class DriverRepairRequest extends Component {
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
+        this.submitRepairRequest();
+    }
+
+    submitRepairRequest(){
+        getData('inventory/repair_request/driver/' + JSON.parse(localStorage.user).id).then(data =>{
+            console.log(data)
+        })
     }
 
     render() {
