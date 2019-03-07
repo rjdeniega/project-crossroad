@@ -162,7 +162,7 @@ function DeploymentListDetails(props) {
     );
 }
 
-function TicketDisplay(props) {
+export function TicketDisplay(props) {
 
     if (props.total >= 100) {
         var content = (

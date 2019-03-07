@@ -3,6 +3,7 @@ import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip, Divider, T
 import '../revised-style.css';
 import { postData } from '../../../../../network_requests/general';
 
+import { TicketDisplay as SubTicketDisplay } from '../deployment phases/pre-deployment';
 
 export class DuringDeployment extends React.Component {
     constructor(props) {
@@ -75,12 +76,19 @@ function DeploymentListDetails(props) {
     const supervisor = JSON.parse(localStorage.user_staff);
     const absent_driver = props.absent_driver
 
-    if (props.route == 'Main Road' || props.route == 'Main Route')
+    if (props.route == 'Main Road' || props.route == 'Main Route' || props.route == 'M') {
+        var route_label = 'Main Road'
         var tag_color = 'blue';
-    else if (props.route == 'Kaliwa')
+    }
+    else if (props.route == 'Kaliwa' || props.route == 'Left Route' || props.route == 'L') {
         var tag_color = 'orange';
-    else
-        var tag_color = 'green'
+        var route_label = 'Left Route';
+    }
+    else {
+        var tag_color = 'green';
+        var route_label = 'Right Route';
+    }
+
 
     if (typeof absent_driver == "undefined") {
         return (
@@ -91,7 +99,7 @@ function DeploymentListDetails(props) {
                         {props.name}
                     </span>
                     <Tag color={tag_color} className="route-tag">
-                            {props.route}
+                        {route_label}
                     </Tag>
                 </div>
 
@@ -128,7 +136,7 @@ function DeploymentListDetails(props) {
                     driver_id={props.driver_id}
                     driver_name={driver_name}
                     deployment_id={props.deployment_id}
-                    route={props.route}
+                    route={route_label}
                     shuttle={props.shuttle}
                 />
             </div>
@@ -221,7 +229,7 @@ function TicketDisplay(props) {
                     </Tag>
                 </Popover>
             </span>
-    
+
         );
 
     } else {
@@ -242,14 +250,14 @@ function TicketDisplay(props) {
                         <Tag className="ticket-tag">
                             {props.amount}
                         </Tag>
-                    </Badge>       
+                    </Badge>
                 </Popover>
             </span>
-    
+
         );
     }
 
-    
+
 }
 
 function DetailItems(props) {
@@ -287,10 +295,15 @@ class StopDeploymentButton extends React.Component {
             modal_body: 1,
             content: shuttleBreakdown,
             shuttle_replacement: null,
-            confirmLoading: false
+            confirmLoading: false,
+            is_disabled: false,
+            'ten_peso_tickets': [],
+            'twelve_peso_tickets': [],
+            'fifteen_peso_tickets': [],
+            'ten_total': 0,
+            'twelve_total': 0,
+            'fifteen_total': 0
         }
-
-
     }
 
     componentDidMount() {
@@ -355,7 +368,7 @@ class StopDeploymentButton extends React.Component {
         }
 
         let notice = "Driver has been deployed for " + this.props.driver_name
-       
+
         postData('remittances/deployments/early-leave/redeploy/', earlyleave)
             .then(response => {
                 if (!response.error) {
@@ -376,6 +389,64 @@ class StopDeploymentButton extends React.Component {
         this.setState({
             driver_replacement: value
         });
+        this.fetchSubDriverTickets(value)
+    }
+
+    fetchSubDriverTickets(sub_driver_id) {
+        console.log('entered here', sub_driver_id)
+        fetch('/remittances/tickets/driver/' + sub_driver_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    if (this.props.route == 'Main Road'){
+                        console.log(this.state.ten_total)
+                        if (data.ten_total >= 100 && data.twelve_total >= 100 && data.fifteen_total >= 100)
+                            var is_disabled = false
+                        else
+                            var is_disabled = true
+                    } else {
+                        if (data.ten_total >= 100 && data.twelve_total >= 100)
+                            var is_disabled = false
+                        else
+                            var is_disabled = true
+                    }
+
+                    const earlyLeave = (
+                        <EarlyLeave
+                            deployment_id={this.props.deployment_id}
+                            driver_name={this.props.driver_name}
+                            route={this.props.route}
+                            shuttle={this.props.shuttle}
+                            onSelectChange={this.handleDriverChange}
+                            ten_peso_tickets={data.ten_peso_tickets}
+                            twelve_peso_tickets={data.twelve_peso_tickets}
+                            fifteen_peso_tickets={data.fifteen_peso_tickets}
+                            ten_total={data.ten_total}
+                            twelve_total={data.twelve_total}
+                            fifteen_total={data.fifteen_total}
+                        />
+                    )
+
+                    this.setState({
+                        ten_total: data.ten_total,
+                        ten_peso_tickets: data.ten_peso_tickets,
+                        twelve_total: data.twelve_total,
+                        twelve_peso_tickets: data.twelve_peso_tickets,
+                        fifteen_total: data.fifteen_total,
+                        fifteen_peso_tickets: data.fifteen_peso_tickets,
+                        is_disabled: is_disabled,
+                        content: earlyLeave
+                    });
+
+                    console.log(this.state.ten_total)
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
     }
 
     handleSelectChange = (value) => {
@@ -383,6 +454,20 @@ class StopDeploymentButton extends React.Component {
         let breakdown_message = "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment";
         let earlyend_message = "early leave of driver is when the driver requests for an early end of deployment for personal reasons";
         let tooltip_message = ((value == 1) ? breakdown_message : earlyend_message);
+
+        let is_disabled = (value == 1) ? false : true;
+
+        //clear tickets when it returns to shuttleBreakdown
+        if (value == 1) {
+            this.setState({
+                'ten_peso_tickets': [],
+                'twelve_peso_tickets': [],
+                'fifteen_peso_tickets': [],
+                'ten_total': 0,
+                'twelve_total': 0,
+                'fifteen_total': 0
+            })
+        }
 
         const shuttleBreakdown = (
             <ShuttleBreakdown
@@ -400,6 +485,12 @@ class StopDeploymentButton extends React.Component {
                 route={this.props.route}
                 shuttle={this.props.shuttle}
                 onSelectChange={this.handleDriverChange}
+                ten_peso_tickets={this.state.ten_peso_tickets}
+                twelve_peso_tickets={this.state.twelve_peso_tickets}
+                fifteen_peso_tickets={this.state.fifteen_peso_tickets}
+                ten_total={this.state.ten_total}
+                twelve_total={this.state.twelve_total}
+                fifteen_total={this.state.fifteen_total}
             />
         )
 
@@ -408,7 +499,8 @@ class StopDeploymentButton extends React.Component {
         this.setState({
             modal_body: modal_body,
             tooltip_message: tooltip_message,
-            content: content
+            content: content,
+            is_disabled: is_disabled
         });
     }
 
@@ -431,27 +523,32 @@ class StopDeploymentButton extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     confirmLoading={this.state.confirmLoading}
+                    okButtonProps={this.state.is_disabled ?
+                        { disabled: true } : { disabled: false }
+                    }
                 >
-                    <span className="stop-deployment-modal-select">
-                        <label className="reason-label">
-                            Reason for Termination
-                            <Tooltip title={this.state.tooltip_message} className="info-circle">
-                                <Icon type="question-circle" />
-                            </Tooltip>
-                            :
-                        </label>
-                        <Select
-                            defaultValue='1'
-                            style={{ width: 200 }}
-                            onChange={this.handleSelectChange}
-                            className="reason-select"
-                        >
-                            <Option value='1'>Shuttle Breakdown</Option>
-                            <Option value='2'>Early Leave of Driver</Option>
-                        </Select>
-                        
-                    </span>
-                    {this.state.content}
+                    <div className="modal-container">
+                        <span className="stop-deployment-modal-select">
+                            <label className="reason-label">
+                                Reason for Termination
+                                <Tooltip title={this.state.tooltip_message} className="info-circle">
+                                    <Icon type="question-circle" />
+                                </Tooltip>
+                                :
+                            </label>
+                            <Select
+                                defaultValue='1'
+                                style={{ width: 200 }}
+                                onChange={this.handleSelectChange}
+                                className="reason-select"
+                            >
+                                <Option value='1'>Shuttle Breakdown</Option>
+                                <Option value='2'>Early Leave of Driver</Option>
+                            </Select>
+
+                        </span>
+                        {this.state.content}
+                    </div>
                 </Modal>
             </div>
         );
@@ -506,9 +603,9 @@ class ShuttleBreakdown extends React.Component {
                     value={this.props.driver_name}
                 />
                 <label className="modal-detail-title">Available Shuttles: </label>
-                <Select 
-                    style={{ width: 200 }} 
-                    onChange={this.handleChange} 
+                <Select
+                    style={{ width: 200 }}
+                    onChange={this.handleChange}
                     className="modal-detail-value"
                 >
                     {
@@ -528,7 +625,7 @@ class ShuttleBreakdown extends React.Component {
     }
 }
 
-function ModalDetails(props){
+function ModalDetails(props) {
     return (
         <div className="modal-detail-container">
             <span className="modal-detail-title">
@@ -553,7 +650,7 @@ class EarlyLeave extends React.Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.fetchAvailableDrivers()
     }
 
@@ -587,9 +684,9 @@ class EarlyLeave extends React.Component {
                     Redeploy with a replacement driver
                 </Divider>
                 <label className="modal-detail-title">Available Drivers: </label>
-                <Select 
-                    style={{ width: 200 }} 
-                    onChange={this.handleChange} 
+                <Select
+                    style={{ width: 200 }}
+                    onChange={this.handleChange}
                     className="modal-detail-value"
                 >
                     {
@@ -608,6 +705,25 @@ class EarlyLeave extends React.Component {
                     title="Route"
                     value={this.props.route}
                 />
+                <div className="ticket-tags-container">
+                    <SubTicketDisplay
+                        amount="₱10"
+                        tickets={this.props.ten_peso_tickets}
+                        total={this.props.ten_total}
+                    />
+                    <SubTicketDisplay
+                        amount="₱12"
+                        tickets={this.props.twelve_peso_tickets}
+                        total={this.props.twelve_total}
+                    />
+                    {this.props.route == 'Main Road' &&
+                        <SubTicketDisplay
+                            amount="₱15"
+                            tickets={this.props.fifteen_peso_tickets}
+                            total={this.props.fifteen_total}
+                        />
+                    }
+                </div>
             </div>
         );
     }
