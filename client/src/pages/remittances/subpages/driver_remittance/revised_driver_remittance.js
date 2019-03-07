@@ -6,6 +6,8 @@ import './revised-style.css'
 import { list } from 'react-icons-kit/feather';
 import { postData } from '../../../../network_requests/general';
 
+import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
+
 export class DriverRemittance extends React.Component {
     constructor(props) {
         super(props);
@@ -14,12 +16,14 @@ export class DriverRemittance extends React.Component {
     render() {
         return (
             <div className="page-container">
-                <Header />
-                <Row className="remittance-body">
-                    <Col span={24}>
-                        <DeploymentList />
-                    </Col>
-                </Row>
+                <PerfectScrollbar>
+                    <Header />
+                    <Row className="remittance-body">
+                        <Col span={24}>
+                            <DeploymentList />
+                        </Col>
+                    </Row>
+                </PerfectScrollbar>
             </div>
         );
     }
