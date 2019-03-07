@@ -43,7 +43,7 @@ class ComponentToPrint extends React.Component {
             ],
             datasets: [
                 {
-                    label: "",
+                    label: "Main Road",
                     fill: false,
                     lineTension: 0.1,
                     backgroundColor: 'rgba(75,192,192,0.4)',
@@ -62,7 +62,28 @@ class ComponentToPrint extends React.Component {
                     pointRadius: 1,
                     pointHitRadius: 10,
                     data: this.props.data.values,
-                }
+                },
+                {
+                    label: "Kaliwa",
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'red',
+                    borderColor: 'red',
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'red',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'red',
+                    pointHoverBorderColor: 'red',
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: this.props.data.values,
+                },
             ]
         };
         return <Line data={data} options={{

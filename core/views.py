@@ -1914,7 +1914,7 @@ class NotificationItems(APIView):
 
     @staticmethod
     def get_clerk_notifs(user_id):
-        is_in_between = NotificationItems.is_time_between(time(15,00),time(16,30))
+        is_in_between = NotificationItems.is_time_between(time(15, 00), time(16, 30))
         print(f'the user id is {user_id}')
         print(is_in_between)
 
@@ -1927,7 +1927,6 @@ class NotificationItems(APIView):
                 description='Please upload beep CSV'
             )
         return notification
-
 
     @staticmethod
     def get_member_notifs(user_id):
@@ -2036,14 +2035,7 @@ class PassengerPerRoute(APIView):
 
 class PeakHourReport(APIView):
     @staticmethod
-    def execute(value, hour):
-        for i in range(1, 25):
-            if hour == i:
-                return value + 1
-        return value
-
-    @staticmethod
-    def get(request):
+    def get_passenger_per_hour(route):
         one = 0
         two = 0
         three = 0
@@ -2119,8 +2111,13 @@ class PeakHourReport(APIView):
             elif transaction.transaction_date_time.hour == 24:
                 twentyfour += 1
 
+        return [one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen,
+                fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twentyone,
+                twentytwo, twentythree, twentyfour]
+
+    @staticmethod
+    def get(request):
+
         return Response(data={
-            "values": [one, two, three, four, five, six, seven, eight, nine, ten, eleven, twelve, thirteen,
-                       fourteen, fifteen, sixteen, seventeen, eighteen, nineteen, twenty, twentyone,
-                       twentytwo, twentythree, twentyfour]
+            "values": None
         }, status=status.HTTP_200_OK)
