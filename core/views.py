@@ -1840,12 +1840,13 @@ class NotificationItems(APIView):
     @staticmethod
     def get(request, user_type, user_id):
         # user type gotten from localStorage.get('user_type')
-
         user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
         Notification.objects.all().hard_delete()
         notifications = NotificationSerializer(Notification.objects.all(), many=True)
         unread = NotificationSerializer(Notification.objects.all(), many=True)
         print(user_type)
+        print(user_id)
+        print(user)
         if user_type == 'member':
             NotificationItems.get_member_notifs(user)
             notifications = NotificationSerializer(Notification.objects.all()
@@ -1859,7 +1860,7 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
-            NotificationItems.get_om_notifs(user)
+            NotificationItems.get_om_notifs(user_id)
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -1869,7 +1870,7 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'system_admin':
-            NotificationItems.get_om_notifs(user)
+            NotificationItems.get_om_notifs(user_id)
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -1879,8 +1880,8 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'clerk':
-            NotificationItems.get_om_notifs(user)
-            NotificationItems.get_clerk_notifs(user)
+            NotificationItems.get_om_notifs(user_id)
+            NotificationItems.get_clerk_notifs(user_id)
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -1904,48 +1905,58 @@ class NotificationItems(APIView):
     @staticmethod
     def is_time_between(begin_time, end_time, check_time=None):
         # If check time is not given, default to current UTC time
-        check_time = check_time or datetime.utcnow().time()
+        check_time = datetime.now().time()
         if begin_time < end_time:
             return check_time >= begin_time and check_time <= end_time
         else:  # crosses midnight
             return check_time >= begin_time or check_time <= end_time
 
     @staticmethod
-    def get_clerk_notifs(user):
-        member_id = user['id']
-        is_in_between = NotificationItems.is_time_between(time(15,30),time(16,30))
+    def get_clerk_notifs(user_id):
+        is_in_between = NotificationItems.is_time_between(time(15,00),time(16,30))
+        print(f'the user id is {user_id}')
         print(is_in_between)
+
+        notification = Notification.objects.filter(user__id=user_id,
+                                                   description="Please upload beep CSV")
+        if len(notification) == 0:
+            notification = Notification.objects.create(
+                user=User.objects.get(pk=user_id),
+                type='R',
+                description='Please upload beep CSV'
+            )
+        return notification
 
 
     @staticmethod
-    def get_member_notifs(user):
-        member_id = user['id']
+    def get_member_notifs(user_id):
+        member_id = user_id
         shares = Share.objects.filter(member=Member.objects.get(pk=member_id))
         serialized_shares = ShareSerializer(shares, many=True)
 
         total_shares = sum([float(item["value"]) for item in serialized_shares.data])
-        notification = Notification.objects.filter(user__id=user['id'],
+        notification = Notification.objects.filter(user__id=user_id,
                                                    description="You do not have enough accumulated shares")
 
         if total_shares < 50 and len(notification) == 0:
             notification = Notification.objects.create(
-                user=User.objects.get(pk=user['id']),
+                user=User.objects.get(pk=user_id),
                 type='M',
                 description='You do not have enough accumulated shares'
             )
         return notification
 
     @staticmethod
-    def get_om_notifs(user):
-        member_id = user['id']
+    def get_om_notifs(user_id):
+        member_id = user_id
         notification = None
         for item in ItemCategory.objects.all():
             if item.quantity < 3:
-                notification = Notification.objects.filter(user__id=user['id'],
+                notification = Notification.objects.filter(user__id=user_id,
                                                            description=f'{item.category} is low on stocks ({item.quantity} pcs)')
                 if len(notification) == 0:
                     notification = Notification.objects.create(
-                        user=User.objects.get(pk=user['id']),
+                        user=User.objects.get(pk=user_id),
                         type='I',
                         description=f'{item.category} is low on stocks ({item.quantity} pcs)'
                     )
