@@ -2002,14 +2002,6 @@ class PassengerPerRoute(APIView):
 
     @staticmethod
     def getPassengersFromDate(route, date):
-        print(date)
-        print(route)
-        if route == 'M':
-            route = 'Main Road'
-        if route == 'L':
-            route = 'Kaliwa'
-        if route == 'R':
-            route = 'Kanan'
         remittances = RemittanceForm.objects.filter(
             deployment__shift_iteration__date=date,
             deployment__route=route
