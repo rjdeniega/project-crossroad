@@ -43,11 +43,12 @@ class ComponentToPrint extends React.Component {
                 </div>
                 <div className="formatted-report-body">
                     {this.props.data &&
-                    <table cellSpacing="50" cellPadding="3px">
+                    <table className="ticket-day-table" cellSpacing="50" cellPadding="3px">
                         <thead>
                         <th>Date</th>
+                        <th>Shuttle</th>
+                        <th>Route</th>
                         <th>Shift</th>
-                        <th>Shuttle #</th>
                         <th>10 Peso</th>
                         <th>12 Peso</th>
                         <th>15 Peso</th>
@@ -65,7 +66,8 @@ class ComponentToPrint extends React.Component {
                                         <Fragment>
                                             <tr>
                                                 <td></td>
-                                                <td>{item.shuttle_id}</td>
+                                                <td>{item.shuttle_id} - {item.shuttle_plate}</td>
+                                                <td>{item.shuttle_route}</td>
                                                 <td>AM</td>
                                                 <td>{item.am_ten}</td>
                                                 <td>{item.am_twelve}</td>
@@ -73,6 +75,7 @@ class ComponentToPrint extends React.Component {
                                                 <td>{item.am_total}</td>
                                             </tr>
                                             <tr>
+                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td>PM</td>
@@ -107,6 +110,9 @@ class ComponentToPrint extends React.Component {
                                         <td>
                                         </td>
                                         <td>
+                                        </td>
+                                        <td>
+
                                         </td>
                                         <td><b> Day Total </b></td>
                                         <td className="total-line"><b> {item.ten_total}
@@ -157,11 +163,14 @@ class ComponentToPrint extends React.Component {
                             <td className="total-line"><b>
                             </b></td>
                             <td className="total-line"><b>
+                            </b></td>
+                            <td className="total-line"><b>
                                 {this.props.data.grand_am_total}
                             </b></td>
                         </tr>
                         <tr>
                             <td><b> Grand PM Total </b></td>
+                            <td></td>
                             <td></td>
                             <td></td>
                             <td></td>
@@ -173,6 +182,7 @@ class ComponentToPrint extends React.Component {
                             <td><b> Grand Total </b></td>
                             <td></td>
                             <td></td>
+                             <td></td>
                             <td><b>
                                 {this.props.data.grand_ten_total}
                             </b></td>

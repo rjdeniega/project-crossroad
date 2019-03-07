@@ -1274,6 +1274,7 @@ class TicketTypePerDayReport(APIView):
                 shuttles.append({
                     "shuttle_id": shuttle.id,
                     "shuttle_number": shuttle.shuttle_number,
+                    "shuttle_plate": shuttle.plate_number,
                     "shuttle_make": shuttle.make,
                     "shuttle_model": shuttle.model,
                     "shuttle_route": shuttle.route,
