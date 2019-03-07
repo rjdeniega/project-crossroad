@@ -1842,6 +1842,8 @@ class NotificationItems(APIView):
         # user type gotten from localStorage.get('user_type')
 
         user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
+        Notification.objects.all().hard_delete()
+        notifications = []
         print(user_type)
         if user_type == 'member':
             NotificationItems.get_member_notifs(user)
@@ -1922,7 +1924,7 @@ class NotificationItems(APIView):
         for item in ItemCategory.objects.all():
             if item.quantity < 3:
                 notification = Notification.objects.filter(user__id=user['id'],
-                                                           description=f'{item} is low on stocks ({item.quantity} pcs)')
+                                                           description=f'{item.category} is low on stocks ({item.quantity} pcs)')
                 if len(notification) == 0:
                     notification = Notification.objects.create(
                         user=User.objects.get(pk=user['id']),

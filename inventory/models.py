@@ -70,7 +70,7 @@ class Shuttle(SoftDeletionModel):
     mileage = PositiveIntegerField()
     route = CharField(max_length=16)
     maintenance_sched = DateField(null=True)
-    dayoff_date = CharField(max_length=16)
+    dayoff_date = CharField(max_length=16, null=True)
 
     def save(self, *args, **kwargs):
         if not self.id:
