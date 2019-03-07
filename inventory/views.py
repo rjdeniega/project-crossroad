@@ -748,7 +748,7 @@ class DriverRepairRequest(APIView):
         active_schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
                                                   end_date__gte=datetime.now().date()).first()
 
-        logged_driver = DriverSerializer(Driver.objects.get(user=user))
+        logged_driver = Driver.objects.get(user=user)
         for shift in Shift.objects.filter(schedule=active_schedule):
             for driver in DriversAssigned.objects.filter(shift=shift):
                 if driver.driver == logged_driver:
