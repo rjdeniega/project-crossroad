@@ -747,17 +747,47 @@ class DriverRepairRequest(APIView):
         user = User.objects.get(id=pk)
         active_schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
                                                   end_date__gte=datetime.now().date()).first()
+        logged_driver = Driver.objects.get(user=user)
+
+        repairs = RepairSerializer(Repair.objects.filter(driver_requested=logged_driver), many=True)
+        for shift in Shift.objects.filter(schedule=active_schedule):
+            for driver in DriversAssigned.objects.filter(shift=shift):
+                if driver.driver == logged_driver:
+                    shuttle = driver.shutle
+                    serialized_shuttle = ShuttlesSerializer(shuttle)
+                    return Response(data={
+                        'shuttle': serialized_shuttle.data,
+                        'repairs': repairs.data
+                    }, status=status.HTTP_200_OK)
+
+        return Response(data={
+            'foo': "There is no assigned shift for this driver",
+            'repairs': repairs.data
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, pk):
+        user = User.objects.get(id=pk)
+        data = json.loads(request.body)
+        active_schedule = Schedule.objects.filter(start_date__lte=datetime.now().date(),
+                                                  end_date__gte=datetime.now().date()).first()
 
         logged_driver = Driver.objects.get(user=user)
         for shift in Shift.objects.filter(schedule=active_schedule):
             for driver in DriversAssigned.objects.filter(shift=shift):
                 if driver.driver == logged_driver:
-                    serialized_shuttle = ShuttlesSerializer(driver.shuttle)
+                    message = 'Repair request has been sent'
+                    repair = Repair(shuttle=driver.shuttle, date_requested=datetime.now().date(),
+                                    status='NS', driver_requested=logged_driver)
+                    repair.save()
+                    for problem in data['problems']:
+                        rp = RepairProblem(description=problem)
+                        rp.save()
+                        repair.problems.add(rp)
                     return Response(data={
-                        'foo': serialized_shuttle.data
+                        'foo': message
                     }, status=status.HTTP_200_OK)
 
         return Response(data={
             'foo': "There is no assigned shift for this driver"
         }, status=status.HTTP_200_OK)
-
