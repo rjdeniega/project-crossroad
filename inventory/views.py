@@ -791,3 +791,16 @@ class DriverRepairRequest(APIView):
         return Response(data={
             'foo': "There is no assigned shift for this driver"
         }, status=status.HTTP_200_OK)
+
+
+class UpdateRepairStatus(APIView):
+    @staticmethod
+    def put(request, pk):
+        data = json.loads(request.body)
+        repair = Repair.objects.get(id=pk)
+        repair.status = data['status']
+        repair.save()
+        repair = RepairSerializer(repair)
+        return Response(data={
+            'repair': repair
+        }, status=status.HTTP_200_OK)
