@@ -601,6 +601,18 @@ class PatronageRefund(APIView):
                 for item in serialized_transactions.data:
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
+                shares = Share.objects.filter(member=member)
+                array = []
+
+                for i in range(1, 13):
+                    accumulated_month = 0
+                    for share in shares:
+                        if (share.date_of_update.month == i and share.date_of_update.year == start_date.year):
+                            accumulated_month+=share.value
+                    array.append(accumulated_month)
+
+                rate_of_refund = sum(array)/len(array)
+
                 # rate_of_refund = (sum([item.total for item in transactions]) + sum(
                 #     [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
                 report_items.append({
@@ -617,7 +629,7 @@ class PatronageRefund(APIView):
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions]),
-                    "rate_of_refund": rate_of_refund,
+                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund*100),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions])),
                     "patronage_refund": (rate_of_refund) * sum([item.total for item in transactions]) + sum(
@@ -2230,7 +2242,7 @@ class DriverPerformance(APIView):
             payables = sum([item.discrepancy for item in remittances])
 
             sub_freq_total += sub_freq
-            absences_total  += absences
+            absences_total += absences
             remittance_total += total
             payables_total += payables
 
