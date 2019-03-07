@@ -10,6 +10,7 @@ from django.db.models.aggregates import Count
 from random import randint
 
 from core.models import SoftDeletionModel
+from members.models import Driver
 
 MOVEMENT_TYPE = [
     ('G', 'Get'),
@@ -170,6 +171,7 @@ class OutSourcedItems(SoftDeletionModel):
 
 class Repair(SoftDeletionModel):
     shuttle = ForeignKey(Shuttle, on_delete=models.PROTECT)
+    driver_requested = ForeignKey(Driver, on_delete=models.PROTECT)
     date_requested = DateField()
     vendor = CharField(max_length=64, null=True)
     start_date = DateField(null=True)

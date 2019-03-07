@@ -135,6 +135,13 @@ const DRIVER_TABS = [
         component: RemittancePage,
         image: money
     },
+    {
+        name: "Maintenance",
+        key: "maintenance",
+        path: '/maintenance',
+        component: MaintenancePage,
+        image: wrench,
+    }
 ];
 const CLERK_OM_TABS = [
     {

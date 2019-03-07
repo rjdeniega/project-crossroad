@@ -39,9 +39,6 @@ export class Repairs extends Component {
             width = 1100;
         } else if (e.key === "2") {
             content = 2;
-            width = 650;
-        } else {
-            content = 3;
             width = 700;
         }
         this.setState({
@@ -59,7 +56,7 @@ export class Repairs extends Component {
 
     reloadMaintenance() {
         this.setState({
-            currentPage: 3,
+            currentPage: 2,
             modalWidth: 700
         })
     }
@@ -71,15 +68,8 @@ export class Repairs extends Component {
                 return <RepairsTable shuttle={this.state.shuttle}/>;
             case 2:
                 return (
-                    <RepairForm
-                        requestSubmitted={this.requestSubmitted.bind(this)}
-                        shuttle={this.props.shuttle}
-                    />
-                );
-            case 3:
-                return (
                     <Maintenance reloadMaintenance={this.reloadMaintenance.bind(this)} shuttle={this.props.shuttle}/>
-                )
+                );
             default:
                 return <RepairsTable shuttle={this.state.shuttle}/>;
         }
@@ -106,9 +96,6 @@ export class Repairs extends Component {
                             <Icon icon={wrench}/> Repair Information
                         </Menu.Item>
                         <Menu.Item key="2">
-                            <Icon icon={iosListOutline}/> Repair Request
-                        </Menu.Item>
-                        <Menu.Item key="3">
                             <Icon icon={gears}/> Maintenance
                         </Menu.Item>
                     </Menu>

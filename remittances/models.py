@@ -105,7 +105,7 @@ class Shift(models.Model):
         shift_name = self.get_type_display() + " shift"
         schedule = self.schedule.start_date.strftime('%m/%d/%Y') + " to " + self.schedule.end_date.strftime('%m/%d/%Y')
         supervisor = self.supervisor.name
-        return (shift_name + " - " + schedule + " - " + supervisor) 
+        return (shift_name + " - " + schedule + " - " + supervisor)
 
 
 class DriversAssigned(models.Model):
@@ -115,7 +115,7 @@ class DriversAssigned(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
     def __str__(self):
-        return (self.driver.name + ' driving ')
+        return self.driver.name + ' driving '
 
 
 class ShiftIteration(models.Model):
@@ -128,7 +128,7 @@ class ShiftIteration(models.Model):
         shift_type = self.shift.get_type_display()
         date = self.date.strftime('%m/%d/%Y')
         status = self.get_status_display()
-        return (shift_type + ' Shift on ' + date + ' (' + status + ')' ) 
+        return (shift_type + ' Shift on ' + date + ' (' + status + ')')
 
     def get_status_display(self):
         if self.status == 'O':
@@ -159,7 +159,7 @@ class Deployment(models.Model):
         route = self.get_route_display()
         status = self.get_status_display()
         date = self.shift_iteration.date.strftime('%m/%d/%Y')
-        return (driver_name + " driving shuttle#" + shuttle + " on route " + route + "(" + status + ") on " + date) 
+        return (driver_name + " driving shuttle#" + shuttle + " on route " + route + "(" + status + ") on " + date)
 
     def get_status_display(self):
         if self.status is 'O':
@@ -203,7 +203,8 @@ class SubbedDeployments(models.Model):
 
     def __str__(self):
         date = self.deployment.shift_iteration.date.strftime('%m/%d/%Y')
-        return (self.deployment.driver.name + " subbbed in for " + self.absent_driver.driver.name + " (" + date + ")")
+        return self.deployment.driver.name + " subbbed in for " + self.absent_driver.driver.name + " (" + date + ")"
+
 
 class Redeployments(models.Model):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)

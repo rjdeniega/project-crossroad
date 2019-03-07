@@ -10,6 +10,7 @@ import {ListOfShuttles} from "./components/list_of_shuttles/list_of_shuttles";
 import {AddShuttle} from "./components/add_shuttle/add_shuttle";
 import {MechanicView} from './components/mechanic_view'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
+import {DriverRepairRequest} from "./components/driver_repair_requests/driver_repair_request";
 
 export class MaintenancePage extends Component {
     constructor(props) {
@@ -30,7 +31,9 @@ export class MaintenancePage extends Component {
                 <Header/>
                 {user_type === 'mechanic' ? (
                     <MechanicView/>
-                ) : (
+                ) : user_type === 'driver' ? (<div className={'shuttles-div'}>
+                    <DriverRepairRequest/>
+                </div>): (
                     <div className={'shuttles-div'} align="left"
                          style={{overflowY: 'hidden', overflowX: 'hidden'}}>
                         <PerfectScrollbar>
