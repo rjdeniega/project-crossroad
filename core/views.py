@@ -2061,7 +2061,7 @@ class PeakHourReport(APIView):
         twentythree = 0
         twentyfour = 0
 
-        for transaction in BeepTransaction.objects.all():
+        for transaction in BeepTransaction.objects.filter(shuttle__route=route):
             if transaction.transaction_date_time.hour == 1:
                 one += 1
             elif transaction.transaction_date_time.hour == 2:
@@ -2117,7 +2117,11 @@ class PeakHourReport(APIView):
 
     @staticmethod
     def get(request):
-
+        main_road_values = PeakHourReport.get_passenger_per_hour('Main Road')
+        kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa')
+        kanan_values = PeakHourReport.get_passenger_per_hour('Kanan')
         return Response(data={
-            "values": None
+            "main_road_values": main_road_values,
+            "kaliwa_values": kaliwa_values,
+            "kanan_values": kanan_values,
         }, status=status.HTTP_200_OK)

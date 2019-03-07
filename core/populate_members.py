@@ -166,6 +166,7 @@ class PopulateMembers:
                 BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
                                                transaction_date_time=pm_today_random_time,
+                                               shuttle=Shuttle.objects.order_by("?").first(),
                                                total=values[random.randint(0, 2)])
 
             current_date += timedelta(days=1)
