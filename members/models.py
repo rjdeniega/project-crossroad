@@ -39,14 +39,14 @@ class Person(SoftDeletionModel):
     def __str__(self):
         return (str(self.id) + " - " + self.name)
 
-
     def random(self):
         count = self.aggregate(count=Count('id'))['count']
         random_index = randint(0, count - 1)
         return self.all()[random_index]
-    
+
     def get_user_type(self):
         return self.user_type
+
 
 class Driver(Person):
     user = OneToOneField(User, on_delete=models.CASCADE, null=True)
