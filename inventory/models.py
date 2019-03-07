@@ -72,6 +72,9 @@ class Shuttle(SoftDeletionModel):
     route = CharField(max_length=16)
     maintenance_sched = DateField(null=True)
     dayoff_date = CharField(max_length=16, null=True)
+    purchase_price = DecimalField(max_digits=10, decimal_places=2)
+    salvage_value = DecimalField(max_digits=10, decimal_places=2)
+    lifespan = PositiveIntegerField()
 
     def save(self, *args, **kwargs):
         if not self.id:
