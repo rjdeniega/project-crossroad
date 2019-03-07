@@ -740,3 +740,12 @@ class PurchaseOrderItemView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class DriverRepairRequest(APIView):
+    @staticmethod
+    def get(request, pk):
+        print('hi')
+        user = User.objects.get(id=pk)
+        driver = Driver.objects.get(user=user)
+        return Response(data={
+            'foo': driver
+        }, status=status.HTTP_200_OK)

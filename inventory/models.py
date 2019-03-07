@@ -27,6 +27,7 @@ SHUTTLE_STATUS = [
 
 REPAIR_STATUS = [
     ('NS', 'Not Started'),
+    ('FI', 'For Investigation'),
     ('IP', 'In Progress'),
     ('C', 'Completed')
 ]
