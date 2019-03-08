@@ -136,6 +136,30 @@ class PopulateDatabase():
                     measurement=2, unit="pieces", vendor=vendor,
                     item_code="WWR001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
         item.save()
+        itemMovement = ItemMovement(item=item,
+                                    type="B",
+                                    quantity=6,
+                                    vendor="Lazada",
+                                    unit_price=150,
+                                    created=datetime.strptime(
+                                        '01112018', "%d%m%Y").date())
+        itemMovement.save()
+
+        item2 = Item(name="Signal Lightbulb",
+                     description="Can be used for brake light or turn signal lights",
+                     quantity=8,
+                     brand="TTW",
+                     consumable=False,
+                     average_price=250)
+        item2.save()
+        itemMovement2 = ItemMovement(item=item2,
+                                     type="B",
+                                     quantity=10,
+                                     vendor="Ace Hardware",
+                                     unit_price=250,
+                                     created=datetime.strptime(
+                                         '02112018', "%d%m%Y").date())
+        itemMovement2.save()
 
         item_movement_1 = ItemMovement(item=item,
                                        type="B",
@@ -282,6 +306,9 @@ class PopulateDatabase():
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -294,6 +321,9 @@ class PopulateDatabase():
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -305,6 +335,9 @@ class PopulateDatabase():
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -315,6 +348,9 @@ class PopulateDatabase():
                            plate_number="AB5225",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -326,6 +362,9 @@ class PopulateDatabase():
                            plate_number="UF6862",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -337,6 +376,9 @@ class PopulateDatabase():
                            plate_number="VO5030",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -349,6 +391,9 @@ class PopulateDatabase():
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -359,6 +404,9 @@ class PopulateDatabase():
                            plate_number="YR8953",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -371,6 +419,9 @@ class PopulateDatabase():
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,

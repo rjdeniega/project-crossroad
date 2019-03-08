@@ -510,7 +510,7 @@ class ShuttleMaintenanceFrequency(APIView):
 
             rows.append({
                 "shuttle": shuttle.id,
-                "total": major_maintenanceCost + minor_maintenanceCost + intermediate_maintenanceCost,
+                "total": "{0:,.2f}".format(major_maintenanceCost + minor_maintenanceCost + intermediate_maintenanceCost),
                 "year_purchased": shuttle.date_acquired,
                 "number_of_major_maintenance": major_maintenanceTimes,
                 "number_of_minor_maintenance": minor_maintenanceTimes,
@@ -545,13 +545,13 @@ class ShuttleMaintenanceFrequency(APIView):
         intermediate_total_maintenance_cost = "{0:,.2f}".format(sum([item['intermediate_maintenance_cost_value'] for item in rows]))
         intermediate_total_average_maintenance_cost = "{0:,.2f}".format(
             sum([float(item['intermediate_average_cost_value']) for item in rows]) / len(rows))
-        intermediate_count = "{0:,.2f}".format(
+        intermediate_count = (
             sum([float(item['number_of_intermediate_maintenance']) for item in rows]) / len(rows))
-        major_count = "{0:,.2f}".format(
+        major_count = (
             sum([float(item['number_of_major_maintenance']) for item in rows]) / len(rows))
-        minor_count = "{0:,.2f}".format(
+        minor_count = (
             sum([float(item['number_of_minor_maintenance']) for item in rows]) / len(rows))
-        grand_total = major_total_maintenance_cost + minor_total_maintenance_cost + intermediate_total_maintenance_cost
+        grand_total = float(major_total_maintenance_cost) + float(minor_total_maintenance_cost) + float(intermediate_total_maintenance_cost)
         return Response(data={
             "rows": rows,
             "major_total_maintenance_cost": major_total_maintenance_cost,
@@ -560,7 +560,7 @@ class ShuttleMaintenanceFrequency(APIView):
             "minor_average_maintenance_cost": minor_total_average_maintenance_cost,
             "intermediate_total_maintenance_cost": intermediate_total_maintenance_cost,
             "intermediate_average_maintenance_cost": intermediate_total_average_maintenance_cost,
-            "grand_total": grand_total,
+            "grand_total": "{0:,.2f}".format(grand_total),
             "minor_count": minor_count,
             "major_count": major_count,
             "intermediate_count": intermediate_count
