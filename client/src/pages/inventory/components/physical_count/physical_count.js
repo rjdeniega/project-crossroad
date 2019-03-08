@@ -84,7 +84,7 @@ export class PhysicalCount extends Component {
     changeQuantity = (id, value) => {
         this.setState({
             new_quantity: update(this.state.new_quantity, {
-                [id]: {$set:value}
+                [id - 1]: {$set:value}
             })
         }, () => {
             console.log(this.state)
@@ -103,6 +103,8 @@ export class PhysicalCount extends Component {
 
     confirmCount(items, remarks, quantity) {
         let items_to_update = [];
+        console.log(quantity);
+        console.log(remarks);
         items.forEach(function(item, index){
             let remark = remarks[index];
             let quantity = quantity[index];
