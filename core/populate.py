@@ -136,14 +136,13 @@ class PopulateDatabase():
                     measurement=2, unit="pieces", vendor=vendor,
                     item_code="WWR001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
         item.save()
-        itemMovement = ItemMovement(item=item,
-                                    type="B",
-                                    quantity=6,
-                                    vendor="Lazada",
-                                    unit_price=150,
-                                    created=datetime.strptime(
-                                        '01112018', "%d%m%Y").date())
-        itemMovement.save()
+        item_movement = ItemMovement(item=item,
+                                     type="B",
+                                     quantity=6,
+                                     unit_price=150,
+                                     created=datetime.strptime(
+                                         '01112018', "%d%m%Y").date())
+        item_movement.save()
 
         item2 = Item(name="Signal Lightbulb",
                      description="Can be used for brake light or turn signal lights",
@@ -152,14 +151,13 @@ class PopulateDatabase():
                      consumable=False,
                      average_price=250)
         item2.save()
-        itemMovement2 = ItemMovement(item=item2,
-                                     type="B",
-                                     quantity=10,
-                                     vendor="Ace Hardware",
-                                     unit_price=250,
-                                     created=datetime.strptime(
-                                         '02112018', "%d%m%Y").date())
-        itemMovement2.save()
+        item_movement_2 = ItemMovement(item=item2,
+                                       type="B",
+                                       quantity=10,
+                                       unit_price=250,
+                                       created=datetime.strptime(
+                                           '02112018', "%d%m%Y").date())
+        item_movement_2.save()
 
         item_movement_1 = ItemMovement(item=item,
                                        type="B",
@@ -204,99 +202,56 @@ class PopulateDatabase():
                                          status="Complete")
         purchase_order_2.save()
 
-        purchase_order_2_item_1 = PurchaseOrderItem(quantity=5, description="Pair of brake pads for Mitsubishi L300",
+        purchase_order_2_item_3 = PurchaseOrderItem(quantity=5, description="Pair of brake pads for Mitsubishi L300",
                                                     unit_price=800, category=category_brake_pad,
                                                     item_type="Physical Measurement", measurement=2, unit="pieces",
                                                     brand="Akebono",
                                                     delivery_date=datetime.strptime('02172019', "%d%m%Y").date(),
                                                     received=True)
-        purchase_order_1_item_1.save()
+        purchase_order_2_item_3.save()
 
-        item3 = Item(name="Front Brake Pads",
+        item3 = Item(category=category_brake_pad,
                      description="Pair of brake pads for Mitsubishi L300",
                      quantity=5,
                      brand="Akebono",
-                     consumable=False,
-                     average_price=1300)
+                     unit_price=900,
+                     item_type="Physical Measurement",
+                     measurement=2, unit="Pieces")
         item3.save()
 
-        itemMovement3 = ItemMovement(item=item3,
-                                     type="B",
-                                     quantity=9,
-                                     vendor="Ace Hardware",
-                                     unit_price=1300,
-                                     created=datetime.strptime(
-                                         '01112018', "%d%m%Y").date())
-        itemMovement3.save()
+        item_movement3 = ItemMovement(item=item3,
+                                      type="B",
+                                      quantity=5,
+                                      unit_price=1300,
+                                      created=datetime.strptime(
+                                          '01112018', "%d%m%Y").date())
+        item_movement3.save()
 
-        item4 = Item(name="Radiator Coolant",
-                     description="Total Hi-concentrate Radiator Coolant",
-                     quantity=6,
-                     brand="Total",
-                     consumable=True,
-                     average_price=230)
-        item4.save()
+        purchase_order_2_item_4 = PurchaseOrderItem(quantity=5, description="Synthetic Performance Gasoline Oil",
+                                                    unit_price=455, category=category_brake_pad,
+                                                    item_type="Liquid Measurement", measurement=400, unit="mL",
+                                                    brand="Apex",
+                                                    delivery_date=datetime.strptime('02172019', "%d%m%Y").date(),
+                                                    received=True)
 
-        itemMovement4 = ItemMovement(item=item4,
-                                     type="B",
-                                     quantity=6,
-                                     vendor="Total",
-                                     unit_price=230,
-                                     created=datetime.strptime(
-                                         '01112018', "%d%m%Y").date())
-        itemMovement4.save()
+        purchase_order_2_item_4.save()
 
-        item5 = Item(name="Engine Oil",
+        item4 = Item(category=category_oil,
                      description="Synthetic Performance Gasoline Oil",
                      quantity=5,
                      brand="Apex",
-                     consumable=True,
-                     average_price=455)
-        item5.save()
+                     unit_price=455,
+                     measurement=400, unit="mL", vendor=vendor, item_code="OIL001",
+                     delivery_date=datetime.strptime('02172019', "%d%m%Y").date())
+        item4.save()
 
-        itemMovement5 = ItemMovement(item=item5,
-                                     type="B",
-                                     quantity=5,
-                                     vendor="Shell",
-                                     unit_price=455,
-                                     created=datetime.strptime(
-                                         '01112018', "%d%m%Y").date()
-                                     )
-        itemMovement5.save()
-
-        item6 = Item(name="Tire Valve Cap",
-                     description="For Tires",
-                     quantity=14,
-                     brand="OEM",
-                     consumable=False,
-                     average_price=25)
-        item6.save()
-
-        itemMovement6 = ItemMovement(item=item6,
-                                     type="B",
-                                     quantity=16,
-                                     vendor="Ace Hardware",
-                                     unit_price=25,
-                                     created=datetime.strptime(
-                                         '01112018', "%d%m%Y").date())
-        itemMovement6.save()
-
-        item7 = Item(name="Tire",
-                     description="Tires for L300",
-                     quantity=4,
-                     brand="Thunderer",
-                     consumable=False,
-                     average_price=2860)
-        item7.save()
-
-        itemMovement7 = ItemMovement(item=item7,
-                                     type="B",
-                                     quantity=6,
-                                     vendor="Goodyear",
-                                     unit_price=2860,
-                                     created=datetime.strptime(
-                                         '01112018', "%d%m%Y").date())
-        itemMovement7.save()
+        item_movement4 = ItemMovement(item=item4,
+                                      type="B",
+                                      quantity=5,
+                                      unit_price=455,
+                                      created=datetime.strptime(
+                                          '02172019', "%d%m%Y").date())
+        item_movement4.save()
 
     @staticmethod
     def populate_shuttle():
