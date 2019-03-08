@@ -287,39 +287,24 @@ class MechanicItems(APIView):
     def post(request, pk):
         repair = Repair.objects.get(id=pk)
         data = json.loads(request.body)
-
-        item = Item.objects.get(id=data['selectedItem'])
-        if item.consumable:
-            rm = RepairModifications(
-                item_used=item, quantity=1, used_up=data['depleted'])
+        print(request.body)
+        item = Item.objects.get(id=data['item'])
+        if data['quantity']:
+            rm = RepairModifications(item_used=item, quantity=int(data['quantity']))
             rm.save()
             repair.modifications.add(rm)
-            if rm.used_up:
-                im = ItemMovement(item=item, type='G',
-                                  quantity=1, repair=repair, created=datetime.now().date())
-                im.save()
+            item.quantity = item.quantity - int(data['quantity'])
+            item.save()
+        elif data['measurement']:
+            rm = RepairModifications(item_used=item, quantity=int(data['measurement']))
+            rm.save()
+            repair.modifications.add(rm)
+            item.current_measurement = item.current_measurement - int(data['measurement'])
+            if item.current_measurement == 0:
+                item.current_measurement = item.measurement
                 item.quantity = item.quantity - 1
-
-        else:
-            rm = RepairModifications(
-                item_used=item, quantity=data['quantity'], used_up=True)
-            rm.save()
-            repair.modifications.add(rm)
-            im = ItemMovement(item=item, type='G',
-                              quantity=data['quantity'], repair=repair, created=datetime.now().date())
-            im.save()
-            item.quantity = item.quantity - data['quantity']
-
-        item.save()
-
-        if item.quantity < 5:
-            notification = Notification(
-                type='I', description=item.name + " is low on stock")
-            notification.save()
-        modifications = RepairModificationsSerializer(
-            repair.modifications.all(), many=True)
         return Response(data={
-            'modifications': modifications.data
+            'foo': 'bar'
         }, status=status.HTTP_200_OK)
 
 
@@ -795,7 +780,15 @@ class UpdateRepairStatus(APIView):
         repair.status = data['status']
         if data['type'] == "Minor":
             repair.schedule = datetime.strptime(data['schedule'], '%Y-%m-%d').date()
-            
+        if data['status'] == "IP" or data['status'] == "FO":
+            shuttle = repair.shuttle
+            shuttle.status = 'UM'
+            shuttle.save()
+
+        if data['status'] == "C":
+            shuttle = repair.shuttle
+            shuttle.status = "A"
+            shuttle.save()
         repair.save()
         repair = RepairSerializer(repair)
         return Response(data={
