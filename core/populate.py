@@ -112,16 +112,16 @@ class PopulateDatabase():
         itemMovement.save()
 
         item2 = Item(name="Signal Lightbulb",
-                    description="Can be used for brake light or turn signal lights",
-                    quantity=8,
-                    brand="TTW",
-                    consumable=False,
-                    average_price=250)
+                     description="Can be used for brake light or turn signal lights",
+                     quantity=8,
+                     brand="TTW",
+                     consumable=False,
+                     average_price=250)
         item2.save()
         itemMovement2 = ItemMovement(item=item2,
-                                    type="B",
-                                    quantity=10,
-                                    vendor="Ace Hardware",
+                                     type="B",
+                                     quantity=10,
+                                     vendor="Ace Hardware",
                                      unit_price=250,
                                      created=datetime.strptime(
                                          '02112018', "%d%m%Y").date())
@@ -220,6 +220,9 @@ class PopulateDatabase():
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -228,10 +231,13 @@ class PopulateDatabase():
                            )
         shuttle1.save()
         shuttle2 = Shuttle(shuttle_number="2",
-                            plate_number="XLZ502",
+                           plate_number="XLZ502",
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -239,10 +245,13 @@ class PopulateDatabase():
                            dayoff_date="Tuesday")
         shuttle2.save()
         shuttle3 = Shuttle(shuttle_number="3",
-                            plate_number="UF7087",
+                           plate_number="UF7087",
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -250,9 +259,12 @@ class PopulateDatabase():
                            dayoff_date="Wednesday")
         shuttle3.save()
         shuttle4 = Shuttle(shuttle_number="4",
-                            plate_number="AB5225",
+                           plate_number="AB5225",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -261,9 +273,12 @@ class PopulateDatabase():
                            dayoff_date="Thursday")
         shuttle4.save()
         shuttle5 = Shuttle(shuttle_number="5",
-                            plate_number="UF6862",
+                           plate_number="UF6862",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -272,9 +287,12 @@ class PopulateDatabase():
                            dayoff_date="Friday")
         shuttle5.save()
         shuttle6 = Shuttle(shuttle_number="6",
-                            plate_number="VO5030",
+                           plate_number="VO5030",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -283,10 +301,13 @@ class PopulateDatabase():
                            dayoff_date="Saturday")
         shuttle6.save()
         shuttle7 = Shuttle(shuttle_number="7",
-                            plate_number="WD5363",
+                           plate_number="WD5363",
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -294,9 +315,12 @@ class PopulateDatabase():
                            dayoff_date="Sunday")
         shuttle7.save()
         shuttle8 = Shuttle(shuttle_number="8",
-                            plate_number="YR8953",
+                           plate_number="YR8953",
                            make="Toyota",
                            model="L300",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            status="A",
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
@@ -305,10 +329,13 @@ class PopulateDatabase():
                            dayoff_date="Back-up")
         shuttle8.save()
         shuttle9 = Shuttle(shuttle_number="9",
-                            plate_number="DS2110",
+                           plate_number="DS2110",
                            make="Toyota",
                            model="L300",
                            status="A",
+                           purchase_price=randint(500000, 800000),
+                           salvage_value=randint(100000, 200000),
+                           lifespan=randint(60, 120),
                            date_acquired=datetime.strptime(
                                '24052018', "%d%m%Y").date(),
                            mileage=500,
@@ -331,8 +358,8 @@ class PopulateDatabase():
         rp1 = RepairProblem(description="Maintenance")
         rp1.save()
         rm1 = RepairModifications(item_used=item1,
-                                 quantity=1,
-                                 used_up=False)
+                                  quantity=1,
+                                  used_up=False)
         rm1.save()
         itemMovement1 = ItemMovement(item=item1,
                                      type="G",
@@ -394,7 +421,6 @@ class PopulateDatabase():
         repair3.problems.add(rp3)
         repair3.modifications.add(rm3)
 
-
         ## Shuttle 3
         repair4 = Repair(shuttle=Shuttle.objects.get(pk=3),
                          date_requested=datetime.strptime(
@@ -450,7 +476,6 @@ class PopulateDatabase():
         repair5.problems.add(rp5)
         repair5.modifications.add(rm5)
 
-
         ## Shuttle 4
         repair6 = Repair(shuttle=Shuttle.objects.get(pk=4),
                          date_requested=datetime.strptime(
@@ -479,14 +504,13 @@ class PopulateDatabase():
         repair6.problems.add(rp6)
         repair6.modifications.add(rm6)
 
-
         shuttle4Repair = Repair(shuttle=Shuttle.objects.get(pk=4),
                                 date_requested=datetime.strptime(
-                                '17112018', "%d%m%Y").date(),
+                                    '17112018', "%d%m%Y").date(),
                                 start_date=datetime.strptime(
-                                '17112018', "%d%m%Y").date(),
+                                    '17112018', "%d%m%Y").date(),
                                 end_date=datetime.strptime(
-                                '19112018', "%d%m%Y").date(),
+                                    '19112018', "%d%m%Y").date(),
                                 status="C",
                                 maintenance=False,
                                 labor_fee=4000)
@@ -500,8 +524,6 @@ class PopulateDatabase():
         outsourced_item1.save()
         shuttle4Repair.problems.add(s4rp)
         shuttle4Repair.outsourced_items.add(outsourced_item1)
-
-
 
         ## Shuttle 5
         repair7 = Repair(shuttle=Shuttle.objects.get(pk=5),
@@ -531,8 +553,7 @@ class PopulateDatabase():
         repair7.problems.add(rp7)
         repair7.modifications.add(rm7)
 
-
-        ## Shuttle 6 
+        ## Shuttle 6
         repair8 = Repair(shuttle=Shuttle.objects.get(pk=6),
                          date_requested=datetime.strptime(
                              '13112018', "%d%m%Y").date(),
@@ -588,60 +609,58 @@ class PopulateDatabase():
         repair9.problems.add(rp9)
         repair9.modifications.add(rm9)
 
-
-        ## Shuttle 8 
+        ## Shuttle 8
         repair10 = Repair(shuttle=Shuttle.objects.get(pk=8),
-                         date_requested=datetime.strptime(
-                             '02112018', "%d%m%Y").date(),
-                         start_date=datetime.strptime(
-                             '02112018', "%d%m%Y").date(),
-                         end_date=datetime.strptime(
-                             '02112018', "%d%m%Y").date(),
-                         status="C",
-                         maintenance=False)
+                          date_requested=datetime.strptime(
+                              '02112018', "%d%m%Y").date(),
+                          start_date=datetime.strptime(
+                              '02112018', "%d%m%Y").date(),
+                          end_date=datetime.strptime(
+                              '02112018', "%d%m%Y").date(),
+                          status="C",
+                          maintenance=False)
         repair10.save()
         item10 = Item.objects.get(pk=7)
         rp10 = RepairProblem(description="Flat Tire")
         rp10.save()
         rm10 = RepairModifications(item_used=item10,
-                                  quantity=1,
-                                  used_up=False)
+                                   quantity=1,
+                                   used_up=False)
         rm10.save()
         itemMovement10 = ItemMovement(item=item10,
-                                     type="G",
-                                     quantity=1,
-                                     repair=repair10,
+                                      type="G",
+                                      quantity=1,
+                                      repair=repair10,
                                       created=datetime.strptime(
                                           '02112018', "%d%m%Y").date())
         itemMovement10.save()
         repair10.problems.add(rp10)
         repair10.modifications.add(rm10)
 
-
         ## Shuttle 9
         repair11 = Repair(shuttle=Shuttle.objects.get(pk=9),
-                         date_requested=datetime.strptime(
-                             '11112018', "%d%m%Y").date(),
-                         start_date=datetime.strptime(
-                             '11112018', "%d%m%Y").date(),
-                         end_date=datetime.strptime(
-                             '11112018', "%d%m%Y").date(),
-                         status="C",
-                         maintenance=False)
+                          date_requested=datetime.strptime(
+                              '11112018', "%d%m%Y").date(),
+                          start_date=datetime.strptime(
+                              '11112018', "%d%m%Y").date(),
+                          end_date=datetime.strptime(
+                              '11112018', "%d%m%Y").date(),
+                          status="C",
+                          maintenance=False)
         repair11.save()
         item11 = Item.objects.get(pk=3)
         rp11 = RepairProblem(description="Worn out front brakes")
         rp11.save()
         rm11 = RepairModifications(item_used=item11,
-                                  quantity=2,
-                                  used_up=False)
+                                   quantity=2,
+                                   used_up=False)
         rm11.save()
         itemMovement11 = ItemMovement(item=item11,
-                                     type="G",
-                                     quantity=2,
-                                     repair=repair11,
-                                     created=datetime.strptime(
-                             '11112018', "%d%m%Y").date())
+                                      type="G",
+                                      quantity=2,
+                                      repair=repair11,
+                                      created=datetime.strptime(
+                                          '11112018', "%d%m%Y").date())
         itemMovement11.save()
         repair11.problems.add(rp11)
         repair11.modifications.add(rm11)
