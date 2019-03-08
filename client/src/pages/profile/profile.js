@@ -6,7 +6,7 @@
  */
 import React, { Component, Fragment } from "react"
 import '../../utilities/colorsFonts.css'
-import { List, Avatar } from 'antd'
+import { List, Avatar, Form } from 'antd'
 import './style.css'
 import emptyStateImage from '../../images/empty state record.png'
 import users from '../../images/default.png'
@@ -26,7 +26,6 @@ import {
     InputNumber,
     Row,
     Col,
-    Form,
 } from 'antd';
 import { Icon } from 'react-icons-kit'
 import { driversLicenseO } from 'react-icons-kit/fa/driversLicenseO'
@@ -377,69 +376,137 @@ export class ProfilePage extends Component {
             visible: false,
         });
     }
+
     renderMemberContent = () => (
         <div>
             {this.state.activeUser &&
             <Fragment>
-                <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
-                < Input onChange={this.handleFormChange("name")} defaultValue={this.state.name}
-                        className="user-input"
-                        type="text"
-                        placeholder="enter name"/>
-                <Select onChange={this.handleSelectChange("sex")} className="user-input"
-                        defaultValue={this.state.sex}>
-                    <Option value="M">Male</Option>
-                    <Option value="F">Female</Option>
-                </Select>
-                <Input onChange={this.handleFormChange("address")} value={this.state.address}
-                       className="user-input"
-                       type="text"
-                       placeholder="Enter address"/>
-                <Input onChange={this.handleFormChange("email")} value={this.state.email}
-                       className="user-input"
-                       addonAfter=".com"
-                       placeholder="Enter email address"/>
-                <InputNumber onChange={this.handleNumberFormChange("contact_no")}
-                             defaultValue={this.state.contact_no}
-                             className="user-input" addonBefore="+639"
-                             placeholder="Enter contact number"/>
-                <InputNumber onChange={this.handleNumberFormChange("no_of_dependents")}
-                             defaultValue={this.state.no_of_dependents}
-                             className="user-input"
-                             type="text"
-                             placeholder="Enter number of dependents"/>
-                <Input onChange={this.handleFormChange("occupation")} defaultValue={this.state.occupation}
-                       className="user-input"
-                       type="text"
-                       placeholder="Enter Occupation"/>
-                <Input onChange={this.handleFormChange("religion")} defaultValue={this.state.religion}
-                       className="user-input"
-                       type="text"
-                       placeholder="Enter Religion"/>
-                <Select onChange={this.handleSelectChange("civil_status")} className="user-input"
-                        defaultValue={this.state.civil_status}>
-                    <Option value="S">Single</Option>
-                    <Option value="M">Married</Option>
-                </Select>
-                <Select onChange={this.handleSelectChange("educational_attainment")} className="user-input"
-                        defaultValue={this.state.educational_attainment}>
-                    <Option value="E">Elementary</Option>
-                    <Option value="H">High School</Option>
-                    <Option value="V">Vocational</Option>
-                    <Option value="V">Bachelors Degree</Option>
-                    <Option value="M">Masters Degree</Option>
-                    <Option value="D">Doctorate</Option>
-                </Select>
-                <Input onChange={this.handleFormChange("tin_number")} defaultValue={this.state.tin_number}
-                       className="user-input"
-                       type="text"
-                       placeholder="Enter Tin Number"/>
-                <InputNumber onChange={this.handleNumberFormChange("annual_income")}
-                             defaultValue={this.state.annual_income}
-                             className="user-input"
-                             type="text"
-                             placeholder="Enter Annual Income"/>
-                <Button onClick={this.handleSubmit}>Submit</Button>
+                <Form>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Photo:"
+                    >
+                        <Input type="file" placeholder="select image" onChange={this.handleFileChange}/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Name:"
+                    >
+                        < Input onChange={this.handleFormChange("name")} defaultValue={this.state.name}
+                                className="user-input"
+                                type="text"
+                                placeholder="enter name"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Sex:"
+                    >
+                        <Select onChange={this.handleSelectChange("sex")} className="user-input"
+                                defaultValue={this.state.sex}>
+                            <Option value="M">Male</Option>
+                            <Option value="F">Female</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Address:"
+                    >
+                        <Input onChange={this.handleFormChange("address")} value={this.state.address}
+                               className="user-input"
+                               type="text"
+                               placeholder="Enter address"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Email:"
+                    >
+                        <Input onChange={this.handleFormChange("email")} value={this.state.email}
+                               className="user-input"
+                               addonAfter=".com"
+                               placeholder="Enter email address"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Contact #:"
+                    >
+                        <InputNumber onChange={this.handleNumberFormChange("contact_no")}
+                                     defaultValue={this.state.contact_no}
+                                     className="user-input" addonBefore="+639"
+                                     placeholder="Enter contact number"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="No Of Dependents:"
+                    >
+                        <InputNumber onChange={this.handleNumberFormChange("no_of_dependents")}
+                                     defaultValue={this.state.no_of_dependents}
+                                     className="user-input"
+                                     type="text"
+                                     placeholder="Enter number of dependents"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Occupation:"
+                    >
+                        <Input onChange={this.handleFormChange("occupation")} defaultValue={this.state.occupation}
+                               className="user-input"
+                               type="text"
+                               placeholder="Enter Occupation"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Religion:"
+                    >
+                        <Input onChange={this.handleFormChange("religion")} defaultValue={this.state.religion}
+                               className="user-input"
+                               type="text"
+                               placeholder="Enter Religion"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Civil Status:"
+                    >
+                        <Select onChange={this.handleSelectChange("civil_status")} className="user-input"
+                                defaultValue={this.state.civil_status}>
+                            <Option value="S">Single</Option>
+                            <Option value="M">Married</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Educational Attainment:"
+                    >
+                        <Select onChange={this.handleSelectChange("educational_attainment")} className="user-input"
+                                defaultValue={this.state.educational_attainment}>
+                            <Option value="E">Elementary</Option>
+                            <Option value="H">High School</Option>
+                            <Option value="V">Vocational</Option>
+                            <Option value="V">Bachelors Degree</Option>
+                            <Option value="M">Masters Degree</Option>
+                            <Option value="D">Doctorate</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Tin #:"
+                    >
+                        <Input onChange={this.handleFormChange("tin_number")} defaultValue={this.state.tin_number}
+                               className="user-input"
+                               type="text"
+                               placeholder="Enter Tin Number"/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Annual Income:"
+                    >
+                        <InputNumber onChange={this.handleNumberFormChange("annual_income")}
+                                     defaultValue={this.state.annual_income}
+                                     className="user-input"
+                                     type="text"
+                                     placeholder="Enter Annual Income"/>
+                    </Form.Item>
+                    <Button onClick={this.handleSubmit}>Submit</Button>
+                </Form>
             </Fragment>
             }
         </div>
@@ -547,7 +614,8 @@ export class ProfilePage extends Component {
                                              src={this.renderListItemPhoto(activeUser.photo)}/>
                                         <div className="basic-info">
                                             <div className="info-row">
-                                                <Button className="add-user " onClick={this.showModal}> Edit Profile </Button>
+                                                <Button className="add-user " onClick={this.showModal}> Edit
+                                                    Profile </Button>
                                             </div>
                                             <div className="info-row"><b>Name:</b> {activeUser.name}</div>
                                             <div className="info-row"><b>Contact Number:</b> {activeUser.contact_no}

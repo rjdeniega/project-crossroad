@@ -1605,7 +1605,8 @@ class TicketTypePerDayReport(APIView):
                     "am_fifteen": am_fifteen,
                     "pm_ten": pm_ten,
                     "pm_twelve": pm_twelve,
-                    "pm_fifteen": pm_fifteen
+                    "pm_fifteen": pm_fifteen,
+                    "day_total": am_ten+pm_ten+am_twelve+pm_twelve+am_fifteen+pm_fifteen,
                 })
             ten_total = sum([item['am_ten'] for item in shuttles]) + sum([item['pm_ten'] for item in shuttles])
             twelve_total = sum([item['am_twelve'] for item in shuttles]) + sum([item['pm_twelve'] for item in shuttles])
