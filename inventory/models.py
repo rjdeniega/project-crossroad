@@ -172,8 +172,8 @@ class RepairFinding(SoftDeletionModel):
 
 class RepairModifications(SoftDeletionModel):
     item_used = ForeignKey(Item, on_delete=models.CASCADE)
-    quantity = PositiveIntegerField()
-    used_up = BooleanField()
+    quantity = PositiveIntegerField(null=True)
+    amount = PositiveIntegerField(null=True)
 
 
 class OutSourcedItems(SoftDeletionModel):

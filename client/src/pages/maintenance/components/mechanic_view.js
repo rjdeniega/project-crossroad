@@ -336,9 +336,9 @@ export class MechanicView extends Component{
                                       {modifications.map(function(modification, index){
                                           return items.map(function(item, index){
                                               if(item.id === modification.item_used){
-                                                  console.log('nice')
+                                                  console.log('nice');
                                                   return (
-                                                  <List.Item>{modification.quantity} - {item.name}</List.Item>
+                                                  <List.Item>{modification.quantity} - {item.brand} {item.category}</List.Item>
                                                 )
                                               }
 
@@ -373,6 +373,20 @@ export class MechanicView extends Component{
         });
 
         this.loadRepairs()
+    }
+
+    completeRepair(id) {
+        message.success('Repair completed!');
+        let data = {
+            status: "C",
+            type: ''
+        };
+
+        putData('inventory/repair/update_status/' + id, data).then(data => {
+            this.loadNewRepair(data.repair)
+        });
+
+        this.loadNewRepair()
     }
 
     render(){
@@ -438,7 +452,7 @@ export class MechanicView extends Component{
                                                 </Modal>
                                             </div>
                                         ) : loadedRepair.status === 'IP' ? (
-                                                <Button type='primary' onClick={() => this.repairAction(loadedRepair.id, 'complete')}>
+                                                <Button type='primary' onClick={() => this.completeRepair(loadedRepair.id)}>
                                                     <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
                                                 </Button>
                                         ): loadedRepair.status === 'FI' ? (
@@ -450,6 +464,11 @@ export class MechanicView extends Component{
                                         ): loadedRepair.status === 'SR' && (
                                             <div>
                                                 <Tag color='blue'> Schedule: {loadedRepair.schedule}</Tag>
+                                                {new Date(loadedRepair.schedule) < new Date() &&
+                                                    <Button type='primary' onClick={() => this.completeRepair(loadedRepair.id)}>
+                                                    <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
+                                                </Button>
+                                                }
                                             </div>
                                         )}
                                         <Menu onClick={this.handleClick} selectedKeys={[this.state.currentTab]}
