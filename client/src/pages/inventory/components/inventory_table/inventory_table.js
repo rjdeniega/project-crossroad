@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table, Empty} from 'antd'
+import {Table, Empty, Tag} from 'antd'
 import './style.css'
 import {getData} from "../../../../network_requests/general";
 import _ from 'lodash';
@@ -75,7 +75,10 @@ export class InventoryTable extends Component {
 
     columns = [
         {title: "Item", dataIndex: "category", key: "category", align: 'left'},
-        {title: "Quantity", dataIndex: "quantity", key: "quantity", align: 'center'},
+        {title: "Quantity", dataIndex: "quantity", key: "quantity", align: 'center',
+            render: (quantity) => {
+                return <span>{quantity} &nbsp; {quantity <= 3 && <Tag color="yellow">Low Quantity</Tag>}</span>
+            }},
     ];
 
     groupedItems = () => {

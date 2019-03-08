@@ -95,12 +95,46 @@ class PopulateDatabase():
 
     @staticmethod
     def populate_inventory():
-        item = Item(name="Windshield Wiper",
+        vendor = Vendor(name="Ace Hardware", address="12 Karilagan St., Pasig City", contact_number="09178712380")
+        vendor.save()
+        vendor2 = Vendor(name="Handyman", address="5th Floor Megamall, Ortigas Avenue", contact_number="09266323535")
+        vendor2.save()
+        vendor3 = Vendor(name="Budjolex", address="427 Bel-air, Sta. Rosa City, Laguna", contact_number="09153552690")
+        vendor3.save()
+        category_oil = ItemCategory(category='Oil', code_prefix='OIL', quantity=0)
+        category_oil.save()
+        category_tire = ItemCategory(category='Tire', code_prefix='TIR', quantity=0)
+        category_tire.save()
+        category_windshield = ItemCategory(category='Windshield Wiper', code_prefix='WWR', quantity=0)
+        category_windshield.save()
+        category_light_bulb = ItemCategory(category="Light Bulb", code_prefix='LBB', quantity=0)
+        category_light_bulb.save()
+        category_brake_pad = ItemCategory(category="Brake Pads", code_prefix='BRP', quantity=0)
+        category_brake_pad.save()
+        category_brake_fluid = ItemCategory(category="Brake Fluid", code_prefix='BRF', quantity=0)
+        category_brake_fluid.save()
+
+        purchase_order_1 = PurchaseOrder(po_number=1, vendor=vendor,
+                                         order_date=datetime.strptime('27122018', "%d%m%Y").date(),
+                                         completion_date=datetime.strptime('01012019', "%d%m%Y").date(),
+                                         status="Complete")
+        purchase_order_1.save()
+        purchase_order_1_item_1 = PurchaseOrderItem(quantity=4, description="Windshield wiper for Toyota L300",
+                                                    unit_price=200, category=category_windshield,
+                                                    item_type="Physical Measurement", measurement=2, unit="pieces",
+                                                    brand="Vew Clear",
+                                                    delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
+                                                    received=True)
+        purchase_order_1_item_1.save()
+
+        item = Item(category=category_windshield,
                     description="Windshield wiper for Toyota L300",
                     quantity=4,
                     brand="Vew Clear",
-                    consumable=False,
-                    average_price=150)
+                    unit_price=200,
+                    item_type="Physical Measurement",
+                    measurement=2, unit="pieces", vendor=vendor,
+                    item_code="WWR001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
         item.save()
         itemMovement = ItemMovement(item=item,
                                     type="B",
@@ -126,6 +160,57 @@ class PopulateDatabase():
                                      created=datetime.strptime(
                                          '02112018', "%d%m%Y").date())
         itemMovement2.save()
+
+        item_movement_1 = ItemMovement(item=item,
+                                       type="B",
+                                       quantity=4,
+                                       unit_price=200,
+                                       created=datetime.strptime(
+                                           '01012019', "%d%m%Y").date())
+        item_movement_1.save()
+
+        category_windshield.quantity = 4
+        category_windshield.save()
+
+        purchase_order_1_item_2 = PurchaseOrderItem(quantity=8,
+                                                    description="Can be used for brake light or turn signal lights",
+                                                    unit_price=250, category=category_light_bulb,
+                                                    item_type="Physical Measurement", measurement=10, unit="pieces",
+                                                    brand="TTW",
+                                                    delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
+                                                    received=True)
+        purchase_order_1_item_2.save()
+
+        item2 = Item(category=category_light_bulb,
+                     description="Can be used for brake light or turn signal lights",
+                     quantity=8,
+                     brand="TTW",
+                     unit_price=250,
+                     item_type="Physical Measurement",
+                     measurement=10, unit="pieces", vendor=vendor,
+                     item_code="LBB001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
+        item2.save()
+        item_movement_2 = ItemMovement(item=item2,
+                                       type="B",
+                                       quantity=8,
+                                       unit_price=250,
+                                       created=datetime.strptime(
+                                           '01012019', "%d%m%Y").date())
+        item_movement_2.save()
+
+        purchase_order_2 = PurchaseOrder(po_number=2, vendor=vendor,
+                                         order_date=datetime.strptime('02142019', "%d%m%Y").date(),
+                                         completion_date=datetime.strptime('02172019', "%d%m%Y").date(),
+                                         status="Complete")
+        purchase_order_2.save()
+
+        purchase_order_2_item_1 = PurchaseOrderItem(quantity=5, description="Pair of brake pads for Mitsubishi L300",
+                                                    unit_price=800, category=category_brake_pad,
+                                                    item_type="Physical Measurement", measurement=2, unit="pieces",
+                                                    brand="Akebono",
+                                                    delivery_date=datetime.strptime('02172019', "%d%m%Y").date(),
+                                                    received=True)
+        purchase_order_1_item_1.save()
 
         item3 = Item(name="Front Brake Pads",
                      description="Pair of brake pads for Mitsubishi L300",
@@ -346,7 +431,7 @@ class PopulateDatabase():
     @staticmethod
     def populate_repairs():
 
-        ## Shuttle 1
+        # Shuttle 1
         repair1 = Repair(shuttle=Shuttle.objects.get(pk=1),
                          date_requested=datetime.strptime('15112018', "%d%m%Y").date(),
                          start_date=datetime.strptime('16112018', "%d%m%Y").date(),
