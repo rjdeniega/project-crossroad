@@ -2032,7 +2032,7 @@ class NotificationItems(APIView):
         member_id = user_id
         notification = None
         for item in ItemCategory.objects.all():
-            if item.quantity < 3:
+            if item.quantity <= 3:
                 notification = Notification.objects.filter(user__id=user_id,
                                                            description=f'{item.category} is low on stocks ({item.quantity} pcs)')
                 if len(notification) == 0:
