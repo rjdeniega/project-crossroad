@@ -67,10 +67,10 @@ class FindingsFormInit extends Component{
             }
             if(!err && typeof values['findings'] !== 'undefined'){
                 let cleaned_findings = values['findings']
-                                .filter(function(n){return n!= undefined})
+                                .filter(function(n){return n !== undefined});
                 const data = {
                     findings: cleaned_findings,
-                }
+                };
 
                 postData('inventory/mechanic/repairs/' + repair.id, data)
                     .then(response => {
@@ -141,7 +141,7 @@ class FindingsFormInit extends Component{
                 {formItems}
                 <Form.Item {...formItemLayoutWithOutLabel}>
                     <Button type="dashed" onClick={this.add} style={{ width: '80%' }}>
-                        <Icon icon={plus} /> Add problem
+                        <Icon icon={plus} /> Add finding
                     </Button>
                 </Form.Item>
                 <Form.Item {...formItemLayoutWithOutLabel}>
