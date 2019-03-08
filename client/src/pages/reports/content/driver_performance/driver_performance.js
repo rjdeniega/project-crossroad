@@ -38,8 +38,8 @@ class ComponentToPrint extends React.Component {
                 <div className="report-labels">
                     {this.props.data &&
                     <Fragment>
-                        {this.props.data.date &&
-                        <p> Inventory Count as of {this.props.data.date}</p>
+                        {this.props.data.end_date &&
+                        <p> Driver Remittance, Absences, and Payables as from {this.props.data.start_date} to {this.props.data.end_date}</p>
                         }
                     </Fragment>
                     }
@@ -47,26 +47,32 @@ class ComponentToPrint extends React.Component {
                 <div className="report-body">
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
-                        <th>Item Name</th>
-                        <th>Quantity</th>
+                        <th>Driver Name</th>
+                        <th>Remittance</th>
+                        <th>Payables</th>
+                        <th>Absences</th>
+                        <th>Frequency of Sub-in</th>
                         </thead>
                         <tbody>
-                        {this.props.data.items &&
+                        {this.props.data &&
                         <Fragment>
-                            {this.props.data.items.map((item, index) => (
+                            {this.props.data.data.map((item, index) => (
                                 <Fragment>
                                     <tr>
-                                        <td>{item.name}</td>
-                                        <td>{item.quantity}</td>
+                                        <td>{item.driver.name}</td>
+                                        <td>{item.remittance}</td>
+                                        <td>{item.payables}</td>
+                                        <td>{item.absences}</td>
+                                        <td>{item.sub_freq}</td>
                                     </tr>
                                 </Fragment>
                             ))}
                             <tr>
-                                {/*<td><b> Grand Total </b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.total_remittance}</b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.total_fuel}</b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.total_costs}</b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.grand_total}</b></td>*/}
+                                <td><b> Total </b></td>
+                                <td className="total-line"><b>{this.props.data.remittance_total}</b></td>
+                                <td className="total-line"><b>{this.props.data.payables_total}</b></td>
+                                <td className="total-line"><b>{this.props.data.absences_total}</b></td>
+                                <td className="total-line">{this.props.data.sub_freq_total}</td>
                             </tr>
                         </Fragment>
                         }
@@ -90,7 +96,7 @@ export class DriverPerformance extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        postData('/driver_performance/',data).then(data => {
+        postData('/driver_performance/', data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({

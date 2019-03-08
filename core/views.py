@@ -601,6 +601,18 @@ class PatronageRefund(APIView):
                 for item in serialized_transactions.data:
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
+                shares = Share.objects.filter(member=member)
+                array = []
+
+                for i in range(1, 13):
+                    accumulated_month = 0
+                    for share in shares:
+                        if (share.date_of_update.month == i and share.date_of_update.year == start_date.year):
+                            accumulated_month+=share.value
+                    array.append(accumulated_month)
+
+                rate_of_refund = sum(array)/len(array)
+
                 # rate_of_refund = (sum([item.total for item in transactions]) + sum(
                 #     [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
                 report_items.append({
@@ -617,7 +629,7 @@ class PatronageRefund(APIView):
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions]),
-                    "rate_of_refund": rate_of_refund,
+                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund*100),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions])),
                     "patronage_refund": (rate_of_refund) * sum([item.total for item in transactions]) + sum(
@@ -2196,6 +2208,7 @@ class PeakHourReport(APIView):
             "end_date": week4_end.date(),
         }, status=status.HTTP_200_OK)
 
+
 #
 # class RemittancePerMonth(APIView):
 #     @staticmethod
@@ -2206,7 +2219,6 @@ class PeakHourReport(APIView):
 class DriverPerformance(APIView):
     @staticmethod
     def post(request):
-        print("enters here")
         start_date = datetime.strptime(request.data["start_date"], '%Y-%m-%d')
         if "end_date" in request.data:
             end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
@@ -2214,22 +2226,41 @@ class DriverPerformance(APIView):
             end_date = start_date + timedelta(days=6)
 
         data = []
+        print(start_date)
+        print(end_date)
+        sub_freq_total = 0
+        absences_total = 0
+        remittance_total = 0
+        payables_total = 0
 
-        temp_date = start_date
-        while start_date < end_date:
-            for driver in Driver.objects.filter(is_supervisor=False):
-                remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
-                                                           created__lte=end_date)
-                total = sum([item.total for item in remittances])
-                payables = sum([item.discrepancy for item in remittances])
-                data.append({
-                    "driver": DriverSerializer(driver).data,
-                    "remittance": total,
-                    "payables": payables,
-                })
+        for driver in Driver.objects.filter(is_supervisor=False):
+            remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
+                                                        created__lte=end_date)
+            sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver))
+            absences = len(SubbedDeployments.objects.filter(absent_driver__driver=driver))
+            total = sum([item.total for item in remittances])
+            payables = sum([item.discrepancy for item in remittances])
 
-            temp_date += timedelta(days=1)
+            sub_freq_total += sub_freq
+            absences_total += absences
+            remittance_total += total
+            payables_total += payables
 
+            data.append({
+                "driver": DriverSerializer(driver).data,
+                "remittance": "{0:,.2f}".format(total),
+                "payables": "{0:,.2f}".format(payables),
+                "sub_freq": sub_freq,
+                "absences": absences,
+            })
+
+        print(data)
         return Response(data={
-            "data":data
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
+            "data": data,
+            "payables_total": "{0:,.2f}".format(payables_total),
+            "absences_total": absences_total,
+            "sub_freq_total": sub_freq_total,
+            "remittance_total": "{0:,.2f}".format(remittance_total)
         }, status=status.HTTP_200_OK)

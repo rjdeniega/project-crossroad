@@ -73,15 +73,6 @@ export class TicketingPane extends Component {
         dataIndex: 'shift.type',
         key: 'shift.type',
     }, {
-        title: 'No. Of Drivers Deployed',
-        dataIndex: 'address',
-        key: 'address',
-    }, {
-        title: 'No. Of Sub Drivers',
-        key: 'tags',
-        dataIndex: 'tags'
-
-    }, {
         title: 'Action',
         key: 'action',
         render: (text, record) => (

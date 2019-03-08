@@ -42,6 +42,7 @@ class ComponentToPrint extends React.Component {
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
                         <th>Member</th>
+                        <th>Initial Shares</th>
                         <th>Jan</th>
                         <th>Feb</th>
                         <th>Mar</th>
@@ -54,8 +55,7 @@ class ComponentToPrint extends React.Component {
                         <th>Oct</th>
                         <th>Nov</th>
                         <th>Dec</th>
-                        <th>Acc</th>
-                        <th>Prev</th>
+                        <th>Accumulated Shares</th>
                         <th>Total</th>
                         </thead>
                         <tbody>
@@ -65,6 +65,7 @@ class ComponentToPrint extends React.Component {
                                 <Fragment>
                                     <tr>
                                         <td>{item.name}</td>
+                                        <td><b>{item.prior_shares}</b></td>
                                         <td>{item.months[0].added_amount}</td>
                                         <td>{item.months[1].added_amount}</td>
                                         <td>{item.months[2].added_amount}</td>
@@ -78,14 +79,14 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.months[10].added_amount}</td>
                                         <td>{item.months[11].added_amount}</td>
                                         <td><b>{item.accumulated_shares}</b></td>
-                                        <td><b>{item.prior_shares}</b></td>
                                         <td><b>{item.total_shares}</b></td>
                                     </tr>
                                 </Fragment>
                             ))}
 
                             <tr>
-                                <td><b> Grand Total </b></td>
+                                <td><b> Grand Total </b></td>                                <td className="total-line"><b>{this.props.data.prev_total}</b></td>
+                                <td className="total-line"><b>{this.props.data.prev_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[0]}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[1]}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[2]}</b></td>
@@ -99,12 +100,7 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line"><b>{this.props.data.months_sum[10]}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[11]}</b></td>
                                 <td className="total-line"><b>{this.props.data.acc_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.prev_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.grand_total}</b></td>
-
-
-
-
                             </tr>
                         </Fragment>
                         }
