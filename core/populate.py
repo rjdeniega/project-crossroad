@@ -186,14 +186,15 @@ class PopulateDatabase():
                                                     brand="Akebono",
                                                     delivery_date=datetime.strptime('02172019', "%d%m%Y").date(),
                                                     received=True)
-        purchase_order_1_item_1.save()
+        purchase_order_2_item_1.save()
 
-        item3 = Item(name="Front Brake Pads",
+        item3 = Item(category=category_brake_pad,
                      description="Pair of brake pads for Mitsubishi L300",
                      quantity=5,
                      brand="Akebono",
-                     consumable=False,
-                     average_price=1300)
+                     unit_price=900,
+                     item_type="Physical Measurement",
+                     measurement=2, unit="Pieces")
         item3.save()
 
         itemMovement3 = ItemMovement(item=item3,
