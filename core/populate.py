@@ -400,8 +400,7 @@ class PopulateDatabase():
         rp1 = RepairProblem(description="Maintenance")
         rp1.save()
         rm1 = RepairModifications(item_used=item1,
-                                  quantity=1,
-                                  used_up=False)
+                                  quantity=1)
         rm1.save()
         item_movement1 = ItemMovement(item=item1,
                                       type="G",
@@ -416,7 +415,7 @@ class PopulateDatabase():
                          driver_requested=Driver.objects.get(pk=1),
                          date_requested=datetime.strptime('21022019', "%d%m%Y").date(),
                          start_date=datetime.strptime('22022019', "%d%m%Y").date(),
-                         end_date=datetime.strptime('24022018', "%d%m%Y").date(),
+                         end_date=datetime.strptime('24022019', "%d%m%Y").date(),
                          degree="Intermediate",
                          status="C",
                          maintenance=False)
@@ -426,8 +425,7 @@ class PopulateDatabase():
         rp2 = RepairProblem(description="Broken Windshield")
         rp2.save()
         rm2 = RepairModifications(item_used=item2,
-                                  quantity=1,
-                                  used_up=False)
+                                  quantity=1)
         rm2.save()
 
         item_movement_2 = ItemMovement(item=item2,
@@ -441,6 +439,7 @@ class PopulateDatabase():
 
         # Shuttle 2
         repair3 = Repair(shuttle=Shuttle.objects.get(pk=2),
+                         driver_requested=Driver.objects.get(pk=2),
                          date_requested=datetime.strptime(
                              '02032019', "%d%m%Y").date(),
                          start_date=datetime.strptime(
@@ -448,14 +447,14 @@ class PopulateDatabase():
                          end_date=datetime.strptime(
                              '02032019', "%d%m%Y").date(),
                          status="C",
+                         degree="Minor",
                          maintenance=False)
         repair3.save()
         item3 = Item.objects.get(pk=2)
         rp3 = RepairProblem(description="Left blinker not working")
         rp3.save()
         rm3 = RepairModifications(item_used=item3,
-                                  quantity=1,
-                                  used_up=False)
+                                  quantity=1)
         rm3.save()
         item_movement3 = ItemMovement(item=item3,
                                       type="G",
@@ -467,3 +466,31 @@ class PopulateDatabase():
         repair3.problems.add(rp3)
         repair3.modifications.add(rm3)
 
+        # Shuttle 3
+        repair4 = Repair(shuttle=Shuttle.objects.get(pk=3),
+                         driver_requested=Driver.objects.get(pk=3),
+                         date_requested=datetime.strptime(
+                             '01032019', "%d%m%Y").date(),
+                         start_date=datetime.strptime(
+                             '01032019', "%d%m%Y").date(),
+                         end_date=datetime.strptime(
+                             '02032019', "%d%m%Y").date(),
+                         status="C",
+                         degree="Minor",
+                         maintenance=False)
+        repair4.save()
+        item4 = Item.objects.get(pk=3)
+        rp4 = RepairProblem(description="Worn out front brakes")
+        rp4.save()
+        rm4 = RepairModifications(item_used=item4,
+                                  quantity=2)
+        rm4.save()
+        item_movement4 = ItemMovement(item=item4,
+                                      type="G",
+                                      quantity=2,
+                                      repair=repair4,
+                                      created=datetime.strptime(
+                                          '02032019', "%d%m%Y").date())
+        item_movement4.save()
+        repair4.problems.add(rp4)
+        repair4.modifications.add(rm4)
