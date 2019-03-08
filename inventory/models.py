@@ -33,6 +33,12 @@ REPAIR_STATUS = [
     ('FO', 'For Outsource'),  # Mechanic (Add outsourced costs )
     ('SR', 'Scheduled Repair')
 ]
+REPAIR_DEGREE = [
+    ('MIN', 'Minor'),  # Operations Manager (Determine what kind of repair)
+    ('INT', 'Intermediate'),  # Mechanic (Add findings)
+    ('MAJ', 'Major'),  # Mechanic (Start repairs)
+
+]
 ROUTE = [
     ('M', 'Main Road'),
     ('R', 'Right Route'),  # Kanan

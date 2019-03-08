@@ -42,7 +42,7 @@ class ComponentToPrint extends React.Component {
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
                         <th>Member</th>
-                        <th>Initial Shares</th>
+                        <th>Initial</th>
                         <th>Jan</th>
                         <th>Feb</th>
                         <th>Mar</th>
@@ -55,7 +55,7 @@ class ComponentToPrint extends React.Component {
                         <th>Oct</th>
                         <th>Nov</th>
                         <th>Dec</th>
-                        <th>Accumulated Shares</th>
+                        <th>Accumulated</th>
                         <th>Total</th>
                         </thead>
                         <tbody>
@@ -85,7 +85,7 @@ class ComponentToPrint extends React.Component {
                             ))}
 
                             <tr>
-                                <td><b> Grand Total </b></td>                                <td className="total-line"><b>{this.props.data.prev_total}</b></td>
+                                <td><b> Grand Total </b></td>
                                 <td className="total-line"><b>{this.props.data.prev_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[0]}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[1]}</b></td>

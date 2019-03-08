@@ -41,12 +41,29 @@ class ComponentToPrint extends React.Component {
                 <div className="report-body">
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
-                        <th>Shuttle #</th>
-                        <th>Acquired</th>
-                        <th>Mileage</th>
-                        <th>M. Frequency</th>
-                        <th>M. Cost</th>
-                        <th>Ave. M. Cost</th>
+                        <tr>
+                            <th>Shuttle #</th>
+                            <th>Acquired</th>
+                            <th>Mileage</th>
+                            <th colSpan={3}>M. Frequency</th>
+                            <th colSpan={3}>M. Cost</th>
+                            <th colSpan={3}>Ave. M. Cost</th>
+                             <th>Cost Total</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>MN</th>
+                            <th>INT</th>
+                            <th>MJ</th>
+                            <th>MN</th>
+                            <th>INT</th>
+                            <th>MJ</th>
+                            <th>MN</th>
+                            <th>INT</th>
+                            <th>MJ</th>
+                        </tr>
                         </thead>
                         <tbody>
                         {this.props.data &&
@@ -57,19 +74,34 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.shuttle}</td>
                                         <td>{item.year_purchased}</td>
                                         <td>{item.mileage}</td>
-                                        <td>{item.number_of_maintenance}</td>
-                                        <td>{item.maintenance_cost}</td>
-                                        <td>{item.average_cost}</td>
+                                        {/*here*/}
+                                        <td>{item.number_of_minor_maintenance}</td>
+                                        <td>{item.number_of_intermediate_maintenance}</td>
+                                        <td>{item.number_of_major_maintenance}</td>
+                                        <td>{item.minor_maintenance_cost}</td>
+                                        <td>{item.intermediate_maintenance_cost}</td>
+                                        <td>{item.major_maintenance_cost}</td>
+                                        <td>{item.minor_average_cost}</td>
+                                        <td>{item.intermediate_average_cost}</td>
+                                        <td>{item.major_average_cost}</td>
+                                        <td><b>{item.total}</b></td>
                                     </tr>
                                 </Fragment>
                             ))}
                             <tr>
                                 <td><b> Grand Total </b></td>
                                 <td className="total-line"><b></b></td>
-                                 <td className="total-line"><b></b></td>
-                                 <td className="total-line"><b></b></td>
-                                 <td className="total-line"><b>{this.props.data.total_maintenance_cost}</b></td>
-                                 <td className="total-line"><b>{this.props.data.total_average_maintenance_cost}</b></td>
+                                <td className="total-line"><b></b></td>
+                                <td className="total-line"><b>{this.props.data.minor_count}</b></td>
+                                <td className="total-line"><b>{this.props.data.intermediate_count}</b></td>
+                                <td className="total-line"><b>{this.props.data.major_count}</b></td>
+                                <td className="total-line"><b>{this.props.data.minor_total_maintenance_cost}</b></td>
+                                <td className="total-line"><b>{this.props.data.intermediate_total_maintenance_cost}</b></td>
+                                <td className="total-line"><b>{this.props.data.major_total_maintenance_cost}</b></td>
+                                <td className="total-line"><b>{this.props.data.minor_average_maintenance_cost}</b></td>
+                                <td className="total-line"><b>{this.props.data.intermediate_average_maintenance_cost}</b></td>
+                                <td className="total-line"><b>{this.props.data.major_average_maintenance_cost}</b></td>
+                                <td className="total-line"><b>{this.props.data.grand_total}</b></td>
                             </tr>
                         </Fragment>
                         }
@@ -85,14 +117,6 @@ export class MaintenanceReport extends Component {
     state = {};
 
     componentDidMount() {
-         getData('/inventory/shuttles/maintenance_report').then(data => {
-            console.log(data);
-            if (!data.error) {
-                this.setState({
-                    data: data
-                })
-            }
-        });
     }
 
     fetchTransactions() {
@@ -100,7 +124,7 @@ export class MaintenanceReport extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        getData('/inventory/shuttles/maintenance_report').then(data => {
+        postData('/inventory/shuttles/maintenance_report/',data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({
@@ -127,6 +151,8 @@ export class MaintenanceReport extends Component {
     render() {
         return (
             <div className="report-body">
+                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}

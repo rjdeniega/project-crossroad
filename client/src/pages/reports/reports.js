@@ -120,8 +120,8 @@ const MAINTENANCE_CARDS = [{
     'icon': wrench,
     'content': <MaintenanceReport/>
 },{
-    'title': 'Shuttle Net Income',
-    'description': 'view maintenance cost per shuttle',
+    'title': 'Shuttle Net Value',
+    'description': 'view accumulated value of shuttle',
     'icon': wrench,
     'content': <ShuttleIncome/>
 },{

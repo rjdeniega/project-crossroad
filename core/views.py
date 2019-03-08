@@ -608,10 +608,10 @@ class PatronageRefund(APIView):
                     accumulated_month = 0
                     for share in shares:
                         if (share.date_of_update.month == i and share.date_of_update.year == start_date.year):
-                            accumulated_month+=share.value
+                            accumulated_month += share.value
                     array.append(accumulated_month)
 
-                rate_of_refund = sum(array)/len(array)
+                rate_of_refund = sum(array) / len(array)
 
                 # rate_of_refund = (sum([item.total for item in transactions]) + sum(
                 #     [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
@@ -629,7 +629,7 @@ class PatronageRefund(APIView):
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions]),
-                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund*100),
+                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund * 100),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
                         [item.total for item in carwash_transactions])),
                     "patronage_refund": (rate_of_refund) * sum([item.total for item in transactions]) + sum(
@@ -1778,12 +1778,18 @@ class ShuttleCostVRevenueReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        end_date = datetime.strptime(data["end_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date
 
         rows = []
         total_remittance = 0
         total_cost = 0
         total_fuel = 0
+        grand_depreciation = 0
+        total_purchase_cost = 0
+        grand_net = 0
 
         for shuttle in Shuttle.objects.all():
             initialMaintenanceCost = 0
@@ -1803,7 +1809,8 @@ class ShuttleCostVRevenueReport(APIView):
             repairs = Repair.objects.filter(
                 shuttle=shuttle,
                 date_requested__gte=start_date,
-                date_requested__lte=end_date
+                date_requested__lte=end_date,
+                degree="Major"
             )
 
             for repair in repairs:
@@ -1819,21 +1826,38 @@ class ShuttleCostVRevenueReport(APIView):
                     amount = outsourced.quantity * outsourced.unit_price
                     initialMaintenanceCost = initialMaintenanceCost + amount
 
+            value = (shuttle.purchase_price - shuttle.salvage_value)
+            depreciation_rate = (shuttle.purchase_price - shuttle.salvage_value) / shuttle.lifespan
+            temp_start_date = shuttle.date_acquired
+            total_depreciation = 0
+
+            months = ShuttleCostVRevenueReport.diff_month(temp_start_date, end_date)
+            total_depreciation = (value * depreciation_rate) * months
+
+            net_value = value + shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost - total_depreciation
             rows.append({
+                "purchase_cost": value,
                 "shuttle_id": shuttle.id,
                 "shuttle_plate_number": shuttle.plate_number,
                 "shuttle_make": shuttle.make,
                 "revenue": shuttle_remittance,
                 "fuel_cost": shuttle_fuel_cost,
+                "depreciation": total_depreciation,
                 "cost": initialMaintenanceCost,
-                "value": shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost
+                "value": shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost,
+                "net_value": net_value
             })
-
+            grand_depreciation += total_depreciation
             total_remittance += shuttle_remittance
             total_fuel += shuttle_fuel_cost
             total_cost += initialMaintenanceCost
+            total_purchase_cost += value
+            grand_net += net_value
 
         return Response(data={
+            "grand_net": grand_net,
+            "total_purchase_cost": total_purchase_cost,
+            "total_depreciation": grand_depreciation,
             "shuttle_maintenance_costs": [(item['cost'] + item['fuel_cost']) for item in rows],
             "shuttle_revenues": [item['revenue'] for item in rows],
             "start_date": start_date.date(),
@@ -1844,6 +1868,11 @@ class ShuttleCostVRevenueReport(APIView):
             "grand_total": total_remittance - total_fuel - total_cost,
             "shuttles": rows
         }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def diff_month(d1, d2):
+        value = (d1.year - d2.year) * 12 + d1.month - d2.month == 0
+        return value if value != 0 else 1
 
 
 class RemittanceForTheMonth(APIView):
