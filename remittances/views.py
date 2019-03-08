@@ -441,7 +441,7 @@ class NonDeployedDrivers(APIView):
         shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id, date=datetime.now().date()).first()
 
         query = DriversAssigned.objects.filter(shift=current_shift.id)
-
+        print(query)
         # remove drivers already deployed
         if shift_iteration:
             deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
@@ -495,7 +495,7 @@ class NonDeployedDrivers(APIView):
             item["ten_total"] = ten_total
             item["twelve_total"] = twelve_total
             item["fifteen_total"] = fifteen_total
-
+        print(non_deployed_drivers.data)
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
         }, status=status.HTTP_200_OK)

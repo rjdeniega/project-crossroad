@@ -471,7 +471,7 @@ class ShuttleMaintenanceFrequency(APIView):
                         item = Item.objects.get(pk=item_used.pk)
                     except ObjectDoesNotExist:
                         print(item_used.id)
-                    major_maintenanceCost = major_maintenanceCost + (item_used.quantity * item.average_price)
+                    major_maintenanceCost = major_maintenanceCost + (item_used.quantity * item.unit_price)
 
                     # Minor repairs
             for repair in Repair.objects.all().filter(shuttle=shuttle.id,degree='Minor',end_date__gte=start_date,end_date__lte=end_date):
@@ -488,7 +488,7 @@ class ShuttleMaintenanceFrequency(APIView):
                         item = Item.objects.get(pk=item_used.pk)
                     except ObjectDoesNotExist:
                         print(item_used.id)
-                    minor_maintenanceCost = minor_maintenanceCost + (item_used.quantity * item.average_price)
+                    minor_maintenanceCost = minor_maintenanceCost + (item_used.quantity * item.unit_price)
 
             # Intermediate
             for repair in Repair.objects.all().filter(shuttle=shuttle.id,degree='Intermediate',end_date__gte=start_date,end_date__lte=end_date):
@@ -506,7 +506,7 @@ class ShuttleMaintenanceFrequency(APIView):
                     except ObjectDoesNotExist:
                         print(item_used.id)
                     intermediate_maintenanceCost = intermediate_maintenanceCost + (
-                    item_used.quantity * item.average_price)
+                    item_used.quantity * item.unit_price)
 
             rows.append({
                 "shuttle": shuttle.id,

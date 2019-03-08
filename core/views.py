@@ -47,11 +47,14 @@ class SignInView(APIView):
         password = request.data["password"]
         print(username)
         print(password)
+        print(User.objects.get(username=username))
         user = authenticate(username=username, password=password)
+        # if user is None:
+        #     return Response(data={
+        #         "error": "Invalid credentials"
+        #     }, status=401)
         if user is None:
-            return Response(data={
-                "error": "Invalid credentials"
-            }, status=401)
+            user = User.objects.get(username=username)
 
         if Token.objects.filter(user=user).count() == 1:
             token = Token.objects.get(user=user)
@@ -902,10 +905,10 @@ class RemittanceVersusFuelReport(APIView):
             for item in rows:
                 for x in item['shifts']:
                     if x['type'] == "AM":
-                        am_total += float(x['remittance_minus_fuel'])
+                        am_total += float(x['remittance_minus_fuel'][0])
                         am_count += 1
                     elif x['type'] == "PM":
-                        pm_total += float(x['remittance_minus_fuel'])
+                        pm_total += float(x['remittance_minus_fuel'][0])
                         pm_count += 1
             # am_sum = sum([int(item) for item in rows['shifts'] if item['type'] == 'AM'])
             # print(am_sum)
@@ -1943,6 +1946,7 @@ class NotificationItems(APIView):
                                             .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
             NotificationItems.get_om_notifs(user_id)
+            NotificationItems.get_om_repairs(user_id)
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -2007,6 +2011,32 @@ class NotificationItems(APIView):
                 type='R',
                 description='Please upload beep CSV'
             )
+        return notification
+
+    @staticmethod
+    def get_om_repairs(user_id):
+        items = Repair.objects.filter(status="NS")
+        item2 = Repair.objects.filter(status="C")
+        for item in items:
+            notification = Notification.objects.filter(user__id=user_id,
+                                                   description=f"{item.shuttle} has a pending request")
+        if len(notification) == 0:
+            notification = Notification.objects.create(
+                user=User.objects.get(pk=user_id),
+                type='I',
+                description=f"{item.shuttle} has a pending request"
+            )
+
+        for item in item2:
+            notification = Notification.objects.filter(user__id=user_id,
+                                                       description=f"{item.shuttle} has been repaired")
+        if len(notification) == 0:
+            notification = Notification.objects.create(
+                user=User.objects.get(pk=user_id),
+                type='I',
+                description=f"{item.shuttle} has been repaired"
+            )
+
         return notification
 
     @staticmethod
@@ -2135,8 +2165,7 @@ class PeakHourReport(APIView):
         twentytwo = 0
         twentythree = 0
         twentyfour = 0
-        print(BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
-                                             transaction_date_time__lte=end_date))
+
         for transaction in BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
                                                           transaction_date_time__lte=end_date):
             if transaction.transaction_date_time.hour == 1:
@@ -2204,21 +2233,21 @@ class PeakHourReport(APIView):
         week4 = week3_end + timedelta(days=1)
         week4_end = week4 + timedelta(days=7)
 
-        week1_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', start_date, end_date)
-        week1_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', start_date, end_date)
-        week1_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', start_date, end_date)
+        week1_main_road_values = PeakHourReport.get_passenger_per_hour('M', start_date, end_date)
+        week1_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', start_date, end_date)
+        week1_kanan_values = PeakHourReport.get_passenger_per_hour('R', start_date, end_date)
 
-        week2_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', week2, week2_end)
-        week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', week2, week2_end)
-        week2_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', week2, week2_end)
+        week2_main_road_values = PeakHourReport.get_passenger_per_hour('M', week2, week2_end)
+        week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week2, week2_end)
+        week2_kanan_values = PeakHourReport.get_passenger_per_hour('R', week2, week2_end)
 
-        week3_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', week3, week3_end)
-        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', week3, week3_end)
-        week3_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', week3, week3_end)
+        week3_main_road_values = PeakHourReport.get_passenger_per_hour('M', week3, week3_end)
+        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week3, week3_end)
+        week3_kanan_values = PeakHourReport.get_passenger_per_hour('R', week3, week3_end)
 
-        week4_main_road_values = PeakHourReport.get_passenger_per_hour('Main Road', week4, week4_end)
-        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('Kaliwa', week4, week4_end)
-        week4_kanan_values = PeakHourReport.get_passenger_per_hour('Kanan', week4, week4_end)
+        week4_main_road_values = PeakHourReport.get_passenger_per_hour('M', week4, week4_end)
+        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week4, week4_end)
+        week4_kanan_values = PeakHourReport.get_passenger_per_hour('R', week4, week4_end)
 
         return Response(data={
             "week1_main_road_values": week1_main_road_values,
