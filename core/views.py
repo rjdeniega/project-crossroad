@@ -53,8 +53,13 @@ class SignInView(APIView):
         #     return Response(data={
         #         "error": "Invalid credentials"
         #     }, status=401)
-        if user is None:
-            user = User.objects.get(username=username)
+        try:
+            if user is None:
+                user = User.objects.get(username=username)
+        except ObjectDoesNotExist:
+            return Response(data={
+                "error": "Invalid credentials"
+            }, status=401)
 
         if Token.objects.filter(user=user).count() == 1:
             token = Token.objects.get(user=user)
@@ -514,7 +519,7 @@ class MemberTransactionByReport(APIView):
                 member_data["id_card"] = id_card.can
                 transactions = BeepTransaction.objects.filter(card_number=id_card.can)
                 carwash_transactions = [item for item in
-                                        CarwashTransaction.objects.all() if item.member == member]
+                                        CarwashTransaction.objects.filter(member=member)]
                 if end_date is not None:
                     transactions = [item for item in transactions if
                                     start_date.date() <= item.shift.date <= end_date.date()]
@@ -536,15 +541,15 @@ class MemberTransactionByReport(APIView):
                     "no_of_beep": len(transactions),
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
-                    "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in carwash_transactions])),
-                    "carwash_total": sum([item.total for item in carwash_transactions]),
+                    "beep_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in transactions])),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in carwash_transactions])),
+                    "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]),
+                        [float(item['total']) for item in carwash_transactions]),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]))
+                        [float(item['total']) for item in carwash_transactions]))
                 })
         return Response(data={
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
@@ -626,17 +631,16 @@ class PatronageRefund(APIView):
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
                     "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total": sum([item.total for item in carwash_transactions]),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in transactions])),
+                    "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
-                    "total_transactions": sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]),
-                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund * 100),
+                    "total_transactions": sum([float(item['total']) for item in transactions]) + sum(
+                        [float(item['total']) for item in carwash_transactions]),
+                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions])),
-                    "patronage_refund": (rate_of_refund) * sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]),
+                        [float(item['total']) for item in carwash_transactions])),
+                    "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * (surplus/100)),
                 })
         return Response(data={
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
@@ -972,7 +976,12 @@ class BeepTickets(APIView):
                     # beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
                 except ObjectDoesNotExist:
                     beep_shift = []
-                beep_total = sum([item.total for item in BeepTransaction.objects.filter(shift=beep_shift)])
+                except IndexError:
+                    beep_shift = []
+                if len(beep_shift) > 0:
+                    beep_total = sum([item.total for item in BeepTransaction.objects.filter(shift=beep_shift)])
+                else:
+                    beep_total = 0
                 shifts.append({
                     "type": shift.shift.get_type_display(),
                     "beep_total": "{0:,.2f}".format(beep_total),
@@ -1836,15 +1845,16 @@ class ShuttleCostVRevenueReport(APIView):
                     initialMaintenanceCost = initialMaintenanceCost + amount
 
             value = (shuttle.purchase_price - shuttle.salvage_value)
-            depreciation_rate = float((shuttle.purchase_price - shuttle.salvage_value)) / shuttle.lifespan
+            depreciation_rate = float((shuttle.purchase_price - shuttle.salvage_value)) * float(1/shuttle.lifespan)
+
             temp_start_date = shuttle.date_acquired
             total_depreciation = 0
 
             months = ShuttleCostVRevenueReport.diff_month(temp_start_date, end_date)
 
-            total_depreciation = (value * depreciation_rate) * months
+            total_depreciation = depreciation_rate * months
 
-            net_value = value + shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost - total_depreciation
+            net_value = float(value) + float(shuttle_remittance) - float(shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
             rows.append({
                 "purchase_cost": value,
                 "shuttle_id": shuttle.id,
@@ -1897,31 +1907,40 @@ class RemittanceForTheMonth(APIView):
 
         days = [datetime(year, month, day) for day in range(1, num_days + 1)]
 
-        values = []
+        main_road_values = []
+        kaliwa_values = []
+        kanan_values = []
         new_days = []
         rem = RemittanceForTheMonth()
 
         for day in days:
-            value = rem.get_remittance_total(day) + rem.get_beep_total(day)
-            values.append(value)
+            main_road_value = rem.get_remittance_total("M",day) + rem.get_beep_total("M",day)
+            kaliwa_value = rem.get_remittance_total("L", day) + rem.get_beep_total("L", day)
+            kanan_value = rem.get_remittance_total("R", day) + rem.get_beep_total("R", day)
+
+            main_road_values.append(main_road_value)
+            kaliwa_values.append(kaliwa_value)
+            kanan_values.append(kanan_value)
             new_days.append(day.date())
 
         return Response(data={
             "days": new_days,
-            "values": values
+            "main_road_values": main_road_values,
+            "kaliwa_values": kaliwa_values,
+            "kanan_values": kanan_values,
         }, status=status.HTTP_200_OK)
 
     @staticmethod
-    def get_remittance_total(date):
-        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date)
+    def get_remittance_total(route,date):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date,deployment__shuttle__route=route)
         total = 0
         for remittance in remittances:
             total += remittance.get_remittances_only()
         return total
 
     @staticmethod
-    def get_beep_total(date):
-        beeps = BeepTransaction.objects.filter(shift__date=date)
+    def get_beep_total(route,date):
+        beeps = BeepTransaction.objects.filter(shift__date=date,shuttle__route=route)
         total = 0
         for beep in beeps:
             total += beep.total

@@ -513,6 +513,9 @@ export class SharesManagementPane extends Component {
 
                     <Table bordered size="medium"
                            className="remittance-table share-table"
+                           pagination={{
+                               pageSize: 5,
+                           }}
                            columns={this.share_columns}
                            dataSource={this.state.shares}
                     />
