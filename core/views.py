@@ -1842,8 +1842,7 @@ class ShuttleCostVRevenueReport(APIView):
 
             months = ShuttleCostVRevenueReport.diff_month(temp_start_date, end_date)
 
-
-            total_depreciation = (value * depreciation_rate)  * months
+            total_depreciation = (value * depreciation_rate) * months
 
             net_value = value + shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost - total_depreciation
             rows.append({
@@ -1987,6 +1986,15 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'mechanic':
+            NotificationItems.get_mechanic_notifs(user_id)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
+            unread = NotificationSerializer(Notification.objects
+                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
+                '-created'), many=True)
             notifications = NotificationSerializer(Notification.objects
                                                    .filter(Q(type='I') | Q(type='N')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
@@ -2029,7 +2037,7 @@ class NotificationItems(APIView):
         item2 = Repair.objects.filter(status="C")
         for item in items:
             notification = Notification.objects.filter(user__id=user_id,
-                                                   description=f"{item.shuttle} has a pending request")
+                                                       description=f"{item.shuttle} has a pending request")
         if len(notification) == 0:
             notification = Notification.objects.create(
                 user=User.objects.get(pk=user_id),
@@ -2039,7 +2047,7 @@ class NotificationItems(APIView):
 
         for item in item2:
             notification2 = Notification.objects.filter(user__id=user_id,
-                                                       description=f"{item.shuttle} has been repaired")
+                                                        description=f"{item.shuttle} has been repaired")
         if len(notification2) == 0:
             Notification.objects.create(
                 user=User.objects.get(pk=user_id),
@@ -2082,6 +2090,31 @@ class NotificationItems(APIView):
                         description=f'{item.category} is low on stocks ({item.quantity} pcs)'
                     )
         return notification
+
+    @staticmethod
+    def get_mechanic_notifs(user_id):
+        items = Repair.objects.filter(status="FI")
+        item2 = Repair.objects.filter(status="IP")
+
+        for item in items:
+            notification = Notification.objects.filter(user__id=user_id,
+                                                       description=f"{item.shuttle} needs to be diagnosed for repair")
+            if len(notification) == 0:
+                notification = Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} needs to be diagnosed for repair"
+                )
+
+        for item in item2:
+            notification2 = Notification.objects.filter(user__id=user_id,
+                                                        description=f"{item.shuttle} needs to be repaired")
+            if len(notification2) == 0:
+                Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} needs to be repaired"
+                )
 
 
 class ChangeNotificationStatus(APIView):
