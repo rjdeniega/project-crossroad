@@ -1304,14 +1304,20 @@ class TicketTypePerDayReport(APIView):
                                 print(consumed_ticket.total)
                                 pm_count += consumed_ticket.total / 15
                                 pm_fifteen += consumed_ticket.total / 15
-
+                shuttle_route = None
+                if shuttle.route == "M":
+                    shuttle_route = "Main Road"
+                elif shuttle.route == "R":
+                    shuttle_route = "Kanan"
+                elif shuttle.route == "L":
+                    shuttle_route = "Kaliwa"
                 shuttles.append({
                     "shuttle_id": shuttle.id,
                     "shuttle_number": shuttle.shuttle_number,
                     "shuttle_plate": shuttle.plate_number,
                     "shuttle_make": shuttle.make,
                     "shuttle_model": shuttle.model,
-                    "shuttle_route": shuttle.route,
+                    "shuttle_route": shuttle_route,
                     "am_total": am_count,
                     "pm_total": pm_count,
                     "am_ten": am_ten,
@@ -1830,12 +1836,14 @@ class ShuttleCostVRevenueReport(APIView):
                     initialMaintenanceCost = initialMaintenanceCost + amount
 
             value = (shuttle.purchase_price - shuttle.salvage_value)
-            depreciation_rate = (shuttle.purchase_price - shuttle.salvage_value) / shuttle.lifespan
+            depreciation_rate = float((shuttle.purchase_price - shuttle.salvage_value)) / shuttle.lifespan
             temp_start_date = shuttle.date_acquired
             total_depreciation = 0
 
             months = ShuttleCostVRevenueReport.diff_month(temp_start_date, end_date)
-            total_depreciation = (value * depreciation_rate) * months
+
+
+            total_depreciation = (value * depreciation_rate)  * months
 
             net_value = value + shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost - total_depreciation
             rows.append({
@@ -1957,6 +1965,8 @@ class NotificationItems(APIView):
                 '-created'), many=True)
         elif user_type == 'system_admin':
             NotificationItems.get_om_notifs(user_id)
+            NotificationItems.get_om_repairs(user_id)
+
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -2028,10 +2038,10 @@ class NotificationItems(APIView):
             )
 
         for item in item2:
-            notification = Notification.objects.filter(user__id=user_id,
+            notification2 = Notification.objects.filter(user__id=user_id,
                                                        description=f"{item.shuttle} has been repaired")
-        if len(notification) == 0:
-            notification = Notification.objects.create(
+        if len(notification2) == 0:
+            Notification.objects.create(
                 user=User.objects.get(pk=user_id),
                 type='I',
                 description=f"{item.shuttle} has been repaired"

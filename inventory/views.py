@@ -442,7 +442,7 @@ class ShuttleMaintenanceFrequency(APIView):
             end_date = start_date + timedelta(days=6)
 
         rows = []
-
+        print(Repair.objects.all().filter(shuttle=shuttle.id,degree='Intermediate',end_date__gte=start_date,end_date__lte=end_date))
         shuttles = Shuttle.objects.all()
 
         for shuttle in shuttles:
