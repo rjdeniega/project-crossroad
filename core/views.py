@@ -1952,8 +1952,8 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
-            NotificationItems.get_om_notifs(user_id)
             NotificationItems.get_om_repairs(user_id)
+            NotificationItems.get_om_notifs(user_id)
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -1963,8 +1963,8 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'system_admin':
-            NotificationItems.get_om_notifs(user_id)
             NotificationItems.get_om_repairs(user_id)
+            NotificationItems.get_om_notifs(user_id)
 
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
@@ -2035,27 +2035,26 @@ class NotificationItems(APIView):
     def get_om_repairs(user_id):
         items = Repair.objects.filter(status="NS")
         item2 = Repair.objects.filter(status="C")
+
         for item in items:
             notification = Notification.objects.filter(user__id=user_id,
-                                                       description=f"{item.shuttle} has a pending request")
-        if len(notification) == 0:
-            notification = Notification.objects.create(
-                user=User.objects.get(pk=user_id),
-                type='I',
-                description=f"{item.shuttle} has a pending request"
-            )
+                                                       description=f"{item.shuttle} has a pending repair request")
+            if len(notification) == 0:
+                notification = Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} has a pending repair request"
+                )
 
         for item in item2:
             notification2 = Notification.objects.filter(user__id=user_id,
                                                         description=f"{item.shuttle} has been repaired")
-        if len(notification2) == 0:
-            Notification.objects.create(
-                user=User.objects.get(pk=user_id),
-                type='I',
-                description=f"{item.shuttle} has been repaired"
-            )
-
-        return notification
+            if len(notification2) == 0:
+                Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} has been repaired"
+                )
 
     @staticmethod
     def get_member_notifs(user):
