@@ -155,7 +155,7 @@ export class SharesAccumulationReport extends Component {
     render() {
         return (
             <div className="report-body">
-                <DatePicker.YearPicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}

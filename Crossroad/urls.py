@@ -61,7 +61,8 @@ urlpatterns = [
     path('passenger_per_route/', PassengerPerRoute.as_view()),
     path('peak_hours/', PeakHourReport.as_view()),
     path('beep_tickets_per_route/', BeepTicketsPerRoute.as_view()),
-    path('driver_performance/', DriverPerformance.as_view())
+    path('driver_performance/', DriverPerformance.as_view()),
+    path('remittance_per_year/', RemittancePerYear.as_view())
 ]
 
 if settings.DEBUG:

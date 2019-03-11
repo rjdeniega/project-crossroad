@@ -24,6 +24,7 @@ import { SharesReport } from './content/shares_report/shares_report'
 import { TransactionReport } from './content/transactions_report/transactions_report'
 import { RemittanceSummary } from './content/remittance_summary/remittance_summary'
 import { RemittanceChart} from './content/remittance_chart/remittance_chart'
+import { RemittancePerYear} from './content/remittance_per_year/remittance_per_year'
 import { TicketReport } from './content/ticket_reports/ticket_reports'
 import { TicketShuttleBreakdown } from './content/ticket_breakdown_shuttle/ticket_breakdown_shuttle'
 import { WeeklySupervisorReport } from './content/weekly_supervisor_report/weekly_supervisor_report'
@@ -72,6 +73,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view remittances per route',
     'icon': money,
     'content': <RemittanceSummaryRoute/>
+},{
+    'title': 'Remittance Per Year',
+    'description': 'view monthly remittances per year',
+    'icon': money,
+    'content': <RemittancePerYear/>
 },{
     'title': 'Driver Remittance & Payables',
     'description': 'view driver deployment information',

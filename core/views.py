@@ -2397,6 +2397,7 @@ class NotificationItems(APIView):
     def get_mechanic_notifs(user_id):
         items = Repair.objects.filter(status="FI")
         item2 = Repair.objects.filter(status="IP")
+        item3 = Repair.objects.filter(status="SR")
 
         for item in items:
             notification = Notification.objects.filter(user__id=user_id,
@@ -2416,6 +2417,15 @@ class NotificationItems(APIView):
                     user=User.objects.get(pk=user_id),
                     type='I',
                     description=f"{item.shuttle} needs to be repaired"
+                )
+        for item in item3:
+            notification3 = Notification.objects.filter(user__id=user_id,
+                                                        description=f"{item.shuttle} is scheduled to be repaired")
+            if len(notification3) == 0:
+                Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} is scheduled to be repaired"
                 )
 
 
@@ -2686,19 +2696,19 @@ class RemittancePerYear(APIView):
         years = []
         for x in range(0, 4):
             months = []
+            days = 365 * x
             for i in range(1, 13):
                 total = sum([item.total for item in
-                             RemittanceForm.objects.filter(created__year=date.year - timedelta(days=365 * x),
+                             RemittanceForm.objects.filter(created__year=(date - timedelta(days=days)).year,
                                                            created__month=i)]) + sum([item.total for item in
                                                                                       BeepTransaction.objects.filter(
-                                                                                          transaction_date_time__year=date.year - timedelta(
-                                                                                              days=365 * x),
+                                                                                          transaction_date_time__year=(date - timedelta(days=days)).year,
                                                                                           transaction_date_time__month=i)])
                 months.append(total)
             years.append({
-                "year": (date.year - timedelta(days=365 * x)).year,
+                "year": (date - timedelta(days=days)).year,
                 "months": months
             })
-            return Response(data={
-                "years": years
-            }, status=status.HTTP_200_OK)
+        return Response(data={
+            "years": years
+        }, status=status.HTTP_200_OK)
