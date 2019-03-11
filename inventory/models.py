@@ -168,6 +168,7 @@ class RepairProblem(SoftDeletionModel):
 
 class RepairFinding(SoftDeletionModel):
     description = TextField()
+    item_defect = ForeignKey(ItemCategory, null=True, on_delete=models.PROTECT)
 
 
 class RepairModifications(SoftDeletionModel):

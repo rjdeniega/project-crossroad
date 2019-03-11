@@ -35,10 +35,10 @@ export class DriverRepairRequest extends Component {
             problems: this.state.findings
         };
         postData('inventory/repair_request/driver/'+ JSON.parse(localStorage.user).id, data).then(data => {
-            console.log(data.foo)
+            console.log(data.foo);
+            this.getState();
         });
         message.success("Repair request has been submitted");
-        this.getState()
     }
 
     updateField(e) {
