@@ -11,7 +11,7 @@ import {ic_loop} from 'react-icons-kit/md/ic_loop'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar'
 import {putData} from "../../../../../../../network_requests/general";
 
-function disabledDate(current){
+function disabledDate(current) {
     return current < moment().endOf('day')
 }
 
@@ -20,7 +20,8 @@ export class RepairDisplay extends Component {
         super(props);
 
         this.state = {
-            scheduled_repair: null
+            scheduled_repair: null,
+            categories: []
         };
 
         this.onChange = this.onChange.bind(this);
@@ -31,6 +32,20 @@ export class RepairDisplay extends Component {
         console.log(date, dateString);
         this.setState({
             scheduled_repair: dateString
+        })
+    }
+
+    componentDidMount() {
+        getData('inventory/items').then(data => {
+            if(!data.error){
+                let categories = [];
+                data.categories.forEach(function(category){
+                    categories[category.id] = category.category
+                });
+                this.setState({
+                    categories:categories,
+                })
+            }
         })
     }
 
@@ -76,7 +91,7 @@ export class RepairDisplay extends Component {
         }
     }
 
-    updateRepairStatus(id, status, type){
+    updateRepairStatus(id, status, type) {
         let {scheduled_repair} = this.state;
         message.success('Updated repair');
         let data = {
@@ -91,7 +106,7 @@ export class RepairDisplay extends Component {
 
     render() {
         let {repair, problems, findings, modifications, outsourcedItems, items} = this.props;
-
+        const {categories} = this.state;
 
         return (
             <div style={{
@@ -110,10 +125,10 @@ export class RepairDisplay extends Component {
                             {!repair.labor_fee ? '' : (
                                 <p><b>Labor Fee: </b>₱{repair.labor_fee}</p>
                             )}
-                            {!repair.schedule ? '':(
+                            {!repair.schedule ? '' : (
                                 <p><b>Repair Schedule: </b>{repair.schedule}</p>
                             )}
-                            {!repair.start_date ? '' : (
+                            {!repair.start_date ? '' : new Date() > repair.schedule && (
                                 <p><b>Start date: </b>{repair.start_date}</p>
                             )}
                             {!repair.end_date ? '' : (
@@ -135,7 +150,7 @@ export class RepairDisplay extends Component {
                                           bordered>
                                         {findings.map(function (finding, index) {
                                             return (
-                                                <List.Item>{finding.description}</List.Item>
+                                                <List.Item>{categories[finding.item_defect]} - {finding.description}</List.Item>
                                             )
                                         })}
                                     </List>
@@ -148,7 +163,6 @@ export class RepairDisplay extends Component {
                                         {modifications.map(function (modification, index) {
                                             return items.map(function (item, index) {
                                                 if (item.id === modification.item_used) {
-                                                    console.log('nice')
                                                     return (
                                                         <List.Item>{modification.quantity} - {item.name}</List.Item>
                                                     )
@@ -177,16 +191,20 @@ export class RepairDisplay extends Component {
                                         <Popover trigger="click" content={
                                             <div style={{width: '10vw', height: '16vh'}}>
                                                 <Typography>Select repair schedule </Typography>
-                                                <DatePicker onChange={this.onChange} disabledDate={disabledDate} />
+                                                <DatePicker onChange={this.onChange} disabledDate={disabledDate}/>
                                                 <br/>
                                                 <br/>
-                                                <Button htmlType='button' type='primary' onClick={() => this.updateRepairStatus(repair.id, "SR", "Minor")}>Confirm</Button>
+                                                <Button htmlType='button' type='primary'
+                                                        onClick={() => this.updateRepairStatus(repair.id, "SR", "Minor")}>Confirm</Button>
                                             </div>
                                         }>
-                                            <Button htmlType='button' type='primary' >Minor</Button>
+                                            <Button htmlType='button' type='primary'>Minor</Button>
                                         </Popover>
-                                        <Button htmlType='button' type='primary' onClick={() => this.updateRepairStatus(repair.id, "IP", "Intermediate")}>Intermediate</Button>
-                                        <Button htmlType='button' type='primary' onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major (for outsource)</Button>
+                                        <Button htmlType='button' type='primary'
+                                                onClick={() => this.updateRepairStatus(repair.id, "IP", "Intermediate")}>Intermediate</Button>
+                                        <Button htmlType='button' type='primary'
+                                                onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major
+                                            (for outsource)</Button>
                                     </Button.Group>
                                 </div>
                             )}

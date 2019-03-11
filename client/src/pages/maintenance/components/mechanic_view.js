@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Icon} from 'react-icons-kit'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
-import {List, Row, Col, Menu, Button, Modal, Form, message, Input, Tag} from 'antd'
+import {List, Row, Col, Menu, Button, Modal, Form, message, Input, Tag, Select} from 'antd'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
 import {postData, getData, putData} from "../../../network_requests/general"
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
@@ -16,146 +16,107 @@ import {OutsourceForm} from './confirm_outsource'
 
 const ButtonGroup = Button.Group;
 
-const div_style = {border: 'solid', width: '100%',
-             borderColor: '#E8E8E8', borderRadius: 5,
-             borderWidth: 1, padding: 20,
-             backgroundColor: 'white', height: '78vh'};
+const div_style = {
+    border: 'solid', width: '100%',
+    borderColor: '#E8E8E8', borderRadius: 5,
+    borderWidth: 1, padding: 20,
+    backgroundColor: 'white', height: '78vh'
+};
 
-function hasErrors(fieldsError){
-    return Object.keys(fieldsError).some(field=>fieldsError[field])
+function hasErrors(fieldsError) {
+    return Object.keys(fieldsError).some(field => fieldsError[field])
 }
 
-class FindingsFormInit extends Component{
-    constructor(props){
+class FindingsForm extends Component {
+    constructor(props) {
         super(props);
-        this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             repair: props.repair,
-            uuid: 0
-        }
+            defective_item: null,
+            finding: null,
+            categories: [],
+        };
+
+        this.submitFinding = this.submitFinding.bind(this)
     }
 
-    remove = (k) => {
-        const {form} = this.props;
-        const keys = form.getFieldValue('keys');
-        if(keys.length === 1){
-            return;
-        }
-        form.setFieldsValue({
-            keys: keys.filter(key => key !== k),
-        })
-    };
+    componentDidMount() {
+        this.getCategories()
+    }
 
-    add = () => {
-        const { form } = this.props;
-        const keys = form.getFieldValue('keys');
-        const nextKeys = keys.concat(this.state.uuid);
-        this.setState({
-            uuid: this.state.uuid + 1,
+    submitFinding() {
+        const {finding, defective_item, repair} = this.state;
+        console.log(finding + defective_item);
+        let data = {
+            category: defective_item,
+            finding: finding,
+        };
+        postData('inventory/mechanic/findings/' + repair.id, data).then(data => {
+            this.props.loadFindings(data.findings)
         });
-        form.setFieldsValue({
-            keys:nextKeys,
-        });
-    };
+        this.props.close()
+    }
 
-    handleSubmit(e){
-        e.preventDefault();
-        const {repair} = this.props;
-        this.props.form.validateFields((err, values)=>{
-            if(typeof values['findings'] === 'undefined'){
-                message.warning('Add problem fields!');
-            }
-            if(!err && typeof values['findings'] !== 'undefined'){
-                let cleaned_findings = values['findings']
-                                .filter(function(n){return n !== undefined});
-                const data = {
-                    findings: cleaned_findings,
-                };
-
-                postData('inventory/mechanic/repairs/' + repair.id, data)
-                    .then(response => {
-                        return response;
-                    })
-                    .then(data => {
-                        if(!data.error){
-                            this.props.loadFindings(data.findings)
-                        }else{
-                            console.log(data.error)
-                        }
-                    })
-
-                this.props.close();
-                message.success('Findings added!')
-            }
+    getCategories() {
+        getData('inventory/items/item_category/').then(data => {
+            this.setState({
+                categories: data.item_category,
+            }, () => {
+                console.log(this.state)
+            })
         })
     }
 
-    render(){
-        const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched, getFieldValue} = this.props.form;
+    render() {
+        const {categories, finding} = this.state;
 
         const formItemLayout = {
             labelCol: {
-                xs: { span: 24 },
-                sm: { span: 4 },
+                xs: {span: 24},
+                sm: {span: 8},
             },
             wrapperCol: {
-                xs: { span: 24 },
-                sm: { span: 20 },
+                xs: {span: 24},
+                sm: {span: 16},
             },
         };
         const formItemLayoutWithOutLabel = {
             wrapperCol: {
-                xs: { span: 24, offset: 0 },
-                sm: { span: 20, offset: 4 },
+                xs: {span: 24, offset: 0},
+                sm: {span: 20, offset: 8},
             },
         };
-        getFieldDecorator('keys', { initialValue: [] });
-        const keys = getFieldValue('keys');
-        const formItems = keys.map((k, index) => {
-            return (
-                <Form.Item
-                    {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
-                    label={index === 0 ? 'Findings' : ''}
-                    required={true}
-                    key={k}>
-                    {getFieldDecorator(`findings[${k}]`, {
-                        validateTrigger: ['onChange', 'onBlur'],
-                        rules: [{
-                            required: true,
-                            whitespace: true,
-                            message: 'Please input finding',
-                        }],
-                    })(
-                        <Input className='finding' placeholder='Finding' style={{width: '80%', marginRight: 8}}/>
-                    )}
-                    {keys.length > 1 ?(
-                        <Icon
-                            className="dynamic-delete-button" icon={withMinus}
-                            disabled={keys.length === 1} onClick={() => this.remove(k)}/>
-                    ) : null}
+        return (
+            <div>
+                <Form.Item label="Finding" {...formItemLayout}>
+                    <Input onChange={e => this.setState({
+                        finding: e.target.value
+                    })}/>
                 </Form.Item>
-            );
-        });
-        return(
-            <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
-                {formItems}
+                <Form.Item label="Item Defect" {...formItemLayout}>
+                    <Select style={{width: "100%"}} onSelect={value => {
+                        this.setState({
+                            defective_item: value
+                        })
+                    }}>
+                        <Select.Option value={null}>None</Select.Option>
+                        {categories.map(function (category) {
+                            return <Select.Option value={category.id}>{category.category}</Select.Option>
+                        })}
+                    </Select>
+                </Form.Item>
                 <Form.Item {...formItemLayoutWithOutLabel}>
-                    <Button type="dashed" onClick={this.add} style={{ width: '80%' }}>
-                        <Icon icon={plus} /> Add finding
+                    <Button htmlType="button" type="primary" onClick={this.submitFinding} disabled={!finding && true}>
+                        Add Finding
                     </Button>
                 </Form.Item>
-                <Form.Item {...formItemLayoutWithOutLabel}>
-                    <Button type="primary" htmlType="submit">Submit</Button>
-                </Form.Item>
-            </Form>
+            </div>
         )
     }
 }
 
-const FindingsForm = Form.create()(FindingsFormInit);
-
-export class MechanicView extends Component{
-    constructor(props){
+export class MechanicView extends Component {
+    constructor(props) {
         super(props);
         this.state = {
             repairs: [],
@@ -168,48 +129,56 @@ export class MechanicView extends Component{
             itemsModal: false,
             outsourceModal: false,
             items: [],
-        }
+            categories: [],
+        };
+
+        this.setfindingsVisible = this.setfindingsVisible.bind(this)
     }
 
-    unloadRepair(){
+    unloadRepair() {
         this.setState({
             loadedRepair: ''
         })
     }
 
-    setfindingsVisible(findingsModal){
+    setfindingsVisible(findingsModal) {
         this.setState({findingsModal})
     }
 
-    setItemsVisible(itemsModal){
+    setItemsVisible(itemsModal) {
         this.setState({itemsModal})
     }
 
-    setOutsourcedVisible(outsourceModal){
+    setOutsourcedVisible(outsourceModal) {
         this.setState({outsourceModal})
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.loadRepairs();
 
         getData('inventory/items')
-            .then(data=>{
-                if(!data.error){
+            .then(data => {
+                if (!data.error) {
+                    let categories = [];
+                    data.categories.forEach(function(category){
+                        categories[category.id] = category.category
+                    });
                     this.setState({
-                        items: data.items
-                    })
+                        items: data.items,
+                        categories: categories
+                    }, () => console.log(this.state))
                 } else {
                     console.log(data.error)
                 }
             })
     }
 
-    loadRepairs(){
+    loadRepairs() {
         fetch('inventory/mechanic/repairs')
             .then(response => response.json())
             .then(
                 data => {
-                    if(!data.error){
+                    if (!data.error) {
                         this.setState({
                             repairs: data.repairs
                         })
@@ -220,7 +189,7 @@ export class MechanicView extends Component{
             )
     }
 
-    repairAction(pk, action){
+    repairAction(pk, action) {
         let data = {
             action: action
         };
@@ -231,11 +200,11 @@ export class MechanicView extends Component{
             .then(data => {
                 this.loadRepairs();
                 message.success('Repair ' + action);
-                if(action === 'complete'){
+                if (action === 'complete') {
                     this.setState({
                         loadedRepair: ''
                     })
-                }else{
+                } else {
                     this.setState({
                         loadedRepair: data.repair
                     })
@@ -243,14 +212,14 @@ export class MechanicView extends Component{
             })
     }
 
-    loadFindings(findings){
+    loadFindings(findings) {
         console.log('aw');
         this.setState({
             findings: findings,
         })
     }
 
-    loadItems(items){
+    loadItems(items) {
         this.setState({
             modifications: items
         })
@@ -272,7 +241,7 @@ export class MechanicView extends Component{
 
     handleClick = (e) => {
         let content;
-        switch (e.key){
+        switch (e.key) {
             case '1':
                 content = 1;
                 break;
@@ -289,13 +258,13 @@ export class MechanicView extends Component{
     };
 
     renderCurrentPage = () => {
-        const {currentTab, problems, findings, modifications, loadedRepair, items} = this.state;
+        const {currentTab, problems, findings, modifications, loadedRepair, items, categories} = this.state;
 
         switch (currentTab) {
             case 1:
                 return (
                     <List bordered size='small'>
-                        {problems.map(function(problem, index){
+                        {problems.map(function (problem, index) {
                             return (
                                 <List.Item>{problem.description}</List.Item>
                             )
@@ -308,24 +277,26 @@ export class MechanicView extends Component{
                             (
                                 <List size='small'
                                       bordered>
-                                      {findings.map(function(finding, index){
-                                      return (
-                                          <List.Item>{finding.description}</List.Item>
-                                      )})}
+                                    {findings.map(function (finding, index) {
+                                        return (
+                                            <List.Item>{categories[finding.item_defect]} - {finding.description}</List.Item>
+                                        )
+                                    })}
                                 </List>
-                        )}
+                            )}
                         <br/>
-                        <Button type='dashed' onClick={() => this.setfindingsVisible(true)} hidden={loadedRepair.status === 'IP' ? 'true' :''}
-                            style={{width: '100%'}}>Add Finding</Button>
+                        <Button type='dashed' onClick={() => this.setfindingsVisible(true)}
+                                hidden={loadedRepair.status === 'IP' ? 'true' : ''}
+                                style={{width: '100%'}}>Add Finding</Button>
                         <Modal
                             title='Add Findings'
                             onCancel={() => this.setfindingsVisible(false)}
                             footer={null} visible={this.state.findingsModal}>
                             <FindingsForm repair={loadedRepair} loadFindings={this.loadFindings.bind(this)}
-                                close={() => this.setfindingsVisible(false)}/>
+                                          close={() => this.setfindingsVisible(false)}/>
                         </Modal>
                     </div>
-                    );
+                );
             default:
                 return (
                     <div>
@@ -333,31 +304,31 @@ export class MechanicView extends Component{
                             (
                                 <List size='small'
                                       bordered>
-                                      {modifications.map(function(modification, index){
-                                          return items.map(function(item, index){
-                                              if(item.id === modification.item_used){
-                                                  console.log('nice');
-                                                  return (
-                                                  <List.Item>{modification.quantity} - {item.brand} {item.category}</List.Item>
+                                    {modifications.map(function (modification, index) {
+                                        return items.map(function (item, index) {
+                                            if (item.id === modification.item_used) {
+                                                console.log('nice');
+                                                return (
+                                                    <List.Item>{modification.quantity} - {item.brand} {item.category}</List.Item>
                                                 )
-                                              }
+                                            }
 
-                                          })
+                                        })
                                     })}
                                 </List>
-                        )}
+                            )}
                         <br/>
                         <Button type='dashed' onClick={() => this.setItemsVisible(true)}
-                            style={{width: '100%'}}>Add Item</Button>
+                                style={{width: '100%'}}>Add Item</Button>
                         <Modal
                             title='Add Items' width={450}
                             onCancel={() => this.setItemsVisible(false)}
                             footer={null} visible={this.state.itemsModal}>
                             <AddItems repair={this.state.loadedRepair.id} loadItems={this.loadItems.bind(this)}
-                                close={() => this.setItemsVisible(false)}/>
+                                      close={() => this.setItemsVisible(false)}/>
                         </Modal>
                     </div>
-                    );
+                );
         }
     };
 
@@ -389,37 +360,38 @@ export class MechanicView extends Component{
         this.loadNewRepair()
     }
 
-    render(){
+    render() {
         const {repairs, loadedRepair, problems, findings, modifications} = this.state;
         const loadNewRepair = this.loadNewRepair;
 
-        return(
+        return (
             <div style={{padding: 10}}>
                 <Row gutter={16}>
                     <Col span={8}>
                         <div style={div_style}
-                                     align='middle'>
+                             align='middle'>
                             {repairs.length === 0 ? (
                                 <h2>There are no outstanding repairs</h2>
                             ) : (
                                 <PerfectScrollbar>
                                     <List header={<h3>Repairs</h3>} bordered itemLayout='horizontal'>
-                                            {repairs.map(function(repair, index){
-                                                return(
-                                                    <List.Item actions={[<Icon icon={ic_navigate_next}
-                                                                    onClick={() => loadNewRepair(repair)}
-                                                                    size={24} style={{verticalAlign: 'middle'}}/>]}>
-                                                        <List.Item.Meta
-                                                            avatar={<Icon icon={repair.status === 'NS' ?
-                                                                            ic_access_time : ic_loop}
-                                                                        style={{color: '#E9C46A'}}
-                                                                        size={24}/>}
-                                                            title={<h4>Repair {repair.id} </h4>}
-                                                            description={'Date requested ' + repair.date_requested}
-                                                            align="left"/>
-                                                    </List.Item>
-                                                )
-                                            })}
+                                        {repairs.map(function (repair, index) {
+                                            return (
+                                                <List.Item actions={[<Icon icon={ic_navigate_next}
+                                                                           onClick={() => loadNewRepair(repair)}
+                                                                           size={24}
+                                                                           style={{verticalAlign: 'middle'}}/>]}>
+                                                    <List.Item.Meta
+                                                        avatar={<Icon icon={repair.status === 'NS' ?
+                                                            ic_access_time : ic_loop}
+                                                                      style={{color: '#E9C46A'}}
+                                                                      size={24}/>}
+                                                        title={<h4>Repair {repair.id} </h4>}
+                                                        description={'Date requested ' + repair.date_requested}
+                                                        align="left"/>
+                                                </List.Item>
+                                            )
+                                        })}
                                     </List>
                                 </PerfectScrollbar>
                             )}
@@ -435,56 +407,62 @@ export class MechanicView extends Component{
                                         <h2>Repair: {loadedRepair.id}</h2>
                                         <h3>Shuttle {loadedRepair.shuttle}</h3>
                                         <p><i>Date Requested: {loadedRepair.date_requested}</i></p>
-                                        {loadedRepair.start_date ? (
-                                            <p><b>Start Date: </b> loadedRepair.start_date</p>
-                                        ) :""}
+                                        {loadedRepair.start_date ? new Date() > loadedRepair.start_date && (
+                                            <p><b>Start Date: </b> { loadedRepair.start_date }</p>
+                                        ) : ""}
                                         {loadedRepair.status === 'FO' ? (
                                             <div>
                                                 <Button type='primary' onClick={() => this.setOutsourcedVisible(true)}>
-                                                        <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
+                                                    <Icon icon={ic_check} size={18}
+                                                          style={{verticalAlign: 'middle'}}/> Complete Repair
                                                 </Button>
                                                 <Modal
                                                     title='Enter Repair Summary' width={600}
                                                     onCancel={() => this.setOutsourcedVisible(false)}
                                                     footer={null} visible={this.state.outsourceModal}>
-                                                    <OutsourceForm close={() => this.setOutsourcedVisible(false)} unload={this.unloadRepair.bind(this)}
+                                                    <OutsourceForm close={() => this.setOutsourcedVisible(false)}
+                                                                   unload={this.unloadRepair.bind(this)}
                                                                    repair={loadedRepair}/>
                                                 </Modal>
                                             </div>
                                         ) : loadedRepair.status === 'IP' ? (
-                                                <Button type='primary' onClick={() => this.completeRepair(loadedRepair.id)}>
-                                                    <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
-                                                </Button>
-                                        ): loadedRepair.status === 'FI' ? (
-                                            <Button type='primary' htmlType="button" onClick={() => this.forwardToOperations(loadedRepair.id)}>
+                                            <Button type='primary' onClick={() => this.completeRepair(loadedRepair.id)}>
+                                                <Icon icon={ic_check} size={18}
+                                                      style={{verticalAlign: 'middle'}}/> Complete Repair
+                                            </Button>
+                                        ) : loadedRepair.status === 'FI' ? (
+                                            <Button type='primary' htmlType="button"
+                                                    onClick={() => this.forwardToOperations(loadedRepair.id)}>
                                                 Forward to Operation Manager
                                             </Button>
-                                        ): loadedRepair.status === 'NS' ? (
+                                        ) : loadedRepair.status === 'NS' ? (
                                             <Tag color="green">Forwarded to Operations manager</Tag>
-                                        ): loadedRepair.status === 'SR' && (
+                                        ) : loadedRepair.status === 'SR' && (
                                             <div>
-                                                <Tag color='blue'> Schedule: {loadedRepair.schedule}</Tag>
+                                                {new Date() < loadedRepair.schedule && <Tag color='blue'> Schedule: {loadedRepair.schedule}</Tag>}
                                                 <br/>
                                                 {new Date(loadedRepair.schedule) < new Date() &&
-                                                    <Button type='primary' onClick={() => this.completeRepair(loadedRepair.id)}>
-                                                    <Icon icon={ic_check} size={18} style={{verticalAlign: 'middle'}}/> Complete Repair
+                                                <Button type='primary'
+                                                        onClick={() => this.completeRepair(loadedRepair.id)}>
+                                                    <Icon icon={ic_check} size={18}
+                                                          style={{verticalAlign: 'middle'}}/> Complete Repair
                                                 </Button>
                                                 }
                                             </div>
                                         )}
                                         <Menu onClick={this.handleClick} selectedKeys={[this.state.currentTab]}
                                               mode='horizontal'>
-                                             <Menu.Item key={1}>
-                                                 Problems
-                                             </Menu.Item>
-                                             <Menu.Item key={2}>
-                                                 Findings
-                                             </Menu.Item>
+                                            <Menu.Item key={1}>
+                                                Problems
+                                            </Menu.Item>
+                                            <Menu.Item key={2}>
+                                                Findings
+                                            </Menu.Item>
                                             {loadedRepair.status === "IP" ? (
-                                             <Menu.Item key={3}>
-                                                 Items Used
-                                             </Menu.Item>
-                                            ):  loadedRepair.status === 'SR' && (
+                                                <Menu.Item key={3}>
+                                                    Items Used
+                                                </Menu.Item>
+                                            ) : loadedRepair.status === 'SR' && (
                                                 <Menu.Item key={3}>
                                                     Items Used
                                                 </Menu.Item>
