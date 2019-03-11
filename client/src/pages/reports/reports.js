@@ -18,6 +18,7 @@ import { money } from 'react-icons-kit/fa/money'
 import {wrench} from 'react-icons-kit/fa/wrench'
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { RemittanceReport } from './content/remittance_report/remittance_report'
+import { RemittanceSummaryRoute} from './content/remittance_summary_route/remittance_summary_route'
 import { PeakHours } from './content/peak_hours/peak_hours'
 import { SharesReport } from './content/shares_report/shares_report'
 import { TransactionReport } from './content/transactions_report/transactions_report'
@@ -66,6 +67,11 @@ const REMITTANCE_CARDS = [{
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <WeeklySupervisorReport/>
+},{
+    'title': 'Remittance Per Route',
+    'description': 'view remittances per route',
+    'icon': money,
+    'content': <RemittanceSummaryRoute/>
 },{
     'title': 'Driver Remittance & Payables',
     'description': 'view driver deployment information',

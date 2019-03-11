@@ -136,8 +136,8 @@ class PopulateMembers:
 
     @staticmethod
     def populate_beep():
-        current_date = datetime.now() - timedelta(days=4)
-        new_end_date = current_date + timedelta(days=30)
+        current_date = datetime.now() - timedelta(days=7)
+        new_end_date = current_date + timedelta(days=14)
         values = [10.00, 13.00, 15.00]
 
         while current_date <= new_end_date:

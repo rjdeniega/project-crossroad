@@ -60,6 +60,7 @@ urlpatterns = [
     path('remittance_for_the_month/', RemittanceForTheMonth.as_view()),
     path('passenger_per_route/', PassengerPerRoute.as_view()),
     path('peak_hours/', PeakHourReport.as_view()),
+    path('beep_tickets_per_route/', BeepTicketsPerRoute.as_view()),
     path('driver_performance/', DriverPerformance.as_view())
 ]
 

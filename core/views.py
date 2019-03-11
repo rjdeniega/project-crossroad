@@ -542,7 +542,8 @@ class MemberTransactionByReport(APIView):
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
                     "beep_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in carwash_transactions])),
+                    "carwash_total_decimal": "{0:,.2f}".format(
+                        sum([float(item['total']) for item in carwash_transactions])),
                     "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
@@ -640,7 +641,7 @@ class PatronageRefund(APIView):
                     "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
                         [float(item['total']) for item in carwash_transactions])),
-                    "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * (surplus/100)),
+                    "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * (surplus / 100)),
                 })
         return Response(data={
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
@@ -978,7 +979,7 @@ class BeepTickets(APIView):
                     beep_shift = []
                 except IndexError:
                     beep_shift = []
-                if len(beep_shift) > 0:
+                if beep_shift:
                     beep_total = sum([item.total for item in BeepTransaction.objects.filter(shift=beep_shift)])
                 else:
                     beep_total = 0
@@ -1089,6 +1090,260 @@ class BeepTickets(APIView):
             "grand_remit_minus_fuel": "{0:,.2f}".format(grand_total - grand_fuel_total),
             "rows": rows
         }, status=status.HTTP_200_OK)
+
+
+class BeepTicketsPerRoute(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        print(request.data)
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = start_date + timedelta(days=6)  # for one week
+        temp_start = start_date
+
+        rows = []
+        mr_grand_total = 0
+        mr_grand_fuel_total = 0
+        l_grand_total = 0
+        l_grand_fuel_total = 0
+        r_grand_total = 0
+        r_grand_fuel_total = 0
+        routes = []
+        rows = []
+
+        while temp_start <= end_date:
+            print(temp_start)
+            shift_iterations = ShiftIteration.objects.filter(date=temp_start)
+            main_road = []
+            kaliwa = []
+            kanan = []
+
+            mr_total_remit_day_without_fuel = 0
+            mr_total_fuel_for_day = 0
+            l_total_remit_day_without_fuel = 0
+            l_total_fuel_for_day = 0
+            r_total_remit_day_without_fuel = 0
+            r_total_fuel_for_day = 0
+
+            mr = BeepTicketsPerRoute.get_route(temp_start, shift_iterations, "M", mr_total_remit_day_without_fuel,
+                                               mr_total_fuel_for_day)
+            mr_route_total = sum([item["beep_ticket_total_value"] for item in mr["shifts"]])
+            main_road_shifts = {
+                "route": "Main Road",
+                "shifts": mr["shifts"],
+            }
+            mr_total_remit_day_without_fuel += mr["total_remit_day_without_fuel"]
+            mr_total_fuel_for_day = mr["total_fuel_for_day"]
+
+            l = BeepTicketsPerRoute.get_route(temp_start, shift_iterations, "L", l_total_remit_day_without_fuel,
+                                              l_total_fuel_for_day)
+            l_route_total = sum([item["beep_ticket_total_value"] for item in l["shifts"]])
+
+            kaliwa_shifts = {
+                "route": "Kaliwa",
+                "shifts": l["shifts"],
+            }
+            l_total_remit_day_without_fuel += l["total_remit_day_without_fuel"]
+            l_total_fuel_for_day = l["total_fuel_for_day"]
+
+            r = BeepTicketsPerRoute.get_route(temp_start, shift_iterations, "R", r_total_remit_day_without_fuel,
+                                              r_total_fuel_for_day)
+            r_route_total = sum([item["beep_ticket_total_value"] for item in r["shifts"]])
+
+            kanan_shifts = {
+                "route": "Kanan",
+                "shifts": r['shifts'],
+            }
+            r_total_remit_day_without_fuel += r["total_remit_day_without_fuel"]
+            r_total_fuel_for_day = r["total_fuel_for_day"]
+
+            rows.append({
+                "date": temp_start.date(),
+                "routes": [main_road_shifts, kanan_shifts, kaliwa_shifts],
+                "mr_route_total": "{0:,.2f}".format(mr_route_total),
+                "l_route_total_value": (r_route_total),
+                "r_route_total_value": (l_route_total),
+                "mr_route_total_value": (mr_route_total),
+                "l_route_total": "{0:,.2f}".format(r_route_total),
+                "r_route_total": "{0:,.2f}".format(l_route_total),
+                "grand_route_total": "{0:,.2f}".format(l_route_total+mr_route_total+r_route_total),
+                "mr_total_remit_day_without_fuel": "{0:,.2f}".format(mr_total_remit_day_without_fuel),
+                "mr_total_fuel_for_day": "{0:,.2f}".format(mr_total_fuel_for_day),
+                "mr_total_minus_fuel": "{0:,.2f}".format(mr_total_remit_day_without_fuel - mr_total_fuel_for_day),
+                "l_total_remit_day_without_fuel": "{0:,.2f}".format(l_total_remit_day_without_fuel),
+                "l_total_fuel_for_day": "{0:,.2f}".format(l_total_fuel_for_day),
+                "l_total_minus_fuel": "{0:,.2f}".format(l_total_remit_day_without_fuel - l_total_fuel_for_day),
+                "r_total_remit_day_without_fuel": "{0:,.2f}".format(r_total_remit_day_without_fuel),
+                "r_total_fuel_for_day": "{0:,.2f}".format(r_total_fuel_for_day),
+                "r_total_minus_fuel": "{0:,.2f}".format(r_total_remit_day_without_fuel - r_total_fuel_for_day),
+            })
+
+            # totals
+            mr_grand_total += mr_total_remit_day_without_fuel
+            mr_grand_fuel_total += mr_total_fuel_for_day
+            l_grand_total += l_total_remit_day_without_fuel
+            l_grand_fuel_total += l_total_fuel_for_day
+            r_grand_total += r_total_remit_day_without_fuel
+            r_grand_fuel_total += r_total_fuel_for_day
+
+            temp_start = temp_start + timedelta(days=1)
+        mr_beep_total = 0
+        l_beep_total = 0
+        r_beep_total = 0
+        for item in rows:
+            for x in item['routes']:
+                if x['route'] == "Kanan":
+                    l_beep_total += (x['shifts'][0]['beep_total_value'] + x['shifts'][1]['beep_total_value'])
+                elif x['route'] == "Main Road":
+                    mr_beep_total += (x['shifts'][0]['beep_total_value'] + x['shifts'][1]['beep_total_value'])
+                elif x['route'] == "Kaliwa":
+                    l_beep_total += (x['shifts'][0]['beep_total_value'] + x['shifts'][1]['beep_total_value'])
+        grandest_total = mr_beep_total + l_beep_total + r_beep_total + l_grand_total + r_grand_total + mr_grand_total - mr_grand_fuel_total - l_grand_fuel_total - r_grand_total
+        mr_grand_total = sum([(item["mr_route_total_value"]) for item in rows])
+        l_grand_total = sum([(item["l_route_total_value"]) for item in rows])
+        r_grand_total = sum([int(item["r_route_total_value"]) for item in rows])
+        return Response(data={
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
+            "mr_beep_grand_total": "{0:,.2f}".format(mr_beep_total),
+            "l_beep_grand_total": "{0:,.2f}".format(l_beep_total),
+            "r_beep_grand_total": "{0:,.2f}".format(r_beep_total),
+            "grandest_total": "{0:,.2f}".format(grandest_total),
+            "mr_grand_remit_total": "{0:,.2f}".format(mr_grand_total),
+            "mr_grand_fuel_total": "{0:,.2f}".format(mr_grand_fuel_total),
+            "mr_grand_remit_minus_fuel": "{0:,.2f}".format(mr_grand_total - mr_grand_fuel_total),
+            "l_grand_remit_total": "{0:,.2f}".format(l_grand_total),
+            "l_grand_fuel_total": "{0:,.2f}".format(l_grand_fuel_total),
+            "l_grand_remit_minus_fuel": "{0:,.2f}".format(l_grand_total - l_grand_fuel_total),
+            "r_grand_remit_total": "{0:,.2f}".format(r_grand_total),
+            "r_grand_fuel_total": "{0:,.2f}".format(r_grand_fuel_total),
+            "r_grand_remit_minus_fuel": "{0:,.2f}".format(r_grand_total - r_grand_fuel_total),
+            "grand_route_total": "{0:,.2f}".format(mr_grand_total + r_grand_total + l_grand_total),
+            "rows": rows,
+
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get_route(temp_start, shift_iterations, route, total_remit_day_without_fuel, total_fuel_for_day):
+        shifts = []
+        for shift in shift_iterations:
+            remittances = RemittanceForm.objects.filter(deployment__shift_iteration=shift,
+                                                        deployment__shuttle__route=route)
+
+            total_remittance = 0
+            total_fuel = 0
+
+            for remittance in remittances:
+                total_remittance += (remittance.total + remittance.fuel_cost)
+                total_fuel += remittance.fuel_cost
+
+            if len(shifts) == 1:
+                total_per_day = shifts[0]["remittance_value"] + total_remittance
+            else:
+                total_per_day = total_remittance
+
+
+            try:
+                print(temp_start.date())
+                beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)[0]
+                # beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
+            except ObjectDoesNotExist:
+                beep_shift = []
+            print(beep_shift)
+            beep_total = sum(
+                    [item.total for item in BeepTransaction.objects.filter(shift=beep_shift, shuttle__route=route)])
+            if beep_shift is None:
+                beep_total = 0
+            shifts.append({
+                "type": shift.shift.get_type_display(),
+                "beep_total": "{0:,.2f}".format(beep_total),
+                "beep_total_value": beep_total,
+                "beep_ticket_total_value": beep_total + total_remittance - total_fuel,
+                "remittance": "{0:,.2f}".format(total_remittance),
+                "remittance_value": total_remittance,
+                "total_per_day": "{0:,.2f}".format(total_per_day),
+                "fuel": "{0:,.2f}".format(total_fuel),
+                "remittance_minus_fuel": "{0:,.2f}".format(total_remittance - total_fuel),
+                "beep_ticket_total": "{0:,.2f}".format(beep_total + total_remittance - total_fuel)
+            })
+
+            total_remit_day_without_fuel += total_remittance
+            total_fuel_for_day += total_fuel
+
+        try:
+            # am_beep = [item for item in BeepTransaction.objects.all() if
+            #            item.shift.date == temp_start.date() and item.shift.type == 'A']
+            am_beep = BeepTransaction.objects.filter(shift__date=temp_start.date(), shift__type='A',
+                                                     shuttle__route=route)
+            pm_beep = BeepTransaction.objects.filter(shift__date=temp_start.date(), shift__type='P',
+                                                     shuttle__route=route)
+            # pm_beep = [item for item in BeepTransaction.objects.all() if
+            #            item.shift.date == temp_start.date() and item.shift.type == 'P']
+            print(am_beep)
+            print(pm_beep)
+
+        except ObjectDoesNotExist:
+            am_beep = []
+            pm_beep = []
+
+        am_beep_shift = sum([item.total for item in am_beep])
+        pm_beep_shift = sum([item.total for item in pm_beep])
+
+        if len(shifts) == 0:
+            shifts = [{
+                "type": "AM",
+                "beep_total": "{0:,.2f}".format(am_beep_shift),
+                "beep_total_value": am_beep_shift,
+                "beep_ticket_total_value": am_beep_shift,
+                "total_per_day": "{0:,.2f}".format(0),
+                "remittance": "{0:,.2f}".format(0),
+                "fuel": "{0:,.2f}".format(0),
+                "remittance_minus_fuel": "{0:,.2f}".format(0),
+                "beep_ticket_total": "{0:,.2f}".format(am_beep_shift)
+            }, {
+                "type": "PM",
+                "beep_total": "{0:,.2f}".format(pm_beep_shift),
+                "beep_total_value": pm_beep_shift,
+                "beep_ticket_total_value": pm_beep_shift,
+                "total_per_day": "{0:,.2f}".format(0),
+                "remittance": "{0:,.2f}".format(0),
+                "fuel": "{0:,.2f}".format(0),
+                "remittance_minus_fuel": "{0:,.2f}".format(0),
+                "beep_ticket_total": "{0:,.2f}".format(pm_beep_shift)
+            }]
+        elif len(shifts) == 1 and shifts[0]['type'] == "AM":
+            shifts.append({
+                "type": "PM",
+                "beep_total": "{0:,.2f}".format(pm_beep_shift),
+                "beep_total_value": pm_beep_shift,
+                "beep_ticket_total_value": pm_beep_shift,
+                "total_per_day": "{0:,.2f}".format(0),
+                "remittance": "{0:,.2f}".format(0),
+                "fuel": "{0:,.2f}".format(0),
+                "remittance_minus_fuel": "{0:,.2f}".format(0),
+                "beep_ticket_total": "{0:,.2f}".format(pm_beep_shift)
+            })
+        elif len(shifts) == 1 and shifts[0]['type'] == "PM":
+            shifts = [{
+                "type": "AM",
+                "beep_total": "{0:,.2f}".format(am_beep_shift),
+                "beep_total_value": am_beep_shift,
+                "beep_ticket_total_value": am_beep_shift,
+                "total_per_day": "{0:,.2f}".format(0),
+                "remittance": "{0:,.2f}".format(0),
+                "fuel": "{0:,.2f}".format(0),
+                "remittance_minus_fuel": "{0:,.2f}".format(0),
+                "beep_ticket_total_value": "{0:,.2f}".format(am_beep_shift)
+            }, shifts[0]]
+
+        return {
+            "shifts": shifts,
+            "total_remit_day_without_fuel": total_remit_day_without_fuel,
+            "total_fuel_for_day": total_fuel_for_day,
+        }
 
 
 class RemittancePerRouteReport(APIView):
@@ -1858,7 +2113,7 @@ class ShuttleCostVRevenueReport(APIView):
                     initialMaintenanceCost = initialMaintenanceCost + amount
 
             value = (shuttle.purchase_price - shuttle.salvage_value)
-            depreciation_rate = float((shuttle.purchase_price - shuttle.salvage_value)) * float(1/shuttle.lifespan)
+            depreciation_rate = float((shuttle.purchase_price - shuttle.salvage_value)) * float(1 / shuttle.lifespan)
 
             temp_start_date = shuttle.date_acquired
             total_depreciation = 0
@@ -1867,7 +2122,8 @@ class ShuttleCostVRevenueReport(APIView):
 
             total_depreciation = depreciation_rate * months
 
-            net_value = float(value) + float(shuttle_remittance) - float(shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
+            net_value = float(value) + float(shuttle_remittance) - float(
+                shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
             rows.append({
                 "purchase_cost": value,
                 "shuttle_id": shuttle.id,
@@ -1924,7 +2180,6 @@ class RemittanceForTheMonth(APIView):
         else:
             end_date = date + timedelta(days=6)
 
-
         year = date.year
         month = date.month
         num_days = calendar.monthrange(year, month)[1]
@@ -1939,7 +2194,7 @@ class RemittanceForTheMonth(APIView):
         rem = RemittanceForTheMonth()
 
         while temp_date < end_date:
-            main_road_value = rem.get_remittance_total("M",temp_date) + rem.get_beep_total("M",temp_date)
+            main_road_value = rem.get_remittance_total("M", temp_date) + rem.get_beep_total("M", temp_date)
             kaliwa_value = rem.get_remittance_total("L", temp_date) + rem.get_beep_total("L", temp_date)
             kanan_value = rem.get_remittance_total("R", temp_date) + rem.get_beep_total("R", temp_date)
 
@@ -1959,16 +2214,17 @@ class RemittanceForTheMonth(APIView):
         }, status=status.HTTP_200_OK)
 
     @staticmethod
-    def get_remittance_total(route,date):
-        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date,deployment__shuttle__route=route)
+    def get_remittance_total(route, date):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date,
+                                                    deployment__shuttle__route=route)
         total = 0
         for remittance in remittances:
             total += remittance.get_remittances_only()
         return total
 
     @staticmethod
-    def get_beep_total(route,date):
-        beeps = BeepTransaction.objects.filter(shift__date=date,shuttle__route=route)
+    def get_beep_total(route, date):
+        beeps = BeepTransaction.objects.filter(shift__date=date, shuttle__route=route)
         total = 0
         for beep in beeps:
             total += beep.total
@@ -2411,3 +2667,38 @@ class DriverPerformance(APIView):
             "sub_freq_total": sub_freq_total,
             "remittance_total": "{0:,.2f}".format(remittance_total)
         }, status=status.HTTP_200_OK)
+
+
+class RemittancePerYear(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = date - timedelta(days=1095)
+
+        year = date.year
+        month = date.month
+        num_days = calendar.monthrange(year, month)[1]
+        temp_date = end_date
+        years = []
+        for x in range(0, 4):
+            months = []
+            for i in range(1, 13):
+                total = sum([item.total for item in
+                             RemittanceForm.objects.filter(created__year=date.year - timedelta(days=365 * x),
+                                                           created__month=i)]) + sum([item.total for item in
+                                                                                      BeepTransaction.objects.filter(
+                                                                                          transaction_date_time__year=date.year - timedelta(
+                                                                                              days=365 * x),
+                                                                                          transaction_date_time__month=i)])
+                months.append(total)
+            years.append({
+                "year": (date.year - timedelta(days=365 * x)).year,
+                "months": months
+            })
+            return Response(data={
+                "years": years
+            }, status=status.HTTP_200_OK)
