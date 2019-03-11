@@ -868,13 +868,19 @@ class UpdateRepairStatus(APIView):
         repair.status = data['status']
         if data['type'] == "Minor":
             repair.schedule = datetime.strptime(data['schedule'], '%Y-%m-%d').date()
+            repair.start_date = datetime.strptime(data['schedule'], '%Y-%m-%d').date()
+
+        if 'type' in request.data:
+            repair.degree = data['type']
 
         if data['status'] == "IP" or data['status'] == "FO":
+            repair.start_date = datetime.now().date()
             shuttle = repair.shuttle
             shuttle.status = 'UM'
             shuttle.save()
 
         if data['status'] == "C":
+            repair.end_date = datetime.now().date()
             shuttle = repair.shuttle
             shuttle.status = "A"
             shuttle.save()
