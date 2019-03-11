@@ -137,7 +137,7 @@ class PopulateDatabase():
                     brand="Vew Clear",
                     unit_price=200,
                     item_type="Physical Measurement",
-                    measurement=2, unit="pieces", vendor=vendor,
+                    measurement=2, unit="pieces", vendor=vendor, current_measurement=2,
                     item_code="WWR001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
         item.save()
         item_movement = ItemMovement(item=item,
@@ -174,7 +174,7 @@ class PopulateDatabase():
                                                     description="Can be used for brake light or turn signal lights",
                                                     unit_price=250, category=category_light_bulb,
                                                     item_type="Physical Measurement", measurement=10, unit="pieces",
-                                                    brand="TTW",
+                                                    brand="TTW", current_measurement=10,
                                                     delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
                                                     received=True)
         purchase_order_1_item_2.save()
@@ -185,17 +185,17 @@ class PopulateDatabase():
                                          status="Complete")
         purchase_order_2.save()
 
-        purchase_order_2_item_3 = PurchaseOrderItem(quantity=5, description="Pair of brake pads for Mitsubishi L300",
+        purchase_order_2_item_3 = PurchaseOrderItem(quantity=2, description="Pair of brake pads for Mitsubishi L300",
                                                     unit_price=800, category=category_brake_pad,
                                                     item_type="Physical Measurement", measurement=2, unit="pieces",
-                                                    brand="Akebono",
+                                                    brand="Akebono", current_measurement=2,
                                                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                                                     received=True)
         purchase_order_2_item_3.save()
         purchase_order_2.po_items.add(purchase_order_2_item_3)
         item3 = Item(category=category_brake_pad,
                      description="Pair of brake pads for Mitsubishi L300",
-                     quantity=5,
+                     quantity=2,
                      purchase_order=purchase_order_2,
                      brand="Akebono",
                      vendor=vendor2,
@@ -215,15 +215,15 @@ class PopulateDatabase():
         item_movement3.save()
 
         purchase_order_2_item_4 = PurchaseOrderItem(quantity=5, description="Synthetic Performance Gasoline Oil",
-                                                    unit_price=455, category=category_brake_pad,
+                                                    unit_price=455, category=category_oil,
                                                     item_type="Liquid Measurement", measurement=400, unit="mL",
-                                                    brand="Apex",
+                                                    brand="Apex", current_measurement=400,
                                                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                                                     received=True)
 
         purchase_order_2_item_4.save()
         purchase_order_2.po_items.add(purchase_order_2_item_4)
-        category_brake_pad.quantity = 10
+        category_brake_pad.quantity = 4
         category_brake_pad.save()
 
         item4 = Item(category=category_oil,
@@ -246,9 +246,6 @@ class PopulateDatabase():
                                       created=datetime.strptime(
                                           '17022019', "%d%m%Y").date())
         item_movement4.save()
-
-        category_oil.quantity = 5
-        category_brake_pad.save()
 
         purchase_order_3 = PurchaseOrder(po_number=3, vendor=vendor4,
                                          order_date=datetime.strptime('05032019', "%d%m%Y").date(),
@@ -278,6 +275,7 @@ class PopulateDatabase():
                          brand="Goodyear",
                          vendor=vendor4,
                          created=datetime.strptime('06032019', "%d%m%Y"),
+                         item_code='TIR001',
                          current_measurement=5,
                          purchase_order=purchase_order_3)
         item_tire.save()
@@ -311,6 +309,7 @@ class PopulateDatabase():
                                 unit="mL",
                                 brand="Prestone",
                                 vendor=vendor4,
+                                item_code="BRF001",
                                 created=datetime.strptime('07032019', "%d%m%Y"),
                                 current_measurement=500,
                                 purchase_order=purchase_order_3)

@@ -45,11 +45,13 @@ class ItemView(APIView):
         # transform django objects to JSON (so it can be interpreted in the front-end_
         items = ItemSerializer(Item.objects.all(), many=True)
         vendors = {}
+        categories = ItemCategorySerializer(ItemCategory.objects.all(), many=True)
         for item in Item.objects.all():
             vendor = Vendor.objects.get(id=item.vendor_id)
             vendors[item.id] = vendor.name
         # returns all item objects
         return Response(data={
+            "categories": categories.data,
             "items": items.data,
             "date": datetime.now().date(),
             "vendors": vendors,
@@ -895,4 +897,19 @@ class UpdateRepairStatus(APIView):
         repair = RepairSerializer(repair)
         return Response(data={
             'repair': repair.data
+        }, status=status.HTTP_200_OK)
+
+
+class AddFindingFromMechanic(APIView):
+    @staticmethod
+    def post(request, pk):
+        data = json.loads(request.body)
+        repair = Repair.objects.get(id=pk)
+        category = ItemCategory.objects.get(id=data['category'])
+        finding = RepairFinding(description=data['finding'], item_defect=category)
+        finding.save()
+        repair.findings.add(finding)
+        findings = RepairFindingSerializer(repair.findings, many=True)
+        return Response(data={
+            "findings": findings.data
         }, status=status.HTTP_200_OK)
