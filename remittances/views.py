@@ -682,7 +682,10 @@ class SpecificDeploymentView(APIView):
             x = Deployment.objects.get(pk=item['id'])
             item['shift_date'] = x.shift_iteration.date.strftime("%b %d %Y")
             item['start_time'] = x.start_time.strftime("%I:%M %p")
-            item['end_time'] = x.end_time.strftime("%I:%M %p")
+            item['end_time'] = None
+            if item['end_time'] is not None:
+                item['end_time'] = x.end_time.strftime("%I:%M %p")
+                
             item['driver_object'] = DriverSerializer(Driver.objects.get(pk=item['driver'])).data
 
         return Response(data={

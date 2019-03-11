@@ -115,6 +115,7 @@
 .history-pane-content * {
     font-family: Montserrat, sans-serif;
     /*border: none !important;*/
+    overflow:scroll!important;
     }
 
 .guideline {

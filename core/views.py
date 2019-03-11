@@ -1738,9 +1738,9 @@ class AccumulatedSharesReport(APIView):
             while month <= 12:
                 shares_bought = 0
                 shares = Share.objects.filter(
-                    date_of_update__gt=start_date,
+                    # date_of_update__gt=start_date,
                     date_of_update__year=temp_date.year,
-                    date_of_update__month=month,
+                    # date_of_update__month=month,
                     member_id=member.id
                 )
 
@@ -1784,7 +1784,8 @@ class AccumulatedSharesReport(APIView):
 class ShareUtilities(APIView):
     @staticmethod
     def get_prior_shares(member_id, date):
-        shares = Share.objects.filter(date_of_update__lt=date, member_id=member_id)
+        date = date - timedelta(days=365)
+        shares = Share.objects.filter(date_of_update__year=date.year, member_id=member_id)
         total = 0
         for share in shares:
             total += share.value
@@ -1808,9 +1809,11 @@ class ShuttleCostVRevenueReport(APIView):
         grand_depreciation = 0
         total_purchase_cost = 0
         grand_net = 0
+        grand_total_major = 0
 
         for shuttle in Shuttle.objects.all():
             initialMaintenanceCost = 0
+            major_repairs_cost = 0
 
             shuttle_remittance = sum([(item.total + item.fuel_cost) for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
@@ -1832,6 +1835,16 @@ class ShuttleCostVRevenueReport(APIView):
             )
 
             for repair in repairs:
+                if repair.degree == "Major":
+                    for modification in repair.modifications.all():
+                        item = Item.objects.get(id=modification.item_used.id)
+                        amount = item.average_price * modification.quantity
+                        major_repairs_cost += amount
+
+                    for outsourced in repair.outsourced_items.all():
+                        amount = outsourced.quantity * outsourced.unit_price
+                        major_repairs_cost += amount
+
                 if (repair.labor_fee):
                     initialMaintenanceCost = initialMaintenanceCost + repair.labor_fee
 
@@ -1862,6 +1875,7 @@ class ShuttleCostVRevenueReport(APIView):
                 "shuttle_make": shuttle.make,
                 "revenue": shuttle_remittance,
                 "fuel_cost": shuttle_fuel_cost,
+                "major_total": major_repairs_cost,
                 "depreciation": total_depreciation,
                 "cost": initialMaintenanceCost,
                 "value": shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost,
@@ -1873,6 +1887,7 @@ class ShuttleCostVRevenueReport(APIView):
             total_cost += initialMaintenanceCost
             total_purchase_cost += value
             grand_net += net_value
+            grand_total_major += major_repairs_cost
 
         return Response(data={
             "grand_net": grand_net,
@@ -1880,13 +1895,17 @@ class ShuttleCostVRevenueReport(APIView):
             "total_depreciation": grand_depreciation,
             "shuttle_maintenance_costs": [(item['cost'] + item['fuel_cost']) for item in rows],
             "shuttle_revenues": [item['revenue'] for item in rows],
+            "shuttle_fuel_costs": [item['fuel_cost'] for item in rows],
+            "shuttle_depreciations": [int(item['depreciation']) for item in rows],
+            "shuttle_major_repairs": [item['major_total'] for item in rows],
             "start_date": start_date.date(),
             "end_date": end_date.date(),
             "total_remittance": total_remittance,
             "total_costs": total_cost,
             "total_fuel": total_fuel,
             "grand_total": total_remittance - total_fuel - total_cost,
-            "shuttles": rows
+            "shuttles": rows,
+            "grand_total_major": grand_total_major,
         }, status=status.HTTP_200_OK)
 
     @staticmethod

@@ -118,8 +118,8 @@ class PopulateMembers:
     @staticmethod
     def add_member_transactions():
         values = [10.00, 13.00, 15.00]
-        current_date = datetime.now() - timedelta(days=2)
-        new_end_date = current_date + timedelta(days=2)
+        current_date = datetime.now() - timedelta(days=4)
+        new_end_date = current_date + timedelta(days=5)
         while current_date <= new_end_date:
             for member in Member.objects.all():
                 CarwashTransaction.objects.create(date=current_date, member=member,
@@ -136,7 +136,7 @@ class PopulateMembers:
 
     @staticmethod
     def populate_beep():
-        current_date = datetime.now() - timedelta(days=2)
+        current_date = datetime.now() - timedelta(days=4)
         new_end_date = current_date + timedelta(days=30)
         values = [10.00, 13.00, 15.00]
 
