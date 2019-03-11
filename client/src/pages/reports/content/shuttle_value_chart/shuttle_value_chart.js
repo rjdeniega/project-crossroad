@@ -37,6 +37,57 @@ class ComponentToPrint extends React.Component {
     componentDidMount() {
         console.log(this.props.data);
     }
+    renderChart = () => {
+          let barChartData = {
+            labels: ['Shuttle # 1', 'Shuttle # 2', 'Shuttle # 3', 'Shuttle # 4', 'Shuttle # 5',
+                'Shuttle # 6', 'Shuttle # 7', 'Shuttle # 8', 'Shuttle # 9'],
+            datasets: [{
+                label: 'Shuttle Revenue',
+                backgroundColor: '#ff6f74',
+                stack: 'Stack 0',
+                data: this.props.data.shuttle_revenues
+
+            },
+                {
+                    label: 'Depreciation',
+                    backgroundColor: '#45fad0',
+                    stack: 'Stack 1',
+                    data: this.props.data.shuttle_depreciations
+                },
+                {
+                    label: 'Major Repairs',
+                    backgroundColor: '#269680',
+                    stack: 'Stack 1',
+                    data: this.props.data.shuttle_major_repairs
+                },
+                {
+                    label: 'Fuel Costs',
+                    backgroundColor: '#114a40',
+                    stack: 'Stack 1',
+                    data: this.props.data.shuttle_fuel_costs
+                }
+            ]
+        }
+        return <Bar data={barChartData} options={{
+            title: {
+                display: true,
+                text: "Shuttle Revenue Vs Accumulated Cost Chart " + this.props.data.start_date + " to " + this.props.data.end_date
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false
+            },
+            responsive: true,
+            scales: {
+                xAxes: [{
+                    stacked: true,
+                }],
+                yAxes: [{
+                    stacked: true
+                }]
+            }
+        }}/>
+    }
 
     renderBar = () => {
         const revenue = {
@@ -81,7 +132,7 @@ class ComponentToPrint extends React.Component {
                     }
                 </div>
                 <div className="report-body">
-                    {this.props.data && this.renderBar()}
+                    {this.props.data && this.renderChart()}
                     {/*<div className="chart-wrapper">*/}
                 </div>
             </div>

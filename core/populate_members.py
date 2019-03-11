@@ -118,17 +118,10 @@ class PopulateMembers:
     @staticmethod
     def add_member_transactions():
         values = [10.00, 13.00, 15.00]
-        current_date = datetime.now() - timedelta(days=2)
-        new_end_date = current_date + timedelta(days=2)
+        current_date = datetime.now() - timedelta(days=4)
+        new_end_date = current_date + timedelta(days=5)
         while current_date <= new_end_date:
-            am_shift = BeepShift.objects.create(type='A', date=current_date)
-            pm_shift = BeepShift.objects.create(type='P', date=current_date)
-
             for member in Member.objects.all():
-                BeepTransaction.objects.create(shift=am_shift, card_number=IDCards.objects.get(member=member).can,
-                                               total=values[random.randint(0, 2)])
-                BeepTransaction.objects.create(shift=pm_shift, card_number=IDCards.objects.get(member=member).can,
-                                               total=values[random.randint(0, 2)])
                 CarwashTransaction.objects.create(date=current_date, member=member,
                                                   receipt="OR123" + str(random.randint(1, 10)),
                                                   total=random.randint(200, 700))
@@ -143,7 +136,7 @@ class PopulateMembers:
 
     @staticmethod
     def populate_beep():
-        current_date = datetime.now() - timedelta(days=2)
+        current_date = datetime.now() - timedelta(days=4)
         new_end_date = current_date + timedelta(days=30)
         values = [10.00, 13.00, 15.00]
 

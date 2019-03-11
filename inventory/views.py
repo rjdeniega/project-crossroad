@@ -442,7 +442,6 @@ class ShuttleMaintenanceFrequency(APIView):
             end_date = start_date + timedelta(days=6)
 
         rows = []
-
         shuttles = Shuttle.objects.all()
 
         for shuttle in shuttles:
@@ -457,7 +456,7 @@ class ShuttleMaintenanceFrequency(APIView):
             intermediate_maintenanceCost = 0
 
             # Major repairs
-            for repair in Repair.objects.all().filter(shuttle=shuttle.id, degree="Major", end_date__gte=start_date,end_date__lte=end_date):
+            for repair in Repair.objects.all().filter(shuttle=shuttle, degree="Major", end_date__gte=start_date,end_date__lte=end_date):
                 if repair.labor_fee:
                     major_maintenanceCost = major_maintenanceCost + repair.labor_fee
 
@@ -474,7 +473,7 @@ class ShuttleMaintenanceFrequency(APIView):
                     major_maintenanceCost = major_maintenanceCost + (item_used.quantity * item.unit_price)
 
                     # Minor repairs
-            for repair in Repair.objects.all().filter(shuttle=shuttle.id,degree='Minor',end_date__gte=start_date,end_date__lte=end_date):
+            for repair in Repair.objects.all().filter(shuttle=shuttle,degree='Minor',end_date__gte=start_date,end_date__lte=end_date):
                 if repair.labor_fee:
                     minor_maintenanceCost = minor_maintenanceCost + repair.labor_fee
 
@@ -491,7 +490,9 @@ class ShuttleMaintenanceFrequency(APIView):
                     minor_maintenanceCost = minor_maintenanceCost + (item_used.quantity * item.unit_price)
 
             # Intermediate
-            for repair in Repair.objects.all().filter(shuttle=shuttle.id,degree='Intermediate',end_date__gte=start_date,end_date__lte=end_date):
+            print(Repair.objects.all().filter(shuttle=shuttle, degree='Intermediate', end_date__gte=start_date,
+                                        end_date__lte=end_date))
+            for repair in Repair.objects.all().filter(shuttle=shuttle,degree='Intermediate',end_date__gte=start_date,end_date__lte=end_date):
                 if repair.labor_fee:
                     intermediate_maintenanceCost = intermediate_maintenanceCost + repair.labor_fee
 
@@ -546,11 +547,11 @@ class ShuttleMaintenanceFrequency(APIView):
         intermediate_total_average_maintenance_cost = "{0:,.2f}".format(
             sum([float(item['intermediate_average_cost_value']) for item in rows]) / len(rows))
         intermediate_count = (
-            sum([float(item['number_of_intermediate_maintenance']) for item in rows]) / len(rows))
+            sum([float(item['number_of_intermediate_maintenance']) for item in rows]))
         major_count = (
-            sum([float(item['number_of_major_maintenance']) for item in rows]) / len(rows))
+            sum([float(item['number_of_major_maintenance']) for item in rows]))
         minor_count = (
-            sum([float(item['number_of_minor_maintenance']) for item in rows]) / len(rows))
+            sum([float(item['number_of_minor_maintenance']) for item in rows]))
         grand_total = float(major_total_maintenance_cost) + float(minor_total_maintenance_cost) + float(intermediate_total_maintenance_cost)
         return Response(data={
             "rows": rows,

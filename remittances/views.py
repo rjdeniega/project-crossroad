@@ -188,6 +188,7 @@ class ScheduleHistoryView(APIView):
                 'id': schedule.id,
                 'start_date': schedule.start_date,
                 'end_date': schedule.end_date,
+                "is_current": schedule.id == active_schedule.id,
                 'schedule_status': schedule.get_status(active_schedule),
                 'shifts': tempshifts
             })
@@ -441,23 +442,26 @@ class NonDeployedDrivers(APIView):
         shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id, date=datetime.now().date()).first()
 
         query = DriversAssigned.objects.filter(shift=current_shift.id)
-        print(query)
         # remove drivers already deployed
         if shift_iteration:
             deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
+            print("deployed_drivers")
+            print(deployed_drivers)
 
             drivers = []
             for deployed_driver in deployed_drivers:
                 drivers.append(deployed_driver)
-
+            print(drivers)
+            print(query)
             for driver in drivers:
                 query = query.exclude(driver=driver.driver.id)
 
             for driver in query:
                 if NonDeployedDrivers.did_deploy_a_sub(driver.id, shift_iteration.id):
                     query = query.exclude(driver=driver.driver.id)
-
+        print(query)
         non_deployed_drivers = PlannedDriversSerializer(query, many=True)
+        print(non_deployed_drivers.data)
         for item in non_deployed_drivers.data:
             item["driver"]["shuttle_id"] = item["shuttle"]["id"]
             item["driver"]["shuttle_plate_number"] = item["shuttle"]["plate_number"]
@@ -679,7 +683,10 @@ class SpecificDeploymentView(APIView):
             x = Deployment.objects.get(pk=item['id'])
             item['shift_date'] = x.shift_iteration.date.strftime("%b %d %Y")
             item['start_time'] = x.start_time.strftime("%I:%M %p")
-            item['end_time'] = x.end_time.strftime("%I:%M %p")
+            item['end_time'] = None
+            if item['end_time'] is not None:
+                item['end_time'] = x.end_time.strftime("%I:%M %p")
+
             item['driver_object'] = DriverSerializer(Driver.objects.get(pk=item['driver'])).data
 
         return Response(data={

@@ -10,7 +10,7 @@ import { clockO } from 'react-icons-kit/fa/clockO'
 import { Icon } from 'react-icons-kit'
 import { DatePicker } from 'antd';
 import moment from 'moment';
-import { Select, Table, Avatar, Dropdown, Menu, message, List } from 'antd';
+import { Select, Table, Avatar, Dropdown, Menu, message, List, Tag } from 'antd';
 import { Icon as AntIcon } from 'antd';
 import { getData, postData, putData } from "../../../../network_requests/general";
 import ReactToPrint from "react-to-print";
@@ -76,7 +76,8 @@ export class ShiftHistoryPane extends Component {
                 data["schedule_history"].forEach(item => tableData.push({
                     "id": item.id,
                     "start_date": item.start_date,
-                    "end_date": item.end_date
+                    "end_date": item.end_date,
+                    "is_current": item.is_current
                 }));
                 this.setState({ schedules: tableData });
                 console.log(tableData);
@@ -572,7 +573,7 @@ export class ShiftHistoryPane extends Component {
                         <List.Item.Meta
                             title={<p className="list-title">{item.start_date} - {item.end_date}</p>}
                         />
-                        <AntIcon type="check-circle" theme="filled" className="status-icon"/> <p>Current</p>
+                        {item.is_current && <Fragment><Tag color="green">Current</Tag></Fragment>}
                     </List.Item>
                 )}
             />

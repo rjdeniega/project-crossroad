@@ -53,8 +53,13 @@ class SignInView(APIView):
         #     return Response(data={
         #         "error": "Invalid credentials"
         #     }, status=401)
-        if user is None:
-            user = User.objects.get(username=username)
+        try:
+            if user is None:
+                user = User.objects.get(username=username)
+        except ObjectDoesNotExist:
+            return Response(data={
+                "error": "Invalid credentials"
+            }, status=401)
 
         if Token.objects.filter(user=user).count() == 1:
             token = Token.objects.get(user=user)
@@ -514,7 +519,7 @@ class MemberTransactionByReport(APIView):
                 member_data["id_card"] = id_card.can
                 transactions = BeepTransaction.objects.filter(card_number=id_card.can)
                 carwash_transactions = [item for item in
-                                        CarwashTransaction.objects.all() if item.member == member]
+                                        CarwashTransaction.objects.filter(member=member)]
                 if end_date is not None:
                     transactions = [item for item in transactions if
                                     start_date.date() <= item.shift.date <= end_date.date()]
@@ -536,15 +541,15 @@ class MemberTransactionByReport(APIView):
                     "no_of_beep": len(transactions),
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
-                    "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in carwash_transactions])),
-                    "carwash_total": sum([item.total for item in carwash_transactions]),
+                    "beep_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in transactions])),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in carwash_transactions])),
+                    "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]),
+                        [float(item['total']) for item in carwash_transactions]),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]))
+                        [float(item['total']) for item in carwash_transactions]))
                 })
         return Response(data={
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
@@ -626,17 +631,16 @@ class PatronageRefund(APIView):
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
                     "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total": sum([item.total for item in carwash_transactions]),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in transactions])),
+                    "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
-                    "total_transactions": sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]),
-                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund * 100),
+                    "total_transactions": sum([float(item['total']) for item in transactions]) + sum(
+                        [float(item['total']) for item in carwash_transactions]),
+                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions])),
-                    "patronage_refund": (rate_of_refund) * sum([item.total for item in transactions]) + sum(
-                        [item.total for item in carwash_transactions]),
+                        [float(item['total']) for item in carwash_transactions])),
+                    "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * (surplus/100)),
                 })
         return Response(data={
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
@@ -972,7 +976,12 @@ class BeepTickets(APIView):
                     # beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
                 except ObjectDoesNotExist:
                     beep_shift = []
-                beep_total = sum([item.total for item in BeepTransaction.objects.filter(shift=beep_shift)])
+                except IndexError:
+                    beep_shift = []
+                if len(beep_shift) > 0:
+                    beep_total = sum([item.total for item in BeepTransaction.objects.filter(shift=beep_shift)])
+                else:
+                    beep_total = 0
                 shifts.append({
                     "type": shift.shift.get_type_display(),
                     "beep_total": "{0:,.2f}".format(beep_total),
@@ -1304,14 +1313,20 @@ class TicketTypePerDayReport(APIView):
                                 print(consumed_ticket.total)
                                 pm_count += consumed_ticket.total / 15
                                 pm_fifteen += consumed_ticket.total / 15
-
+                shuttle_route = None
+                if shuttle.route == "M":
+                    shuttle_route = "Main Road"
+                elif shuttle.route == "R":
+                    shuttle_route = "Kanan"
+                elif shuttle.route == "L":
+                    shuttle_route = "Kaliwa"
                 shuttles.append({
                     "shuttle_id": shuttle.id,
                     "shuttle_number": shuttle.shuttle_number,
                     "shuttle_plate": shuttle.plate_number,
                     "shuttle_make": shuttle.make,
                     "shuttle_model": shuttle.model,
-                    "shuttle_route": shuttle.route,
+                    "shuttle_route": shuttle_route,
                     "am_total": am_count,
                     "pm_total": pm_count,
                     "am_ten": am_ten,
@@ -1723,9 +1738,9 @@ class AccumulatedSharesReport(APIView):
             while month <= 12:
                 shares_bought = 0
                 shares = Share.objects.filter(
-                    date_of_update__gt=start_date,
+                    # date_of_update__gt=start_date,
                     date_of_update__year=temp_date.year,
-                    date_of_update__month=month,
+                    # date_of_update__month=month,
                     member_id=member.id
                 )
 
@@ -1769,7 +1784,8 @@ class AccumulatedSharesReport(APIView):
 class ShareUtilities(APIView):
     @staticmethod
     def get_prior_shares(member_id, date):
-        shares = Share.objects.filter(date_of_update__lt=date, member_id=member_id)
+        date = date - timedelta(days=365)
+        shares = Share.objects.filter(date_of_update__year=date.year, member_id=member_id)
         total = 0
         for share in shares:
             total += share.value
@@ -1793,9 +1809,11 @@ class ShuttleCostVRevenueReport(APIView):
         grand_depreciation = 0
         total_purchase_cost = 0
         grand_net = 0
+        grand_total_major = 0
 
         for shuttle in Shuttle.objects.all():
             initialMaintenanceCost = 0
+            major_repairs_cost = 0
 
             shuttle_remittance = sum([(item.total + item.fuel_cost) for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
@@ -1817,6 +1835,16 @@ class ShuttleCostVRevenueReport(APIView):
             )
 
             for repair in repairs:
+                if repair.degree == "Major":
+                    for modification in repair.modifications.all():
+                        item = Item.objects.get(id=modification.item_used.id)
+                        amount = item.average_price * modification.quantity
+                        major_repairs_cost += amount
+
+                    for outsourced in repair.outsourced_items.all():
+                        amount = outsourced.quantity * outsourced.unit_price
+                        major_repairs_cost += amount
+
                 if (repair.labor_fee):
                     initialMaintenanceCost = initialMaintenanceCost + repair.labor_fee
 
@@ -1830,14 +1858,16 @@ class ShuttleCostVRevenueReport(APIView):
                     initialMaintenanceCost = initialMaintenanceCost + amount
 
             value = (shuttle.purchase_price - shuttle.salvage_value)
-            depreciation_rate = (shuttle.purchase_price - shuttle.salvage_value) / shuttle.lifespan
+            depreciation_rate = float((shuttle.purchase_price - shuttle.salvage_value)) * float(1/shuttle.lifespan)
+
             temp_start_date = shuttle.date_acquired
             total_depreciation = 0
 
             months = ShuttleCostVRevenueReport.diff_month(temp_start_date, end_date)
-            total_depreciation = (value * depreciation_rate) * months
 
-            net_value = value + shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost - total_depreciation
+            total_depreciation = depreciation_rate * months
+
+            net_value = float(value) + float(shuttle_remittance) - float(shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
             rows.append({
                 "purchase_cost": value,
                 "shuttle_id": shuttle.id,
@@ -1845,6 +1875,7 @@ class ShuttleCostVRevenueReport(APIView):
                 "shuttle_make": shuttle.make,
                 "revenue": shuttle_remittance,
                 "fuel_cost": shuttle_fuel_cost,
+                "major_total": major_repairs_cost,
                 "depreciation": total_depreciation,
                 "cost": initialMaintenanceCost,
                 "value": shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost,
@@ -1856,6 +1887,7 @@ class ShuttleCostVRevenueReport(APIView):
             total_cost += initialMaintenanceCost
             total_purchase_cost += value
             grand_net += net_value
+            grand_total_major += major_repairs_cost
 
         return Response(data={
             "grand_net": grand_net,
@@ -1863,13 +1895,17 @@ class ShuttleCostVRevenueReport(APIView):
             "total_depreciation": grand_depreciation,
             "shuttle_maintenance_costs": [(item['cost'] + item['fuel_cost']) for item in rows],
             "shuttle_revenues": [item['revenue'] for item in rows],
+            "shuttle_fuel_costs": [item['fuel_cost'] for item in rows],
+            "shuttle_depreciations": [int(item['depreciation']) for item in rows],
+            "shuttle_major_repairs": [item['major_total'] for item in rows],
             "start_date": start_date.date(),
             "end_date": end_date.date(),
             "total_remittance": total_remittance,
             "total_costs": total_cost,
             "total_fuel": total_fuel,
             "grand_total": total_remittance - total_fuel - total_cost,
-            "shuttles": rows
+            "shuttles": rows,
+            "grand_total_major": grand_total_major,
         }, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -1883,38 +1919,56 @@ class RemittanceForTheMonth(APIView):
     def post(request):
         data = json.loads(request.body)
         date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = date + timedelta(days=6)
+
 
         year = date.year
         month = date.month
         num_days = calendar.monthrange(year, month)[1]
+        temp_date = date
 
         days = [datetime(year, month, day) for day in range(1, num_days + 1)]
 
-        values = []
+        main_road_values = []
+        kaliwa_values = []
+        kanan_values = []
         new_days = []
         rem = RemittanceForTheMonth()
 
-        for day in days:
-            value = rem.get_remittance_total(day) + rem.get_beep_total(day)
-            values.append(value)
-            new_days.append(day.date())
+        while temp_date < end_date:
+            main_road_value = rem.get_remittance_total("M",temp_date) + rem.get_beep_total("M",temp_date)
+            kaliwa_value = rem.get_remittance_total("L", temp_date) + rem.get_beep_total("L", temp_date)
+            kanan_value = rem.get_remittance_total("R", temp_date) + rem.get_beep_total("R", temp_date)
+
+            main_road_values.append(main_road_value)
+            kaliwa_values.append(kaliwa_value)
+            kanan_values.append(kanan_value)
+            new_days.append(temp_date.date())
+
+            temp_date += timedelta(days=1)
 
         return Response(data={
             "days": new_days,
-            "values": values
+            "end_date": end_date.date(),
+            "main_road_values": main_road_values,
+            "kaliwa_values": kaliwa_values,
+            "kanan_values": kanan_values,
         }, status=status.HTTP_200_OK)
 
     @staticmethod
-    def get_remittance_total(date):
-        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date)
+    def get_remittance_total(route,date):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date=date,deployment__shuttle__route=route)
         total = 0
         for remittance in remittances:
             total += remittance.get_remittances_only()
         return total
 
     @staticmethod
-    def get_beep_total(date):
-        beeps = BeepTransaction.objects.filter(shift__date=date)
+    def get_beep_total(route,date):
+        beeps = BeepTransaction.objects.filter(shift__date=date,shuttle__route=route)
         total = 0
         for beep in beeps:
             total += beep.total
@@ -1945,8 +1999,8 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
-            NotificationItems.get_om_notifs(user_id)
             NotificationItems.get_om_repairs(user_id)
+            NotificationItems.get_om_notifs(user_id)
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -1956,7 +2010,9 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'system_admin':
+            NotificationItems.get_om_repairs(user_id)
             NotificationItems.get_om_notifs(user_id)
+
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
@@ -1977,6 +2033,15 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
         elif user_type == 'mechanic':
+            NotificationItems.get_mechanic_notifs(user_id)
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
+            print(user_id)
+            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+
+            unread = NotificationSerializer(Notification.objects
+                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
+                '-created'), many=True)
             notifications = NotificationSerializer(Notification.objects
                                                    .filter(Q(type='I') | Q(type='N')).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
@@ -2017,27 +2082,26 @@ class NotificationItems(APIView):
     def get_om_repairs(user_id):
         items = Repair.objects.filter(status="NS")
         item2 = Repair.objects.filter(status="C")
+
         for item in items:
             notification = Notification.objects.filter(user__id=user_id,
-                                                   description=f"{item.shuttle} has a pending request")
-        if len(notification) == 0:
-            notification = Notification.objects.create(
-                user=User.objects.get(pk=user_id),
-                type='I',
-                description=f"{item.shuttle} has a pending request"
-            )
+                                                       description=f"{item.shuttle} has a pending repair request")
+            if len(notification) == 0:
+                notification = Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} has a pending repair request"
+                )
 
         for item in item2:
-            notification = Notification.objects.filter(user__id=user_id,
-                                                       description=f"{item.shuttle} has been repaired")
-        if len(notification) == 0:
-            notification = Notification.objects.create(
-                user=User.objects.get(pk=user_id),
-                type='I',
-                description=f"{item.shuttle} has been repaired"
-            )
-
-        return notification
+            notification2 = Notification.objects.filter(user__id=user_id,
+                                                        description=f"{item.shuttle} has been repaired")
+            if len(notification2) == 0:
+                Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} has been repaired"
+                )
 
     @staticmethod
     def get_member_notifs(user):
@@ -2072,6 +2136,31 @@ class NotificationItems(APIView):
                         description=f'{item.category} is low on stocks ({item.quantity} pcs)'
                     )
         return notification
+
+    @staticmethod
+    def get_mechanic_notifs(user_id):
+        items = Repair.objects.filter(status="FI")
+        item2 = Repair.objects.filter(status="IP")
+
+        for item in items:
+            notification = Notification.objects.filter(user__id=user_id,
+                                                       description=f"{item.shuttle} needs to be diagnosed for repair")
+            if len(notification) == 0:
+                notification = Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} needs to be diagnosed for repair"
+                )
+
+        for item in item2:
+            notification2 = Notification.objects.filter(user__id=user_id,
+                                                        description=f"{item.shuttle} needs to be repaired")
+            if len(notification2) == 0:
+                Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.shuttle} needs to be repaired"
+                )
 
 
 class ChangeNotificationStatus(APIView):

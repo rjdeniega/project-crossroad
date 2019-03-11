@@ -540,7 +540,6 @@ export class ShiftManagementPane extends Component {
                         Create Schedule
                     </div>
                 </div>
-                <div className="expiration-label">expiring in 7 days</div>
 
                 <div className="date-grid">
                     {this.state.currentSched &&

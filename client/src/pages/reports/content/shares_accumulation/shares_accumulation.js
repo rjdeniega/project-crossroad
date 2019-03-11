@@ -79,7 +79,7 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.months[10].added_amount}</td>
                                         <td>{item.months[11].added_amount}</td>
                                         <td><b>{item.accumulated_shares}</b></td>
-                                        <td><b>{item.total_shares}</b></td>
+                                        <td><b>{item.total_shares >= 50 ? item.total_shares : <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" /> {item.total_shares}</p>}</b></td>
                                     </tr>
                                 </Fragment>
                             ))}
@@ -155,7 +155,7 @@ export class SharesAccumulationReport extends Component {
     render() {
         return (
             <div className="report-body">
-                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker.YearPicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}

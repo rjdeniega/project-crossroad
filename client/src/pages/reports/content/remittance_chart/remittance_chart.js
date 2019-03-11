@@ -37,7 +37,28 @@ class ComponentToPrint extends React.Component {
             labels: this.props.data.days,
             datasets: [
                 {
-                    label: "",
+                    label: "Main Road",
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'red',
+                    borderColor: 'red',
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'red',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'red',
+                    pointHoverBorderColor: 'red',
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: this.props.data.main_road_values,
+                },
+                {
+                    label: "Kaliwa",
                     fill: false,
                     lineTension: 0.1,
                     backgroundColor: 'rgba(75,192,192,0.4)',
@@ -55,14 +76,35 @@ class ComponentToPrint extends React.Component {
                     pointHoverBorderWidth: 2,
                     pointRadius: 1,
                     pointHitRadius: 10,
-                    data: this.props.data.values,
-                }
+                    data: this.props.data.kaliwa_values,
+                },
+                {
+                    label: "Kanan",
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'blue',
+                    borderColor: 'blue',
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'blue',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'blue',
+                    pointHoverBorderColor: 'blue',
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: this.props.data.kanan_values,
+                },
             ]
         };
         return <Line data={data} options={{
             title: {
                 display: true,
-                text: "Remittance Trend for " + this.props.data.days[0] + " to " + this.props.data.days[29]
+                text: "Remittance Trend for " + this.props.data.days[0] + " to " + this.props.data.end_date
             }}}/>
 
     };
@@ -128,6 +170,8 @@ export class RemittanceChart extends Component {
         return (
             <div className="report-body">
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
+
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}

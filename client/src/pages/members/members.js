@@ -275,6 +275,9 @@ export class TransactionsPane extends Component {
                         <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
                         <Table bordered size="medium"
                                className="remittance-table"
+                               pagination={{
+                                   pageSize: 5,
+                               }}
                                columns={columns}
                                dataSource={this.state.transactions}
 
@@ -288,6 +291,9 @@ export class TransactionsPane extends Component {
                         <p> total transaction cost: <b>{this.state.total_carwash_transactions} </b></p>
                         <Table bordered size="medium"
                                className="remittance-table"
+                               pagination={{
+                                   pageSize: 5,
+                               }}
                                columns={carwash_columns}
                                dataSource={this.state.carwash_transactions}
                         />
@@ -513,6 +519,9 @@ export class SharesManagementPane extends Component {
 
                     <Table bordered size="medium"
                            className="remittance-table share-table"
+                           pagination={{
+                               pageSize: 5,
+                           }}
                            columns={this.share_columns}
                            dataSource={this.state.shares}
                     />

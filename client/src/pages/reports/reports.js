@@ -52,55 +52,45 @@ const REMITTANCE_CARDS = [{
     'icon': money,
     'content': <RemittanceReport/>
 },{
+    'title': 'Passenger Queries',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <PassengerCount/>
+},{
     'title': 'Remittance Report',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <RemittanceSummary/>
-},{
-    'title': 'Ticket chart per week',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <TicketStack/>
-},{
-    'title': 'Remittance Trend',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <RemittanceChart/>
-},{
-    'title': 'Tickets Report',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <TicketReport/>
-},{
-    'title': 'Ticket Breakdown per Shuttle',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <TicketShuttleBreakdown/>
-},{
-    'title': 'Ticket Per Day',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <TicketPerDay/>
-},{
-    'title': 'Driver Remittance & Payables',
-    'description': 'view driver deployment information',
-    'icon': money,
-    'content': <DriverPerformance/>
 },{
     'title': 'Supervisor Report',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <WeeklySupervisorReport/>
 },{
-    'title': 'Passenger Queries',
+    'title': 'Driver Remittance & Payables',
+    'description': 'view driver deployment information',
+    'icon': money,
+    'content': <DriverPerformance/>
+},{
+    'title': 'Tickets Report',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
-    'content': <PassengerCount/>
+    'content': <TicketReport/>
+},{
+    'title': 'Ticket Per Day',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <TicketPerDay/>
 },{
     'title': 'Beep + Tickets',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
     'content': <BeepTickets/>
+},{
+    'title': 'Remittance Trend',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <RemittanceChart/>
 },{
     'title': 'Passenger Per Route',
     'description': 'view the remittance per route comparison',
@@ -111,7 +101,12 @@ const REMITTANCE_CARDS = [{
     'description': 'view peak hours for beep transactions',
     'icon': money,
     'content': <PeakHours />
-}];
+},{
+    'title': 'Ticket chart per week',
+    'description': 'view beep and ticketing passenger count',
+    'icon': money,
+    'content': <TicketStack/>
+},];
 
 
 const MAINTENANCE_CARDS = [{
