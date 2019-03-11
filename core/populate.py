@@ -34,7 +34,7 @@ class PopulateDatabase():
 
             while pending_for_supervisor:
                 supervisor = Supervisor.objects.random()
-                if (supervisor.id in supervisors_assigned) == False:
+                if supervisor.id not in supervisors_assigned:
                     supervisors_assigned.append(supervisor.id)
                     pending_for_supervisor = False
 
@@ -65,13 +65,13 @@ class PopulateDatabase():
 
             while pending_driver:
                 driver = Driver.objects.random()
-                if (driver.id in drivers_assigned) == False:
+                if driver.id not in drivers_assigned:
                     drivers_assigned.append(driver.id)
                     pending_driver = False
 
             while pending_shuttle:
                 shuttle = Shuttle.objects.random()
-                if (shuttle.id in shuttles_assigned) == False:
+                if shuttle.id not in shuttles_assigned == False:
                     shuttles_assigned.append(shuttle.id)
                     pending_shuttle = False
 
