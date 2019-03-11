@@ -101,6 +101,9 @@ class PopulateDatabase():
         vendor2.save()
         vendor3 = Vendor(name="Budjolex", address="427 Bel-air, Sta. Rosa City, Laguna", contact_number="09153552690")
         vendor3.save()
+        vendor4 = Vendor(name="Laguna Equipment", address="759 Saturn St., Sta. Rosa City, Laguna",
+                         contact_number="09173512562")
+        vendor4.save()
         category_oil = ItemCategory(category='Oil', code_prefix='OIL', quantity=0)
         category_oil.save()
         category_tire = ItemCategory(category='Tire', code_prefix='TIR', quantity=0)
@@ -126,10 +129,11 @@ class PopulateDatabase():
                                                     delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
                                                     received=True)
         purchase_order_1_item_1.save()
-
+        purchase_order_1.po_items.add(purchase_order_1_item_1)
         item = Item(category=category_windshield,
                     description="Windshield wiper for Toyota L300",
                     quantity=4,
+                    purchase_order=purchase_order_1,
                     brand="Vew Clear",
                     unit_price=200,
                     item_type="Physical Measurement",
@@ -144,15 +148,17 @@ class PopulateDatabase():
                                          '01112018', "%d%m%Y").date())
         item_movement.save()
 
-        category_windshield.quantity = 4
+        category_windshield.quantity = 8
         category_windshield.save()
 
-        item2 = Item(name="Signal Lightbulb",
+        item2 = Item(category=category_light_bulb,
                      description="Can be used for brake light or turn signal lights",
                      quantity=8,
+                     purchase_order=purchase_order_1,
                      brand="TTW",
-                     consumable=False,
-                     average_price=250)
+                     vendor=vendor,
+                     unit_price=250, item_type="Single Item", item_code="LBB001",
+                     delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
         item2.save()
         item_movement_2 = ItemMovement(item=item2,
                                        type="B",
@@ -161,7 +167,6 @@ class PopulateDatabase():
                                        created=datetime.strptime(
                                            '02112018', "%d%m%Y").date())
         item_movement_2.save()
-
         category_light_bulb.quantity = 8
         category_light_bulb.save()
 
@@ -173,27 +178,10 @@ class PopulateDatabase():
                                                     delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
                                                     received=True)
         purchase_order_1_item_2.save()
-
-        item2 = Item(category=category_light_bulb,
-                     description="Can be used for brake light or turn signal lights",
-                     quantity=8,
-                     brand="TTW",
-                     unit_price=250,
-                     item_type="Physical Measurement",
-                     measurement=10, unit="pieces", vendor=vendor,
-                     item_code="LBB001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
-        item2.save()
-        item_movement_2 = ItemMovement(item=item2,
-                                       type="B",
-                                       quantity=8,
-                                       unit_price=250,
-                                       created=datetime.strptime(
-                                           '01012019', "%d%m%Y").date())
-        item_movement_2.save()
-
-        purchase_order_2 = PurchaseOrder(po_number=2, vendor=vendor,
-                                         order_date=datetime.strptime('02142019', "%d%m%Y").date(),
-                                         completion_date=datetime.strptime('02172019', "%d%m%Y").date(),
+        purchase_order_1.po_items.add(purchase_order_1_item_2)
+        purchase_order_2 = PurchaseOrder(po_number=2, vendor=vendor2,
+                                         order_date=datetime.strptime('14022019', "%d%m%Y").date(),
+                                         completion_date=datetime.strptime('17022019', "%d%m%Y").date(),
                                          status="Complete")
         purchase_order_2.save()
 
@@ -201,16 +189,20 @@ class PopulateDatabase():
                                                     unit_price=800, category=category_brake_pad,
                                                     item_type="Physical Measurement", measurement=2, unit="pieces",
                                                     brand="Akebono",
-                                                    delivery_date=datetime.strptime('02172019', "%d%m%Y").date(),
+                                                    delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                                                     received=True)
         purchase_order_2_item_3.save()
-
+        purchase_order_2.po_items.add(purchase_order_2_item_3)
         item3 = Item(category=category_brake_pad,
                      description="Pair of brake pads for Mitsubishi L300",
                      quantity=5,
+                     purchase_order=purchase_order_2,
                      brand="Akebono",
+                     vendor=vendor2,
+                     item_code="BRP001",
                      unit_price=900,
                      item_type="Physical Measurement",
+                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                      measurement=2, unit="Pieces")
         item3.save()
 
@@ -219,40 +211,119 @@ class PopulateDatabase():
                                       quantity=5,
                                       unit_price=1300,
                                       created=datetime.strptime(
-                                          '01112018', "%d%m%Y").date())
+                                          '17022019', "%d%m%Y").date())
         item_movement3.save()
 
         purchase_order_2_item_4 = PurchaseOrderItem(quantity=5, description="Synthetic Performance Gasoline Oil",
                                                     unit_price=455, category=category_brake_pad,
                                                     item_type="Liquid Measurement", measurement=400, unit="mL",
                                                     brand="Apex",
-                                                    delivery_date=datetime.strptime('02172019', "%d%m%Y").date(),
+                                                    delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                                                     received=True)
 
         purchase_order_2_item_4.save()
-
-        category_brake_pad.quantity = 5
+        purchase_order_2.po_items.add(purchase_order_2_item_4)
+        category_brake_pad.quantity = 10
         category_brake_pad.save()
 
         item4 = Item(category=category_oil,
                      description="Synthetic Performance Gasoline Oil",
                      quantity=5,
+                     purchase_order=purchase_order_2,
                      brand="Apex",
+                     vendor=vendor2,
                      unit_price=455,
-                     measurement=400, unit="mL", vendor=vendor, item_code="OIL001",
-                     delivery_date=datetime.strptime('02172019', "%d%m%Y").date())
+                     item_type="Liquid Measurement",
+                     measurement=400, unit="mL", item_code="OIL001",
+                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date())
         item4.save()
-
+        category_oil.quantity = 5
+        category_oil.save()
         item_movement4 = ItemMovement(item=item4,
                                       type="B",
                                       quantity=5,
                                       unit_price=455,
                                       created=datetime.strptime(
-                                          '02172019', "%d%m%Y").date())
+                                          '17022019', "%d%m%Y").date())
         item_movement4.save()
 
         category_oil.quantity = 5
         category_brake_pad.save()
+
+        purchase_order_3 = PurchaseOrder(po_number=3, vendor=vendor4,
+                                         order_date=datetime.strptime('05032019', "%d%m%Y").date(),
+                                         completion_date=datetime.strptime('07032019', "%d%m%Y").date(),
+                                         status="Complete")
+        purchase_order_3.save()
+        purchase_order_3_item_1 = PurchaseOrderItem(quantity=5,
+                                                    description="Radial Tires",
+                                                    unit_price=2500,
+                                                    category=category_tire,
+                                                    item_type="Single Item",
+                                                    measurement=None,
+                                                    unit=None,
+                                                    brand="Goodyear",
+                                                    delivery_date=datetime.strptime('06032019', "%d%m%Y").date(),
+                                                    received=True)
+        purchase_order_3_item_1.save()
+        purchase_order_3.po_items.add(purchase_order_3_item_1)
+
+        item_tire = Item(description="Radial Tires",
+                         quantity=5,
+                         category=category_tire,
+                         unit_price=2500,
+                         item_type="Single Item",
+                         measurement=None,
+                         unit=None,
+                         brand="Goodyear",
+                         vendor=vendor4,
+                         created=datetime.strptime('06032019', "%d%m%Y"),
+                         current_measurement=5,
+                         purchase_order=purchase_order_3)
+        item_tire.save()
+        item_tire_movement = ItemMovement(item=item_tire,
+                                          type="B",
+                                          quantity=5,
+                                          unit_price=2500,
+                                          created=datetime.strptime('06032019', "%d%m%Y"))
+        item_tire_movement.save()
+        category_tire.quantity = 5
+        category_tire.save()
+
+        purchase_order_3_item_2 = PurchaseOrderItem(quantity=6,
+                                                    description="Super Heavy duty brake and clutch fluid",
+                                                    unit_price=250,
+                                                    category=category_brake_fluid,
+                                                    item_type="Liquid Measurement",
+                                                    measurement=500,
+                                                    unit="mL",
+                                                    brand="Prestone",
+                                                    delivery_date=datetime.strptime('07032019', "%d%m%Y").date(),
+                                                    received=True)
+        purchase_order_3_item_2.save()
+        purchase_order_3.po_items.add(purchase_order_3_item_2)
+        item_brake_fluid = Item(description="Super Heavy duty brake and clutch fluid",
+                                quantity=6,
+                                category=category_brake_fluid,
+                                unit_price=250,
+                                item_type="Liquid Measurement",
+                                measurement=500,
+                                unit="mL",
+                                brand="Prestone",
+                                vendor=vendor4,
+                                created=datetime.strptime('07032019', "%d%m%Y"),
+                                current_measurement=500,
+                                purchase_order=purchase_order_3)
+        item_brake_fluid.save()
+
+        item_brake_fluid_movement = ItemMovement(item=item_brake_fluid,
+                                                 type="B",
+                                                 quantity=6,
+                                                 unit_price=250,
+                                                 created=datetime.strptime('07032019', "%d%m%Y"))
+        item_brake_fluid_movement.save()
+        category_brake_fluid.quantity = 6
+        category_brake_fluid.save()
 
     @staticmethod
     def populate_shuttle():

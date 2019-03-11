@@ -81,6 +81,7 @@ export class PurchaseOrderView extends Component {
         super(props);
         this.state = {
             visible: false,
+            po_id: '',
             po_number: '',
             vendor_name: '',
             vendor_address: '',
@@ -130,6 +131,7 @@ export class PurchaseOrderView extends Component {
             /** @namespace data.vendor.contact_number **/
             this.setState({
                 po_number: data.purchase_order.po_number,
+                po_id: data.purchase_order.id,
                 vendor_name: data.vendor.name,
                 vendor_address: data.vendor.address,
                 vendor_contact: data.vendor.contact_number,
@@ -144,7 +146,7 @@ export class PurchaseOrderView extends Component {
     }
 
     render() {
-        const {po_number, vendor_name, vendor_address, vendor_contact, special_instructions, order_date, items, categories} = this.state;
+        const {po_id, po_number, vendor_name, vendor_address, vendor_contact, special_instructions, order_date, items, categories} = this.state;
         const {status} = this.props;
         return (
             <span>
@@ -174,7 +176,7 @@ export class PurchaseOrderView extends Component {
 
                     ]}
                 >
-                    <ItemCodePrintout ref={el => (this.componentRef2 = el)} po_id={po_number}/>
+                    <ItemCodePrintout ref={el => (this.componentRef2 = el)} po_id={po_id}/>
                     <div className="purchase-order-view" ref={el => (this.componentRef = el)}>
                         <Row type="flex" justify="space-between" align="bottom">
                             <Col span={12}>
