@@ -188,6 +188,7 @@ class ScheduleHistoryView(APIView):
                 'id': schedule.id,
                 'start_date': schedule.start_date,
                 'end_date': schedule.end_date,
+                "is_current": schedule.id == active_schedule.id,
                 'schedule_status': schedule.get_status(active_schedule),
                 'shifts': tempshifts
             })
@@ -685,7 +686,7 @@ class SpecificDeploymentView(APIView):
             item['end_time'] = None
             if item['end_time'] is not None:
                 item['end_time'] = x.end_time.strftime("%I:%M %p")
-                
+
             item['driver_object'] = DriverSerializer(Driver.objects.get(pk=item['driver'])).data
 
         return Response(data={

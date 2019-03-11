@@ -52,19 +52,19 @@ class ComponentToPrint extends React.Component {
                     label: 'Depreciation',
                     backgroundColor: '#45fad0',
                     stack: 'Stack 1',
-                    data: this.props.data.shuttles.shuttle_depreciations
+                    data: this.props.data.shuttle_depreciations
                 },
                 {
                     label: 'Major Repairs',
                     backgroundColor: '#269680',
                     stack: 'Stack 1',
-                    data: this.props.data.shuttles.shuttle_major_repairs
+                    data: this.props.data.shuttle_major_repairs
                 },
                 {
                     label: 'Fuel Costs',
                     backgroundColor: '#114a40',
                     stack: 'Stack 1',
-                    data: this.props.data.shuttles.shuttle_fuel_costs
+                    data: this.props.data.shuttle_fuel_costs
                 }
             ]
         }

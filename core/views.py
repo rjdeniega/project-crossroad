@@ -1919,10 +1919,16 @@ class RemittanceForTheMonth(APIView):
     def post(request):
         data = json.loads(request.body)
         date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = date + timedelta(days=6)
+
 
         year = date.year
         month = date.month
         num_days = calendar.monthrange(year, month)[1]
+        temp_date = date
 
         days = [datetime(year, month, day) for day in range(1, num_days + 1)]
 
@@ -1932,18 +1938,21 @@ class RemittanceForTheMonth(APIView):
         new_days = []
         rem = RemittanceForTheMonth()
 
-        for day in days:
-            main_road_value = rem.get_remittance_total("M",day) + rem.get_beep_total("M",day)
-            kaliwa_value = rem.get_remittance_total("L", day) + rem.get_beep_total("L", day)
-            kanan_value = rem.get_remittance_total("R", day) + rem.get_beep_total("R", day)
+        while temp_date < end_date:
+            main_road_value = rem.get_remittance_total("M",temp_date) + rem.get_beep_total("M",temp_date)
+            kaliwa_value = rem.get_remittance_total("L", temp_date) + rem.get_beep_total("L", temp_date)
+            kanan_value = rem.get_remittance_total("R", temp_date) + rem.get_beep_total("R", temp_date)
 
             main_road_values.append(main_road_value)
             kaliwa_values.append(kaliwa_value)
             kanan_values.append(kanan_value)
-            new_days.append(day.date())
+            new_days.append(temp_date.date())
+
+            temp_date += timedelta(days=1)
 
         return Response(data={
             "days": new_days,
+            "end_date": end_date.date(),
             "main_road_values": main_road_values,
             "kaliwa_values": kaliwa_values,
             "kanan_values": kanan_values,
