@@ -1169,7 +1169,7 @@ class BeepTicketsPerRoute(APIView):
                 "mr_route_total_value": (mr_route_total),
                 "l_route_total": "{0:,.2f}".format(r_route_total),
                 "r_route_total": "{0:,.2f}".format(l_route_total),
-                "grand_route_total": "{0:,.2f}".format(l_route_total+mr_route_total+r_route_total),
+                "grand_route_total": "{0:,.2f}".format(l_route_total + mr_route_total + r_route_total),
                 "mr_total_remit_day_without_fuel": "{0:,.2f}".format(mr_total_remit_day_without_fuel),
                 "mr_total_fuel_for_day": "{0:,.2f}".format(mr_total_fuel_for_day),
                 "mr_total_minus_fuel": "{0:,.2f}".format(mr_total_remit_day_without_fuel - mr_total_fuel_for_day),
@@ -1245,7 +1245,6 @@ class BeepTicketsPerRoute(APIView):
             else:
                 total_per_day = total_remittance
 
-
             try:
                 print(temp_start.date())
                 beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)[0]
@@ -1254,7 +1253,7 @@ class BeepTicketsPerRoute(APIView):
                 beep_shift = []
             print(beep_shift)
             beep_total = sum(
-                    [item.total for item in BeepTransaction.objects.filter(shift=beep_shift, shuttle__route=route)])
+                [item.total for item in BeepTransaction.objects.filter(shift=beep_shift, shuttle__route=route)])
             if beep_shift is None:
                 beep_total = 0
             shifts.append({
@@ -1918,6 +1917,7 @@ class SupervisorWeeklyReport(APIView):
                     deployed_drivers.append({
                         "driver_id": deployment.driver.id,
                         "driver_name": deployment.driver.name,
+                        "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
                         "remittance": "{0:,.2f}".format(driver_remit)
                     })
 
@@ -1932,9 +1932,13 @@ class SupervisorWeeklyReport(APIView):
                             absent = False
 
                     if absent:
+                        sub_driver = SubbedDeployments.objects.filter(absent_driver=drivers_assigned,
+                                                               deployment__shift_iteration__shift=shift_iteration.shift,
+                                                               deployment__shift_iteration__date=temp_start)[0]
                         absent_drivers.append({
                             "driver_id": drivers_assigned.driver_id,
-                            "driver_name": drivers_assigned.driver.name
+                            "driver_name": drivers_assigned.driver.name,
+                            "sub_driver": sub_driver.deployment.driver.name
                         })
 
                 rows.append({
@@ -2702,7 +2706,9 @@ class RemittancePerYear(APIView):
                              RemittanceForm.objects.filter(created__year=(date - timedelta(days=days)).year,
                                                            created__month=i)]) + sum([item.total for item in
                                                                                       BeepTransaction.objects.filter(
-                                                                                          transaction_date_time__year=(date - timedelta(days=days)).year,
+                                                                                          transaction_date_time__year=(
+                                                                                          date - timedelta(
+                                                                                              days=days)).year,
                                                                                           transaction_date_time__month=i)])
                 months.append(total)
             years.append({

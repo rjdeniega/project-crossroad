@@ -53,8 +53,9 @@ class ComponentToPrint extends React.Component {
                             <th>Date</th>
                             <th>Shift</th>
                             <th>Absent Driver/s</th>
-                            <th>Remarks</th>
+                            <th>Sub-in</th>
                             <th>Deployed Driver</th>
+                            <th>Shuttle</th>
                             {/*<th>Daily Remittance</th>*/}
                             <th>Remittance</th>
 
@@ -93,11 +94,13 @@ class ComponentToPrint extends React.Component {
                                             <td></td>
                                             <td>
                                                 {item.absent_drivers.length > 0 ? item.absent_drivers.map(item => (
-                                                        <p>{item.absent_drivers}</p>
+                                                        <p>{item.driver_name}</p>
                                                     )) : <p>None</p>}
                                             </td>
                                             <td>
-                                                {item.remarks ? item.remarks : <p>None</p>}
+                                                {item.absent_drivers.length > 0 ? item.absent_drivers.map(item => (
+                                                        <p>{item.sub_driver}</p>
+                                                    )) : <p>None</p>}
                                             </td>
                                             <td>
                                                 {item.deployed_drivers.map(item => (
@@ -106,12 +109,19 @@ class ComponentToPrint extends React.Component {
                                             </td>
                                             <td>
                                                 {item.deployed_drivers.map(item => (
+                                                    <p>{item.shuttle}</p>
+                                                ))}
+                                            </td>
+                                            <td>
+                                                {item.deployed_drivers.map(item => (
                                                     <p>{item.remittance}</p>
                                                 ))}
                                             </td>
 
+
                                         </tr>
                                         <tr>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -136,8 +146,22 @@ class ComponentToPrint extends React.Component {
                                     </Fragment>
 
                                 ))}
+                                <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><b>Week total</b></td>
+                                <td>
+                                    <b>{this.props.data.total_remittances}</b>
+                                </td>
+                            </tr>
                             </Fragment>
+
                             }
+
                             </tbody>
                         </table>
                     </Fragment>
