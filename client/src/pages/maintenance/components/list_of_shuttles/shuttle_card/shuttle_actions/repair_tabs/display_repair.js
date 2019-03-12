@@ -161,7 +161,9 @@ export class RepairDisplay extends Component {
                                     <List size='small' header={<h3>Items Used</h3>}
                                           bordered>
                                         {modifications.map(function (modification, index) {
+                                            console.log(modification);
                                             return items.map(function (item, index) {
+                                                console.log(item);
                                                 if (item.id === modification.item_used) {
                                                     return (
                                                         <List.Item>{modification.quantity} - {item.brand} {categories[item.category]}</List.Item>

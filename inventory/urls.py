@@ -5,6 +5,7 @@ from inventory.views import *
 inventory_urls = [
     # Inventory URLS
     path('items/', ItemView.as_view()),
+    path('items/with_quantity/', ItemsWithQuantity.as_view()),
     path('items_and_movement/', ItemAndMovement.as_view()),
     path('items/<int:pk>', ItemView.as_view()),
     path('items/specific/<int:pk>', SpecificItemView.as_view()),

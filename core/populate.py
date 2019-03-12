@@ -3,9 +3,10 @@ from datetime import datetime
 from remittances.models import *
 from members.models import *
 from inventory.models import *
+import random
 
 
-class PopulateDatabase():
+class PopulateDatabase:
     @staticmethod
     def main(start_date, end_date):
         current_date = datetime.strftime(start_date, '%Y-%m-%d')
@@ -456,331 +457,203 @@ class PopulateDatabase():
 
     @staticmethod
     def populate_repairs():
+        # Add Maintenance schedule to repairs
+        shuttles = Shuttle.objects.all()
+        for shuttle in shuttles:
+            shuttle.maintenance_sched = datetime.strptime('25032019', "%d%m%Y").date()
+            shuttle.save()
 
-        # Shuttle 1
-        repair1 = Repair(shuttle=Shuttle.objects.get(pk=1),
-                         driver_requested=Driver.objects.get(pk=1),
-                         date_requested=datetime.strptime('18022019', "%d%m%Y").date(),
-                         start_date=datetime.strptime('180222019', "%d%m%Y").date(),
-                         end_date=datetime.strptime('18022019', "%d%m%Y").date(),
-                         degree="Intermediate",
-                         status="C",
-                         maintenance=True)
-        repair1.save()
-        item1 = Item.objects.get(pk=1)
-        rp1 = RepairProblem(description="Maintenance")
-        rp1.save()
-        rm1 = RepairModifications(item_used=item1,
-                                  quantity=1)
-        rm1.save()
-        item_movement1 = ItemMovement(item=item1,
-                                      type="G",
-                                      quantity=1,
-                                      repair=repair1,
-                                      created=datetime.strptime('18222019', "%d%m%Y").date())
-        item_movement1.save()
-        repair1.problems.add(rp1)
-        repair1.modifications.add(rm1)
+        vendors = ["Ace Hardware", "Handyman", "Budjolex", "Laguna Equipment"]
+        categories = ['Oil', 'Tire', 'Windshield Wiper', 'Light Bulb', 'Brake Pads', 'Brake Fluid']
+        descriptions = {
+            'Oil': ['Engine Oil Enhancer', 'Magnesium Oil', 'An Engine Ceramic coating technology that will coat your '
+                                                            'metallic engine into ceramic'],
+            'Tire': ['205/70R15 96H FM316 Quality SUV Radial Tire', 'PILOT STREET TT/TL',
+                     '65/65R17 RANGER HT603 112H'],
+            'Windshield Wiper': ['Silicone Wiper', 'Wiper Blade', '26" / 15" Aerotwin A432S '],
+            'Light Bulb': ['200W', '350W', '300W'],
+            'Brake Pads': ['GCT', 'KLE650', 'H4N'],
+            'Brake Fluid': ['Silicone Compound', 'Hi Performance', 'DOT3']
+        }
+        brand = {
+            'Oil': ['NOW21', 'X-1R', 'MD10'],
+            'Tire': ['Goodyear', 'Michelin', 'Firemax'],
+            'Windshield Wiper': ['Banana Blade', 'Black horse', 'Universal'],
+            'Light Bulb': ['Eso goal', 'Coromose', 'H4'],
+            'Brake Pads': ['Bendix', 'OEM', 'Hi Q'],
+            'Brake Fluid': ['Dynatext', 'Rock Oil', 'Gas Treatment']
+        }
 
-        repair2 = Repair(shuttle=Shuttle.objects.get(pk=1),
-                         driver_requested=Driver.objects.get(pk=1),
-                         date_requested=datetime.strptime('21022019', "%d%m%Y").date(),
-                         start_date=datetime.strptime('22022019', "%d%m%Y").date(),
-                         end_date=datetime.strptime('24022019', "%d%m%Y").date(),
-                         degree="Intermediate",
-                         status="C",
-                         maintenance=False)
-        repair2.save()
+        findings = {
+            'Oil': ['Low oil', 'Faulty Oil'],
+            'Tire': ["There's a hole", "The tire is smooth"],
+            'Windshield Wiper': ["Old stock", 'Blade is broken'],
+            'Light Bulb': ['Rand out of power', 'It broke'],
+            'Brake Pads': ['Brake pads are smooth', 'The brake pad is cracked'],
+            'Brake Fluid': ['Low fluid', 'Very viscous']
+        }
 
-        item2 = Item.objects.get(pk=1)
-        rp2 = RepairProblem(description="Broken Windshield")
-        rp2.save()
-        rm2 = RepairModifications(item_used=item2,
-                                  quantity=1)
-        rm2.save()
+        problems = {
+            'Oil': ['Not running well', 'Making noises'],
+            'Tire': ['Not running well', 'Too bumpy'],
+            'Windshield Wiper': ['Making noise when wiping', 'Residue when wiping'],
+            'Light Bulb': ['Flickering', 'No light'],
+            'Brake Pads': ['Noise when braking', 'Not braking well'],
+            'Brake Fluid': ['Noise when braking', 'Not braking well']
+        }
 
-        item_movement_2 = ItemMovement(item=item2,
-                                       type="G",
-                                       quantity=1,
-                                       repair=repair2,
-                                       created=datetime.strptime('22022019', "%d%m%Y").date())
-        item_movement_2.save()
-        repair2.problems.add(rp2)
-        repair2.modifications.add(rm2)
+        item_types = {
+            'Oil': ['Liquid Measurement', 300, 'mL', 'OIL'],
+            'Tire': ['Single Item', None, None, 'TIR'],
+            'Windshield Wiper': ['Physical Measurement', 2, 'pieces', 'WWR'],
+            'Light Bulb': ['Single Item', None, None, 'LBB'],
+            'Brake Pads': ['Physical Measurement', 2, 'pieces', 'BRP'],
+            'Brake Fluid': ['Liquid Measurement', 400, 'mL', 'BRF'],
+        }
 
-        # Shuttle 2
-        repair3 = Repair(shuttle=Shuttle.objects.get(pk=2),
-                         driver_requested=Driver.objects.get(pk=2),
-                         date_requested=datetime.strptime(
-                             '02032019', "%d%m%Y").date(),
-                         start_date=datetime.strptime(
-                             '02032019', "%d%m%Y").date(),
-                         end_date=datetime.strptime(
-                             '02032019', "%d%m%Y").date(),
-                         status="C",
-                         degree="Minor",
-                         maintenance=False)
-        repair3.save()
-        item3 = Item.objects.get(pk=2)
-        rp3 = RepairProblem(description="Left blinker not working")
-        rp3.save()
-        rm3 = RepairModifications(item_used=item3,
-                                  quantity=1)
-        rm3.save()
-        item_movement3 = ItemMovement(item=item3,
-                                      type="G",
-                                      quantity=1,
-                                      repair=repair3,
-                                      created=datetime.strptime(
-                                          '02032019', "%d%m%Y").date())
-        item_movement3.save()
-        repair3.problems.add(rp3)
-        repair3.modifications.add(rm3)
+        usernames = ['jerrysantos', 'martingarcia', 'waynemambugan', 'emmantolentino', 'noelpampango',
+                     'carlsinang', 'choloagila', 'roelbautista', 'jonathanlakbayin', 'joserodrigo',
+                     'benignosalo']
 
-        # Shuttle 3
-        repair4 = Repair(shuttle=Shuttle.objects.get(pk=3),
-                         driver_requested=Driver.objects.get(pk=3),
-                         date_requested=datetime.strptime(
-                             '01032019', "%d%m%Y").date(),
-                         start_date=datetime.strptime(
-                             '01032019', "%d%m%Y").date(),
-                         end_date=datetime.strptime(
-                             '02032019', "%d%m%Y").date(),
-                         status="C",
-                         degree="Minor",
-                         maintenance=False)
-        repair4.save()
-        item4 = Item.objects.get(pk=3)
-        rp4 = RepairProblem(description="Worn out front brakes")
-        rp4.save()
-        rm4 = RepairModifications(item_used=item4,
-                                  quantity=2)
-        rm4.save()
-        item_movement4 = ItemMovement(item=item4,
-                                      type="G",
-                                      quantity=2,
-                                      repair=repair4,
-                                      created=datetime.strptime(
-                                          '02032019', "%d%m%Y").date())
-        item_movement4.save()
-        repair4.problems.add(rp4)
-        repair4.modifications.add(rm4)
+        liquid_measurement = [500, 450, 300, 250]
+        measurement_unit = ["mL", 'L', 'fl. oz']
 
-        repair5 = Repair(shuttle=Shuttle.objects.get(pk=3),
-                         driver_requested=Driver.objects.get(pk=3),
-                         date_requested=datetime.strptime(
-                             '07032019', "%d%m%Y").date(),
-                         start_date=datetime.strptime(
-                             '08032019', "%d%m%Y").date(),
-                         end_date=datetime.strptime(
-                             '08032019', "%d%m%Y").date(),
-                         degree="Intermediate",
-                         status="C",
-                         maintenance=True)
-        repair5.save()
-        item5 = Item.objects.get(pk=6)
-        rp5 = RepairProblem(description="Lost Tire Cap")
-        rp5.save()
-        rm5 = RepairModifications(item_used=item5,
-                                  quantity=1)
-        rm5.save()
-        item_movement5 = ItemMovement(item=item5,
-                                      type="G",
-                                      quantity=1,
-                                      repair=repair5,
-                                      created=datetime.strptime(
-                                          '08032019', "%d%m%Y").date())
-        item_movement5.save()
-        repair5.problems.add(rp5)
-        repair5.modifications.add(rm5)
+        degree = ['Minor', 'Intermediate', 'Major']
 
-        # Shuttle 4
-        repair6 = Repair(shuttle=Shuttle.objects.get(pk=4),
-                         driver_requested=Driver.objects.get(pk=4),
-                         date_requested=datetime.strptime(
-                             '05032019', "%d%m%Y").date(),
-                         start_date=datetime.strptime(
-                             '05032019', "%d%m%Y").date(),
-                         end_date=datetime.strptime(
-                             '06032019', "%d%m%Y").date(),
-                         status="C",
-                         maintenance=True)
-        repair6.save()
-        item6 = Item.objects.get(pk=6)
-        rp6 = RepairProblem(description="Lost Tire Cap")
-        rp6.save()
-        rm6 = RepairModifications(item_used=item6,
-                                  quantity=1,
-                                  used_up=False)
-        rm6.save()
-        item_movement6 = ItemMovement(item=item6,
-                                      type="G",
-                                      quantity=1,
-                                      repair=repair6,
-                                      created=datetime.strptime(
-                                          '06032019', "%d%m%Y").date())
-        item_movement6.save()
-        repair6.problems.add(rp6)
-        repair6.modifications.add(rm6)
+        #  Shuttle 1
+        shuttle_1_repair_1 = Repair(shuttle=Shuttle.objects.get(shuttle_number=1),
+                                    driver_requested=Driver.objects.get(user=User.objects.get(username="jerrysantos")),
+                                    date_requested=datetime.strptime('01032019', "%d%m%Y").date(),
+                                    start_date=datetime.strptime('01032019', "%d%m%Y").date(),
+                                    end_date=datetime.strptime('01032019', "%d%m%Y").date(),
+                                    degree="Minor",
+                                    status="C")
+        shuttle_1_repair_1.save()
 
-        #
-        # shuttle4Repair = Repair(shuttle=Shuttle.objects.get(pk=4),
-        #                         date_requested=datetime.strptime(
-        #                             '17112018', "%d%m%Y").date(),
-        #                         start_date=datetime.strptime(
-        #                             '17112018', "%d%m%Y").date(),
-        #                         end_date=datetime.strptime(
-        #                             '19112018', "%d%m%Y").date(),
-        #                         status="C",
-        #                         maintenance=False,
-        #                         labor_fee=4000)
-        #
-        # shuttle4Repair.save()
-        # s4rp = RepairProblem(description="Engine Failure")
-        # s4rp.save()
-        # outsourced_item1 = OutSourcedItems(item="Engine",
-        #                                    quantity=1,
-        #                                    unit_price=15000)
-        # outsourced_item1.save()
-        # shuttle4Repair.problems.add(s4rp)
-        # shuttle4Repair.outsourced_items.add(outsourced_item1)
-        #
-        # ## Shuttle 5
-        # repair7 = Repair(shuttle=Shuttle.objects.get(pk=5),
-        #                  date_requested=datetime.strptime(
-        #                      '11112018', "%d%m%Y").date(),
-        #                  start_date=datetime.strptime(
-        #                      '11112018', "%d%m%Y").date(),
-        #                  end_date=datetime.strptime(
-        #                      '11112018', "%d%m%Y").date(),
-        #                  status="C",
-        #                  maintenance=False)
-        # repair7.save()
-        # item7 = Item.objects.get(pk=2)
-        # rp7 = RepairProblem(description="Right blinker not working")
-        # rp7.save()
-        # rm7 = RepairModifications(item_used=item7,
-        #                           quantity=1,
-        #                           used_up=False)
-        # rm7.save()
-        # itemMovement7 = ItemMovement(item=item7,
-        #                              type="G",
-        #                              quantity=1,
-        #                              repair=repair7,
-        #                              created=datetime.strptime(
-        #                                  '11112018', "%d%m%Y").date())
-        # itemMovement7.save()
-        # repair7.problems.add(rp7)
-        # repair7.modifications.add(rm7)
-        #
-        # ## Shuttle 6
-        # repair8 = Repair(shuttle=Shuttle.objects.get(pk=6),
-        #                  date_requested=datetime.strptime(
-        #                      '13112018', "%d%m%Y").date(),
-        #                  start_date=datetime.strptime(
-        #                      '13112018', "%d%m%Y").date(),
-        #                  end_date=datetime.strptime(
-        #                      '13112018', "%d%m%Y").date(),
-        #                  status="C",
-        #                  maintenance=False)
-        # repair8.save()
-        # item8 = Item.objects.get(pk=7)
-        # rp8 = RepairProblem(description="Flat Tire")
-        # rp8.save()
-        # rm8 = RepairModifications(item_used=item8,
-        #                           quantity=1,
-        #                           used_up=False)
-        # rm8.save()
-        # itemMovement8 = ItemMovement(item=item8,
-        #                              type="G",
-        #                              quantity=1,
-        #                              repair=repair8,
-        #                              created=datetime.strptime(
-        #                                  '13112018', "%d%m%Y").date())
-        # itemMovement8.save()
-        # repair8.problems.add(rp8)
-        # repair8.modifications.add(rm8)
-        #
-        # ## Shuttle 7
-        # repair9 = Repair(shuttle=Shuttle.objects.get(pk=7),
-        #                  date_requested=datetime.strptime(
-        #                      '15112018', "%d%m%Y").date(),
-        #                  start_date=datetime.strptime(
-        #                      '16112018', "%d%m%Y").date(),
-        #                  end_date=datetime.strptime(
-        #                      '17112018', "%d%m%Y").date(),
-        #                  status="C",
-        #                  maintenance=True)
-        # repair9.save()
-        # item9 = Item.objects.get(pk=4)
-        # rp9 = RepairProblem(description="Radiator Coolant Low")
-        # rp9.save()
-        # rm9 = RepairModifications(item_used=item9,
-        #                           quantity=1,
-        #                           used_up=False)
-        # rm9.save()
-        # itemMovement9 = ItemMovement(item=item9,
-        #                              type="G",
-        #                              quantity=1,
-        #                              repair=repair9,
-        #                              created=datetime.strptime(
-        #                                  '16112018', "%d%m%Y").date())
-        # itemMovement9.save()
-        # repair9.problems.add(rp9)
-        # repair9.modifications.add(rm9)
-        #
-        # ## Shuttle 8
-        # repair10 = Repair(shuttle=Shuttle.objects.get(pk=8),
-        #                   date_requested=datetime.strptime(
-        #                       '02112018', "%d%m%Y").date(),
-        #                   start_date=datetime.strptime(
-        #                       '02112018', "%d%m%Y").date(),
-        #                   end_date=datetime.strptime(
-        #                       '02112018', "%d%m%Y").date(),
-        #                   status="C",
-        #                   maintenance=False)
-        # repair10.save()
-        # item10 = Item.objects.get(pk=7)
-        # rp10 = RepairProblem(description="Flat Tire")
-        # rp10.save()
-        # rm10 = RepairModifications(item_used=item10,
-        #                            quantity=1,
-        #                            used_up=False)
-        # rm10.save()
-        # itemMovement10 = ItemMovement(item=item10,
-        #                               type="G",
-        #                               quantity=1,
-        #                               repair=repair10,
-        #                               created=datetime.strptime(
-        #                                   '02112018', "%d%m%Y").date())
-        # itemMovement10.save()
-        # repair10.problems.add(rp10)
-        # repair10.modifications.add(rm10)
-        #
-        # ## Shuttle 9
-        # repair11 = Repair(shuttle=Shuttle.objects.get(pk=9),
-        #                   date_requested=datetime.strptime(
-        #                       '11112018', "%d%m%Y").date(),
-        #                   start_date=datetime.strptime(
-        #                       '11112018', "%d%m%Y").date(),
-        #                   end_date=datetime.strptime(
-        #                       '11112018', "%d%m%Y").date(),
-        #                   status="C",
-        #                   maintenance=False)
-        # repair11.save()
-        # item11 = Item.objects.get(pk=3)
-        # rp11 = RepairProblem(description="Worn out front brakes")
-        # rp11.save()
-        # rm11 = RepairModifications(item_used=item11,
-        #                            quantity=2,
-        #                            used_up=False)
-        # rm11.save()
-        # itemMovement11 = ItemMovement(item=item11,
-        #                               type="G",
-        #                               quantity=2,
-        #                               repair=repair11,
-        #                               created=datetime.strptime(
-        #                                   '11112018', "%d%m%Y").date())
-        # itemMovement11.save()
-        # repair11.problems.add(rp11)
-        # repair11.modifications.add(rm11)
+        shuttle_1_repair_1_problem_1 = RepairProblem(description="I hear screeching when I step on the brakes.")
+        shuttle_1_repair_1_problem_1.save()
+        shuttle_1_repair_1.problems.add(shuttle_1_repair_1_problem_1)
+
+        shuttle_1_repair_1_purchase_order = PurchaseOrder(po_number=4, vendor=Vendor.objects.get(name="Ace Hardware"),
+                                                          order_date=datetime.strptime('01022019', "%d%m%Y").date(),
+                                                          completion_date=datetime.strptime('04022019',
+                                                                                            "%d%m%Y").date(),
+                                                          status="Complete")
+        shuttle_1_repair_1_purchase_order.save()
+        shuttle_1_repair_1_purchase_order_item_1 = PurchaseOrderItem(quantity=2,
+                                                                     description="Pair of brake pads for "
+                                                                                 "Mitsubishi L300",
+                                                                     unit_price=750,
+                                                                     category=ItemCategory.objects.get(category="Brake "
+                                                                                                                "Pads"),
+                                                                     item_type="Physical Measurement", measurement=2,
+                                                                     unit="pieces",
+                                                                     brand="Hi Q",
+                                                                     delivery_date=datetime.strptime('04022019',
+                                                                                                     "%d%m%Y").date(),
+                                                                     received=True)
+        shuttle_1_repair_1_purchase_order_item_1.save()
+        shuttle_1_repair_1_purchase_order.po_items.add(shuttle_1_repair_1_purchase_order_item_1)
+        shuttle_1_repair_1_item_1 = Item(category=ItemCategory.objects.get(category="Brake Pads"),
+                                         description="Pair of brake pads for Mitsubishi L300",
+                                         quantity=0, brand="Hi Q", unit_price=750, item_type="Physical Measurement",
+                                         measurement=2, unit="pieces", vendor=Vendor.objects.get(name="Ace Hardware"),
+                                         current_measurement=0, item_code="BRP002",
+                                         delivery_date=datetime.strptime('04022019',
+                                                                         "%d%m%Y").date(),
+                                         purchase_order=shuttle_1_repair_1_purchase_order)
+        shuttle_1_repair_1_item_1.save()
+        shuttle_1_repair_1_item_1_movement = ItemMovement(item=shuttle_1_repair_1_item_1,
+                                                          type="B",
+                                                          quantity=2,
+                                                          unit_price=750,
+                                                          created=datetime.strptime('04022019',
+                                                                                    "%d%m%Y").date())
+        shuttle_1_repair_1_item_1_movement.save()
+        shuttle_1_repair_1_finding_1 = RepairFinding(description="The brake pads are smooth",
+                                                     item_defect=ItemCategory.objects.get(category="Brake Pads"))
+        shuttle_1_repair_1_finding_1.save()
+        shuttle_1_repair_1.findings.add(shuttle_1_repair_1_finding_1)
+
+        shuttle_1_repair_1_modification_1 = RepairModifications(item_used=shuttle_1_repair_1_item_1,
+                                                                quantity=2)
+        shuttle_1_repair_1_modification_1.save()
+        shuttle_1_repair_1.modifications.add(shuttle_1_repair_1_modification_1)
+        shuttle_1_repair_1.save()
+
+        shuttle_1_repair_1_item_1_movement_1 = ItemMovement(item=shuttle_1_repair_1_item_1,
+                                                            type="G",
+                                                            quantity=2, repair=shuttle_1_repair_1)
+        shuttle_1_repair_1_item_1_movement_1.save()
+
+        for shuttle in Shuttle.objects.all():
+            print(shuttle.shuttle_number)
+            print(usernames[shuttle.shuttle_number - 1])
+            for i in range(0, randint(3, 5)):
+                start_date = datetime(2019, randint(1, 2), randint(1, 28)).date()
+                end_date = datetime(2019, randint(1, 2), randint(1, 28)).date()
+                while end_date < start_date:
+                    end_date = datetime(2019, randint(1, 2), randint(1, 28)).date()
+                vendor = random.choice(vendors)
+                broken_category = random.choice(categories)
+                item_description = random.choice(descriptions[broken_category])
+                item_price = randint(200, 800)
+                item_brand = random.choice(brand[broken_category])
+                finding = random.choice(findings[broken_category])
+                problem = random.choice(problems[broken_category])
+                item_details = item_types[broken_category]
+                repair = Repair(shuttle=shuttle,
+                                driver_requested=Driver.objects.get(
+                                    user=User.objects.get(username=usernames[shuttle.shuttle_number - 1])),
+                                date_requested=start_date,
+                                start_date=start_date,
+                                end_date=end_date,
+                                degree=degree[randint(0, 2)],
+                                status='C')
+                repair.save()
+                repair_problem = RepairProblem(description=problem)
+                repair_problem.save()
+                repair.problems.add(repair_problem)
+
+                purchase_order = PurchaseOrder(po_number=PurchaseOrder.objects.count() + 1,
+                                               vendor=Vendor.objects.get(name=vendor),
+                                               order_date=start_date,
+                                               completion_date=start_date, status="Complete")
+                purchase_order.save()
+                purchase_order_item = PurchaseOrderItem(quantity=1,
+                                                        description=item_description,
+                                                        unit_price=item_price,
+                                                        category=ItemCategory.objects.get(category=broken_category),
+                                                        item_type=item_details[0],
+                                                        measurement=item_details[1],
+                                                        unit=item_details[2],
+                                                        brand=item_brand,
+                                                        delivery_date=start_date,
+                                                        received=True)
+                purchase_order_item.save()
+                purchase_order.po_items.add(purchase_order_item)
+                item = Item(category=ItemCategory.objects.get(category=broken_category),
+                            description=item_description,
+                            quantity=0, brand=item_brand, unit_price=item_price,
+                            item_type=item_details[0], vendor=Vendor.objects.get(name=vendor),
+                            measurement=item_details[1], unit=item_details[2],
+                            item_code=(item_details[3] + str(randint(100, 999))),
+                            delivery_date=start_date, purchase_order=purchase_order)
+                item.save()
+                item_movement = ItemMovement(item=item, type="B", quantity=1, unit_price=item_price,
+                                             created=start_date)
+                item_movement.save()
+                repair_finding = RepairFinding(description=finding,
+                                               item_defect=ItemCategory.objects.get(category=broken_category))
+                repair_finding.save()
+                repair.findings.add(repair_finding)
+                if item_details[0] == "Liquid Measurement":
+                    repair_modification = RepairModifications(item_used=item, quantity=item_details[1])
+                else:
+                    repair_modification = RepairModifications(item_used=item, quantity=1)
+                repair_modification.save()
+                repair.modifications.add(repair_modification)
+                repair.save()
+
+                item_movement_2 = ItemMovement(item=item, type="G", quantity=1, repair=repair)
+                item_movement_2.save()

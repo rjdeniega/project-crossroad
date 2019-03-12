@@ -31,7 +31,7 @@ export class InventoryTable extends Component {
                 item_categories: data.item_category,
             })
         });
-        getData('inventory/items/').then(data => {
+        getData('inventory/items/with_quantity/').then(data => {
             this.setState({
                 items: data.items,
                 vendors: data.vendors,
@@ -57,6 +57,7 @@ export class InventoryTable extends Component {
             if(item.measurement){
                 measurement = item.measurement + item.unit
             }
+
             if (item.category === category) {
                 data.push({
                     key: key,

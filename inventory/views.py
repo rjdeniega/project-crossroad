@@ -39,6 +39,25 @@ class ItemAndMovement(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class ItemsWithQuantity(APIView):
+    @staticmethod
+    def get(request):
+        # transform django objects to JSON (so it can be interpreted in the front-end_
+        items = ItemSerializer(Item.objects.all().filter(quantity__gt=0), many=True)
+        vendors = {}
+        categories = ItemCategorySerializer(ItemCategory.objects.all(), many=True)
+        for item in Item.objects.all():
+            vendor = Vendor.objects.get(id=item.vendor_id)
+            vendors[item.id] = vendor.name
+        # returns all item objects
+        return Response(data={
+            "categories": categories.data,
+            "items": items.data,
+            "date": datetime.now().date(),
+            "vendors": vendors,
+        }, status=status.HTTP_200_OK)
+
+
 class ItemView(APIView):
     @staticmethod
     def get(request):
@@ -320,6 +339,8 @@ class MechanicItems(APIView):
                     category = ItemCategory.objects.get(id=item.category.id)
                     category.quantity = category.quantity - 1
                     category.save()
+        item_movement = ItemMovement(item=item, type="G", quantity=rm.quantity, repair=repair)
+        item_movement.save()
         return Response(data={
             'foo': 'bar'
         }, status=status.HTTP_200_OK)
@@ -943,8 +964,11 @@ class AddFindingFromMechanic(APIView):
     def post(request, pk):
         data = json.loads(request.body)
         repair = Repair.objects.get(id=pk)
-        category = ItemCategory.objects.get(id=data['category'])
-        finding = RepairFinding(description=data['finding'], item_defect=category)
+        if data['category']:
+            category = ItemCategory.objects.get(id=data['category'])
+            finding = RepairFinding(description=data['finding'], item_defect=category)
+        else:
+            finding = RepairFinding(description=data['finding'])
         finding.save()
         repair.findings.add(finding)
         findings = RepairFindingSerializer(repair.findings, many=True)
