@@ -150,7 +150,6 @@ export class InventoryPage extends Component {
                     <Tabs activeKey={this.state.activeTab} onChange={this.changeTab}>
                         <Tabs.TabPane tab="Inventory" key="1" onClick={() => this.changeTab("1")}>
                             <Row type="flex" justify="start">
-                                {items.length ? (<Col span={6}><PhysicalCount/></Col>) : null}
                                 <Col span={6}> <AddCategory reload_items={this.reloadItems}/>
                                 </Col>
                             </Row>

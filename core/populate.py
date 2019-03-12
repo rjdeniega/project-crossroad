@@ -275,7 +275,7 @@ class PopulateDatabase:
                          unit=None,
                          brand="Goodyear",
                          vendor=vendor4,
-                         created=datetime.strptime('06032019', "%d%m%Y"),
+                         delivery_date=datetime.strptime('06032019', "%d%m%Y"),
                          item_code='TIR001',
                          current_measurement=5,
                          purchase_order=purchase_order_3)
@@ -311,7 +311,7 @@ class PopulateDatabase:
                                 brand="Prestone",
                                 vendor=vendor4,
                                 item_code="BRF001",
-                                created=datetime.strptime('07032019', "%d%m%Y"),
+                                delivery_date=datetime.strptime('07032019', "%d%m%Y"),
                                 current_measurement=500,
                                 purchase_order=purchase_order_3)
         item_brake_fluid.save()
