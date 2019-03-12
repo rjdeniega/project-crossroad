@@ -545,7 +545,8 @@ class MemberTransactionByReport(APIView):
                     "no_of_beep": len(transactions),
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
-                    "beep_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in serialized_transactions.data])),
+                    "beep_total_decimal": "{0:,.2f}".format(
+                        sum([float(item['total']) for item in serialized_transactions.data])),
                     "carwash_total_decimal": "{0:,.2f}".format(
                         sum([float(item['total']) for item in carwash_transactions])),
                     "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
@@ -553,8 +554,9 @@ class MemberTransactionByReport(APIView):
                     "carwash_transactions": carwash_transactions,
                     "total_transactions": sum([float(item.total) for item in transactions]) + sum(
                         [float(item['total']) for item in carwash_transactions]),
-                    "total_transactions_decimal": "{0:,.2f}".format(sum([float(item.total) for item in transactions]) + sum(
-                        [float(item['total']) for item in carwash_transactions]))
+                    "total_transactions_decimal": "{0:,.2f}".format(
+                        sum([float(item.total) for item in transactions]) + sum(
+                            [float(item['total']) for item in carwash_transactions]))
                 })
         return Response(data={
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
@@ -640,7 +642,8 @@ class PatronageRefund(APIView):
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
                     "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in serialized_transactions.data])),
+                    "carwash_total_decimal": "{0:,.2f}".format(
+                        sum([float(item['total']) for item in serialized_transactions.data])),
                     "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
@@ -911,22 +914,25 @@ class RemittanceVersusFuelReport(APIView):
             grand_fuel_total += total_fuel_for_day
 
             temp_start = temp_start + timedelta(days=1)
-            am_total = 0
-            am_count = 0
-            pm_total = 0
-            pm_count = 0
-            for item in rows:
-                for x in item['shifts']:
-                    if x['type'] == "AM":
-                        am_total += float(x['remittance_minus_fuel'][0])
-                        am_count += 1
-                    elif x['type'] == "PM":
-                        pm_total += float(x['remittance_minus_fuel'][0])
-                        pm_count += 1
+        am_total = 0
+        am_count = 0
+        pm_total = 0
+        pm_count = 0
+        for item in rows:
+            for x in item['shifts']:
+                print(x['type'])
+                if x['type'] == "AM":
+                    string = x['remittance_minus_fuel']
+                    am_total += float(string.replace(',',''))
+                    am_count += 1
+                elif x['type'] == "PM":
+                    string = x['remittance_minus_fuel']
+                    pm_total += float(string.replace(',',''))
+                    pm_count += 1
             # am_sum = sum([int(item) for item in rows['shifts'] if item['type'] == 'AM'])
             # print(am_sum)
-            am_average = am_total / am_count
-            pm_average = pm_total / pm_count
+        am_average = am_total / am_count
+        pm_average = pm_total / pm_count
         return Response(data={
             "start_date": start_date.date(),
             "end_date": end_date.date(),
@@ -1941,8 +1947,8 @@ class SupervisorWeeklyReport(APIView):
 
                     if absent:
                         sub_driver = SubbedDeployments.objects.filter(absent_driver=drivers_assigned,
-                                                               deployment__shift_iteration__shift=shift_iteration.shift,
-                                                               deployment__shift_iteration__date=temp_start)[0]
+                                                                      deployment__shift_iteration__shift=shift_iteration.shift,
+                                                                      deployment__shift_iteration__date=temp_start)[0]
                         absent_drivers.append({
                             "driver_id": drivers_assigned.driver_id,
                             "driver_name": drivers_assigned.driver.name,
@@ -2711,12 +2717,13 @@ class RemittancePerYear(APIView):
             days = 365 * x
             for i in range(1, 13):
                 total = sum([item.total for item in
-                             RemittanceForm.objects.filter(deployment__shift_iteration__date__year=(date - timedelta(days=days)).year,
-                                                           deployment__shift_iteration__date__month=i)]) + sum([item.total for item in
+                             RemittanceForm.objects.filter(
+                                 deployment__shift_iteration__date__year=(date - timedelta(days=days)).year,
+                                 deployment__shift_iteration__date__month=i)]) + sum([item.total for item in
                                                                                       BeepTransaction.objects.filter(
                                                                                           transaction_date_time__year=(
-                                                                                          date - timedelta(
-                                                                                              days=days)).year,
+                                                                                              date - timedelta(
+                                                                                                  days=days)).year,
                                                                                           transaction_date_time__month=i)])
                 months.append("{0:,.2f}".format(total))
             years.append({

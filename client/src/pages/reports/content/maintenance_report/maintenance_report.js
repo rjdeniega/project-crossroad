@@ -78,13 +78,13 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.number_of_minor_maintenance}</td>
                                         <td>{item.number_of_intermediate_maintenance}</td>
                                         <td>{item.number_of_major_maintenance}</td>
-                                        <td>{item.minor_maintenance_cost}</td>
-                                        <td>{item.intermediate_maintenance_cost}</td>
-                                        <td>{item.major_maintenance_cost}</td>
-                                        <td>{item.minor_average_cost}</td>
-                                        <td>{item.intermediate_average_cost}</td>
-                                        <td>{item.major_average_cost}</td>
-                                        <td><b>{item.total}</b></td>
+                                        <td className="monetary">{item.minor_maintenance_cost}</td>
+                                        <td className="monetary">{item.intermediate_maintenance_cost}</td>
+                                        <td className="monetary">{item.major_maintenance_cost}</td>
+                                        <td className="monetary">{item.minor_average_cost}</td>
+                                        <td className="monetary">{item.intermediate_average_cost}</td>
+                                        <td className="monetary">{item.major_average_cost}</td>
+                                        <td className="monetary"><b>{item.total}</b></td>
                                     </tr>
                                 </Fragment>
                             ))}
@@ -95,13 +95,13 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line"><b>{this.props.data.minor_count}</b></td>
                                 <td className="total-line"><b>{this.props.data.intermediate_count}</b></td>
                                 <td className="total-line"><b>{this.props.data.major_count}</b></td>
-                                <td className="total-line"><b>{this.props.data.minor_total_maintenance_cost}</b></td>
-                                <td className="total-line"><b>{this.props.data.intermediate_total_maintenance_cost}</b></td>
-                                <td className="total-line"><b>{this.props.data.major_total_maintenance_cost}</b></td>
-                                <td className="total-line"><b>{this.props.data.minor_average_maintenance_cost}</b></td>
-                                <td className="total-line"><b>{this.props.data.intermediate_average_maintenance_cost}</b></td>
-                                <td className="total-line"><b>{this.props.data.major_average_maintenance_cost}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.minor_total_maintenance_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.intermediate_total_maintenance_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.major_total_maintenance_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.minor_average_maintenance_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.intermediate_average_maintenance_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.major_average_maintenance_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_total}</b></td>
                             </tr>
                         </Fragment>
                         }

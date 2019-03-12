@@ -100,7 +100,7 @@ class ComponentToPrint extends React.Component {
                                 <td className="monetary">{this.props.data.years[0].months[5]}</td>
                             </tr>
                             <tr>
-                                <td className="monetary">July</td>
+                                <td>July</td>
                                 <td className="monetary">{this.props.data.years[3].months[6]}</td>
                                 <td className="monetary">{this.props.data.years[2].months[6]}</td>
                                 <td className="monetary">{this.props.data.years[1].months[6]}</td>
