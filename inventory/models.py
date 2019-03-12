@@ -109,7 +109,7 @@ class PurchaseOrderItem(SoftDeletionModel):
     quantity = PositiveIntegerField()
     description = CharField(max_length=64)
     unit_price = DecimalField(max_digits=10, decimal_places=2)
-    category = ForeignKey(ItemCategory, on_delete=models.PROTECT)
+    category = ForeignKey(ItemCategory, on_delete=models.CASCADE)
     item_type = CharField(max_length=255)
     measurement = PositiveIntegerField(null=True)
     unit = CharField(max_length=10, null=True)
@@ -120,7 +120,7 @@ class PurchaseOrderItem(SoftDeletionModel):
 
 class PurchaseOrder(SoftDeletionModel):
     po_number = CharField(max_length=6)
-    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
+    vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateTimeField(editable=False)
     completion_date = models.DateTimeField(null=True)
     po_items = ManyToManyField(PurchaseOrderItem)
@@ -132,13 +132,13 @@ class PurchaseOrder(SoftDeletionModel):
 class Item(SoftDeletionModel):
     description = CharField(max_length=255)
     quantity = PositiveIntegerField()
-    category = ForeignKey(ItemCategory, on_delete=models.PROTECT)
+    category = ForeignKey(ItemCategory, on_delete=models.CASCADE)
     unit_price = DecimalField(max_digits=10, decimal_places=2)
     item_type = CharField(max_length=255)
     measurement = PositiveIntegerField(null=True)
     unit = CharField(max_length=10, null=True)
     brand = CharField(max_length=64)
-    vendor = ForeignKey(Vendor, on_delete=models.PROTECT)
+    vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
     item_code = CharField(max_length=6)
@@ -168,7 +168,7 @@ class RepairProblem(SoftDeletionModel):
 
 class RepairFinding(SoftDeletionModel):
     description = TextField()
-    item_defect = ForeignKey(ItemCategory, null=True, on_delete=models.PROTECT)
+    item_defect = ForeignKey(ItemCategory, null=True, on_delete=models.CASCADE)
 
 
 class RepairModifications(SoftDeletionModel):
@@ -185,7 +185,7 @@ class OutSourcedItems(SoftDeletionModel):
 
 class Repair(SoftDeletionModel):
     shuttle = ForeignKey(Shuttle, on_delete=models.PROTECT)
-    driver_requested = ForeignKey(Driver, on_delete=models.PROTECT)
+    driver_requested = ForeignKey(Driver, on_delete=models.CASCADE)
     date_requested = DateField()
     vendor = CharField(max_length=64, null=True)
     start_date = DateField(null=True)
@@ -207,7 +207,7 @@ class ItemMovement(SoftDeletionModel):
     quantity = PositiveIntegerField()
     remarks = CharField(max_length=64, null=True)
     unit_price = DecimalField(max_digits=10, decimal_places=2, null=True)
-    repair = ForeignKey(Repair, on_delete=models.PROTECT, null=True)
+    repair = ForeignKey(Repair, on_delete=models.CASCADE, null=True)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
 

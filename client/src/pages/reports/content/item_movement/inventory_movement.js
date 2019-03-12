@@ -98,7 +98,6 @@ export class ItemMovementReport extends Component {
     state = {};
 
     componentDidMount() {
-        this.fetchTransactions()
     }
 
     fetchTransactions() {
@@ -106,7 +105,7 @@ export class ItemMovementReport extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        postData('/inventory/item_movement_report', data).then(data => {
+        postData('/inventory/item_movement_report/', data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({
@@ -120,7 +119,7 @@ export class ItemMovementReport extends Component {
         this.setState({
             start_date_object: date,
             start_date: dateString
-        })
+        }, () => this.fetchTransactions())
     };
     handleEndDateChange = (date, dateString) => {
         this.setState({

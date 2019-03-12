@@ -994,7 +994,7 @@ class FinalItemMovementReport(APIView):
             categories.append(category.category)
             g_count = 0
             b_count = 0
-            for item_movement in ItemMovement.objects.all().filter(created__gte=date, created__lte=end_date):
+            for item_movement in ItemMovement.objects.all():
                 item = item_movement.item
                 if item.category == category:
                     if item_movement.type == "B":
