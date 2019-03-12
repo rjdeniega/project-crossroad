@@ -582,7 +582,8 @@ class PopulateDatabase:
         shuttle_1_repair_1.save()
 
         shuttle_1_repair_1_item_1_movement_1 = ItemMovement(item=shuttle_1_repair_1_item_1,
-                                                            type="G",
+                                                            type="G", created=datetime.strptime('04022019',
+                                                                                    "%d%m%Y").date(),
                                                             quantity=2, repair=shuttle_1_repair_1)
         shuttle_1_repair_1_item_1_movement_1.save()
 
@@ -656,5 +657,6 @@ class PopulateDatabase:
                 repair.modifications.add(repair_modification)
                 repair.save()
 
-                item_movement_2 = ItemMovement(item=item, type="G", quantity=quantity_movement, repair=repair)
+                item_movement_2 = ItemMovement(item=item, type="G", quantity=quantity_movement, repair=repair,
+                                               created=start_date)
                 item_movement_2.save()
