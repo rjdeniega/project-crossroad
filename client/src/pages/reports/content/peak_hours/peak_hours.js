@@ -405,7 +405,6 @@ export class PeakHours extends Component {
     };
 
     componentDidMount() {
-        this.fetchTransactions()
     }
 
     fetchTransactions() {

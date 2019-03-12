@@ -61,10 +61,10 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.member_card.can}</td>
                                         <td>{item.member.name}</td>
                                         <td>{item.no_of_beep}</td>
-                                        <td>{item.beep_total_decimal}</td>
+                                        <td className="monetary">{item.beep_total_decimal}</td>
                                         <td>{item.no_of_carwash}</td>
                                         <td>{item.carwash_total_decimal}</td>
-                                        <td><b>{item.total_transactions}</b></td>
+                                        <td className="monetary"><b>{item.total_transactions}</b></td>
 
                                     </tr>
                                 </Fragment>
@@ -73,10 +73,10 @@ class ComponentToPrint extends React.Component {
                                 <td><b> Grand Total </b></td>
                                 <td className="total-line"><b></b></td>
                                 <td className="total-line"><b>{this.props.data.no_of_beep_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.beep_grand_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.beep_grand_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.no_of_carwash_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.carwash_grand_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.carwash_grand_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_total}</b></td>
                             </tr>
                         </Fragment>
                         }

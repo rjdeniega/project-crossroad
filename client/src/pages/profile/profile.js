@@ -88,17 +88,26 @@ const share_columns = [{
     }];
 const columns = [{
     title: 'Card Number',
-    dataIndex: 'can',
-    key: 'can',
+    dataIndex: 'card_number',
+    key: 'card_number',
     render: (text) => (
         <div className="rem-status">
             {text}
         </div>
     ),
 }, {
-    title: 'Registration Date',
-    dataIndex: 'register_date',
-    key: 'register_date',
+    title: 'Date',
+    dataIndex: 'shift_date',
+    key: 'shift_date',
+    render: (text) => (
+        <div className="rem-status">
+            {text}
+        </div>
+    ),
+}, {
+    title: 'Transaction Cost',
+    dataIndex: 'total',
+    key: 'total',
     render: (text) => (
         <div className="rem-status">
             {text}
@@ -223,7 +232,7 @@ export class ProfilePage extends Component {
             })
             .catch(error => console.log(error));
 
-        message.success('Beep card successfully edited!');
+        message.success('Beep card successfully added!');
 
         this.setState({
             beep_visible: false,

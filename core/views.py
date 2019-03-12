@@ -506,18 +506,22 @@ class MemberTransactionByReport(APIView):
         for member in Member.objects.all():
             member_data = MemberSerializer(member).data
             try:
-                id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
+                id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member.id))
             except ObjectDoesNotExist:
                 report_items.append({
                     "member": MemberSerializer(member).data,
                     "transactions": None,
                     "total_transactions": 0
                 })
-                id_card = None
+                id_cards = None
 
-            if id_card is not None:
-                member_data["id_card"] = id_card.can
-                transactions = BeepTransaction.objects.filter(card_number=id_card.can)
+            if len(id_cards) > 0:
+                member_data["id_card"] = id_cards[0].can
+                transactions = []
+                for id_card in id_cards:
+                    for item in BeepTransaction.objects.filter(card_number=id_card.can):
+                        transactions.append(item)
+                print(transactions)
                 carwash_transactions = [item for item in
                                         CarwashTransaction.objects.filter(member=member)]
                 if end_date is not None:
@@ -537,19 +541,19 @@ class MemberTransactionByReport(APIView):
 
                 report_items.append({
                     "member": member_data,
-                    "member_card": IDCardSerializer(IDCards.objects.get(member=member)).data,
+                    "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
                     "no_of_beep": len(transactions),
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
-                    "beep_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in transactions])),
+                    "beep_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in serialized_transactions.data])),
                     "carwash_total_decimal": "{0:,.2f}".format(
                         sum([float(item['total']) for item in carwash_transactions])),
                     "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
-                    "total_transactions": sum([item.total for item in transactions]) + sum(
+                    "total_transactions": sum([float(item.total) for item in transactions]) + sum(
                         [float(item['total']) for item in carwash_transactions]),
-                    "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
+                    "total_transactions_decimal": "{0:,.2f}".format(sum([float(item.total) for item in transactions]) + sum(
                         [float(item['total']) for item in carwash_transactions]))
                 })
         return Response(data={
@@ -582,7 +586,7 @@ class PatronageRefund(APIView):
 
             member_data = MemberSerializer(member).data
             try:
-                id_card = IDCards.objects.get(member=Member.objects.get(pk=member.id))
+                id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member.id))
             except ObjectDoesNotExist:
                 report_items.append({
                     "member": MemberSerializer(member).data,
@@ -591,9 +595,13 @@ class PatronageRefund(APIView):
                 })
                 id_card = None
 
-            if id_card is not None:
-                member_data["id_card"] = id_card.can
-                transactions = BeepTransaction.objects.filter(card_number=id_card.can)
+            if id_cards is not None:
+                member_data["id_card"] = id_cards.last().can
+                transactions = []
+                for id_card in id_cards:
+                    for item in BeepTransaction.objects.filter(card_number=id_card.can):
+                        transactions.append(item)
+
                 carwash_transactions = [item for item in
                                         CarwashTransaction.objects.all() if item.member == member]
                 if end_date is not None:
@@ -627,16 +635,16 @@ class PatronageRefund(APIView):
                 report_items.append({
                     "date": start_date,
                     "member": member_data,
-                    "member_card": IDCardSerializer(IDCards.objects.get(member=member)).data,
+                    "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
                     "no_of_beep": len(transactions),
                     "no_of_carwash": len(carwash_transactions),
                     "beep_total": sum([item.total for item in transactions]),
                     "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in transactions])),
+                    "carwash_total_decimal": "{0:,.2f}".format(sum([float(item['total']) for item in serialized_transactions.data])),
                     "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
                     "beep_transactions": serialized_transactions.data,
                     "carwash_transactions": carwash_transactions,
-                    "total_transactions": sum([float(item['total']) for item in transactions]) + sum(
+                    "total_transactions": sum([float(item.total) for item in transactions]) + sum(
                         [float(item['total']) for item in carwash_transactions]),
                     "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
                     "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
@@ -1999,7 +2007,7 @@ class AccumulatedSharesReport(APIView):
                 shares = Share.objects.filter(
                     # date_of_update__gt=start_date,
                     date_of_update__year=temp_date.year,
-                    # date_of_update__month=month,
+                    date_of_update__month=month,
                     member_id=member.id
                 )
 
@@ -2703,18 +2711,27 @@ class RemittancePerYear(APIView):
             days = 365 * x
             for i in range(1, 13):
                 total = sum([item.total for item in
-                             RemittanceForm.objects.filter(created__year=(date - timedelta(days=days)).year,
-                                                           created__month=i)]) + sum([item.total for item in
+                             RemittanceForm.objects.filter(deployment__shift_iteration__date__year=(date - timedelta(days=days)).year,
+                                                           deployment__shift_iteration__date__month=i)]) + sum([item.total for item in
                                                                                       BeepTransaction.objects.filter(
                                                                                           transaction_date_time__year=(
                                                                                           date - timedelta(
                                                                                               days=days)).year,
                                                                                           transaction_date_time__month=i)])
-                months.append(total)
+                months.append("{0:,.2f}".format(total))
             years.append({
                 "year": (date - timedelta(days=days)).year,
-                "months": months
+                "months": months,
             })
-        return Response(data={
-            "years": years
-        }, status=status.HTTP_200_OK)
+
+            data = {
+                "years": years
+            }
+            months = []
+            # for i in range (0,5):
+            #
+            #      for i in range (0,12):
+            #     data[calendar.month_name[i]] = 0
+            #     total = 0
+
+        return Response(data=data, status=status.HTTP_200_OK)

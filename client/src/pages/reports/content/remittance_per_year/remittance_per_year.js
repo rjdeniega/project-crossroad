@@ -43,7 +43,8 @@ class ComponentToPrint extends React.Component {
                 </div>
                 <div className="report-body">
                     <table cellSpacing="50" cellPadding="3px">
-                        {this.props.data && <Fragment>
+                        {this.props.data &&
+                        <Fragment>
                             <thead>
                             <th></th>
                             <th>{this.props.data.years[3].year}</th>
@@ -51,100 +52,99 @@ class ComponentToPrint extends React.Component {
                             <th>{this.props.data.years[1].year}</th>
                             <th>{this.props.data.years[0].year}</th>
                             </thead>
-                        </Fragment>}
+                        </Fragment>
+                        }
                         <tbody>
+                        {this.props.data &&
+                        <Fragment>
+                            <tr>
+                                <td>January</td>
+                                <td>{this.props.data.years[3].months[0]}</td>
+                                <td>{this.props.data.years[2].months[0]}</td>
+                                <td>{this.props.data.years[1].months[0]}</td>
+                                <td>{this.props.data.years[0].months[0]}</td>
+                            </tr>
+                            <tr>
+                                <td>February</td>
+                                <td>{this.props.data.years[3].months[1]}</td>
+                                <td>{this.props.data.years[2].months[1]}</td>
+                                <td>{this.props.data.years[1].months[1]}</td>
+                                <td>{this.props.data.years[0].months[1]}</td>
+                            </tr>
+                            <tr>
+                                <td>March</td>
+                                <td>{this.props.data.years[3].months[2]}</td>
+                                <td>{this.props.data.years[2].months[2]}</td>
+                                <td>{this.props.data.years[1].months[2]}</td>
+                                <td>{this.props.data.years[0].months[2]}</td>
+                            </tr>
+                            <tr>
+                                <td>April</td>
+                                <td>{this.props.data.years[3].months[3]}</td>
+                                <td>{this.props.data.years[2].months[3]}</td>
+                                <td>{this.props.data.years[1].months[3]}</td>
+                                <td>{this.props.data.years[0].months[3]}</td>
+                            </tr>
+                            <tr>
+                                <td>May</td>
+                                <td>{this.props.data.years[3].months[4]}</td>
+                                <td>{this.props.data.years[2].months[4]}</td>
+                                <td>{this.props.data.years[1].months[4]}</td>
+                                <td>{this.props.data.years[0].months[4]}</td>
+                            </tr>
+                            <tr>
+                                <td>June</td>
+                                <td>{this.props.data.years[3].months[5]}</td>
+                                <td>{this.props.data.years[2].months[5]}</td>
+                                <td>{this.props.data.years[1].months[5]}</td>
+                                <td>{this.props.data.years[0].months[5]}</td>
+                            </tr>
+                            <tr>
+                                <td>July</td>
+                                <td>{this.props.data.years[3].months[6]}</td>
+                                <td>{this.props.data.years[2].months[6]}</td>
+                                <td>{this.props.data.years[1].months[6]}</td>
+                                <td>{this.props.data.years[0].months[6]}</td>
+                            </tr>
+                            <tr>
+                                <td>August</td>
+                                <td>{this.props.data.years[3].months[7]}</td>
+                                <td>{this.props.data.years[2].months[7]}</td>
+                                <td>{this.props.data.years[1].months[7]}</td>
+                                <td>{this.props.data.years[0].months[7]}</td>
+                            </tr>
+                            <tr>
+                                <td>September</td>
+                                <td>{this.props.data.years[3].months[8]}</td>
+                                <td>{this.props.data.years[2].months[8]}</td>
+                                <td>{this.props.data.years[1].months[8]}</td>
+                                <td>{this.props.data.years[0].months[8]}</td>
+                            </tr>
+                            <tr>
+                                <td>October</td>
+                                <td>{this.props.data.years[3].months[9]}</td>
+                                <td>{this.props.data.years[2].months[9]}</td>
+                                <td>{this.props.data.years[1].months[9]}</td>
+                                <td>{this.props.data.years[0].months[9]}</td>
+                            </tr>
+                            <tr>
+                                <td>November</td>
+                                <td>{this.props.data.years[3].months[10]}</td>
+                                <td>{this.props.data.years[2].months[10]}</td>
+                                <td>{this.props.data.years[1].months[10]}</td>
+                                <td>{this.props.data.years[0].months[10]}</td>
+                            </tr>
+                            <tr>
+                                <td>December</td>
+                                <td>{this.props.data.years[3].months[11]}</td>
+                                <td>{this.props.data.years[2].months[11]}</td>
+                                <td>{this.props.data.years[1].months[11]}</td>
+                                <td>{this.props.data.years[0].months[11]}</td>
+                            </tr>
+                        </Fragment>
+                        }
                         </tbody>
                     </table>
-                    <tbody>
-                    {this.props.data &&
-                    <Fragment>
-                        <tr>
-                            <td>January</td>
-                            <td>{this.props.data.years[0].months[0]}</td>
-                            <td>{this.props.data.years[0].months[1]}</td>
-                            <td>{this.props.data.years[0].months[2]}</td>
-                            <td>{this.props.data.years[0].months[3]}</td>
-                        </tr>
-                        <tr>
-                            <td>February</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>March</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>April</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>May</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>June</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>August</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>September</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>October</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>November</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>December</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                    </Fragment>
-                    }
-                    </tbody>
                     <p className="end-label">END OF REPORT</p>
                 </div>
             </div>

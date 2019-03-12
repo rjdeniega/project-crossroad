@@ -230,7 +230,7 @@ class SpecificMemberView(APIView):
     def get(request, member_id):
         member = MemberSerializer(Member.objects.get(id=member_id))
         try:
-            id_card = IDCards.objects.get(member=Member.objects.get(pk=member_id))
+            id_card = IDCards.objects.filter(member=Member.objects.get(pk=member_id)).last()
         except ObjectDoesNotExist:
             id_card = None
 
@@ -318,12 +318,17 @@ class ProspectView(APIView):
 class MemberTransactionView(APIView):
     @staticmethod
     def get(request, member_id):
-        id_card = IDCards.objects.get(member=Member.objects.get(pk=member_id))
-        transactions = BeepTransaction.objects.filter(card_number=id_card.can)
-        print(transactions)
+        id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member_id))
+        transactions = []
+        transactions_list = []
+        for id in id_cards:
+            transactions = BeepTransaction.objects.filter(card_number=id.can)
+            transactions_list.append(transactions)
+
         serialized_transactions = BeepTransactionSerializer(transactions, many=True)
         for item in serialized_transactions.data:
             item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+            item["total"] = "{0:,.2f}".format(float(item["total"]))
         return Response(data={
             "transactions": serialized_transactions.data,
             "total_transactions": sum([float(item["total"]) for item in serialized_transactions.data])

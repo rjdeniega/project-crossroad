@@ -49,7 +49,6 @@ class ComponentToPrint extends React.Component {
                         <thead>
                         <th>Member ID</th>
                         <th>Name</th>
-                        <th>Total Transactions (Php)</th>
                         <th>Rate of Refund (%)</th>
                         <th>Patronage Refund (Php)</th>
                         </thead>
@@ -61,9 +60,8 @@ class ComponentToPrint extends React.Component {
                                     <tr>
                                         <td>{item.member_card.can}</td>
                                         <td>{item.member.name}</td>
-                                        <td>{item.total_transactions_decimal}</td>
                                         <td>{item.rate_of_refund}</td>
-                                        <td>{item.patronage_refund}</td>
+                                        <td className="monetary">{item.patronage_refund}</td>
 
                                     </tr>
                                 </Fragment>

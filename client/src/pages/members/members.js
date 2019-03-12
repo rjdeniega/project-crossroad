@@ -276,7 +276,7 @@ export class TransactionsPane extends Component {
                         <Table bordered size="medium"
                                className="remittance-table"
                                pagination={{
-                                   pageSize: 5,
+                                   pageSize: 4,
                                }}
                                columns={columns}
                                dataSource={this.state.transactions}
@@ -292,7 +292,7 @@ export class TransactionsPane extends Component {
                         <Table bordered size="medium"
                                className="remittance-table"
                                pagination={{
-                                   pageSize: 5,
+                                   pageSize: 4,
                                }}
                                columns={carwash_columns}
                                dataSource={this.state.carwash_transactions}
