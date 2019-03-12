@@ -34,11 +34,7 @@ class ComponentToPrint extends React.Component {
             <div className="container">
                 <div className="report-labels">
                     {this.props.data &&
-                    <Fragment>
-                        {/*{this.props.data &&*/}
-                        {/*<p> Remittance Per Year Report for {this.props.data.start_date}</p>*/}
-                        {/*}*/}
-                    </Fragment>
+                        <p> Monthly Remittances from the year {this.props.data.end_date} to {this.props.data.start_date}</p>
                     }
                 </div>
                 <div className="report-body">
@@ -52,7 +48,7 @@ class ComponentToPrint extends React.Component {
                             <th>{this.props.data.years[1].year}</th>
                             <th>{this.props.data.years[0].year}</th>
                             <th>Total</th>
-                            <th>Average</th>
+                            <th>Month Average</th>
                             </thead>
                         </Fragment>
                         }

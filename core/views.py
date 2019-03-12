@@ -2770,6 +2770,8 @@ class RemittancePerYear(APIView):
         for item in years[2]["months"]:
             year4 += float(item.replace(',', ''))
         data = {
+            "start_date": years[0]['year'],
+            "end_date": years[3]['year'],
             "years": years,
             "jan": "{0:,.2f}".format(january),
             "feb": "{0:,.2f}".format(february),
