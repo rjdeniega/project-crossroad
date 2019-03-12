@@ -59,87 +59,87 @@ class ComponentToPrint extends React.Component {
                         <Fragment>
                             <tr>
                                 <td>January</td>
-                                <td>{this.props.data.years[3].months[0]}</td>
-                                <td>{this.props.data.years[2].months[0]}</td>
-                                <td>{this.props.data.years[1].months[0]}</td>
-                                <td>{this.props.data.years[0].months[0]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[0]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[0]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[0]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[0]}</td>
                             </tr>
                             <tr>
                                 <td>February</td>
-                                <td>{this.props.data.years[3].months[1]}</td>
-                                <td>{this.props.data.years[2].months[1]}</td>
-                                <td>{this.props.data.years[1].months[1]}</td>
-                                <td>{this.props.data.years[0].months[1]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[1]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[1]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[1]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[1]}</td>
                             </tr>
                             <tr>
                                 <td>March</td>
-                                <td>{this.props.data.years[3].months[2]}</td>
-                                <td>{this.props.data.years[2].months[2]}</td>
-                                <td>{this.props.data.years[1].months[2]}</td>
-                                <td>{this.props.data.years[0].months[2]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[2]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[2]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[2]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[2]}</td>
                             </tr>
                             <tr>
                                 <td>April</td>
-                                <td>{this.props.data.years[3].months[3]}</td>
-                                <td>{this.props.data.years[2].months[3]}</td>
-                                <td>{this.props.data.years[1].months[3]}</td>
-                                <td>{this.props.data.years[0].months[3]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[3]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[3]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[3]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[3]}</td>
                             </tr>
                             <tr>
                                 <td>May</td>
-                                <td>{this.props.data.years[3].months[4]}</td>
-                                <td>{this.props.data.years[2].months[4]}</td>
-                                <td>{this.props.data.years[1].months[4]}</td>
-                                <td>{this.props.data.years[0].months[4]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[4]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[4]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[4]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[4]}</td>
                             </tr>
                             <tr>
                                 <td>June</td>
-                                <td>{this.props.data.years[3].months[5]}</td>
-                                <td>{this.props.data.years[2].months[5]}</td>
-                                <td>{this.props.data.years[1].months[5]}</td>
-                                <td>{this.props.data.years[0].months[5]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[5]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[5]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[5]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[5]}</td>
                             </tr>
                             <tr>
-                                <td>July</td>
-                                <td>{this.props.data.years[3].months[6]}</td>
-                                <td>{this.props.data.years[2].months[6]}</td>
-                                <td>{this.props.data.years[1].months[6]}</td>
-                                <td>{this.props.data.years[0].months[6]}</td>
+                                <td className="monetary">July</td>
+                                <td className="monetary">{this.props.data.years[3].months[6]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[6]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[6]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[6]}</td>
                             </tr>
                             <tr>
                                 <td>August</td>
-                                <td>{this.props.data.years[3].months[7]}</td>
-                                <td>{this.props.data.years[2].months[7]}</td>
-                                <td>{this.props.data.years[1].months[7]}</td>
-                                <td>{this.props.data.years[0].months[7]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[7]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[7]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[7]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[7]}</td>
                             </tr>
                             <tr>
                                 <td>September</td>
-                                <td>{this.props.data.years[3].months[8]}</td>
-                                <td>{this.props.data.years[2].months[8]}</td>
-                                <td>{this.props.data.years[1].months[8]}</td>
-                                <td>{this.props.data.years[0].months[8]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[8]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[8]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[8]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[8]}</td>
                             </tr>
                             <tr>
                                 <td>October</td>
-                                <td>{this.props.data.years[3].months[9]}</td>
-                                <td>{this.props.data.years[2].months[9]}</td>
-                                <td>{this.props.data.years[1].months[9]}</td>
-                                <td>{this.props.data.years[0].months[9]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[9]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[9]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[9]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[9]}</td>
                             </tr>
                             <tr>
                                 <td>November</td>
-                                <td>{this.props.data.years[3].months[10]}</td>
-                                <td>{this.props.data.years[2].months[10]}</td>
-                                <td>{this.props.data.years[1].months[10]}</td>
-                                <td>{this.props.data.years[0].months[10]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[10]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[10]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[10]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[10]}</td>
                             </tr>
                             <tr>
                                 <td>December</td>
-                                <td>{this.props.data.years[3].months[11]}</td>
-                                <td>{this.props.data.years[2].months[11]}</td>
-                                <td>{this.props.data.years[1].months[11]}</td>
-                                <td>{this.props.data.years[0].months[11]}</td>
+                                <td className="monetary">{this.props.data.years[3].months[11]}</td>
+                                <td className="monetary">{this.props.data.years[2].months[11]}</td>
+                                <td className="monetary">{this.props.data.years[1].months[11]}</td>
+                                <td className="monetary">{this.props.data.years[0].months[11]}</td>
                             </tr>
                         </Fragment>
                         }

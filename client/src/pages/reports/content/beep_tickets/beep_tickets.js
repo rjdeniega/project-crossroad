@@ -63,7 +63,7 @@ class ComponentToPrint extends React.Component {
                                             <tr>
                                                 <td></td>
                                                 <td>{item.type}</td>
-                                                <td>{item.remittance}</td>
+                                                <td className="monetary">{item.remittance}</td>
                                                 {(item.type == "A" || item.type == "AM") &&
                                                 <Fragment>
                                                     <td></td>
@@ -71,13 +71,13 @@ class ComponentToPrint extends React.Component {
                                                 }
                                                 {(item.type == "P" || item.type == "PM") &&
                                                 <Fragment>
-                                                    <td><b>{item.total_per_day}</b></td>
+                                                    <td className="monetary"><b>{item.total_per_day}</b></td>
                                                 </Fragment>
                                                 }
                                                 <td>{item.fuel}</td>
-                                                <td><b>{item.remittance_minus_fuel}</b></td>
-                                                <td>{item.beep_total}</td>
-                                                <td><b>{item.beep_ticket_total}</b></td>
+                                                <td className="monetary"><b>{item.remittance_minus_fuel}</b></td>
+                                                <td className="monetary">{item.beep_total}</td>
+                                                <td className="monetary"><b>{item.beep_ticket_total}</b></td>
                                             </tr>
                                             {/*{index%11 == 0 &&*/}
                                             {/*<p className="page-break"></p>*/}
@@ -111,12 +111,12 @@ class ComponentToPrint extends React.Component {
 
                                 <td><b> Grand Total </b></td>
                                 <td className="total-line"></td>
-                                <td className="total-line"><b>{this.props.data.grand_remit_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_remit_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_fuel_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grand_remit_minus_fuel}</b></td>
-                                <td className="total-line"><b>{this.props.data.beep_grand_total}</b></td>
-                                <td className="total-line"><b>{this.props.data.grandest_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_remit_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_remit_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_fuel_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_remit_minus_fuel}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.beep_grand_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grandest_total}</b></td>
 
 
                             </tr>

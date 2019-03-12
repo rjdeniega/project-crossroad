@@ -58,15 +58,15 @@ class ComponentToPrint extends React.Component {
                                             <tr>
                                                 <td></td>
                                                 <td>{item.type}</td>
-                                                <td>{item.remittance}</td>
+                                                <td className="monetary">{item.remittance}</td>
                                                 {(item.type == "A" || item.type == "AM") &&
                                                 <td></td>
                                                 }
                                                 {(item.type == "P" || item.type == "PM") &&
-                                                <td><b>{item.total_per_day}</b></td>
+                                                <td className="monetary"><b>{item.total_per_day}</b></td>
                                                 }
-                                                <td>{item.fuel}</td>
-                                                <td><b>{item.remittance_minus_fuel}</b></td>
+                                                <td className="monetary">{item.fuel}</td>
+                                                <td className="monetary"><b>{item.remittance_minus_fuel}</b></td>
                                             </tr>
                                             {/*{index%11 == 0 &&*/}
                                             {/*<p className="page-break"></p>*/}
@@ -103,7 +103,7 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line"></td>
                                 <td className="total-line"></td>
                                 <td className="total-line"></td>
-                                <td className="total-line"><b>{this.props.data.grand_am_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_am_total}</b></td>
                             </tr>
                             <tr>
 
@@ -112,16 +112,16 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td><b>{this.props.data.grand_pm_total}</b></td>
+                                <td className="monetary"><b>{this.props.data.grand_pm_total}</b></td>
                             </tr>
                             <tr>
 
                                 <td><b> Grand Total </b></td>
                                 <td></td>
-                                <td><b>{this.props.data.grand_remit_total}</b></td>
-                                <td><b>{this.props.data.grand_remit_total}</b></td>
-                                <td><b>{this.props.data.grand_fuel_total}</b></td>
-                                <td><b>{this.props.data.grand_remit_minus_fuel}</b></td>
+                                <td className="monetary"><b>{this.props.data.grand_remit_total}</b></td>
+                                <td className="monetary"><b>{this.props.data.grand_remit_total}</b></td>
+                                <td className="monetary"><b>{this.props.data.grand_fuel_total}</b></td>
+                                <td className="monetary"><b>{this.props.data.grand_remit_minus_fuel}</b></td>
                             </tr>
                             <tr>
 
@@ -130,7 +130,7 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td><b>{this.props.data.am_average}</b></td>
+                                <td className="monetary"><b>{this.props.data.am_average}</b></td>
                             </tr>
                             <tr>
                                 <td><b> PM Average</b></td>
@@ -138,7 +138,7 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td><b>{this.props.data.pm_average}</b></td>
+                                <td className="monetary"><b>{this.props.data.pm_average}</b></td>
                             </tr>
                         </Fragment>
                         }

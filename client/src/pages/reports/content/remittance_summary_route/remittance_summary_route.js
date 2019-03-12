@@ -71,17 +71,17 @@ class ComponentToPrint extends React.Component {
                                                     <td></td>
                                                     <td></td>
                                                     <td>{item.type}</td>
-                                                    <td>{item.remittance}</td>
+                                                    <td className="monetary">{item.remittance}</td>
                                                     {(item.type == "A" || item.type == "AM") &&
                                                     <td></td>
                                                     }
                                                     {(item.type == "P" || item.type == "PM") &&
-                                                    <td><b>{item.total_per_day}</b></td>
+                                                    <td className="monetary"><b>{item.total_per_day}</b></td>
                                                     }
-                                                    <td>{item.fuel}</td>
-                                                    <td><b>{item.remittance_minus_fuel}</b></td>
-                                                    <td>{item.beep_total}</td>
-                                                    <td>{item.beep_ticket_total}</td>
+                                                    <td className="monetary">{item.fuel}</td>
+                                                    <td className="monetary"><b>{item.remittance_minus_fuel}</b></td>
+                                                    <td className="monetary">{item.beep_total}</td>
+                                                    <td className="monetary">{item.beep_ticket_total}</td>
                                                 </tr>
                                             </Fragment>
                                         ))}
@@ -96,7 +96,7 @@ class ComponentToPrint extends React.Component {
                                     <td className="total-line"></td>
                                     <td className="total-line"></td>
                                     <td className="total-line"></td>
-                                    <td className="total-line"><b>{item.mr_route_total}</b></td>
+                                    <td className="total-line monetary"><b>{item.mr_route_total}</b></td>
                                 </tr>
                                 <tr>
                                     <td></td>
@@ -107,7 +107,7 @@ class ComponentToPrint extends React.Component {
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td><b>{item.l_route_total}</b></td>
+                                    <td className="monetary"><b>{item.l_route_total}</b></td>
                                 </tr>
                                 <tr>
                                     <td></td>
@@ -118,7 +118,7 @@ class ComponentToPrint extends React.Component {
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td><b>{item.r_route_total}</b></td>
+                                    <td className="monetary"><b>{item.r_route_total}</b></td>
                                 </tr>
                                 <tr>
                                     <td></td>
@@ -129,7 +129,7 @@ class ComponentToPrint extends React.Component {
                                     <td></td>
                                     <td></td>
                                     <td></td>
-                                    <td><b>{item.grand_route_total}</b></td>
+                                    <td className="monetary"><b>{item.grand_route_total}</b></td>
                                 </tr>
                             </Fragment>
                         ))}
@@ -144,7 +144,7 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line"></td>
                                 <td className="total-line"></td>
                                 <td className="total-line"></td>
-                                <td className="total-line"><b>{this.props.data.mr_grand_remit_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.mr_grand_remit_total}</b></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -155,7 +155,7 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td><b>{this.props.data.l_grand_remit_total}</b></td>
+                                <td className="monetary"><b>{this.props.data.l_grand_remit_total}</b></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -166,7 +166,7 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td><b>{this.props.data.r_grand_remit_total}</b></td>
+                                <td className="monetary"><b>{this.props.data.r_grand_remit_total}</b></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -177,7 +177,7 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td><b>{this.props.data.grand_route_total}</b></td>
+                                <td className="monetary"><b>{this.props.data.grand_route_total}</b></td>
                             </tr>
                         </Fragment>
                         }
