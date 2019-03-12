@@ -132,7 +132,8 @@ export class MechanicView extends Component {
             categories: [],
         };
 
-        this.setfindingsVisible = this.setfindingsVisible.bind(this)
+        this.setfindingsVisible = this.setfindingsVisible.bind(this);
+        this.setItemsVisible = this.setItemsVisible.bind(this);
     }
 
     unloadRepair() {
@@ -309,7 +310,7 @@ export class MechanicView extends Component {
                                             if (item.id === modification.item_used) {
                                                 console.log('nice');
                                                 return (
-                                                    <List.Item>{modification.quantity} - {item.brand} {item.category}</List.Item>
+                                                    <List.Item>{modification.quantity} - {item.brand} {categories[item.category]}</List.Item>
                                                 )
                                             }
 
@@ -356,8 +357,6 @@ export class MechanicView extends Component {
         putData('inventory/repair/update_status/' + id, data).then(data => {
             this.loadNewRepair(data.repair)
         });
-
-        this.loadNewRepair()
     }
 
     render() {
