@@ -1920,18 +1920,24 @@ class SupervisorWeeklyReport(APIView):
 
                 for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
                     driver_remit = 0
+                    driver_fuel = 0
+                    driver_cost = 0
                     for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
                         daily_remittance += consumed_ticket.total
                         driver_remit += consumed_ticket.total
                     for remittance in RemittanceForm.objects.filter(deployment=deployment):
                         daily_cost += remittance.fuel_cost + remittance.other_cost
                         daily_income += remittance.total
+                        driver_cost += remittance.fuel_cost + remittance.other_cost
+
 
                     deployed_drivers.append({
                         "driver_id": deployment.driver.id,
                         "driver_name": deployment.driver.name,
                         "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
-                        "remittance": "{0:,.2f}".format(driver_remit)
+                        "remittance": "{0:,.2f}".format(driver_remit),
+                        "cost": "{0:,.2f}".format(driver_cost),
+                        "total": "{0:,.2f}".format(driver_remit-driver_cost),
                     })
 
                     number_of_drivers += 1
@@ -1986,7 +1992,7 @@ class SupervisorWeeklyReport(APIView):
             "end_date": end_date.date(),
             "supervisor_id": supervisor.id,
             "supervisor_name": supervisor.name,
-            "total_remittances": total_remittances,
+            "total_remittances": "{0:,.2f}".format(total_remittances),
             "total_costs": "{0:,.2f}".format(total_costs),
             "total_income": "{0:,.2f}".format(total_income),
             "total_deployed_drivers": total_deployed_drivers,

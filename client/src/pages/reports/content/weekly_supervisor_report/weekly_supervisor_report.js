@@ -57,7 +57,8 @@ class ComponentToPrint extends React.Component {
                             <th>Shuttle</th>
                             {/*<th>Daily Remittance</th>*/}
                             <th>Remittance</th>
-
+                            <th>Cost</th>
+                            <th>Total</th>
                             </thead>
                             <tbody>
                             {this.props.data &&
@@ -91,7 +92,7 @@ class ComponentToPrint extends React.Component {
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td colSpan={2}>
+                                            <td style={{'text-align' : 'start'}}colSpan={2}>
                                                 {item.absent_drivers.length > 0 ? item.absent_drivers.map(item => (
                                                         <p>{item.driver_name} ➜ {item.sub_driver}</p>
                                                     )) : <p>None</p>}
@@ -111,6 +112,16 @@ class ComponentToPrint extends React.Component {
                                                     <p className="monetary">{item.remittance}</p>
                                                 ))}
                                             </td>
+                                            <td>
+                                                {item.deployed_drivers.map(item => (
+                                                    <p className="monetary">{item.cost}</p>
+                                                ))}
+                                            </td>
+                                            <td>
+                                                {item.deployed_drivers.map(item => (
+                                                    <p className="monetary">{item.total}</p>
+                                                ))}
+                                            </td>
 
 
                                         </tr>
@@ -124,6 +135,12 @@ class ComponentToPrint extends React.Component {
                                             <td><b>Day total</b></td>
                                             <td className="total-line monetary">
                                                 <b>{item.daily_remittance}</b>
+                                            </td>
+                                            <td className="total-line monetary">
+                                                <b>{item.daily_cost}</b>
+                                            </td>
+                                            <td className="total-line monetary">
+                                                <b>{item.daily_income}</b>
                                             </td>
                                         </tr>
                                         {/*<tr>*/}
@@ -150,6 +167,12 @@ class ComponentToPrint extends React.Component {
                                     <td><b>Week total</b></td>
                                     <td className="monetary">
                                         <b>{this.props.data.total_remittances}</b>
+                                    </td>
+                                    <td className="monetary">
+                                        <b>{this.props.data.total_costs}</b>
+                                    </td>
+                                    <td className="monetary">
+                                        <b>{this.props.data.total_income}</b>
                                     </td>
                                 </tr>
                             </Fragment>

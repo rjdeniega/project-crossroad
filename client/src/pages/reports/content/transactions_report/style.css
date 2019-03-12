@@ -20,5 +20,6 @@
     overflow: scroll;
     }
 .report-modal .ant-modal-content{
-    width: 900px!important;
+    width: 1000px!important;
+    left: -100px!important;
     }
