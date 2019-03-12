@@ -1895,7 +1895,6 @@ class SupervisorWeeklyReport(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        print(data['supervisor_id'])
         supervisor = Driver.objects.get(id=data["supervisor_id"])  # requests supervisor id
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
         end_date = start_date + timedelta(days=6)  # for one week
@@ -1945,14 +1944,21 @@ class SupervisorWeeklyReport(APIView):
                         if deployed_driver["driver_id"] == drivers_assigned.driver_id:
                             absent = False
 
+                    driver_name = ""
                     if absent:
+
                         sub_driver = SubbedDeployments.objects.filter(absent_driver=drivers_assigned,
                                                                       deployment__shift_iteration__shift=shift_iteration.shift,
-                                                                      deployment__shift_iteration__date=temp_start)[0]
+                                                                      deployment__shift_iteration__date=temp_start)
+                        print(drivers_assigned)
+                        print(sub_driver)
+                        if len(sub_driver) > 0:
+                            sub_driver = sub_driver[0]
+                            driver_name = sub_driver.deployment.driver.name
                         absent_drivers.append({
                             "driver_id": drivers_assigned.driver_id,
                             "driver_name": drivers_assigned.driver.name,
-                            "sub_driver": sub_driver.deployment.driver.name
+                            "sub_driver": driver_name
                         })
 
                 rows.append({

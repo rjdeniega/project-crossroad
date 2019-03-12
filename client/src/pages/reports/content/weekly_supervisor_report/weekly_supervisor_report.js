@@ -52,8 +52,7 @@ class ComponentToPrint extends React.Component {
                             <th>Day</th>
                             <th>Date</th>
                             <th>Shift</th>
-                            <th>Absent Driver/s</th>
-                            <th>Sub-in</th>
+                            <th colSpan={2}>Absent Driver/s ➜ Sub-in</th>
                             <th>Deployed Driver</th>
                             <th>Shuttle</th>
                             {/*<th>Daily Remittance</th>*/}
@@ -92,14 +91,9 @@ class ComponentToPrint extends React.Component {
                                             <td></td>
                                             <td></td>
                                             <td></td>
-                                            <td>
+                                            <td colSpan={2}>
                                                 {item.absent_drivers.length > 0 ? item.absent_drivers.map(item => (
-                                                        <p>{item.driver_name}</p>
-                                                    )) : <p>None</p>}
-                                            </td>
-                                            <td>
-                                                {item.absent_drivers.length > 0 ? item.absent_drivers.map(item => (
-                                                        <p>{item.sub_driver}</p>
+                                                        <p>{item.driver_name} ➜ {item.sub_driver}</p>
                                                     )) : <p>None</p>}
                                             </td>
                                             <td>
@@ -147,17 +141,17 @@ class ComponentToPrint extends React.Component {
 
                                 ))}
                                 <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td><b>Week total</b></td>
-                                <td className="monetary">
-                                    <b>{this.props.data.total_remittances}</b>
-                                </td>
-                            </tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><b>Week total</b></td>
+                                    <td className="monetary">
+                                        <b>{this.props.data.total_remittances}</b>
+                                    </td>
+                                </tr>
                             </Fragment>
 
                             }
