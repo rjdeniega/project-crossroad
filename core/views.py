@@ -2795,11 +2795,11 @@ class RemittancePerYear(APIView):
             "oct_average": "{0:,.2f}".format(october / 4),
             "nov_average": "{0:,.2f}".format(november / 4),
             "dec_average": "{0:,.2f}".format(december / 4),
-            "year4": year1,
-            "year3": year2,
-            "year2": year3,
-            "year1": year4,
-            "grand_total": january + february + march + april + may + june + july + august + september + october + november + december
+            "year4": "{0:,.2f}".format(year1),
+            "year3": "{0:,.2f}".format(year2),
+            "year2": "{0:,.2f}".format(year3),
+            "year1": "{0:,.2f}".format(year4),
+            "grand_total": "{0:,.2f}".format(january + february + march + april + may + june + july + august + september + october + november + december)
         }
 
         return Response(data=data, status=status.HTTP_200_OK)

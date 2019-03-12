@@ -186,7 +186,7 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line monetary">{this.props.data.year4}</td>
                                 <td className="total-line monetary">{this.props.data.grand_total}</td>
                                 <td className="total-line monetary"></td>
-                                
+
                             </tr>
                         </Fragment>
                         }
