@@ -923,14 +923,14 @@ class RemittanceVersusFuelReport(APIView):
                 print(x['type'])
                 if x['type'] == "AM":
                     string = x['remittance_minus_fuel']
-                    am_total += float(string.replace(',',''))
+                    am_total += float(string.replace(',', ''))
                     am_count += 1
                 elif x['type'] == "PM":
                     string = x['remittance_minus_fuel']
-                    pm_total += float(string.replace(',',''))
+                    pm_total += float(string.replace(',', ''))
                     pm_count += 1
-            # am_sum = sum([int(item) for item in rows['shifts'] if item['type'] == 'AM'])
-            # print(am_sum)
+                    # am_sum = sum([int(item) for item in rows['shifts'] if item['type'] == 'AM'])
+                    # print(am_sum)
         am_average = am_total / am_count
         pm_average = pm_total / pm_count
         return Response(data={
@@ -2730,15 +2730,76 @@ class RemittancePerYear(APIView):
                 "year": (date - timedelta(days=days)).year,
                 "months": months,
             })
+        january = 0
+        february = 0
+        march = 0
+        april = 0
+        may = 0
+        june = 0
+        july = 0
+        august = 0
+        september = 0
+        october = 0
+        november = 0
+        december = 0
+        for item in years:
+            january += float(item["months"][0].replace(',', ''))
+            february += float(item["months"][1].replace(',', ''))
+            march += float(item["months"][2].replace(',', ''))
+            april += float(item["months"][3].replace(',', ''))
+            may += float(item["months"][4].replace(',', ''))
+            june += float(item["months"][5].replace(',', ''))
+            july += float(item["months"][6].replace(',', ''))
+            august += float(item["months"][7].replace(',', ''))
+            september += float(item["months"][8].replace(',', ''))
+            october += float(item["months"][9].replace(',', ''))
+            november += float(item["months"][10].replace(',', ''))
+            december += float(item["months"][11].replace(',', ''))
 
-            data = {
-                "years": years
-            }
-            months = []
-            # for i in range (0,5):
-            #
-            #      for i in range (0,12):
-            #     data[calendar.month_name[i]] = 0
-            #     total = 0
+        year1 = 0
+        for item in years[0]["months"]:
+            year1 += float(item.replace(',', ''))
+
+        year2 = 0
+        for item in years[1]["months"]:
+            year2 += float(item.replace(',', ''))
+        year3 = 0
+        for item in years[2]["months"]:
+            year3 += float(item.replace(',', ''))
+        year4 = 0
+        for item in years[2]["months"]:
+            year4 += float(item.replace(',', ''))
+        data = {
+            "years": years,
+            "jan": "{0:,.2f}".format(january),
+            "feb": "{0:,.2f}".format(february),
+            "mar": "{0:,.2f}".format(march),
+            "apr": "{0:,.2f}".format(april),
+            "may": "{0:,.2f}".format(may),
+            "june": "{0:,.2f}".format(june),
+            "july": "{0:,.2f}".format(july),
+            "aug": "{0:,.2f}".format(august),
+            "sept": "{0:,.2f}".format(september),
+            "oct": "{0:,.2f}".format(october),
+            "nov": "{0:,.2f}".format(november),
+            "dec": "{0:,.2f}".format(december),
+            "jan_average": "{0:,.2f}".format(january / 4),
+            "feb_average": "{0:,.2f}".format(february / 4),
+            "mar_average": "{0:,.2f}".format(march / 4),
+            "apr_average": "{0:,.2f}".format(april / 4),
+            "may_average": "{0:,.2f}".format(may / 4),
+            "june_average": "{0:,.2f}".format(june / 4),
+            "july_average": "{0:,.2f}".format(july / 4),
+            "aug_average": "{0:,.2f}".format(august / 4),
+            "sept_average": "{0:,.2f}".format(september / 4),
+            "oct_average": "{0:,.2f}".format(october / 4),
+            "nov_average": "{0:,.2f}".format(november / 4),
+            "dec_average": "{0:,.2f}".format(december / 4),
+            "year4": year1,
+            "year3": year2,
+            "year2": year3,
+            "year1": year4,
+            "grand_total": january + february + march + april + may + june + july + august + september + october + november + december
+        }
 
         return Response(data=data, status=status.HTTP_200_OK)
