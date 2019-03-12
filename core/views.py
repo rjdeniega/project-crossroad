@@ -1261,15 +1261,18 @@ class BeepTicketsPerRoute(APIView):
 
             try:
                 print(temp_start.date())
-                beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)[0]
-                # beep_shift = [item for item in beep_shift if item.type == shift.shift.type]
+                beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)
+
+                if len (beep_shift)>0:
+                    beep_shift = beep_shift[0]
+                    beep_total = sum(
+                        [item.total for item in BeepTransaction.objects.filter(shift=beep_shift, shuttle__route=route)])
+                else:
+                    beep_shift = None
+                    beep_total = 0
             except ObjectDoesNotExist:
-                beep_shift = []
-            print(beep_shift)
-            beep_total = sum(
-                [item.total for item in BeepTransaction.objects.filter(shift=beep_shift, shuttle__route=route)])
-            if beep_shift is None:
-                beep_total = 0
+                    beep_total = 0
+
             shifts.append({
                 "type": shift.shift.get_type_display(),
                 "beep_total": "{0:,.2f}".format(beep_total),

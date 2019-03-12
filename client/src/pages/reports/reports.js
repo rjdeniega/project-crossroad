@@ -137,11 +137,6 @@ const MAINTENANCE_CARDS = [{
     'icon': wrench,
     'content': <ShuttleValueChart/>
 },{
-    'title': 'Current Inventory Count',
-    'description': 'view maintenance cost per shuttle',
-    'icon': wrench,
-    'content': <InventoryReport/>
-},{
     'title': 'Item Movement Report',
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
