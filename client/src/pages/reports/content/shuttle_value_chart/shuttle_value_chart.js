@@ -32,7 +32,7 @@ const Option = Select.Option;
 class ComponentToPrint extends React.Component {
     state = {
         data: []
-    }
+    };
 
     componentDidMount() {
         console.log(this.props.data);
@@ -67,7 +67,7 @@ class ComponentToPrint extends React.Component {
                     data: this.props.data.shuttle_fuel_costs
                 }
             ]
-        }
+        };
         return <Bar data={barChartData} options={{
             title: {
                 display: true,

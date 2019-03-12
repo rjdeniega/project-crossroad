@@ -44,4 +44,5 @@ inventory_urls = [
 
     path('repair_request/driver/<int:pk>', DriverRepairRequest.as_view()),
     path('repair/update_status/<int:pk>', UpdateRepairStatus.as_view()),
+    path('item_movement_report/', FinalItemMovementReport.as_view()),
 ]

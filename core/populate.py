@@ -595,6 +595,7 @@ class PopulateDatabase:
                 while end_date < start_date:
                     end_date = datetime(2019, randint(1, 2), randint(1, 28)).date()
                 vendor = random.choice(vendors)
+                quantity_movement = randint(1, 5)
                 broken_category = random.choice(categories)
                 item_description = random.choice(descriptions[broken_category])
                 item_price = randint(200, 800)
@@ -620,7 +621,7 @@ class PopulateDatabase:
                                                order_date=start_date,
                                                completion_date=start_date, status="Complete")
                 purchase_order.save()
-                purchase_order_item = PurchaseOrderItem(quantity=1,
+                purchase_order_item = PurchaseOrderItem(quantity=quantity_movement,
                                                         description=item_description,
                                                         unit_price=item_price,
                                                         category=ItemCategory.objects.get(category=broken_category),
@@ -640,7 +641,7 @@ class PopulateDatabase:
                             item_code=(item_details[3] + str(randint(100, 999))),
                             delivery_date=start_date, purchase_order=purchase_order)
                 item.save()
-                item_movement = ItemMovement(item=item, type="B", quantity=1, unit_price=item_price,
+                item_movement = ItemMovement(item=item, type="B", quantity=quantity_movement, unit_price=item_price,
                                              created=start_date)
                 item_movement.save()
                 repair_finding = RepairFinding(description=finding,
@@ -650,10 +651,10 @@ class PopulateDatabase:
                 if item_details[0] == "Liquid Measurement":
                     repair_modification = RepairModifications(item_used=item, quantity=item_details[1])
                 else:
-                    repair_modification = RepairModifications(item_used=item, quantity=1)
+                    repair_modification = RepairModifications(item_used=item, quantity=quantity_movement)
                 repair_modification.save()
                 repair.modifications.add(repair_modification)
                 repair.save()
 
-                item_movement_2 = ItemMovement(item=item, type="G", quantity=1, repair=repair)
+                item_movement_2 = ItemMovement(item=item, type="G", quantity=quantity_movement, repair=repair)
                 item_movement_2.save()

@@ -975,3 +975,37 @@ class AddFindingFromMechanic(APIView):
         return Response(data={
             "findings": findings.data
         }, status=status.HTTP_200_OK)
+
+
+class FinalItemMovementReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        if "end_date" in request.data:
+            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+        else:
+            end_date = date - timedelta(days=31)
+
+        categories = []
+        get_count = []
+        bought_count = []
+        for category in ItemCategory.objects.all():
+            categories.append(category.category)
+            g_count = 0
+            b_count = 0
+            for item_movement in ItemMovement.objects.all().filter(created__gte=date, created__lte=end_date):
+                item = item_movement.item
+                if item.category == category:
+                    if item_movement.type == "B":
+                        b_count += item_movement.quantity
+                    elif item_movement.type == "G":
+                        g_count += item_movement.quantity
+            get_count.append(g_count)
+            bought_count.append(b_count)
+
+        return Response(data={
+            'categories': categories,
+            'get': get_count,
+            'bought': bought_count,
+        }, status=status.HTTP_200_OK)
