@@ -1930,14 +1930,13 @@ class SupervisorWeeklyReport(APIView):
                         daily_income += remittance.total
                         driver_cost += remittance.fuel_cost + remittance.other_cost
 
-
                     deployed_drivers.append({
                         "driver_id": deployment.driver.id,
                         "driver_name": deployment.driver.name,
                         "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
                         "remittance": "{0:,.2f}".format(driver_remit),
                         "cost": "{0:,.2f}".format(driver_cost),
-                        "total": "{0:,.2f}".format(driver_remit-driver_cost),
+                        "total": "{0:,.2f}".format(driver_remit - driver_cost),
                     })
 
                     number_of_drivers += 1
@@ -2123,8 +2122,15 @@ class ShuttleCostVRevenueReport(APIView):
                 if repair.degree == "Major":
                     for modification in repair.modifications.all():
                         item = Item.objects.get(id=modification.item_used.id)
-                        amount = item.average_price * modification.quantity
-                        major_repairs_cost += amount
+                        if item.item_type == "Physical Measurement":
+                            major_repairs_cost = major_repairs_cost + (
+                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                        elif item.item_type == "Liquid Measurement":
+                            major_repairs_cost = major_repairs_cost + (
+                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                        else:
+                            major_repairs_cost = major_repairs_cost + (
+                                    float(modification.quantity) * float(item.unit_price))
 
                     for outsourced in repair.outsourced_items.all():
                         amount = outsourced.quantity * outsourced.unit_price
@@ -2135,8 +2141,15 @@ class ShuttleCostVRevenueReport(APIView):
 
                 for modification in repair.modifications.all():
                     item = Item.objects.get(id=modification.item_used.id)
-                    amount = item.average_price * modification.quantity
-                    initialMaintenanceCost = initialMaintenanceCost + amount
+                    if item.item_type == "Physical Measurement":
+                        initialMaintenanceCost = initialMaintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                    elif item.item_type == "Liquid Measurement":
+                        initialMaintenanceCost = initialMaintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                    else:
+                        initialMaintenanceCost = initialMaintenanceCost + (
+                                float(modification.quantity) * float(item.unit_price))
 
                 for outsourced in repair.outsourced_items.all():
                     amount = outsourced.quantity * outsourced.unit_price
@@ -2164,7 +2177,7 @@ class ShuttleCostVRevenueReport(APIView):
                 "major_total": major_repairs_cost,
                 "depreciation": total_depreciation,
                 "cost": initialMaintenanceCost,
-                "value": shuttle_remittance - shuttle_fuel_cost - initialMaintenanceCost,
+                "value": float(shuttle_remittance) - float(shuttle_fuel_cost) - initialMaintenanceCost,
                 "net_value": net_value
             })
             grand_depreciation += total_depreciation
@@ -2179,7 +2192,7 @@ class ShuttleCostVRevenueReport(APIView):
             "grand_net": grand_net,
             "total_purchase_cost": total_purchase_cost,
             "total_depreciation": grand_depreciation,
-            "shuttle_maintenance_costs": [(item['cost'] + item['fuel_cost']) for item in rows],
+            "shuttle_maintenance_costs": [(item['cost'] + float(item['fuel_cost'])) for item in rows],
             "shuttle_revenues": [item['revenue'] for item in rows],
             "shuttle_fuel_costs": [item['fuel_cost'] for item in rows],
             "shuttle_depreciations": [int(item['depreciation']) for item in rows],
@@ -2189,7 +2202,7 @@ class ShuttleCostVRevenueReport(APIView):
             "total_remittance": total_remittance,
             "total_costs": total_cost,
             "total_fuel": total_fuel,
-            "grand_total": total_remittance - total_fuel - total_cost,
+            "grand_total": float(total_remittance) - float(total_fuel) - total_cost,
             "shuttles": rows,
             "grand_total_major": grand_total_major,
         }, status=status.HTTP_200_OK)
@@ -2734,8 +2747,8 @@ class RemittancePerYear(APIView):
                                  deployment__shift_iteration__date__month=i)]) + sum([item.total for item in
                                                                                       BeepTransaction.objects.filter(
                                                                                           transaction_date_time__year=(
-                                                                                              date - timedelta(
-                                                                                                  days=days)).year,
+                                                                                                  date - timedelta(
+                                                                                              days=days)).year,
                                                                                           transaction_date_time__month=i)])
                 months.append("{0:,.2f}".format(total))
             years.append({
@@ -2813,7 +2826,8 @@ class RemittancePerYear(APIView):
             "year3": "{0:,.2f}".format(year2),
             "year2": "{0:,.2f}".format(year3),
             "year1": "{0:,.2f}".format(year4),
-            "grand_total": "{0:,.2f}".format(january + february + march + april + may + june + july + august + september + october + november + december)
+            "grand_total": "{0:,.2f}".format(
+                january + february + march + april + may + june + july + august + september + october + november + december)
         }
 
         return Response(data=data, status=status.HTTP_200_OK)
