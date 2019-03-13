@@ -985,7 +985,7 @@ class FinalItemMovementReport(APIView):
         if "end_date" in request.data:
             end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
         else:
-            end_date = date - timedelta(days=31)
+            end_date = date + timedelta(days=7)
 
         categories = []
         get_count = []
@@ -994,7 +994,7 @@ class FinalItemMovementReport(APIView):
             categories.append(category.category)
             g_count = 0
             b_count = 0
-            for item_movement in ItemMovement.objects.all():
+            for item_movement in ItemMovement.objects.filter(created__gte=date, created__lte=end_date):
                 item = item_movement.item
                 if item.category == category:
                     if item_movement.type == "B":
@@ -1008,4 +1008,7 @@ class FinalItemMovementReport(APIView):
             'categories': categories,
             'get': get_count,
             'bought': bought_count,
+            'start_date': date.date(),
+            'end_date': end_date.date()
+
         }, status=status.HTTP_200_OK)

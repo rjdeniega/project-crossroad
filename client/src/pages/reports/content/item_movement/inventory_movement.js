@@ -133,6 +133,7 @@ export class ItemMovementReport extends Component {
         return (
             <div className="report-body">
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                <DatePicker placeholder="date from" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}
