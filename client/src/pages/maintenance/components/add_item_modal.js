@@ -33,7 +33,9 @@ export class AddItems extends Component {
             measurement: measurement,
         };
         postData('inventory/mechanic/items/add/' + this.props.repair, data).then(data => {
-            console.log(data)
+            console.log(data);
+            this.props.close();
+            this.props.loadItems();
         })
     }
 

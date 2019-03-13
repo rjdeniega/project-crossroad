@@ -60,7 +60,7 @@ export class InventoryTable extends Component {
             if (item.category === category) {
                 data.push({
                     key: key,
-                    created: new Date(item.created).toLocaleDateString(),
+                    created: new Date(item.delivery_date).toLocaleDateString(),
                     brand: item.brand,
                     description: item.description,
                     vendor: vendors[item.id],

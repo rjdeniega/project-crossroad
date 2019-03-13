@@ -37,13 +37,13 @@ export class RepairDisplay extends Component {
 
     componentDidMount() {
         getData('inventory/items').then(data => {
-            if(!data.error){
+            if (!data.error) {
                 let categories = [];
-                data.categories.forEach(function(category){
+                data.categories.forEach(function (category) {
                     categories[category.id] = category.category
                 });
                 this.setState({
-                    categories:categories,
+                    categories: categories,
                 })
             }
         })
@@ -164,7 +164,7 @@ export class RepairDisplay extends Component {
                                             return items.map(function (item, index) {
                                                 if (item.id === modification.item_used) {
                                                     return (
-                                                        <List.Item>{modification.quantity} - {item.name}</List.Item>
+                                                        <List.Item>{modification.quantity} - {item.brand} {categories[item.category]}</List.Item>
                                                     )
                                                 }
 

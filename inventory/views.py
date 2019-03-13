@@ -291,20 +291,35 @@ class MechanicItems(APIView):
         data = json.loads(request.body)
         print(request.body)
         item = Item.objects.get(id=data['item'])
-        if data['quantity']:
+        if item.item_type == "Single Item":
             rm = RepairModifications(item_used=item, quantity=int(data['quantity']))
             rm.save()
             repair.modifications.add(rm)
             item.quantity = item.quantity - int(data['quantity'])
             item.save()
-        elif data['measurement']:
+            category = ItemCategory.objects.get(id=item.category.id)
+            category.quantity = category.quantity - int(data['quantity'])
+            category.save()
+        else:
             rm = RepairModifications(item_used=item, quantity=int(data['measurement']))
             rm.save()
             repair.modifications.add(rm)
-            item.current_measurement = item.current_measurement - int(data['measurement'])
-            if item.current_measurement == 0:
-                item.current_measurement = item.measurement
-                item.quantity = item.quantity - 1
+            if item.item_type == "Physical Measurement":
+                item.current_measurement = item.current_measurement - int(data['measurement'])
+                if item.current_measurement == 0:
+                    item.quantity = item.quantity - 1
+                    item.save()
+                category = ItemCategory.objects.get(id=item.category.id)
+                category.quantity = category.quantity - int(data['measurement'])
+                category.save()
+            elif item.item_type == "Liquid Measurement":
+                item.current_measurement = item.current_measurement - int(data['measurement'])
+                if item.current_measurement == 0:
+                    item.quantity = item.quantity - 1
+                    item.save()
+                    category = ItemCategory.objects.get(id=item.category.id)
+                    category.quantity = category.quantity - 1
+                    category.save()
         return Response(data={
             'foo': 'bar'
         }, status=status.HTTP_200_OK)
@@ -472,7 +487,14 @@ class ShuttleMaintenanceFrequency(APIView):
                         item = Item.objects.get(pk=item_used.item_used.pk)
                     except ObjectDoesNotExist:
                         print(item_used.id)
-                    major_maintenanceCost = major_maintenanceCost + (item_used.quantity * item.unit_price)
+                    if item.item_type == "Physical Measurement":
+                        major_maintenanceCost = major_maintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
+                    elif item.item_type == "Liquid Measurement":
+                        major_maintenanceCost = major_maintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
+                    else:
+                        major_maintenanceCost = major_maintenanceCost + (float(item_used.quantity) * float(item.unit_price))
 
                     # Minor repairs
             for repair in Repair.objects.all().filter(shuttle=shuttle, degree='Minor', end_date__gte=start_date,
@@ -483,7 +505,15 @@ class ShuttleMaintenanceFrequency(APIView):
                         item = Item.objects.get(pk=item_used.item_used.pk)
                     except ObjectDoesNotExist:
                         print(item_used.id)
-                    minor_maintenanceCost = minor_maintenanceCost + (item_used.quantity * item.unit_price)
+                    if item.item_type == "Physical Measurement":
+                        minor_maintenanceCost = minor_maintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
+                    elif item.item_type == "Liquid Measurement":
+                        minor_maintenanceCost = minor_maintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
+                    else:
+                        minor_maintenanceCost = minor_maintenanceCost + (
+                                float(item_used.quantity) * float(item.unit_price))
 
             # Intermediate
             print(Repair.objects.all().filter(shuttle=shuttle, degree='Intermediate', end_date__gte=start_date,
@@ -502,8 +532,15 @@ class ShuttleMaintenanceFrequency(APIView):
                         item = Item.objects.get(pk=item_used.item_used.pk)
                     except ObjectDoesNotExist:
                         print(item_used.id)
-                    intermediate_maintenanceCost = intermediate_maintenanceCost + (
-                            item_used.quantity * item.unit_price)
+                    if item.item_type == "Physical Measurement":
+                        intermediate_maintenanceCost = intermediate_maintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
+                    elif item.item_type == "Liquid Measurement":
+                        intermediate_maintenanceCost = intermediate_maintenanceCost + (
+                                float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
+                    else:
+                        intermediate_maintenanceCost = intermediate_maintenanceCost + (
+                                float(item_used.quantity) * float(item.unit_price))
 
             rows.append({
                 "shuttle": shuttle.id,
@@ -555,8 +592,9 @@ class ShuttleMaintenanceFrequency(APIView):
             sum([float(item['number_of_major_maintenance']) for item in rows]))
         minor_count = (
             sum([float(item['number_of_minor_maintenance']) for item in rows]))
-        grand_total = float(major_total_maintenance_cost) + float(minor_total_maintenance_cost) + float(
-            intermediate_total_maintenance_cost)
+        grand_total = float(sum([item['major_maintenance_cost_value'] for item in rows])) + float(
+            sum([item['minor_maintenance_cost_value'] for item in rows])) + float(
+            sum([item['intermediate_maintenance_cost_value'] for item in rows]))
         return Response(data={
             "rows": rows,
             "major_total_maintenance_cost": major_total_maintenance_cost,

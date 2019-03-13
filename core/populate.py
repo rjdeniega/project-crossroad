@@ -174,7 +174,7 @@ class PopulateDatabase():
                                                     description="Can be used for brake light or turn signal lights",
                                                     unit_price=250, category=category_light_bulb,
                                                     item_type="Physical Measurement", measurement=10, unit="pieces",
-                                                    brand="TTW", current_measurement=10,
+                                                    brand="TTW",
                                                     delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
                                                     received=True)
         purchase_order_1_item_2.save()
@@ -188,7 +188,7 @@ class PopulateDatabase():
         purchase_order_2_item_3 = PurchaseOrderItem(quantity=2, description="Pair of brake pads for Mitsubishi L300",
                                                     unit_price=800, category=category_brake_pad,
                                                     item_type="Physical Measurement", measurement=2, unit="pieces",
-                                                    brand="Akebono", current_measurement=2,
+                                                    brand="Akebono",
                                                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                                                     received=True)
         purchase_order_2_item_3.save()
@@ -201,7 +201,7 @@ class PopulateDatabase():
                      vendor=vendor2,
                      item_code="BRP001",
                      unit_price=900,
-                     item_type="Physical Measurement",
+                     item_type="Physical Measurement", current_measurement=2,
                      delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                      measurement=2, unit="Pieces")
         item3.save()
@@ -217,7 +217,7 @@ class PopulateDatabase():
         purchase_order_2_item_4 = PurchaseOrderItem(quantity=5, description="Synthetic Performance Gasoline Oil",
                                                     unit_price=455, category=category_oil,
                                                     item_type="Liquid Measurement", measurement=400, unit="mL",
-                                                    brand="Apex", current_measurement=400,
+                                                    brand="Apex",
                                                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
                                                     received=True)
 
@@ -233,7 +233,7 @@ class PopulateDatabase():
                      brand="Apex",
                      vendor=vendor2,
                      unit_price=455,
-                     item_type="Liquid Measurement",
+                     item_type="Liquid Measurement", current_measurement=400,
                      measurement=400, unit="mL", item_code="OIL001",
                      delivery_date=datetime.strptime('17022019', "%d%m%Y").date())
         item4.save()
