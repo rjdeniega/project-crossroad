@@ -9,6 +9,7 @@ import {Button} from 'antd'
 import {Icon, Input} from 'antd'
 import {postData} from '../../network_requests/general'
 import crossroad_logo from '../../images/crossroad_logo.png'
+import LBATSCLogo from '../../images/LBATSCLogo.png'
 import {RemittancePage} from '../../pages/remittances/remittances'
 import {InventoryPage} from '../../pages/inventory/inventory'
 
@@ -47,6 +48,7 @@ export class SignInPage extends Component {
             <div className="sign-in-body">
                 <div className="content-section">
                     <div className="sign-in-logos">
+                        <img className="lbatsc-logo" src={LBATSCLogo}/>
                         <img className="crossroad-logo" src={crossroad_logo}/>
                     </div>
 

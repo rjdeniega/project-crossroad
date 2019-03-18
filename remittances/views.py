@@ -2325,7 +2325,7 @@ class BeepCollapsedView(APIView):
             })
 
         return Response(data={
-            "beep_shifts": beep_shifts
+            "beep_shifts": beep_shifts.reverse()
         }, status=status.HTTP_200_OK)
 
 

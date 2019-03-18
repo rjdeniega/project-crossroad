@@ -12,7 +12,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Pagination } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -25,6 +25,12 @@ const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
 class ComponentToPrint extends React.Component {
+    componentDidMount() {
+        if (this.props.data) {
+            console.log(this.props.length)
+        }
+    }
+
     render() {
         const { data } = this.props
         return (
@@ -33,7 +39,8 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Beep + Ticket Remittance Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p> Beep + Ticket Remittance Report for {this.props.data.start_date}
+                            to {this.props.data.end_date} </p>
                         }
                     </Fragment>
                     }
@@ -88,6 +95,18 @@ class ComponentToPrint extends React.Component {
                                 </Fragment>
                             ))}
                             <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td colSpan={3}>
+                                    <Pagination size="small" onChange={this.props.handlePagination} defaultCurrent={1}
+                                                total={this.props.length}/>
+
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>
                                     <div>&nbsp;</div>
                                 </td>
@@ -131,7 +150,9 @@ class ComponentToPrint extends React.Component {
     }
 }
 export class BeepTickets extends Component {
-    state = {};
+    state = {
+        start: 0
+    };
 
     componentDidMount() {
     }
@@ -143,12 +164,57 @@ export class BeepTickets extends Component {
         };
         postData('/beep_tickets/', data).then(data => {
             console.log(data);
+            console.log(data.rows.length);
+            let length = Math.round(data.rows.length / 7)
+
             if (!data.error) {
-                this.setState({
-                    data: data
-                })
+                if (data.rows.length < 8) {
+                    this.setState({
+                        data: data,
+                        original_data: data,
+                        length: length * 10,
+                    })
+                }
+                else {
+                    let new_data = data;
+                    new_data.rows = this.changeContents(data.rows);
+                    console.log(new_data);
+                    this.setState({
+                        data: new_data,
+                        original_data: data,
+                        length: length * 10,
+                    })
+                }
+                console.log(this.state.length)
             }
         });
+
+    }
+
+    handlePagination = (current) => {
+        let new_array = this.state.data;
+        this.setState({
+            start: current
+        }, () => {
+            new_array.rows = this.changeContents(this.state.original_data);
+            this.setState({
+                data: new_array
+            })
+        })
+        console.log(this.state.data)
+    }
+
+    changeContents = (array) => {
+        console.log(this.state.start);
+        console.log(array.length)
+        let index = this.state.start * 7
+        let new_array = [];
+        for (let i = index; i <= index + 6; i++) {
+            if (i < array.length) {
+                new_array.push(array[i])
+            }
+        }
+        return new_array;
     }
 
     handleStartDateChange = (date, dateString) => {
@@ -175,7 +241,10 @@ export class BeepTickets extends Component {
                         trigger={() => <a href="#">Print this out!</a>}
                         content={() => this.componentRef}
                     />
-                    <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>
+                    <ComponentToPrint length={this.state.length}
+                                      handlePagination={this.handlePagination} data={this.state.data}
+                                      ref={el => (this.componentRef = el)}/>
+
                 </div>
             </div>
         );
