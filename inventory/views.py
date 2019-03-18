@@ -985,30 +985,47 @@ class FinalItemMovementReport(APIView):
         if "end_date" in request.data:
             end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
         else:
-            end_date = date + timedelta(days=7)
+            end_date = None
 
         categories = []
         get_count = []
         bought_count = []
+        print(ItemMovement.objects.filter(repair__end_date__gte=date, repair__end_date__lte=end_date))
         for category in ItemCategory.objects.all():
             categories.append(category.category)
             g_count = 0
             b_count = 0
-            for item_movement in ItemMovement.objects.filter(created__gte=date, created__lte=end_date):
-                item = item_movement.item
-                if item.category == category:
-                    if item_movement.type == "B":
-                        b_count += item_movement.quantity
-                    elif item_movement.type == "G":
-                        g_count += item_movement.quantity
-            get_count.append(g_count)
-            bought_count.append(b_count)
-
+            if end_date is not None:
+                for item_movement in ItemMovement.objects.filter(item__delivery_date__gte=date, item__delivery_date__lte=end_date):
+                    item = item_movement.item
+                    if item.category == category:
+                        if item_movement.type == "B":
+                            b_count += item_movement.quantity
+                for item_movement in ItemMovement.objects.filter(repair__end_date__gte=date, repair__end_date__lte=end_date):
+                    item = item_movement.item
+                    if item.category == category:
+                        if item_movement.type == "G":
+                            g_count += item_movement.quantity
+                get_count.append(g_count)
+                bought_count.append(b_count)
+            else:
+                for item_movement in ItemMovement.objects.filter(item__delivery_date=date):
+                    item = item_movement.item
+                    if item.category == category:
+                        if item_movement.type == "B":
+                            b_count += item_movement.quantity
+                for item_movement in ItemMovement.objects.filter(repair__end_date=date):
+                    item = item_movement.item
+                    if item.category == category:
+                        if item_movement.type == "G":
+                            g_count += item_movement.quantity
+                get_count.append(g_count)
+                bought_count.append(b_count)
         return Response(data={
             'categories': categories,
             'get': get_count,
             'bought': bought_count,
             'start_date': date.date(),
-            'end_date': end_date.date()
+            'end_date': end_date.date() if end_date is not None else date.date()
 
         }, status=status.HTTP_200_OK)

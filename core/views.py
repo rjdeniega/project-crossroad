@@ -630,7 +630,7 @@ class PatronageRefund(APIView):
                             accumulated_month += share.value
                     array.append(accumulated_month)
 
-                rate_of_refund = sum(array) / len(array)
+                rate_of_refund = sum(array) / 12
 
                 # rate_of_refund = (sum([item.total for item in transactions]) + sum(
                 #     [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
