@@ -100,7 +100,8 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td></td>
-                                <td colSpan={3}>
+                                 <td></td>
+                                <td colSpan={2}>
                                     <Pagination size="small" onChange={this.props.handlePagination} defaultCurrent={1}
                                                 total={this.props.length}/>
 
@@ -168,35 +169,37 @@ export class BeepTickets extends Component {
             let length = Math.round(data.rows.length / 7)
 
             if (!data.error) {
+                this.setState({
+                    original_data: data,
+                    data:data,
+                });
                 if (data.rows.length < 8) {
                     this.setState({
                         data: data,
-                        original_data: data,
                         length: length * 10,
                     })
                 }
                 else {
-                    let new_data = data;
-                    new_data.rows = this.changeContents(data.rows);
-                    console.log(new_data);
+                    let new_data = {...data};
+                    new_data.rows = this.changeContents([...this.state.original_data.rows]);
                     this.setState({
                         data: new_data,
-                        original_data: data,
                         length: length * 10,
-                    })
+                    });
+                    console.log(this.state.original_data)
                 }
-                console.log(this.state.length)
             }
         });
 
     }
 
     handlePagination = (current) => {
-        let new_array = this.state.data;
+        let new_array = {...this.state.original_data};
         this.setState({
             start: current
         }, () => {
-            new_array.rows = this.changeContents(this.state.original_data);
+            new_array.rows = this.changeContents([...this.state.original_data.rows]);
+            console.log(new_array.rows);
             this.setState({
                 data: new_array
             })
@@ -206,7 +209,6 @@ export class BeepTickets extends Component {
 
     changeContents = (array) => {
         console.log(this.state.start);
-        console.log(array.length)
         let index = this.state.start * 7
         let new_array = [];
         for (let i = index; i <= index + 6; i++) {
