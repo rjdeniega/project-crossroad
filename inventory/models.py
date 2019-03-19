@@ -22,7 +22,8 @@ SHUTTLE_STATUS = [
     ('A', 'Available'),
     ('NM', 'Needs Maintenance'),
     ('UM', 'Under Maintenance'),
-    ('B', 'Back-up')
+    ('B', 'Back-up'),
+    ('FI', 'For Investigation'),
 ]
 
 REPAIR_STATUS = [
