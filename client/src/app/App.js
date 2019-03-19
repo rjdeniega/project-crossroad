@@ -8,7 +8,7 @@ import { MembersPage } from "../pages/members/members";
 import { NavBar } from "../components/navbar/navbar";
 import { InventoryPage } from "../pages/inventory/inventory";
 import { MaintenancePage } from "../pages/maintenance/maintenance";
-import { ReportsPage } from "../pages/reports/reports";
+import { ReportsPage } from "../pages/reports/new_reports";
 import { TicketsPage } from "../pages/tickets/tickets";
 import { ProfilePage } from "../pages/profile/profile";
 import { HistoryPage } from "../pages/driver_history/driver_history";
