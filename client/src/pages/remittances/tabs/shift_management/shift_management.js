@@ -115,16 +115,17 @@ export class ShiftManagementPane extends Component {
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
                 //append drivers with their ids as key
-                console.log(data);
                 if (!data.error) {
-                    this.setState({
-                        current_start_date: data['start_date'],
-                        current_end_date: data['end_date'],
-                        current_am: data['shifts'][0],
-                        current_pm: data['shifts'][1],
-                        current_am_supervisor: data['shifts'][0]['drivers'],
-                        current_pm_supervisor: data['shifts'][1]['drivers'],
-                    })
+                    if(data != undefined) {
+                        this.setState({
+                            current_start_date: data['start_date'],
+                            current_end_date: data['end_date'],
+                            current_am: data['shifts'][0],
+                            current_pm: data['shifts'][1],
+                            current_am_supervisor: data['shifts'][0]['drivers'],
+                            current_pm_supervisor: data['shifts'][1]['drivers'],
+                        })
+                    }
                 }
             }
             else {
@@ -144,7 +145,7 @@ export class ShiftManagementPane extends Component {
                 const tableData = [];
                 //append drivers with their ids as key
                 console.log(data);
-                if(data['drivers'].length > 0) {
+                if (data['drivers'].length > 0) {
                     data["drivers"].forEach(item => tableData.push({
                         "key": item.id,
                         "name": item.name,
@@ -682,7 +683,6 @@ export class ShiftManagementPane extends Component {
                                 </Panel>
                             </Collapse>
                         </div>
-
                     </div>
                     <div className="driver-selection">
                         {/*<div className="table-label-div">*/}

@@ -27,7 +27,6 @@ const Option = Select.Option;
 
 class ComponentToPrint extends React.Component {
 
-
     render() {
         const { data } = this.props;
         return (
