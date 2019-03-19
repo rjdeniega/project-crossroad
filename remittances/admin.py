@@ -15,6 +15,8 @@ admin.site.register(ShiftIteration)
 admin.site.register(SubbedDeployments)
 admin.site.register(ConsumedTicket)
 admin.site.register(AssignedTicket)
+admin.site.register(DriversAssigned)
+admin.site.register(PresentDrivers)
 
 @admin.register(BeepTransaction)
 class BeepTransactionAdmin(ImportExportModelAdmin):

@@ -856,13 +856,13 @@ class MarkAsPresent(APIView):
     def post(request):
         data = json.loads(request.body)
         active_sched = RemittanceUtilities.get_active_schedule();
-
+        print(data["driver_id"])
         driver = None
         for shift in Shift.objects.filter(schedule=active_sched):
             for assignedDriver in DriversAssigned.objects.filter(shift=shift):
-                if assignedDriver.id == data["driver_id"]:
+                if assignedDriver.driver.id == data["driver_id"]:
                     driver = assignedDriver
-        
+        print(driver)
         presentDriver = PresentDrivers()
         presentDriver.assignedDriver = driver
         presentDriver.save()

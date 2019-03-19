@@ -81,6 +81,12 @@ class Schedule(models.Model):
             return 'completed'
         else:
             return 'pending'
+    
+    def get_display(self):
+        return self.start_date.strftime("%m\%d\%y") + " to " + self.end_date.strftime("%m\%d\%y")
+
+    def __str__(self):
+        return self.start_date.strftime("%m\%d\%y") + " to " + self.end_date.strftime("%m\%d\%y")
 
 
 class Shift(models.Model):
@@ -115,7 +121,7 @@ class DriversAssigned(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.driver.name + ' driving '
+        return self.driver.name + ' driving on ' + self.shift.get_type_display() + " shift (" + self.shift.schedule.get_display() + ") "
 
 class ShiftIteration(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
@@ -202,7 +208,7 @@ class PresentDrivers(models.Model):
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        return self.assignedDriver.driver.name + ' is present on ' + self.date
+        return self.assignedDriver.driver.name + ' is present on ' + self.datetime.strftime("%m-%d-%y %H:%M:%S")
 
 
 class SubbedDeployments(models.Model):

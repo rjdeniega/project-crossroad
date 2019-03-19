@@ -18,6 +18,11 @@ export class DriverRemittance extends React.Component {
             <div className="page-container">
                 <PerfectScrollbar>
                     <Header />
+                    <Row className="deployment-body">
+                        <Col span={24}>
+                            <OngoingDeployment />
+                        </Col>
+                    </Row>
                     <Row className="remittance-body">
                         <Col span={24}>
                             <DeploymentList />
@@ -26,6 +31,58 @@ export class DriverRemittance extends React.Component {
                 </PerfectScrollbar>
             </div>
         );
+    }
+}
+
+class OngoingDeployment extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.handleMarkAsPresent = this.handleMarkAsPresent.bind(this);
+    }
+
+    handleMarkAsPresent = () => {
+        let driver = JSON.parse(localStorage.user_staff)
+        console.log(driver)
+        this.postDriver(driver)
+    }
+
+    postDriver(driver){
+        let data = {"driver_id": driver.id}
+        postData('remittances/deployments/present/', data)
+            .then(response => {
+                if (!response.error) {
+                    message.success(this.props.driver + " has been marked as Pending for Deployment");
+                } else {
+                    console.log(response.error);
+                }
+            });
+    }
+
+    render() {
+        return(
+            <div className="deployment-container">
+                <MarkAsPresentButton handleMarkAsPresent={this.handleMarkAsPresent}/>
+            </div>
+        )
+    }
+}
+
+class MarkAsPresentButton extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick(){
+        this.props.handleMarkAsPresent();
+    }
+
+    render(){
+        return(
+            <Button type="primary" onClick={this.handleClick}>Ready for Deployment</Button>
+        ) 
     }
 }
 
