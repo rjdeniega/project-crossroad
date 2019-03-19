@@ -2043,7 +2043,9 @@ class AccumulatedSharesReport(APIView):
                 month += 1
 
             rows.append({
+                "is_new": member.accepted_date > (datetime.now() - timedelta(days=366)).date(),
                 "name": member.name,
+                "accepted_date": member.accepted_date,
                 "prior_shares": prior_shares,
                 "accumulated_shares": accumulated_shares,
                 "total_shares": prior_shares + accumulated_shares,
@@ -2313,7 +2315,7 @@ class RemittanceForTheMonth(APIView):
 
                 if i == 3:
                     end_date = temp_date
-           
+
             return Response(data={
                 "days": reversed(days),
                 "start_date": f'{end_date.year}',

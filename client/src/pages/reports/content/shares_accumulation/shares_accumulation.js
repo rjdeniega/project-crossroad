@@ -42,6 +42,7 @@ class ComponentToPrint extends React.Component {
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
                         <th>Member</th>
+                        <th>Date Accepted</th>
                         <th>Initial</th>
                         <th>Jan</th>
                         <th>Feb</th>
@@ -65,6 +66,7 @@ class ComponentToPrint extends React.Component {
                                 <Fragment>
                                     <tr>
                                         <td>{item.name}</td>
+                                        <td>{item.accepted_date}</td>
                                         <td><b>{item.prior_shares}</b></td>
                                         <td>{item.months[0].added_amount}</td>
                                         <td>{item.months[1].added_amount}</td>
@@ -79,13 +81,14 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.months[10].added_amount}</td>
                                         <td>{item.months[11].added_amount}</td>
                                         <td><b>{item.accumulated_shares}</b></td>
-                                        <td><b>{item.total_shares >= 50 ? item.total_shares : <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" /> {item.total_shares}</p>}</b></td>
+                                        <td><b>{(item.total_shares < 50 && !item.is_new) ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" /> {item.total_shares}</p> : item.total_shares }</b></td>
                                     </tr>
                                 </Fragment>
                             ))}
 
                             <tr>
                                 <td><b> Grand Total </b></td>
+                                <td className="total-line"></td>
                                 <td className="total-line"><b>{this.props.data.prev_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[0]}</b></td>
                                 <td className="total-line"><b>{this.props.data.months_sum[1]}</b></td>
