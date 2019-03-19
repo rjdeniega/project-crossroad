@@ -1263,7 +1263,7 @@ class BeepTicketsPerRoute(APIView):
                 print(temp_start.date())
                 beep_shift = BeepShift.objects.filter(date=temp_start.date(), type=shift.shift.type)
 
-                if len (beep_shift)>0:
+                if len(beep_shift) > 0:
                     beep_shift = beep_shift[0]
                     beep_total = sum(
                         [item.total for item in BeepTransaction.objects.filter(shift=beep_shift, shuttle__route=route)])
@@ -1271,7 +1271,7 @@ class BeepTicketsPerRoute(APIView):
                     beep_shift = None
                     beep_total = 0
             except ObjectDoesNotExist:
-                    beep_total = 0
+                beep_total = 0
 
             shifts.append({
                 "type": shift.shift.get_type_display(),
@@ -1606,7 +1606,7 @@ class TicketTypePerDayReport(APIView):
                     "pm_ten": pm_ten,
                     "pm_twelve": pm_twelve,
                     "pm_fifteen": pm_fifteen,
-                    "day_total": am_ten+pm_ten+am_twelve+pm_twelve+am_fifteen+pm_fifteen,
+                    "day_total": am_ten + pm_ten + am_twelve + pm_twelve + am_fifteen + pm_fifteen,
                 })
             ten_total = sum([item['am_ten'] for item in shuttles]) + sum([item['pm_ten'] for item in shuttles])
             twelve_total = sum([item['am_twelve'] for item in shuttles]) + sum([item['pm_twelve'] for item in shuttles])
@@ -2128,13 +2128,13 @@ class ShuttleCostVRevenueReport(APIView):
                         item = Item.objects.get(id=modification.item_used.id)
                         if item.item_type == "Physical Measurement":
                             major_repairs_cost = major_repairs_cost + (
-                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         elif item.item_type == "Liquid Measurement":
                             major_repairs_cost = major_repairs_cost + (
-                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         else:
                             major_repairs_cost = major_repairs_cost + (
-                                    float(modification.quantity) * float(item.unit_price))
+                                float(modification.quantity) * float(item.unit_price))
 
                     for outsourced in repair.outsourced_items.all():
                         amount = outsourced.quantity * outsourced.unit_price
@@ -2147,13 +2147,13 @@ class ShuttleCostVRevenueReport(APIView):
                     item = Item.objects.get(id=modification.item_used.id)
                     if item.item_type == "Physical Measurement":
                         initialMaintenanceCost = initialMaintenanceCost + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     elif item.item_type == "Liquid Measurement":
                         initialMaintenanceCost = initialMaintenanceCost + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     else:
                         initialMaintenanceCost = initialMaintenanceCost + (
-                                float(modification.quantity) * float(item.unit_price))
+                            float(modification.quantity) * float(item.unit_price))
 
                 for outsourced in repair.outsourced_items.all():
                     amount = outsourced.quantity * outsourced.unit_price
@@ -2227,37 +2227,107 @@ class RemittanceForTheMonth(APIView):
         else:
             end_date = date + timedelta(days=6)
 
-        year = date.year
-        month = date.month
-        num_days = calendar.monthrange(year, month)[1]
-        temp_date = date
-
-        days = [datetime(year, month, day) for day in range(1, num_days + 1)]
-
         main_road_values = []
         kaliwa_values = []
         kanan_values = []
         new_days = []
         rem = RemittanceForTheMonth()
 
-        while temp_date < end_date:
-            main_road_value = rem.get_remittance_total("M", temp_date) + rem.get_beep_total("M", temp_date)
-            kaliwa_value = rem.get_remittance_total("L", temp_date) + rem.get_beep_total("L", temp_date)
-            kanan_value = rem.get_remittance_total("R", temp_date) + rem.get_beep_total("R", temp_date)
+        if data["interval"] == "day":
+            year = date.year
+            month = date.month
+            num_days = calendar.monthrange(year, month)[1]
+            temp_date = date
 
-            main_road_values.append(main_road_value)
-            kaliwa_values.append(kaliwa_value)
-            kanan_values.append(kanan_value)
-            new_days.append(temp_date.date())
+            days = [datetime(year, month, day) for day in range(1, num_days + 1)]
 
-            temp_date += timedelta(days=1)
+            while temp_date < end_date:
+                main_road_value = rem.get_remittance_total("M", temp_date) + rem.get_beep_total("M", temp_date)
+                kaliwa_value = rem.get_remittance_total("L", temp_date) + rem.get_beep_total("L", temp_date)
+                kanan_value = rem.get_remittance_total("R", temp_date) + rem.get_beep_total("R", temp_date)
+
+                main_road_values.append(main_road_value)
+                kaliwa_values.append(kaliwa_value)
+                kanan_values.append(kanan_value)
+                new_days.append(temp_date.date())
+
+                temp_date += timedelta(days=1)
+
+            return Response(data={
+                "days": new_days,
+                "start_date": date.date(),
+                "end_date": end_date.date(),
+                "main_road_values": main_road_values,
+                "kaliwa_values": kaliwa_values,
+                "kanan_values": kanan_values,
+            }, status=status.HTTP_200_OK)
+
+        elif data["interval"] == "month":
+            days = []
+            temp_date = date
+            temp_date = temp_date.replace(day=1)
+            print(temp_date)
+
+            for i in range(0, 12):
+                value = calendar.monthrange(temp_date.year, temp_date.month)[1]
+                day = value
+                days.append(calendar.month_name[temp_date.month])
+
+                main_road_value = rem.get_remittance_total_monthly("M", temp_date) + rem.get_beep_total_monthly("M",
+                                                                                                                temp_date)
+                kaliwa_value = rem.get_remittance_total_monthly("L", temp_date) + rem.get_beep_total_monthly("L",
+                                                                                                             temp_date)
+                kanan_value = rem.get_remittance_total_monthly("R", temp_date) + rem.get_beep_total_monthly("R",
+                                                                                                            temp_date)
+
+                main_road_values.append(main_road_value)
+                kaliwa_values.append(kaliwa_value)
+                kanan_values.append(kanan_value)
+
+                temp_date += timedelta(days=day)
+
+                if i == 10:
+                    end_date = temp_date
+        elif data["interval"] == "year":
+            days = []
+            temp_date = date
+            temp_date = temp_date.replace(day=1)
+            temp_date = temp_date.replace(month=1)
+            print(temp_date)
+
+            for i in range(0, 5):
+                days.append(temp_date.year)
+
+                main_road_value = rem.get_remittance_total_yearly("M", temp_date) + rem.get_beep_total_yearly("M",
+                                                                                                              temp_date)
+                kaliwa_value = rem.get_remittance_total_yearly("L", temp_date) + rem.get_beep_total_yearly("L",
+                                                                                                           temp_date)
+                kanan_value = rem.get_remittance_total_yearly("R", temp_date) + rem.get_beep_total_yearly("R",
+                                                                                                          temp_date)
+
+                main_road_values.append(main_road_value)
+                kaliwa_values.append(kaliwa_value)
+                kanan_values.append(kanan_value)
+
+                temp_date -= timedelta(days=366)
+
+                if i == 3:
+                    end_date = temp_date
+           
+            return Response(data={
+                "days": reversed(days),
+                "start_date": f'{end_date.year}',
+                "end_date": f'{date.year}',
+                "main_road_values": reversed(main_road_values),
+                "kaliwa_values": reversed(kaliwa_values),
+                "kanan_values": reversed(kanan_values),
+            }, status=status.HTTP_200_OK)
+
+        else:
+            pass
 
         return Response(data={
-            "days": new_days,
-            "end_date": end_date.date(),
-            "main_road_values": main_road_values,
-            "kaliwa_values": kaliwa_values,
-            "kanan_values": kanan_values,
+            "data": "it worked"
         }, status=status.HTTP_200_OK)
 
     @staticmethod
@@ -2270,8 +2340,45 @@ class RemittanceForTheMonth(APIView):
         return total
 
     @staticmethod
+    def get_remittance_total_monthly(route, date):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date__year=date.year,
+                                                    deployment__shift_iteration__date__month=date.month,
+                                                    deployment__shuttle__route=route)
+        total = 0
+        for remittance in remittances:
+            total += remittance.get_remittances_only()
+        return total
+
+    @staticmethod
+    def get_remittance_total_yearly(route, date):
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date__year=date.year,
+                                                    deployment__shuttle__route=route)
+        total = 0
+        for remittance in remittances:
+            total += remittance.get_remittances_only()
+        return total
+
+    @staticmethod
     def get_beep_total(route, date):
         beeps = BeepTransaction.objects.filter(shift__date=date, shuttle__route=route)
+        total = 0
+        for beep in beeps:
+            total += beep.total
+        return total
+
+    @staticmethod
+    def get_beep_total_monthly(route, date):
+        beeps = BeepTransaction.objects.filter(shift__date__year=date.year, shift__date__month=date.month,
+                                               shuttle__route=route)
+        total = 0
+        for beep in beeps:
+            total += beep.total
+        return total
+
+    @staticmethod
+    def get_beep_total_yearly(route, date):
+        beeps = BeepTransaction.objects.filter(shift__date__year=date.year,
+                                               shuttle__route=route)
         total = 0
         for beep in beeps:
             total += beep.total
@@ -2751,8 +2858,8 @@ class RemittancePerYear(APIView):
                                  deployment__shift_iteration__date__month=i)]) + sum([item.total for item in
                                                                                       BeepTransaction.objects.filter(
                                                                                           transaction_date_time__year=(
-                                                                                                  date - timedelta(
-                                                                                              days=days)).year,
+                                                                                              date - timedelta(
+                                                                                                  days=days)).year,
                                                                                           transaction_date_time__month=i)])
                 months.append("{0:,.2f}".format(total))
             years.append({
