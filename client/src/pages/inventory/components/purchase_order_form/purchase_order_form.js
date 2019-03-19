@@ -1,5 +1,20 @@
 import React, {Component} from 'react';
-import {Table, Row, Col, Input, AutoComplete, Divider, message, Select, Icon, Popover, Button, Form} from 'antd';
+import {
+    Table,
+    Row,
+    Col,
+    Input,
+    AutoComplete,
+    Divider,
+    message,
+    Select,
+    Icon,
+    Popover,
+    Button,
+    Form,
+    Checkbox,
+    Cascader
+} from 'antd';
 import update from 'react-addons-update';
 import './style.css';
 import NumberFormat from 'react-number-format';
@@ -264,12 +279,15 @@ export class PurchaseOrderForm extends Component {
             categories: [],
             visible_form: false,
             items_submit: [],
+            options: [],
+            new_vendor: true,
         };
 
         this.updateFields = this.updateFields.bind(this);
         this.updateDetails = this.updateDetails.bind(this);
         this.updatedCreateRows = this.updatedCreateRows.bind(this);
         this.addItem = this.addItem.bind(this);
+        this.newVendor = this.newVendor.bind(this);
     }
 
     componentDidMount() {
@@ -289,7 +307,25 @@ export class PurchaseOrderForm extends Component {
                 });
                 data_source.push(vendor.name);
             });
+            let options = [];
+            Object.keys(data.vendor_list).map(vendor => {
+                let items = [];
+                data.vendor_list[vendor].forEach(category => {
+                    items.push({
+                        disabled: true,
+                        code: category,
+                        name: category,
+                    })
+                });
+                options.push({
+                    code: vendor,
+                    name: vendor,
+                    items: items,
+                });
+            });
+            console.log(options);
             this.setState({
+                options: options,
                 autofill_data: autofill_data,
                 data_source: data_source
             })
@@ -535,6 +571,10 @@ export class PurchaseOrderForm extends Component {
         });
     };
 
+    filter(inputValue, path) {
+        return (path.some(option => (option.label).toLowerCase().indexOf(inputValue.toLowerCase()) > -1));
+    }
+
     updatedCreateRows(items) {
         let rows = [];
         let self = this;
@@ -558,24 +598,25 @@ export class PurchaseOrderForm extends Component {
                 return false;
             } else {
                 let measurement = "";
-                if(item.measurement){
+                if (item.measurement) {
                     measurement = item.measurement + item.unit;
                 }
                 rows.push({
                     key: key,
                     details: item.brand + " " + measurement + " - " + item.description,
                     quantity: item.quantity,
-                    unit_price: <NumberFormat value={item.unit_price} displayType={'text'} thousandSeparator={true} prefix={'Php'}
-                                     decimalScale={2} fixedDecimalScale={true}/>,
+                    unit_price: <NumberFormat value={item.unit_price} displayType={'text'} thousandSeparator={true}
+                                              prefix={'Php'}
+                                              decimalScale={2} fixedDecimalScale={true}/>,
                     total: <NumberFormat value={item.total} displayType={'text'} thousandSeparator={true} prefix={'Php'}
-                                     decimalScale={2} fixedDecimalScale={true}/>
+                                         decimalScale={2} fixedDecimalScale={true}/>
                 });
                 return true;
             }
         });
-        if(items[1].brand){
+        if (items[1].brand) {
             let total = 0;
-            items.forEach(function(item){
+            items.forEach(function (item) {
                 total = total + item.total;
             });
             rows.push({
@@ -588,8 +629,15 @@ export class PurchaseOrderForm extends Component {
         return rows;
     }
 
+    newVendor(e) {
+        this.setState({
+            new_vendor: e.target.checked
+        })
+    }
+
     render() {
-        const {po_num, vendorName, vendorAddress, vendorContact, items, grand_total, data_source, categories} = this.state;
+        const { new_vendor, po_num, vendorName, vendorAddress, vendorContact, items, grand_total, data_source, categories, options} = this.state;
+        const {filter} = this.filter;
         return (
             <div className="purchase-order-form">
                 <Row type="flex" justify="space-between" align="bottom">
@@ -628,18 +676,39 @@ export class PurchaseOrderForm extends Component {
                     </Col>
                 </Row>
                 <Row>
+                    <Col span={12}>
+                         <Checkbox checked={new_vendor} onChange={this.newVendor}>New Vendor</Checkbox>
+                    </Col>
+                </Row>
+                <br/>
+                <Row>
                     <Col span={4}>
                         <p align="left" className="form-info-vendor">Vendor Name: &nbsp;</p>
                     </Col>
                     <Col>
-                        <AutoComplete
-                            size='small'
+                        {new_vendor ? (<Input size='small'
                             className='vendor-name-input'
-                            onSelect={this.getVendorInfo}
                             value={vendorName}
-                            dataSource={data_source}
-                            onChange={e => this.updateDetails('vendor_name', e)}
-                            filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}/>
+                            onChange={e => this.updateDetails('vendor_name', e.target.value)}/>)
+                            :
+                            (<Cascader className='vendor-name-input'
+                                  size='small'
+                                  expandTrigger="hover"
+                                  fieldNames={{label: 'name', value: 'code', children: 'items'}}
+                                  options={options} showSearch={{filter}}
+                                  changeOnSelect
+                                    onChange={e => {
+                                        this.getVendorInfo(e[0])
+                                    }}/>)}
+
+                        {/*<AutoComplete*/}
+                        {/*size='small'*/}
+                        {/*className='vendor-name-input'*/}
+                        {/*onSelect={this.getVendorInfo}*/}
+                        {/*value={vendorName}*/}
+                        {/*dataSource={data_source}*/}
+                        {/*onChange={e => this.updateDetails('vendor_name', e)}*/}
+                        {/*filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}/>*/}
                     </Col>
                 </Row>
                 <Row>

@@ -774,8 +774,15 @@ class VendorsView(APIView):
     @staticmethod
     def get(request):
         vendors = VendorSerializer(Vendor.objects.all(), many=True)
+        vendor_list = {}
+        for vendor in Vendor.objects.all().order_by('name'):
+            list_of_vendors = []
+            for category in VendorItem.objects.filter(vendor=vendor).order_by('category__category'):
+                list_of_vendors.append(category.category.category)
+            vendor_list[vendor.name] = list_of_vendors
         return Response(data={
             'vendors': vendors.data,
+            'vendor_list': vendor_list
         }, status=status.HTTP_200_OK)
 
 
@@ -885,6 +892,7 @@ class DriverRepairRequest(APIView):
             for driver in DriversAssigned.objects.filter(shift=shift):
                 if driver.driver == logged_driver:
                     shuttle = driver.shuttle
+
                     serialized_shuttle = ShuttlesSerializer(shuttle)
                     return Response(data={
                         'shuttle': serialized_shuttle.data,
@@ -910,6 +918,8 @@ class DriverRepairRequest(APIView):
                     message = 'Repair request has been sent'
                     repair = Repair(shuttle=driver.shuttle, date_requested=datetime.now().date(),
                                     status='FI', driver_requested=logged_driver)
+                    driver.shuttle.status = 'FI'
+                    driver.shuttle.save()
                     repair.save()
                     for problem in data['problems']:
                         rp = RepairProblem(description=problem)

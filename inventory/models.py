@@ -22,7 +22,8 @@ SHUTTLE_STATUS = [
     ('A', 'Available'),
     ('NM', 'Needs Maintenance'),
     ('UM', 'Under Maintenance'),
-    ('B', 'Back-up')
+    ('B', 'Back-up'),
+    ('FI', 'For Investigation'),
 ]
 
 REPAIR_STATUS = [
@@ -103,6 +104,11 @@ class ItemCategory(SoftDeletionModel):
     category = CharField(max_length=64, unique=True)
     code_prefix = CharField(max_length=3)
     quantity = PositiveIntegerField()
+
+
+class VendorItem(SoftDeletionModel):
+    vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
+    category = ForeignKey(ItemCategory, on_delete=models.CASCADE)
 
 
 class PurchaseOrderItem(SoftDeletionModel):

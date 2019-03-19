@@ -15,8 +15,13 @@ function checkStatus(status) {
     else if (status === 'NM') {
         return "Needs Maintenance"
     }
-    else {
+    else if (status === 'B'){
+        return "Back Up"
+    }
+    else if (status === 'UM'){
         return "Under Maintenance"
+    } else {
+        return "For Inspection"
     }
 }
 
