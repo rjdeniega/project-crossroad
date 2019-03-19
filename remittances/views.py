@@ -442,26 +442,42 @@ class NonDeployedDrivers(APIView):
         shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id, date=datetime.now().date()).first()
 
         query = DriversAssigned.objects.filter(shift=current_shift.id)
+        print(query)
+        isAbsent = list()
+        for driver in DriversAssigned.objects.filter(shift=current_shift.id):
+            isPresent = False
+            for present in PresentDrivers.objects.filter(
+                    datetime__year=datetime.now().year,
+                    datetime__month=datetime.now().month,
+                    datetime__day=datetime.now().day
+                ):
+                if driver.id == present.assignedDriver.id:
+                    isPresent = True
+
+            if isPresent == False:
+                isAbsent.append(driver.id)
+                
+        for absent in isAbsent:
+            query = query.exclude(id=absent)
+            
         # remove drivers already deployed
         if shift_iteration:
             deployed_drivers = Deployment.objects.filter(shift_iteration=shift_iteration.id)
-            print("deployed_drivers")
-            print(deployed_drivers)
+            
 
             drivers = []
             for deployed_driver in deployed_drivers:
                 drivers.append(deployed_driver)
-            print(drivers)
-            print(query)
+            
             for driver in drivers:
                 query = query.exclude(driver=driver.driver.id)
 
             for driver in query:
                 if NonDeployedDrivers.did_deploy_a_sub(driver.id, shift_iteration.id):
                     query = query.exclude(driver=driver.driver.id)
-        print(query)
+        
         non_deployed_drivers = PlannedDriversSerializer(query, many=True)
-        print(non_deployed_drivers.data)
+        
         for item in non_deployed_drivers.data:
             item["driver"]["shuttle_id"] = item["shuttle"]["id"]
             item["driver"]["shuttle_plate_number"] = item["shuttle"]["plate_number"]
@@ -499,7 +515,7 @@ class NonDeployedDrivers(APIView):
             item["ten_total"] = ten_total
             item["twelve_total"] = twelve_total
             item["fifteen_total"] = fifteen_total
-        print(non_deployed_drivers.data)
+        
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
         }, status=status.HTTP_200_OK)
