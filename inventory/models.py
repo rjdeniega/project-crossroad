@@ -106,6 +106,11 @@ class ItemCategory(SoftDeletionModel):
     quantity = PositiveIntegerField()
 
 
+class VendorItem(SoftDeletionModel):
+    vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
+    category = ForeignKey(ItemCategory, on_delete=models.CASCADE)
+
+
 class PurchaseOrderItem(SoftDeletionModel):
     quantity = PositiveIntegerField()
     description = CharField(max_length=64)

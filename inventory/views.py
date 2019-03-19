@@ -774,8 +774,15 @@ class VendorsView(APIView):
     @staticmethod
     def get(request):
         vendors = VendorSerializer(Vendor.objects.all(), many=True)
+        vendor_list = {}
+        for vendor in Vendor.objects.all().order_by('name'):
+            list_of_vendors = []
+            for category in VendorItem.objects.filter(vendor=vendor).order_by('category__category'):
+                list_of_vendors.append(category.category.category)
+            vendor_list[vendor.name] = list_of_vendors
         return Response(data={
             'vendors': vendors.data,
+            'vendor_list': vendor_list
         }, status=status.HTTP_200_OK)
 
 
