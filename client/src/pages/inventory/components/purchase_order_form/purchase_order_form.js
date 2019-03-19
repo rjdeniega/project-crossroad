@@ -630,8 +630,12 @@ export class PurchaseOrderForm extends Component {
     }
 
     newVendor(e) {
+        console.log(this.state);
         this.setState({
-            new_vendor: e.target.checked
+            new_vendor: e.target.checked,
+            vendorName: '',
+            vendorAddress: '',
+            vendorContact: '',
         })
     }
 
@@ -698,7 +702,8 @@ export class PurchaseOrderForm extends Component {
                                   options={options} showSearch={{filter}}
                                   changeOnSelect
                                     onChange={e => {
-                                        this.getVendorInfo(e[0])
+                                        this.getVendorInfo(e[0]);
+                                        this.updateDetails('vendor_name', e[0])
                                     }}/>)}
 
                         {/*<AutoComplete*/}
