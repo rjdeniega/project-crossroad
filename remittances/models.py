@@ -117,7 +117,6 @@ class DriversAssigned(models.Model):
     def __str__(self):
         return self.driver.name + ' driving '
 
-
 class ShiftIteration(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
     date = DateField(default=timezone.now)
@@ -195,6 +194,15 @@ class Deployment(models.Model):
     def set_deployment_breakdown(self):
         self.result = 'B'
         self.save()
+
+
+class PresentDrivers(models.Model):
+    assignedDriver = ForeignKey(DriversAssigned, related_name="assigned_driver", on_delete=models.CASCADE)
+    datetime = DateTimeField(default=timezone.now)
+    deployment = ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.assignedDriver.driver.name + ' is present on ' + self.date
 
 
 class SubbedDeployments(models.Model):

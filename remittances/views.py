@@ -851,6 +851,27 @@ class DeploySubDriver(APIView):
                 "errors": error_message
             }, status=status.HTTP_400_BAD_REQUEST)
 
+class MarkAsPresent(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        active_sched = RemittanceUtilities.get_active_schedule();
+
+        driver = None
+        for shift in Shift.objects.filter(schedule=active_sched):
+            for assignedDriver in DriversAssigned.objects.filter(shift=shift):
+                if assignedDriver.id == data["driver_id"]:
+                    driver = assignedDriver
+        
+        presentDriver = PresentDrivers()
+        presentDriver.assignedDriver = driver
+        presentDriver.save()
+
+        return Response({
+            "driver": assignedDriver.driver.name,
+            "presentDriverObj": presentDriver.id
+        }, status=status.HTTP_200_OK)
+
 
 class DeployedDrivers(APIView):
     # this function returns all ongoing deployments for the latest shift iteration of the supervisor
