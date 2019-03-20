@@ -479,17 +479,30 @@ class NonDeployedDrivers(APIView):
         non_deployed_drivers = PlannedDriversSerializer(query, many=True)
         
         for item in non_deployed_drivers.data:
+
+            present = PresentDrivers.objects.get(
+                    assignedDriver=item["id"],
+                    datetime__year=datetime.now().year,
+                    datetime__month=datetime.now().month,
+                    datetime__day=datetime.now().day
+                )
+            
+
             item["driver"]["shuttle_id"] = item["shuttle"]["id"]
             item["driver"]["shuttle_plate_number"] = item["shuttle"]["plate_number"]
-
-            if item['deployment_type'] is 'E' and item['shift']['type'] is 'A':
+            
+            if item['deployment_type'] == 'Early' and item['shift']['type'] == 'A':
                 item['expected_departure'] = "5:00 AM"
-            elif item['deployment_type'] is 'R' and item['shift']['type'] is 'A':
+                item["is_late"] = False if present.datetime < present.datetime.replace(hour=5) else True
+            elif item['deployment_type'] == 'Regular' and item['shift']['type'] == 'A':
                 item['expected_departure'] = "7:00 AM"
-            elif item['deployment_type'] is 'R' and item['shift']['type'] is 'P':
+                item["is_late"] = False if present.datetime < present.datetime.replace(hour=7) else True
+            elif item['deployment_type'] == 'Regular' and item['shift']['type'] == 'P':
                 item['expected_departure'] = "2:00 PM"
+                item["is_late"] = False if present.datetime < present.datetime.replace(hour=14) else True
             else:
-                item['expected_departure'] = "10:00 PM"
+                item['expected_departure'] = "4:00 PM"
+                item["is_late"] = False if present.datetime < present.datetime.replace(hour=16) else True
 
             tickets = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
 

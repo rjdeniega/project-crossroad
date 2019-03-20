@@ -58,6 +58,7 @@ function DeploymentList(props) {
                                     ten_total={item.ten_total}
                                     fifteen_total={item.fifteen_total}
                                     twelve_total={item.twelve_total}
+                                    is_late={item.is_late}
                                 />
                             </List.Item>
                         </div>
@@ -102,6 +103,13 @@ function DeploymentListDetails(props) {
                 <Tag color={tag_color} className="route-tag">
                     {route_label}
                 </Tag>
+                {props.is_late == true &&
+                    <span className="late-tag">
+                        <Tag color="red" >
+                            Late
+                        </Tag>
+                    </span>
+                }
             </div>
 
             <div className="deployment-list-container">
