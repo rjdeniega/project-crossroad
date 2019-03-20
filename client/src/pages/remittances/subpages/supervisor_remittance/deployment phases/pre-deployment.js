@@ -109,13 +109,35 @@ class RevisedSubContent extends React.Component {
         super(props);
 
         this.state = {
+            "absentDrivers": [],
             "subDrivers": []
         }
     }
 
     componentDidMount() {
+        this.fetchAbsentDrivers();
         this.fetchSubDrivers();
     }
+
+    fetchAbsentDrivers() {
+        let supervisor = JSON.parse(localStorage.user_staff);
+        fetch('/remittances/deployments/absent/' + supervisor.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        absentDrivers: data.absent_drivers
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
 
     fetchSubDrivers() {
         let supervisor = JSON.parse(localStorage.user_staff);
@@ -145,7 +167,7 @@ class RevisedSubContent extends React.Component {
                     </label>
                     <Select onChange={this.handleChange} style={{ width: 200 }}>
                         {
-                            this.state.subDrivers.map((item) => (
+                            this.state.absentDrivers.map((item) => (
                                 <option value={item.driver.id} key={item.driver.id}>
                                     {item.driver.name}
                                 </option>
