@@ -955,7 +955,7 @@ class MarkAsPresent(APIView):
 
         return Response({
             "driver": assignedDriver.driver.name,
-            "presentDriverObj": presentDriver.id
+            "timeIn": presentDriver.datetime.strftime("%r")
         }, status=status.HTTP_200_OK)
 
 

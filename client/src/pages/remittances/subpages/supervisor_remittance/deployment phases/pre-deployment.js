@@ -126,12 +126,12 @@ class RevisedSubButton extends React.Component {
                 if (!data.error) {
                     if (this.props.route == 'Main Road'){
                         console.log(this.state.ten_total)
-                        if (data.ten_total >= 100 && data.twelve_total >= 100 && data.fifteen_total >= 100)
+                        if (data.ten_total >= 50 && data.twelve_total >= 80 && data.fifteen_total >= 50)
                             var is_disabled = false
                         else
                             var is_disabled = true
                     } else {
-                        if (data.ten_total >= 100 && data.twelve_total >= 100)
+                        if (data.ten_total >= 50 && data.twelve_total >= 80)
                             var is_disabled = false
                         else
                             var is_disabled = true
@@ -391,18 +391,18 @@ function DeploymentListDetails(props) {
     if (props.route == 'Main Road' || props.route == 'M') {
         var route_label = 'Main Road'
         var tag_color = 'blue';
-        if (props.ten_total >= 100 && props.twelve_total >= 100 && props.fifteen_total >= 100)
+        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.fifteen_total >= 50)
             var is_disabled = false;
         else
             var is_disabled = true;
     } else if (props.route == 'Kaliwa' || props.route == 'L') {
         var route_label = "Left Route"
         var tag_color = 'orange';
-        var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
+        var is_disabled = props.ten_total >= 50 && props.twelve_total >= 80 ? false : true;
     } else {
         var route_label = "Right Route"
         var tag_color = 'green';
-        var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
+        var is_disabled = props.ten_total >= 50 && props.twelve_total >= 80 ? false : true;
     }
 
     return (

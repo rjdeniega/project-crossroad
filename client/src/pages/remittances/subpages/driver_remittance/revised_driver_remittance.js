@@ -65,8 +65,8 @@ class OngoingDeployment extends React.Component {
 
     handleMarkAsPresent = () => {
         let driver = JSON.parse(localStorage.user_staff)
-        console.log(driver)
-        this.postDriver(driver)
+    
+        this.postDriver(driver);
     }
 
     postDriver(driver){
@@ -74,11 +74,11 @@ class OngoingDeployment extends React.Component {
         postData('remittances/deployments/present/', data)
             .then(response => {
                 if (!response.error) {
-                    message.success(this.props.driver + " has been marked as Pending for Deployment");
+                    message.success("You have been marked as Pending for Deployment");
                 } else {
                     console.log(response.error);
                 }
-            });
+            })
     }
 
     render() {
