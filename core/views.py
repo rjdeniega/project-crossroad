@@ -2498,21 +2498,21 @@ class NotificationItems(APIView):
         if is_am:
             notification = Notification.objects.filter(user__id=user_id,
                                                        description="Please upload AM beep CSV")
+            if len(notification) == 0:
+                notification = Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='R',
+                    description='Please upload AM beep CSV'
+                )
         elif is_pm:
             notification = Notification.objects.filter(user__id=user_id,
                                                        description="Please upload PM beep CSV")
-        if len(notification) == 0 and is_am:
-            notification = Notification.objects.create(
-                user=User.objects.get(pk=user_id),
-                type='R',
-                description='Please upload AM beep CSV'
-            )
-        if len(notification) == 0 and is_pm:
-            notification = Notification.objects.create(
-                user=User.objects.get(pk=user_id),
-                type='R',
-                description='Please upload PM beep CSV'
-            )
+            if len(notification) == 0:
+                notification = Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='R',
+                    description='Please upload PM beep CSV'
+                )
 
         items = ItemRequest.objects.all()
         for item in items:
