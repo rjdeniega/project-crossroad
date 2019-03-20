@@ -2462,13 +2462,12 @@ class NotificationItems(APIView):
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
-            notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
 
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='N')).order_by('-created'), many=True)
+                                                   .filter(Q(type='I') | Q(type='N')).filter(user__id=user_id).order_by('-created'), many=True)
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by(
                 '-created'), many=True)
