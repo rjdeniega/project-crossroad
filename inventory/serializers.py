@@ -72,3 +72,9 @@ class ItemCategorySerializer(ModelSerializer):
     class Meta:
         model = ItemCategory
         fields = "__all__"
+
+
+class ItemRequestSerializer(ModelSerializer):
+    class Meta:
+        model = ItemRequest
+        fields = "__all__"

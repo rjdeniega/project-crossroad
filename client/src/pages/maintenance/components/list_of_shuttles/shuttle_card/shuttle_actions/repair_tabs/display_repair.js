@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Icon} from 'react-icons-kit'
-import {List, Typography, Button, Popover, DatePicker, message} from 'antd'
+import {List, Typography, Button, Popover, DatePicker, message, Tooltip} from 'antd'
 import {getData} from '../../../../../../../network_requests/general'
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
 import {ic_done} from 'react-icons-kit/md/ic_done'
@@ -100,8 +100,9 @@ export class RepairDisplay extends Component {
             type: type,
         };
         putData('inventory/repair/update_status/' + id, data).then(data => {
-            console.log(data)
-        })
+            this.props.loadNewRepair(data.repair);
+        });
+
     }
 
     render() {
@@ -188,7 +189,9 @@ export class RepairDisplay extends Component {
                             <br/>
                             {repair.status === "NS" && (
                                 <div>
-                                    <Typography>Select degree of repair</Typography>
+                                    <Typography.Text strong>Select degree of repair: </Typography.Text>
+                                    <Typography>Mechanic Recommendation: {repair.recommendation}</Typography>
+                                    <br/>
                                     <Button.Group>
                                         <Popover trigger="click" content={
                                             <div style={{width: '10vw', height: '16vh'}}>
@@ -200,13 +203,20 @@ export class RepairDisplay extends Component {
                                                         onClick={() => this.updateRepairStatus(repair.id, "SR", "Minor")}>Confirm</Button>
                                             </div>
                                         }>
-                                            <Button htmlType='button' type='primary'>Minor</Button>
+                                            <Tooltip title="Minor repairs are not urgent and can be scheduled">
+                                                <Button htmlType='button' type='primary'>Minor</Button>
+                                            </Tooltip>
                                         </Popover>
-                                        <Button htmlType='button' type='primary'
-                                                onClick={() => this.updateRepairStatus(repair.id, "IP", "Intermediate")}>Intermediate</Button>
-                                        <Button htmlType='button' type='primary'
-                                                onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major
-                                            (for outsource)</Button>
+                                        <Tooltip
+                                            title="Intermediate repairs are urgent and must be done as soon as possible">
+                                            <Button htmlType='button' type='primary'
+                                                    onClick={() => this.updateRepairStatus(repair.id, "IP", "Intermediate")}>Intermediate</Button>
+                                        </Tooltip>
+                                        <Tooltip
+                                            title="Major repairs are repairs that require experts thus sending the shuttle to a repair shop">
+                                            <Button htmlType='button' type='primary'
+                                                    onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major</Button>
+                                        </Tooltip>
                                     </Button.Group>
                                 </div>
                             )}
