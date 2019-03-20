@@ -2489,12 +2489,16 @@ class NotificationItems(APIView):
 
     @staticmethod
     def get_clerk_notifs(user_id):
-        is_in_between = NotificationItems.is_time_between(time(15, 00), time(16, 30))
+        is_am = NotificationItems.is_time_between(time(15, 00), time(16, 30))
+        is_pm = NotificationItems.is_time_between(time(19, 00), time(20, 00))
         print(f'the user id is {user_id}')
-        print(is_in_between)
 
-        notification = Notification.objects.filter(user__id=user_id,
-                                                   description="Please upload beep CSV")
+        if is_am:
+            notification = Notification.objects.filter(user__id=user_id,
+                                                   description="Please upload AM beep CSV")
+        elif is_pm:
+            notification = Notification.objects.filter(user__id=user_id,
+                                                       description="Please upload PM beep CSV")
         if len(notification) == 0:
             notification = Notification.objects.create(
                 user=User.objects.get(pk=user_id),
@@ -2550,7 +2554,24 @@ class NotificationItems(APIView):
     @staticmethod
     def get_om_notifs(user_id):
         member_id = user_id
-        Notification.objects.filter(user__id=user_id).hard_delete()
+        # Notification.objects.filter(user__id=user_id).hard_delete()
+        notification = None
+        for item in ItemCategory.objects.all():
+            if item.quantity <= 3:
+                notification = Notification.objects.filter(user__id=user_id,
+                                                           description=f'{item.category} is low on stocks ({item.quantity} pcs)')
+                if len(notification) == 0:
+                    notification = Notification.objects.create(
+                        user=User.objects.get(pk=user_id),
+                        type='I',
+                        description=f'{item.category} is low on stocks ({item.quantity} pcs)'
+                    )
+        return notification
+
+    @staticmethod
+    def get_om_notifs(user_id):
+        member_id = user_id
+        # Notification.objects.filter(user__id=user_id).hard_delete()
         notification = None
         for item in ItemCategory.objects.all():
             if item.quantity <= 3:
