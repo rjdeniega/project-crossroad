@@ -62,8 +62,23 @@ class RevisedSubButton extends React.Component {
         super(props);
 
         this.state = {
-            "modal_is_visible": false
+            'modal_is_visible': false,
+            'sub_driver_id': null,
+            'is_disabled': true,
+            'ten_peso_tickets': [],
+            'twelve_peso_tickets': [],
+            'fifteen_peso_tickets': [],
+            'ten_total': 0,
+            'twelve_total': 0,
+            'fifteen_total': 0,
+            'driver_name': null,
+            'driver_shuttle': null,
+            'driver_route': null,
+            'absent_id': null,
         }
+
+        this.handleSubDriverChange = this.handleSubDriverChange.bind(this);
+        this.handleAbsentChange = this.handleAbsentChange.bind(this);
     }
 
     showModal = () => {
@@ -84,6 +99,62 @@ class RevisedSubButton extends React.Component {
         });
     }
 
+    handleSubDriverChange(sub_driver_id) {
+        this.setState({
+            'sub_driver_id': sub_driver_id,
+        });
+        this.fetchSubDriverTickets(sub_driver_id);
+    }
+
+    handleAbsentChange(id, name, shuttle, route) {
+        this.setState({
+            'absent_id': id,
+            'driver_name': name,
+            'driver_shuttle': shuttle,
+            'driver_route': route,
+        })
+    }
+
+    fetchSubDriverTickets(sub_driver_id) {
+        console.log('entered here', sub_driver_id)
+        fetch('/remittances/tickets/driver/' + sub_driver_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    if (this.props.route == 'Main Road'){
+                        console.log(this.state.ten_total)
+                        if (data.ten_total >= 100 && data.twelve_total >= 100 && data.fifteen_total >= 100)
+                            var is_disabled = false
+                        else
+                            var is_disabled = true
+                    } else {
+                        if (data.ten_total >= 100 && data.twelve_total >= 100)
+                            var is_disabled = false
+                        else
+                            var is_disabled = true
+                    }
+
+                    this.setState({
+                        ten_total: data.ten_total,
+                        ten_peso_tickets: data.ten_peso_tickets,
+                        twelve_total: data.twelve_total,
+                        twelve_peso_tickets: data.twelve_peso_tickets,
+                        fifteen_total: data.fifteen_total,
+                        fifteen_peso_tickets: data.fifteen_peso_tickets,
+                        is_disabled: is_disabled
+                    });
+
+                    console.log(this.state.ten_total)
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
     render(){
         return(
             <span>
@@ -96,8 +167,23 @@ class RevisedSubButton extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     okText="Deploy"
+                    okButtonProps={this.state.is_disabled ?
+                        { disabled: true } : { disabled: false }
+                    }
                 >
-                    <RevisedSubContent />
+                    <RevisedSubContent 
+                        onSelectChange={this.handleSubDriverChange}
+                        onAbsentChange={this.handleAbsentChange}
+                        shuttle={this.state.driver_shuttle}
+                        driver_name={this.state.driver_name}
+                        route={this.state.driver_route}
+                        ten_total={this.state.ten_total}
+                        twelve_total={this.state.twelve_total}
+                        fifteen_total={this.state.fifteen_total}
+                        ten_peso_tickets={this.state.ten_peso_tickets}
+                        twelve_peso_tickets={this.state.twelve_peso_tickets}
+                        fifteen_peso_tickets={this.state.fifteen_peso_tickets}
+                    />
                 </Modal>
             </span>
         );
@@ -112,6 +198,9 @@ class RevisedSubContent extends React.Component {
             "absentDrivers": [],
             "subDrivers": []
         }
+
+        this.handleSubChange = this.handleSubChange.bind(this);
+        this.handleAbsentChange = this.handleAbsentChange.bind(this);
     }
 
     componentDidMount() {
@@ -136,6 +225,33 @@ class RevisedSubContent extends React.Component {
                     console.log(data.error)
                 }
             }).catch(error => console.log(error));
+    }
+
+    handleAbsentChange(value) {
+        let driver = null
+        let absentDrivers = this.state.absentDrivers;
+        for(var i=0; i<absentDrivers.length; i++){
+            console.log("entered here")
+            if(this.state.absentDrivers[i]["driver"]["id"] == value)
+                driver = this.state.absentDrivers[i];
+        }
+        let driver_id = driver.driver.id;
+        let driver_name = driver.driver.name;
+        let driver_shuttle = "#" + driver.shuttle.shuttle_number + " - " + driver.shuttle.plate_number;
+        let driver_route = null;
+
+        if(driver.shuttle.route == "M")
+            driver_route = "Main Road";
+        else if(driver.shuttle.route == "R")
+            driver_route = "Kaliwa";
+        else
+            driver_route = "Kanan";
+        
+        this.props.onAbsentChange(driver_id, driver_name, driver_shuttle, driver_route);
+    }
+
+    handleSubChange(value) {
+        this.props.onSelectChange(value);
     }
 
 
@@ -165,7 +281,7 @@ class RevisedSubContent extends React.Component {
                     <label className="sub-driver-label">
                         Absent Driver:
                     </label>
-                    <Select onChange={this.handleChange} style={{ width: 200 }}>
+                    <Select onChange={this.handleAbsentChange} style={{ width: 200 }}>
                         {
                             this.state.absentDrivers.map((item) => (
                                 <option value={item.driver.id} key={item.driver.id}>
@@ -179,7 +295,7 @@ class RevisedSubContent extends React.Component {
                     <label className="sub-driver-label">
                         Subdrivers:
                     </label>
-                    <Select onChange={this.handleChange} style={{ width: 200 }}>
+                    <Select onChange={this.handleSubChange} style={{ width: 200 }}>
                         {
                             this.state.subDrivers.map((item) => (
                                 <option value={item.driver.id} key={item.driver.id}>
@@ -198,11 +314,11 @@ class RevisedSubContent extends React.Component {
                         value={this.props.driver_name}
                     />
                     <DetailItems
-                        title="Shuttle: "
+                        title="Shuttle"
                         value={this.props.shuttle}
                     />
                     <DetailItems
-                        title="Route: "
+                        title="Route"
                         value={this.props.route}
                     />
 
