@@ -1498,8 +1498,8 @@ class TicketCountReport(APIView):
             grand_pm_total += grand_pm_total + pm_total
 
         return Response(data={
-            "start_date": start_date,
-            "end_date": end_date,
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
             "grand_am_total": grand_am_total,
             "grand_pm_total": grand_pm_total,
             "am_average": grand_am_total / 30,
@@ -1515,8 +1515,11 @@ class TicketTypePerDayReport(APIView):
     def post(request):
         data = json.loads(request.body)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        end_date = start_date + timedelta(days=6)  # for one week
 
+        if "end_date" not in request.data:
+            end_date = start_date + timedelta(days=6)  # for one week
+        else:
+            end_date = datetime.strptime(data["end_date"], '%Y-%m-%d')
         temp_start = start_date
 
         days = []
@@ -2291,6 +2294,15 @@ class RemittanceForTheMonth(APIView):
 
                 if i == 10:
                     end_date = temp_date
+            return Response(data={
+                "days": days,
+                "start_date": date.date(),
+                "end_date": end_date.date(),
+                "main_road_values": main_road_values,
+                "kaliwa_values": kaliwa_values,
+                "kanan_values": kanan_values,
+            }, status=status.HTTP_200_OK)
+
         elif data["interval"] == "year":
             days = []
             temp_date = date
@@ -2393,7 +2405,7 @@ class NotificationItems(APIView):
     def get(request, user_type, user_id):
         # user type gotten from localStorage.get('user_type')
         user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
-        Notification.objects.all().hard_delete()
+        Notification.objects.filter(is_read=True).hard_delete()
         notifications = NotificationSerializer(Notification.objects.all(), many=True)
         unread = NotificationSerializer(Notification.objects.all(), many=True)
         print(user_type)
@@ -2494,7 +2506,7 @@ class NotificationItems(APIView):
     @staticmethod
     def get_om_repairs(user_id):
         items = Repair.objects.filter(status="NS")
-        item2 = Repair.objects.filter(status="C")
+        # item2 = Repair.objects.filter(status="C")
 
         for item in items:
             notification = Notification.objects.filter(user__id=user_id,
@@ -2506,15 +2518,15 @@ class NotificationItems(APIView):
                     description=f"{item.shuttle} has a pending repair request"
                 )
 
-        for item in item2:
-            notification2 = Notification.objects.filter(user__id=user_id,
-                                                        description=f"{item.shuttle} has been repaired")
-            if len(notification2) == 0:
-                Notification.objects.create(
-                    user=User.objects.get(pk=user_id),
-                    type='I',
-                    description=f"{item.shuttle} has been repaired"
-                )
+                # for item in item2:
+                #     notification2 = Notification.objects.filter(user__id=user_id,
+                #                                                 description=f"{item.shuttle} has been repaired")
+                #     if len(notification2) == 0:
+                #         Notification.objects.create(
+                #             user=User.objects.get(pk=user_id),
+                #             type='I',
+                #             description=f"{item.shuttle} has been repaired"
+                #         )
 
     @staticmethod
     def get_member_notifs(user):

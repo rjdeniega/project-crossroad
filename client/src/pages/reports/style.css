@@ -67,3 +67,8 @@
     width: 100%;
     margin-bottom: 20px
     }
+.lbatsc-container{
+    display:flex;
+    justify-items: center;
+    justify-content:center;
+    }

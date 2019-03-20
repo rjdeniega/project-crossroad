@@ -362,7 +362,8 @@ class AssignedTicketHistory(APIView):
 class AssignedTicketHistoryPerSupervisor(APIView):
     @staticmethod
     def get(request, supervisor_id):
-        tickets = AssignedTicket.objects.all().order_by('-created')  # TODO order by date created
+        date = datetime.now() - timedelta(days=90)
+        tickets = AssignedTicket.objects.filter(created__gte=date).order_by('-created')  # TODO order by date created
 
         ticket_assignments = []
 

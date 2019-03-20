@@ -13,13 +13,14 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Pagination, Row } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
+import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -31,11 +32,14 @@ class ComponentToPrint extends React.Component {
         const { data } = this.props;
         return (
             <div className="formatted-container">
+                <div className="lbatsc-container">
+                    <img className="lbatsc" src={LBATSCLogo}/>
+                </div>
                 <div className="report-labels">
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.start_date &&
-                        <p> Ticket Count Report for {this.props.data.start_date}</p>
+                        <p><b> Ticket Count Report for {this.props.data.start_date}</b></p>
                         }
                     </Fragment>
                     }
@@ -181,6 +185,11 @@ class ComponentToPrint extends React.Component {
                         </Fragment>
                         }
                         <tr>
+                            <Pagination size="small" onChange={this.props.handlePagination} defaultCurrent={1}
+                                        total={this.props.length}/>
+
+                        </tr>
+                        <tr>
                             <td>
                                 <div>&nbsp;</div>
                             </td>
@@ -256,7 +265,9 @@ class ComponentToPrint extends React.Component {
     }
 }
 export class TicketPerDay extends Component {
-    state = {};
+    state = {
+        start: 1
+    };
 
     componentDidMount() {
     }
@@ -269,11 +280,56 @@ export class TicketPerDay extends Component {
         postData('ticket_type_per_day/', data).then(data => {
             console.log(data);
             if (!data.error) {
-                this.setState({
-                    data: data
-                })
+                console.log(data);
+                console.log(data.days.length);
+                let length = Math.round(data.days.length);
+
+                if (!data.error) {
+                    this.setState({
+                        original_data: data,
+                        data: data,
+                    });
+                    if (data.days.length < 2) {
+                        this.setState({
+                            data: data,
+                            length: length * 10,
+                        })
+                    }
+                    else {
+                        let new_data = { ...data };
+                        new_data.days = this.changeContents([...this.state.original_data.days]);
+                        console.log(new_data);
+                        this.setState({
+                            data: new_data,
+                            length: length * 10,
+                        });
+                        console.log(this.state.original_data)
+                    }
+                }
             }
         });
+    }
+
+    handlePagination = (current) => {
+        let new_array = { ...this.state.original_data };
+        this.setState({
+            start: current
+        }, () => {
+            new_array.days = this.changeContents([...this.state.original_data.days]);
+            console.log(new_array.days);
+            this.setState({
+                data: new_array
+            })
+        })
+        console.log(this.state.data)
+    }
+
+    changeContents = (array) => {
+        console.log(this.state.start);
+        let index = this.state.start - 1;
+        let new_array = [];
+        new_array.push(array[index]);
+        return new_array;
     }
 
     handleStartDateChange = (date, dateString) => {
@@ -300,7 +356,8 @@ export class TicketPerDay extends Component {
                         trigger={() => <a href="#">Print this out!</a>}
                         content={() => this.componentRef}
                     />
-                    <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>
+                    <ComponentToPrint handlePagination={this.handlePagination} length={this.state.length}
+                                      data={this.state.data} ref={el => (this.componentRef = el)}/>
                 </div>
             </div>
         );

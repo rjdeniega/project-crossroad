@@ -18,7 +18,7 @@ import moment from "moment";
 const columns = [{
     title: 'Name',
     dataIndex: 'member.name',
-    key: 'mamber.name',
+    key: 'member.name',
     render: (text) => (
         <div>
             {text}

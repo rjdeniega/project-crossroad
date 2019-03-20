@@ -9,3 +9,10 @@
   thead { display:table-header-group }
   tfoot { display:table-footer-group }
 }
+.lbatsc{
+    height: 80px;
+    }
+.lbatsc-container{
+    display: flex;
+    justify-content: center;
+    }
