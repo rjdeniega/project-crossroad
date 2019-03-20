@@ -959,6 +959,41 @@ class MarkAsPresent(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class DayOffDriver(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        active_sched = RemittanceUtilities.get_active_schedule();
+        print(data["driver_id"])
+        driver = None
+        for shift in Shift.objects.filter(schedule=active_sched):
+            for assignedDriver in DriversAssigned.objects.filter(shift=shift):
+                if assignedDriver.driver.id == data["driver_id"]:
+                    driver = assignedDriver
+
+        presents = PresentDrivers.objects.filter(
+                    assignedDriver=driver, 
+                    datetime__year=datetime.now().year,
+                    datetime__month=datetime.now().month,
+                    datetime__day=datetime.now().day
+                    )
+        
+        if presents:
+            present = presents[0]
+            present.is_dayoff = True
+            present.save()
+
+            return Response(data={
+                "message": "driver is now taking a dayoff"
+            }, status=status.HTTP_200_OK)
+        else:
+             return Response(data={
+                "message": "problem occured regarding present drivers obj"
+            }, status=status.HTTP_200_OK)
+        
+        
+
+
 class DeployedDrivers(APIView):
     # this function returns all ongoing deployments for the latest shift iteration of the supervisor
     @staticmethod

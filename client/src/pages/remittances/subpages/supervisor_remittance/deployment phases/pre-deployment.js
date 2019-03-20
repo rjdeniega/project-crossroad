@@ -648,6 +648,9 @@ function DeploymentButtons(props) {
 
     return (
         <div className="deployment-button-container">
+            <DayOffButton 
+                driver_id={props.driver_id}
+            />
             <SubButton
                 shuttle={props.shuttle}
                 route={props.route}
@@ -675,6 +678,32 @@ function DeploymentButtons(props) {
                 )}
         </div>
     );
+}
+
+class DayOffButton extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.handleDayOff = this.handleDayOff.bind(this);
+    }
+
+    handleDayOff() {
+        let data = {"driver_id": this.props.driver_id}
+        postData('remittances/deployments/dayoff/', data)
+            .then(response => {
+                if (!response.error) {
+                    message.success("Driver now takes the dayoff");
+                } else {
+                    console.log(response.error);
+                }
+            });
+    }
+
+    render(){
+        return(
+            <Button onClick={this.handleDayOff}>Day-off</Button>
+        );
+    }
 }
 
 class DeployWithDiffShuttle extends React.Component {

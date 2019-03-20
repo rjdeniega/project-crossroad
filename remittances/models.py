@@ -206,6 +206,7 @@ class PresentDrivers(models.Model):
     assignedDriver = ForeignKey(DriversAssigned, related_name="assigned_driver", on_delete=models.CASCADE)
     datetime = DateTimeField(default=timezone.now)
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
+    is_dayoff = BooleanField(default=False)
 
     def __str__(self):
         return self.assignedDriver.driver.name + ' is present on ' + self.datetime.strftime("%m-%d-%y %H:%M:%S")
