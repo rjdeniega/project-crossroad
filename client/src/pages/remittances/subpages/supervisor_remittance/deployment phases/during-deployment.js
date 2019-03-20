@@ -51,7 +51,7 @@ function DeploymentList(props) {
                                     id={item.driver.id}
                                     name={item.driver.name}
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
-                                    route={item.shuttle.route}
+                                    route={item.route}
                                     start_time={item.start_time}
                                     tickets="130pcs"
                                     photo={item.driver.photo}
@@ -612,6 +612,7 @@ class ShuttleBreakdown extends React.Component {
     }
 
     render() {
+        const { Option, OptGroup } = Select;
         return (
             <div>
                 <Divider orientation="left">
@@ -627,13 +628,30 @@ class ShuttleBreakdown extends React.Component {
                     onChange={this.handleChange}
                     className="modal-detail-value"
                 >
-                    {
-                        this.state.availableShuttles.map((item) => (
-                            <option value={item.id} key={item.id}>
-                                Shuttle#{item.shuttle_number} - {item.plate_number}
-                            </option>
-                        ))
-                    }
+                    <OptGroup label="Back-up Shuttles">
+                        {
+                            this.state.availableShuttles.map((item) => {
+                                if(item.route == 'B')
+                                    return (
+                                        <option value={item.id} key={item.id}>
+                                            Shuttle#{item.shuttle_number} - {item.plate_number}
+                                        </option>
+                                    )
+                            })
+                        }
+                    </OptGroup>
+                    <OptGroup label="Other Available Shuttles">
+                        {
+                            this.state.availableShuttles.map((item) => {
+                                if(item.route != 'B')
+                                    return (
+                                        <option value={item.id} key={item.id}>
+                                            Shuttle#{item.shuttle_number} - {item.plate_number}
+                                        </option>
+                                    )
+                            })
+                        }
+                    </OptGroup>
                 </Select>
                 <ModalDetails
                     title="Route"

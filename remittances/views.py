@@ -1011,6 +1011,7 @@ class DeployedDrivers(APIView):
             shuttle = ShuttlesSerializer(Shuttle.objects.get(id=item.get('shuttle')))
             deployment = Deployment.objects.get(id=item["id"]);
             time = deployment.start_time
+            item["route"] = deployment.route
             item["driver"] = driver.data
             item["shuttle"] = shuttle.data
             item["start_time"] = time.strftime("%I:%M %p")
@@ -1071,7 +1072,7 @@ class ShuttleBreakdown(APIView):
 
         for deployment in deployments:
             shuttles = shuttles.exclude(id=deployment.shuttle.id)
-
+        
         serialized_shuttle = ShuttlesSerializer(shuttles, many=True)
         return Response(data={
             "shuttles": serialized_shuttle.data
