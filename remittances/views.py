@@ -2242,7 +2242,7 @@ class BeepTransactionView(APIView):
         else:
             date = datetime.strptime(request.POST.get('date'), '%Y-%m-%d').date()
         if request.POST.get('shift_type') == "null":
-            is_am = BeepTransactionView.is_time_between(time(6, 00), time(16, 30))
+            is_am = BeepTransactionView.is_time_between(time(2, 00), time(14, 00))
             if is_am:
                 shift_type = "A"
             else:
