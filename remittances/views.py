@@ -287,7 +287,10 @@ class AssignTicketView(APIView):
         assigned_ticket = AssignedTicket()
         assigned_ticket.driver_id = data['driver_id']
         assigned_ticket.range_from = data['range_from']
-        temp_string = int(data['range_from']) + 100 - 1
+        if data["ticket_type"] == 'A' or data["ticket_type"] == 'C':
+            temp_string = int(data['range_from']) + 100 - 1
+        else:
+            temp_string = int(data['range_from']) + 200 - 1
         assigned_ticket.range_to = str(temp_string)
         assigned_ticket.type = data['ticket_type']
         assigned_ticket.save()
@@ -313,7 +316,6 @@ class AssignTicketView(APIView):
 
         saved_data = AssignedTicketSerializer(assigned_ticket)
 
-        print(saved_data)
         assigned_ticket_object = {
             "date": datetime.now().date(),
             "range_to": assigned_ticket.range_to,
