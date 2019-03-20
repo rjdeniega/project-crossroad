@@ -2497,7 +2497,7 @@ class NotificationItems(APIView):
 
         if is_am:
             notification = Notification.objects.filter(user__id=user_id,
-                                                   description="Please upload AM beep CSV")
+                                                       description="Please upload AM beep CSV")
         elif is_pm:
             notification = Notification.objects.filter(user__id=user_id,
                                                        description="Please upload PM beep CSV")
@@ -2513,6 +2513,17 @@ class NotificationItems(APIView):
                 type='R',
                 description='Please upload PM beep CSV'
             )
+
+        items = ItemRequest.objects.all()
+        for item in items:
+            notifs = Notification.objects.filter(user__id=user_id,
+                                                 description=f"{item.category.category} is needed , {item.description}")
+            if len(notifs) == 0:
+                notification = Notification.objects.create(
+                    user=User.objects.get(pk=user_id),
+                    type='I',
+                    description=f"{item.category.category} is needed , {item.description}"
+                )
         return notification
 
     @staticmethod
