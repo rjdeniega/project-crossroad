@@ -58,7 +58,7 @@ class ComponentToPrint extends React.Component {
                             {this.props.data.report_items.map((item, index) => (
                                 <Fragment>
                                     <tr>
-                                        <td>{item.member_card.can}</td>
+                                        <td>{item.member_id}</td>
                                         <td>{item.member.name}</td>
                                         <td>{item.no_of_beep}</td>
                                         <td className="monetary">{item.beep_total_decimal}</td>

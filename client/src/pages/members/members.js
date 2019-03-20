@@ -108,9 +108,10 @@ export class TransactionsPane extends Component {
         total: null,
         receipt: null,
         visible: false,
-        date: null,
+        date: "now",
         date_object: moment('2015/01/01', dateFormat),
-        function: 'add'
+        function: 'add',
+        with_select: false,
     };
 
     componentDidMount() {
@@ -220,6 +221,12 @@ export class TransactionsPane extends Component {
             image: e.target.files[0]
         })
     };
+     onChangeTransaction = (e) => {
+        this.setState({
+            with_select: e.target.value
+        })
+        console.log(`radio checked:${e.target.value}`);
+    }
 
     render() {
         const { activeUser } = this.props;
@@ -243,9 +250,20 @@ export class TransactionsPane extends Component {
                                 {...formItemLayout}
                                 label="Date of Transaction:"
                             >
+                                <RadioGroup size="small" onChange={this.onChangeTransaction} defaultValue={false}>
+                                    <RadioButton value={false}>Now</RadioButton>
+                                    <RadioButton value={true}>Select Date</RadioButton>
+                                </RadioGroup>
+                            </Form.Item>
+                            {this.state.with_select &&
+                            <Form.Item
+                                {...formItemLayout}
+                                label=" "
+                            >
                                 <DatePicker className="user-input" onChange={this.handleDateChange}
                                             format={dateFormat}/>
                             </Form.Item>
+                            }
                             <Form.Item
                                 {...formItemLayout}
                                 label="Receipt Number:"
@@ -314,9 +332,10 @@ export class SharesManagementPane extends Component {
         total_shares: null,
         total_peso_value: null,
         visible: false,
-        date: null,
+        date: "now",
         date_object: moment('2015/01/01', dateFormat),
         action: null,
+        with_select_shares: false,
     };
 
     componentDidMount() {
@@ -399,6 +418,7 @@ export class SharesManagementPane extends Component {
         });
     };
     handleShareChange = (value) => {
+        console.log(value);
         this.setState({
             add_share_value: value
         })
@@ -457,6 +477,12 @@ export class SharesManagementPane extends Component {
         })
         console.log(`radio checked:${e.target.value}`);
     }
+    onChangeShares= (e) => {
+        this.setState({
+            with_select_shares: e.target.value
+        })
+        console.log(`radio checked:${e.target.value}`);
+    }
 
     render() {
         const { activeUser } = this.props;
@@ -482,11 +508,22 @@ export class SharesManagementPane extends Component {
                             </Form.Item>
                             <Form.Item
                                 {...formItemLayout}
-                                label="Date of Payment:"
+                                label="Date of Transaction:"
+                            >
+                                <RadioGroup size="small" onChange={this.onChangeShares} defaultValue={false}>
+                                    <RadioButton value={false}>Now</RadioButton>
+                                    <RadioButton value={true}>Select Date</RadioButton>
+                                </RadioGroup>
+                            </Form.Item>
+                            {this.state.with_select_shares &&
+                            <Form.Item
+                                {...formItemLayout}
+                                label=" "
                             >
                                 <DatePicker className="user-input" onChange={this.handleDateChange}
                                             format={dateFormat}/>
                             </Form.Item>
+                            }
                             <Form.Item
                                 {...formItemLayout}
                                 label="Receipt Number:"

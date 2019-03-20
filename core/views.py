@@ -540,6 +540,7 @@ class MemberTransactionByReport(APIView):
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
                 report_items.append({
+                    "member_id": member.id,
                     "member": member_data,
                     "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
                     "no_of_beep": len(transactions),

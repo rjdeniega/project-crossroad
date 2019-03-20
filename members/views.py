@@ -338,14 +338,14 @@ class MemberTransactionView(APIView):
 class MemberSharesView(APIView):
     @staticmethod
     def get(request, member_id):
-        shares = Share.objects.filter(member=Member.objects.get(pk=member_id))
+        shares = Share.objects.filter(member=Member.objects.get(pk=member_id)).order_by("date_of_update")
         serialized_shares = ShareSerializer(shares, many=True)
 
         for item in serialized_shares.data:
             item["peso_value"] = float(item["value"]) * 500
 
         return Response(data={
-            "shares": serialized_shares.data,
+            "shares": reversed(serialized_shares.data),
             "total_shares": sum([float(item["value"]) for item in serialized_shares.data]),
             "total_peso_value": sum([float(item["peso_value"]) for item in serialized_shares.data])
         }, status=status.HTTP_200_OK)
@@ -374,6 +374,9 @@ class MemberSharesView(APIView):
             "value": value,
             "photo": request.FILES.get('image')
         }
+        if data['date_of_update'] == "now":
+            data['date_of_update'] = datetime.now().date()
+        print(data['date_of_update'])
         share_serializer = ShareSerializer(data=data)
 
         if share_serializer.is_valid():

@@ -2365,11 +2365,11 @@ class CarwashTransactionView(APIView):
     @staticmethod
     def get(request, member_id):
         print("enters here")
-        transactions = CarwashTransaction.objects.all()
+        transactions = CarwashTransaction.objects.all().order_by("date")
         carwash_transactions = [item for item in transactions if item.member.id == member_id]
         serialized_carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions]
         return Response(data={
-            "carwash_transactions": serialized_carwash_transactions,
+            "carwash_transactions": reversed(serialized_carwash_transactions),
             "carwash_transaction_total": sum([float(item["total"]) for item in serialized_carwash_transactions])
         }, status=status.HTTP_200_OK)
 
@@ -2382,6 +2382,9 @@ class CarwashTransactionView(APIView):
             "total": request.POST.get('total'),
             "photo": request.FILES.get('image')
         }
+        print(data['date'])
+        if data['date'] == "now":
+            data['date'] = datetime.now().date()
         transaction_serializer = CarwashTransactionSerializer(data=data)
         if transaction_serializer.is_valid():
             transaction = transaction_serializer.create(validated_data=transaction_serializer.validated_data)
