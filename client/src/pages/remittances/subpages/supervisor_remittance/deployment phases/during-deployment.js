@@ -79,14 +79,17 @@ function DeploymentListDetails(props) {
     if (props.route == 'Main Road' || props.route == 'Main Route' || props.route == 'M') {
         var route_label = 'Main Road'
         var tag_color = 'blue';
+        var isMainRoad = true;
     }
     else if (props.route == 'Kaliwa' || props.route == 'Left Route' || props.route == 'L') {
         var tag_color = 'orange';
         var route_label = 'Left Route';
+        var isMainRoad = false;
     }
     else {
         var tag_color = 'green';
         var route_label = 'Right Route';
+        var isMainRoad = false;
     }
 
 
@@ -94,7 +97,12 @@ function DeploymentListDetails(props) {
         return (
             <div>
                 <div className="deployment-header">
-                    <Avatar src={props.photo} shape="square" />
+                    <Avatar 
+                        src={props.photo} 
+                        style={{ backgroundColor: '#68D3B7' }} 
+                        shape="square"
+                        icon="user"
+                        />
                     <span className="deployment-name">
                         {props.name}
                     </span>
@@ -122,7 +130,7 @@ function DeploymentListDetails(props) {
                             amount="₱12"
                             tickets={props.twelve_tickets}
                         />
-                        {props.route == 'Main Road' || props.route == 'Main Route' &&
+                        {isMainRoad &&
                             <TicketDisplay
                                 amount="₱15"
                                 tickets={props.fifteen_tickets}
@@ -148,9 +156,19 @@ function DeploymentListDetails(props) {
             <div>
                 <div className="deployment-header">
                     <Tooltip title={prompt_text} placement="topLeft">
-                        <Avatar src={absent_driver.photo} shape="square" />
+                        <Avatar 
+                            src={absent_driver.photo}
+                            style={{ backgroundColor: '#68D3B7' }} 
+                            shape="square"
+                            icon="user"
+                            />
                         <Icon type="arrow-right" className="sub-arrow" />
-                        <Avatar src={props.photo} shape="square" />
+                        <Avatar 
+                            src={props.photo} 
+                            style={{ backgroundColor: '#68D3B7' }} 
+                            shape="square"
+                            icon="user"
+                            />
                         <span className="deployment-name">
                             {props.name}
                         </span>
@@ -183,7 +201,7 @@ function DeploymentListDetails(props) {
                             amount="₱12"
                             tickets={props.twelve_tickets}
                         />
-                        {props.route == 'Main Road' || props.route == 'Main Route' &&
+                        {isMainRoad &&
                             <TicketDisplay
                                 amount="₱15"
                                 tickets={props.fifteen_tickets}
