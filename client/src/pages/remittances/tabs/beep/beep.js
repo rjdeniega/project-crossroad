@@ -2,7 +2,7 @@
  * Created by JasonDeniega on 02/07/2018.
  */
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
 import { Modal, Button, Input, Select, Icon, Table, Radio, Row, Col, Alert, Form, DatePicker, Pagination } from 'antd'
@@ -101,7 +101,8 @@ export class BeepPane extends Component {
         transactions: [],
         function: 'add',
         date: null,
-        date_object: moment('2015/01/01', dateFormat)
+        date_object: moment('2015/01/01', dateFormat),
+        is_manual: false,
     };
 
     componentDidMount() {
@@ -148,7 +149,7 @@ export class BeepPane extends Component {
     };
     fetchTransactionData = data => {
         console.log("entered here");
-        getData('/remittances/specific_beep/'+ data.id).then(data => {
+        getData('/remittances/specific_beep/' + data.id).then(data => {
             if (!data.error) {
                 console.log(data.transactions);
                 this.setState({
@@ -218,6 +219,12 @@ export class BeepPane extends Component {
         })
         console.log(`radio checked:${e.target.value}`);
     }
+    onChangeManual = (e) => {
+        this.setState({
+            is_manual: e.target.value
+        })
+        console.log(`radio checked:${e.target.value}`);
+    }
 
 
     render() {
@@ -246,21 +253,35 @@ export class BeepPane extends Component {
                         </Form.Item>
                         <Form.Item
                             {...formItemLayout}
-                            label="Select Date"
+                            label="Shift:"
                         >
-                            <DatePicker className="user-input" onChange={this.handleDateChange} format={dateFormat}/>
+                            <RadioGroup onChange={this.onChangeManual} defaultValue={false}>
+                                <RadioButton value={false}>Now</RadioButton>
+                                <RadioButton value={true}>Select Manually</RadioButton>
+                            </RadioGroup>
                         </Form.Item>
+                        {this.state.is_manual &&
+                        <Fragment>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Select Date"
+                            >
+                                <DatePicker className="user-input" onChange={this.handleDateChange}
+                                            format={dateFormat}/>
+                            </Form.Item>
 
-                        <Form.Item
-                            {...formItemLayout}
-                            label="Shift Type"
-                        >
-                            <Select onChange={this.handleSelectChange("shift_type")} className="user-input"
-                                    defaultValue="Please select shift type">
-                                <Option value="A">AM</Option>
-                                <Option value="P">PM</Option>
-                            </Select>
-                        </Form.Item>
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Shift Type"
+                            >
+                                <Select onChange={this.handleSelectChange("shift_type")} className="user-input"
+                                        defaultValue="Please select shift type">
+                                    <Option value="A">AM</Option>
+                                    <Option value="P">PM</Option>
+                                </Select>
+                            </Form.Item>
+                        </Fragment>
+                        }
                         <Form.Item
                             {...formItemLayout}
                             label="Beep CSV file"

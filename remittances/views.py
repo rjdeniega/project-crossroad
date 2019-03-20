@@ -11,9 +11,8 @@ from remittances.serializers import *
 from inventory.serializers import ShuttlesSerializer
 from .models import *
 import json
-from datetime import datetime
+from datetime import datetime, time
 from tablib import Dataset
-from time import time
 
 
 class ScheduleView(APIView):
@@ -983,7 +982,7 @@ class RedeployDriver(APIView):
         drivers = serialized_drivers.data
 
         supervisor = DriverSerializer(Driver.objects.get(id=shift_iteration.shift.supervisor.id))
-        
+
         drivers.append(supervisor.data)
 
         return Response(data={
@@ -1424,6 +1423,7 @@ class SpecificDriverTicket(APIView):
             "fifteen_peso_tickets": fifteen_peso_tickets,
         }, status=status.HTTP_200_OK)
 
+
 class TicketUtilities():
     @staticmethod
     def get_num_of_void(assigned_ticket_id):
@@ -1508,7 +1508,7 @@ class TicketUtilities():
             # remove consumed tickets
             # retrieve highest end ticket for the bundle
             consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=ticket.id).order_by("-end_ticket").first()
-            
+
             if consumed_tickets is not None:
                 # check if all tickets in bundle are consumed
                 if ticket.range_to > consumed_tickets.end_ticket:
@@ -2228,7 +2228,7 @@ class BeepTransactionView(APIView):
                 "shift": BeepShiftSerializer(shift).data,
                 "transactions": dict_transactions
             })
-
+        print(beep_shifts)
         return Response(data={
             "beep_shifts": beep_shifts
         }, status=status.HTTP_200_OK)
@@ -2236,9 +2236,22 @@ class BeepTransactionView(APIView):
     @staticmethod
     def post(request):
         print(request.data)
-        shift_type = request.POST.get('shift_type')
+        #autodetect shift if not present
+        if request.POST.get('date') == "null":
+            date = datetime.now().date()
+        else:
+            date = datetime.strptime(request.POST.get('date'), '%Y-%m-%d').date()
+        if request.POST.get('shift_type') == "null":
+            is_am = BeepTransactionView.is_time_between(time(6, 00), time(16, 30))
+            if is_am:
+                shift_type = "A"
+            else:
+                shift_type = "P"
+        else:
+            shift_type = request.POST.get('shift_type')
+
         function = request.POST.get('function')
-        beep_shift = BeepTransactionView.shift_get_or_create(request.POST.get('date'), shift_type)
+        beep_shift = BeepTransactionView.shift_get_or_create(date, shift_type)
         shuttle = Shuttle.objects.order_by("?").first()
         if function == 'replace':
             [item.delete() for item in BeepTransaction.objects.all() if item.shift == beep_shift]
@@ -2262,6 +2275,15 @@ class BeepTransactionView(APIView):
         }, status=status.HTTP_200_OK)
 
     @staticmethod
+    def is_time_between(begin_time, end_time, check_time=None):
+        # If check time is not given, default to current UTC time
+        check_time = datetime.now().time()
+        if begin_time < end_time:
+            return check_time >= begin_time and check_time <= end_time
+        else:  # crosses midnight
+            return check_time >= begin_time or check_time <= end_time
+
+    @staticmethod
     def generate_column(row):
         return BeepTransactionView.temp_shift.id
 
@@ -2272,16 +2294,14 @@ class BeepTransactionView(APIView):
     @staticmethod
     def shift_get_or_create(date, shift_type):
         for shift in BeepShift.objects.all():
-            print(shift.date)
-            print(datetime.strptime(date, '%Y-%m-%d').date())
-            print(shift.date == datetime.strptime(date, '%Y-%m-%d').date())
-            if shift.date == datetime.strptime(date, '%Y-%m-%d').date() and shift.type == shift_type:
+            print(shift.date == date)
+            if shift.date == date and shift.type == shift_type:
                 print("its the same")
                 return shift
         print("not the same")
         beep_shift = BeepShift()
         beep_shift.type = shift_type
-        beep_shift.date = datetime.strptime(date, '%Y-%m-%d').date()
+        beep_shift.date = date
         beep_shift.save()
         return beep_shift
 
@@ -2324,9 +2344,8 @@ class BeepCollapsedView(APIView):
                 "shift": BeepShiftSerializer(shift).data,
                 # "transactions": dict_transactions
             })
-
         return Response(data={
-            "beep_shifts": beep_shifts.reverse()
+            "beep_shifts": reversed(beep_shifts)
         }, status=status.HTTP_200_OK)
 
 
@@ -2335,7 +2354,8 @@ class SpecificBeepView(APIView):
     def get(request, beep_shift_id):
         print("enters here")
         dict_transactions = []
-        transactions = [BeepTransactionSerializer(item) for item in BeepTransaction.objects.filter(shift__id=beep_shift_id)]
+        transactions = [BeepTransactionSerializer(item) for item in
+                        BeepTransaction.objects.filter(shift__id=beep_shift_id)]
         for transaction in transactions:
             transaction_instance = transaction.data
             try:

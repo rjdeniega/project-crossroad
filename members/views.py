@@ -128,10 +128,19 @@ class AssignedDriverView(APIView):
         active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
 
         drivers = DriversAssigned.objects.filter(shift__schedule=active_sched)
-        drivers = [item.driver for item in drivers]
-        drivers = DriverSerializer(drivers, many=True).data
 
-        drivers.append(DriverSerializer(Driver.objects.get(id=supervisor_id)).data)
+        drivers = [item.driver.name for item in drivers]
+        drivers.append(Driver.objects.get(id=supervisor_id).name)
+        drivers = sorted(drivers)
+
+        new_drivers = []
+        for item in drivers:
+            x = Driver.objects.filter(name=item)[0]
+            new_drivers.append(x)
+
+        drivers = DriverSerializer(new_drivers, many=True).data
+
+
 
         for driver in drivers:
             tickets = TicketUtilities.get_assigned_with_void_of_driver(driver["id"])

@@ -56,7 +56,6 @@ class ComponentToPrint extends React.Component {
                         <th>Remittance</th>
                         <th>Payables</th>
                         <th>Absences</th>
-                        <th>Frequency of Sub-in</th>
                         </thead>
                         <tbody>
                         {this.props.data &&
@@ -68,7 +67,6 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.remittance}</td>
                                         <td>{item.payables}</td>
                                         <td>{item.absences}</td>
-                                        <td>{item.sub_freq}</td>
                                     </tr>
                                 </Fragment>
                             ))}
@@ -77,7 +75,6 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line"><b>{this.props.data.remittance_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.payables_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.absences_total}</b></td>
-                                <td className="total-line">{this.props.data.sub_freq_total}</td>
                             </tr>
                         </Fragment>
                         }
