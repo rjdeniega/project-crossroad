@@ -1,10 +1,74 @@
 import React, {Component} from 'react'
 import {postData, getData} from "../../../network_requests/general"
-import {Form, Menu, Select, InputNumber, Button, Checkbox, message} from 'antd'
+import {Form, Menu, Select, InputNumber, Button, Checkbox, message, Popover} from 'antd'
 import Input from "antd/es/input";
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+
+class RequestItems extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            category: null,
+            description: null,
+        };
+
+        this.submitRequest = this.submitRequest.bind(this)
+    }
+
+    submitRequest(){
+        let data = {
+            category: this.state.category,
+            description: this.state.description
+        };
+        postData('inventory/request_item/', data).then(data => {
+            console.log(data);
+            message.success("Request Submitted!");
+        })
+    }
+
+    render() {
+        const {categories} = this.props;
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 8},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 14},
+            },
+        };
+
+        const buttonLayout = {
+            wrapperCol: {
+                sm: {
+                    span: 14,
+                    offset: 8
+                }
+            }
+        };
+        return (
+            <div>
+                <Form.Item label="Category" {...formItemLayout}>
+                    <Select style={{width: "100%"}} onSelect={e => this.setState({category: e}, () => console.log(this.state))}>
+                        {categories.map(function (category) {
+                            return <Select.Option value={category.id}>{category.category}
+                            </Select.Option>
+                        })}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="Description" {...formItemLayout}>
+                    <Input type="text" onChange={e => this.setState({description: e.target.value})}/>
+                </Form.Item>
+                <Form.Item {...buttonLayout}>
+                    <Button htmlType="button" onClick={this.submitRequest}>Submit Request</Button>
+                </Form.Item>
+            </div>
+        )
+    }
+}
 
 export class AddItems extends Component {
     constructor(props) {
@@ -15,6 +79,7 @@ export class AddItems extends Component {
             active_category: null,
             active_item: null,
             quantity: null,
+            request_item: false,
             measurement: null,
         };
         this.addItem = this.addItem.bind(this)
@@ -62,7 +127,7 @@ export class AddItems extends Component {
     getItems() {
         getData('inventory/items/item_category').then(data => {
             let categories = [];
-            data.item_category.forEach(function(category){
+            data.item_category.forEach(function (category) {
                 categories[category.id] = category
             });
             this.setState({
@@ -71,32 +136,36 @@ export class AddItems extends Component {
         });
         getData('inventory/items/').then(data => {
             let items = [];
-            data.items.forEach(function(item){
+            data.items.forEach(function (item) {
                 items[item.id] = item;
             });
             this.setState({
                 items: items,
             }, () => console.log(this.state))
         })
-    }
+    };
+
+    handleVisibleChange = (request_item) => {
+        this.setState({request_item});
+    };
 
     render() {
         const {categories, items, active_category, active_item} = this.state;
         const formItemLayout = {
             labelCol: {
                 xs: {span: 24},
-                sm: {span: 8},
+                sm: {span: 6},
             },
             wrapperCol: {
                 xs: {span: 24},
-                sm: {span: 16},
+                sm: {span: 12},
             },
         };
         const buttonLayout = {
             wrapperCol: {
                 sm: {
-                    span: 16,
-                    offset: 8
+                    span: 18,
+                    offset: 6
                 }
             }
         };
@@ -105,7 +174,8 @@ export class AddItems extends Component {
                 <Form.Item label="Category" {...formItemLayout}>
                     <Select style={{width: "100%"}} onSelect={e => this.onSelect(e)}>
                         {categories.map(function (category) {
-                            return <Select.Option value={category.id}>{category.category}</Select.Option>
+                            return <Select.Option value={category.id}>{category.category} -
+                                Quantity: {category.quantity}</Select.Option>
                         })}
                     </Select>
                 </Form.Item>
@@ -115,7 +185,11 @@ export class AddItems extends Component {
                             {items.map(function (item) {
                                 console.log(categories[item.id]);
                                 if (item.category === active_category) {
-                                    return <Select.Option value={item.id}>{item.item_code}</Select.Option>
+                                    return <Select.Option
+                                        value={item.id}>{item.item_code} - {item.quantity}
+                                        {item.unit === "pieces" ? item.quantity > 1 ? " boxes" : " box" :
+                                            item.unit === "mL" ? item.quantity > 1 ? " bottles" : " bottle" :
+                                                " available"}</Select.Option>
                                 }
                             })}
                         </Select>
@@ -124,16 +198,26 @@ export class AddItems extends Component {
                 {active_item && items[active_item].item_type === "Single Item" &&
                 <Form.Item label="Quantity" {...formItemLayout}>
                     <Input type="number" onChange={e => this.updateField(e.target.value, 'quantity')}
-                    addonAfter={items[active_item].quantity + " available"}/>
+                           addonAfter={items[active_item].quantity + " available"}/>
                 </Form.Item>
                 }
                 {active_item && items[active_item].measurement &&
                 <Form.Item label="Amount used up" {...formItemLayout}>
                     <Input type='number' onChange={e => this.updateField(e.target.value, 'measurement')}
-                    addonAfter={items[active_item].current_measurement + items[active_item].unit + " available"}/>
+                           addonAfter={items[active_item].current_measurement + items[active_item].unit + " available"}/>
                 </Form.Item>}
                 <Form.Item {...buttonLayout}>
                     <Button htmlType='button' type='primary' onClick={this.addItem}>Add Item</Button>
+                    <Popover
+                        trigger="click"
+                        title="Request Item from clerk"
+                        onVisibleChange={this.handleVisibleChange}
+                        visible={this.state.request_item}
+                        content={
+                            <RequestItems categories={categories}/>
+                        }>
+                        <Button htmlType='button' style={{marginLeft: 5}}>Request Item from clerk</Button>
+                    </Popover>
                 </Form.Item>
             </div>
         )

@@ -87,7 +87,9 @@ export class RepairsTable extends Component{
                                  style={{cursor: 'pointer'}}/> </span>
                 )
             }
-        }]
+        }];
+
+        this.loadNewRepair = this.loadNewRepair.bind(this)
     }
 
     componentDidMount(){
@@ -157,7 +159,8 @@ export class RepairsTable extends Component{
                                    loadNewRepair={this.loadNewRepair}/>
                         </Col>
                         <Col span={14}>
-                            <RepairDisplay repair={loadedRepair}
+                            <RepairDisplay loadNewRepair={this.loadNewRepair}
+                                            repair={loadedRepair}
                                            problems={problems}
                                            findings={findings}
                                            modifications={modifications}

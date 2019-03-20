@@ -325,7 +325,7 @@ export class MechanicView extends Component {
                         <Button type='dashed' onClick={() => this.setItemsVisible(true)}
                                 style={{width: '100%'}}>Add Item</Button>
                         <Modal
-                            title='Add Items' width={450}
+                            title='Add Items' width={600}
                             onCancel={() => this.setItemsVisible(false)}
                             footer={null} visible={this.state.itemsModal}>
                             <AddItems repair={this.state.loadedRepair.id} loadItems={this.loadItems.bind(this)}

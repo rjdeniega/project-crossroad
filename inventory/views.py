@@ -515,7 +515,8 @@ class ShuttleMaintenanceFrequency(APIView):
                         major_maintenanceCost = major_maintenanceCost + (
                                 float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
                     else:
-                        major_maintenanceCost = major_maintenanceCost + (float(item_used.quantity) * float(item.unit_price))
+                        major_maintenanceCost = major_maintenanceCost + (
+                                    float(item_used.quantity) * float(item.unit_price))
 
                     # Minor repairs
             for repair in Repair.objects.all().filter(shuttle=shuttle, degree='Minor', end_date__gte=start_date,
@@ -846,7 +847,7 @@ class ItemCategoryView(APIView):
 
     @staticmethod
     def get(request):
-        item_category = ItemCategorySerializer(ItemCategory.objects.all(), many=True)
+        item_category = ItemCategorySerializer(ItemCategory.objects.all().order_by("category"), many=True)
         return Response(data={
             'item_category': item_category.data
         }, status=status.HTTP_200_OK)
@@ -1014,12 +1015,14 @@ class FinalItemMovementReport(APIView):
             g_count = 0
             b_count = 0
             if end_date is not None:
-                for item_movement in ItemMovement.objects.filter(item__delivery_date__gte=date, item__delivery_date__lte=end_date):
+                for item_movement in ItemMovement.objects.filter(item__delivery_date__gte=date,
+                                                                 item__delivery_date__lte=end_date):
                     item = item_movement.item
                     if item.category == category:
                         if item_movement.type == "B":
                             b_count += item_movement.quantity
-                for item_movement in ItemMovement.objects.filter(repair__end_date__gte=date, repair__end_date__lte=end_date):
+                for item_movement in ItemMovement.objects.filter(repair__end_date__gte=date,
+                                                                 repair__end_date__lte=end_date):
                     item = item_movement.item
                     if item.category == category:
                         if item_movement.type == "G":
@@ -1046,4 +1049,17 @@ class FinalItemMovementReport(APIView):
             'start_date': date.date(),
             'end_date': end_date.date() if end_date is not None else date.date()
 
+        }, status=status.HTTP_200_OK)
+
+
+class RequestItem(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        item_request = ItemRequest(category=ItemCategory.objects.get(id=data['category']),
+                                   description=data['description'])
+        item_request.save()
+        item_request = ItemRequestSerializer(item_request)
+        return Response(data={
+            'item_request': item_request.data
         }, status=status.HTTP_200_OK)

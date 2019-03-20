@@ -100,8 +100,9 @@ export class RepairDisplay extends Component {
             type: type,
         };
         putData('inventory/repair/update_status/' + id, data).then(data => {
-            console.log(data)
-        })
+            this.props.loadNewRepair(data.repair);
+        });
+
     }
 
     render() {
@@ -188,7 +189,7 @@ export class RepairDisplay extends Component {
                             <br/>
                             {repair.status === "NS" && (
                                 <div>
-                                    <Typography>Select degree of repair: </Typography>
+                                    <Typography.Text strong>Select degree of repair: </Typography.Text>
                                     <Typography>Mechanic Recommendation: {repair.recommendation}</Typography>
                                     <br/>
                                     <Button.Group>
@@ -206,13 +207,15 @@ export class RepairDisplay extends Component {
                                                 <Button htmlType='button' type='primary'>Minor</Button>
                                             </Tooltip>
                                         </Popover>
-                                        <Tooltip title="Intermediate repairs are urgent and must be done as soon as possible">
+                                        <Tooltip
+                                            title="Intermediate repairs are urgent and must be done as soon as possible">
                                             <Button htmlType='button' type='primary'
-                                                onClick={() => this.updateRepairStatus(repair.id, "IP", "Intermediate")}>Intermediate</Button>
+                                                    onClick={() => this.updateRepairStatus(repair.id, "IP", "Intermediate")}>Intermediate</Button>
                                         </Tooltip>
-                                        <Tooltip title="Major repairs are repairs that require experts thus sending the shuttle to a repair shop">
+                                        <Tooltip
+                                            title="Major repairs are repairs that require experts thus sending the shuttle to a repair shop">
                                             <Button htmlType='button' type='primary'
-                                                onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major</Button>
+                                                    onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major</Button>
                                         </Tooltip>
                                     </Button.Group>
                                 </div>
