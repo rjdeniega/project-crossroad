@@ -731,6 +731,9 @@ class PurchaseOrderView(APIView):
                                                     unit_price=item['unit_price'], category=category,
                                                     item_type=item['item_type'], measurement=item['measurement'],
                                                     unit=item["unit"], brand=item["brand"])
+            if not VendorItem.objects.filter(vendor=vendor, category=category).exists():
+                vendor_item = VendorItem(vendor=vendor, category=category)
+                vendor_item.save()
             purchase_order_item.save()
             purchase_order.po_items.add(purchase_order_item)
 
