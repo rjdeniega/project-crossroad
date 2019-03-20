@@ -451,7 +451,7 @@ class NonDeployedDrivers(APIView):
                     datetime__month=datetime.now().month,
                     datetime__day=datetime.now().day
                 ):
-                if driver.id == present.assignedDriver.id:
+                if driver.id == present.assignedDriver.id and present.is_dayoff == False:
                     isPresent = True
 
             if isPresent == False:
