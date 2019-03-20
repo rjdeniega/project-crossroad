@@ -634,6 +634,36 @@ class SubDrivers(APIView):
             "sub_drivers": sub_drivers
         }, status=status.HTTP_200_OK)
 
+class AbsentDrivers(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, supervisor_id=supervisor_id)
+        query = DriversAssigned.objects.filter(shift=current_shift)
+
+        absentList = list()
+        for driver in DriversAssigned.objects.filter(shift=current_shift.id):
+            isAbsent = True
+            for present in PresentDrivers.objects.filter(
+                    datetime__year=datetime.now().year,
+                    datetime__month=datetime.now().month,
+                    datetime__day=datetime.now().day
+                ):
+                if driver.id == present.assignedDriver.id:
+                    isAbsent = False
+
+            if isAbsent == False:
+                absentList.append(driver.id)
+                
+        for absent in absentList:
+            query = query.exclude(id=absent)
+
+        data = PlannedDriversSerializer(query, many=True)
+        return Response(data={
+            "absent_drivers": data.data
+        }, status=status.HTTP_200_OK)
+
+        
 
 class SpecificDriver(APIView):
     @staticmethod
