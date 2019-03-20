@@ -387,6 +387,9 @@ function DeploymentListDetails(props) {
     const driver_id = props.id;
     const driver_name = props.name;
     const supervisor = JSON.parse(localStorage.user_staff);
+    const firstLetter = props.name.split(" ")[0].charAt(0);
+    const secondLetter = props.name.split(" ")[1].charAt(0);
+    const userPhoto = firstLetter + secondLetter
 
     if (props.route == 'Main Road' || props.route == 'M') {
         var route_label = 'Main Road'
@@ -408,7 +411,12 @@ function DeploymentListDetails(props) {
     return (
         <div>
             <div className="deployment-header">
-                <Avatar src={props.photo} shape="square" />
+                <Avatar 
+                    src={props.photo} 
+                    style={{ backgroundColor: '#68D3B7' }} 
+                    shape="square"
+                    icon="user"
+                    />
                 <span className="deployment-name">
                     {props.name}
                 </span>
