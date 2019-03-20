@@ -2524,7 +2524,7 @@ class NotificationItems(APIView):
                     type='I',
                     description=f"{item.category.category} is needed , {item.description}"
                 )
-        return notification
+        return None
 
     @staticmethod
     def get_om_repairs(user_id):

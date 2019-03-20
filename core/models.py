@@ -83,7 +83,7 @@ NOTIFICATION_TYPE = [
 
 class Notification(SoftDeletionModel):
     type = CharField(max_length=1, choices=NOTIFICATION_TYPE)
-    user = ForeignKey(User,on_delete=models.CASCADE, null=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     description = CharField(max_length=255)
     is_read = BooleanField(default=False)
     created = models.DateTimeField(editable=False, null=True)

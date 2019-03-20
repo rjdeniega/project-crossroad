@@ -183,7 +183,6 @@ export class AddItems extends Component {
                     <Form.Item label="Item" {...formItemLayout}>
                         <Select style={{width: "100%"}} onSelect={e => this.onSelect2(e)}>
                             {items.map(function (item) {
-                                console.log(categories[item.id]);
                                 if (item.category === active_category) {
                                     return <Select.Option
                                         value={item.id}>{item.item_code} - {item.quantity}
