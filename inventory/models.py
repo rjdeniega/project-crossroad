@@ -196,6 +196,7 @@ class Repair(SoftDeletionModel):
     vendor = CharField(max_length=64, null=True)
     start_date = DateField(null=True)
     end_date = DateField(null=True)
+    recommendation = CharField(max_length=64, null=True)
     degree = CharField(max_length=64, null=True)
     schedule = DateField(null=True)
     status = CharField(max_length=2, choices=REPAIR_STATUS)
@@ -205,6 +206,11 @@ class Repair(SoftDeletionModel):
     modifications = ManyToManyField(RepairModifications)
     outsourced_items = ManyToManyField(OutSourcedItems)
     maintenance = BooleanField(default=False)
+
+
+class ItemRequest(SoftDeletionModel):
+    category = ForeignKey(ItemCategory, on_delete=models.CASCADE)
+    description = CharField(max_length=64, null=True)
 
 
 class ItemMovement(SoftDeletionModel):
