@@ -2491,6 +2491,8 @@ class NotificationItems(APIView):
     def get_clerk_notifs(user_id):
         is_am = NotificationItems.is_time_between(time(15, 00), time(16, 30))
         is_pm = NotificationItems.is_time_between(time(19, 00), time(20, 00))
+        print(is_am)
+        print(is_pm)
         print(f'the user id is {user_id}')
 
         if is_am:
@@ -2499,11 +2501,17 @@ class NotificationItems(APIView):
         elif is_pm:
             notification = Notification.objects.filter(user__id=user_id,
                                                        description="Please upload PM beep CSV")
-        if len(notification) == 0:
+        if len(notification) == 0 and is_am:
             notification = Notification.objects.create(
                 user=User.objects.get(pk=user_id),
                 type='R',
-                description='Please upload beep CSV'
+                description='Please upload AM beep CSV'
+            )
+        if len(notification) == 0 and is_pm:
+            notification = Notification.objects.create(
+                user=User.objects.get(pk=user_id),
+                type='R',
+                description='Please upload PM beep CSV'
             )
         return notification
 
