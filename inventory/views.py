@@ -947,6 +947,11 @@ class UpdateRepairStatus(APIView):
             repair.schedule = datetime.strptime(data['schedule'], '%Y-%m-%d').date()
             repair.start_date = datetime.strptime(data['schedule'], '%Y-%m-%d').date()
 
+        if 'suggested_degree' in request.data:
+            if data['suggested_degree'] != '':
+                repair.recommendation = data['suggested_degree']
+                repair.save()
+
         if 'type' in request.data:
             if data['type'] != '':
                 repair.degree = data['type']

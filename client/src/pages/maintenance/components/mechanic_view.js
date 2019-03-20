@@ -35,6 +35,7 @@ class FindingsForm extends Component {
             defective_item: null,
             finding: null,
             categories: [],
+
         };
 
         this.submitFinding = this.submitFinding.bind(this)
@@ -130,10 +131,12 @@ export class MechanicView extends Component {
             outsourceModal: false,
             items: [],
             categories: [],
+            suggestion: "Minor",
         };
 
         this.setfindingsVisible = this.setfindingsVisible.bind(this);
         this.setItemsVisible = this.setItemsVisible.bind(this);
+        this.forwardToOperations = this.forwardToOperations.bind(this);
     }
 
     unloadRepair() {
@@ -161,7 +164,7 @@ export class MechanicView extends Component {
             .then(data => {
                 if (!data.error) {
                     let categories = [];
-                    data.categories.forEach(function(category){
+                    data.categories.forEach(function (category) {
                         categories[category.id] = category.category
                     });
                     this.setState({
@@ -335,9 +338,11 @@ export class MechanicView extends Component {
 
     forwardToOperations(id) {
         message.success("Forwarded to operations manager!");
+
         let data = {
             status: 'NS',
-            type: ''
+            type: '',
+            suggested_degree: this.state.suggestion
         };
 
         putData('inventory/repair/update_status/' + id, data).then(data => {
@@ -362,6 +367,17 @@ export class MechanicView extends Component {
     render() {
         const {repairs, loadedRepair, problems, findings, modifications} = this.state;
         const loadNewRepair = this.loadNewRepair;
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 4},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 20},
+            },
+        };
+
 
         return (
             <div style={{padding: 10}}>
@@ -407,7 +423,7 @@ export class MechanicView extends Component {
                                         <h3>Shuttle {loadedRepair.shuttle}</h3>
                                         <p><i>Date Requested: {loadedRepair.date_requested}</i></p>
                                         {loadedRepair.start_date ? new Date() > loadedRepair.start_date && (
-                                            <p><b>Start Date: </b> { loadedRepair.start_date }</p>
+                                            <p><b>Start Date: </b> {loadedRepair.start_date}</p>
                                         ) : ""}
                                         {loadedRepair.status === 'FO' ? (
                                             <div>
@@ -430,15 +446,26 @@ export class MechanicView extends Component {
                                                       style={{verticalAlign: 'middle'}}/> Complete Repair
                                             </Button>
                                         ) : loadedRepair.status === 'FI' ? (
-                                            <Button type='primary' htmlType="button"
-                                                    onClick={() => this.forwardToOperations(loadedRepair.id)}>
-                                                Forward to Operation Manager
-                                            </Button>
+                                            <div>
+                                                <Form.Item label="Suggested Degree" {...formItemLayout}>
+                                                    <Select style={{width: '20%'}} defaultValue="Minor" onSelect={e => this.setState({suggestion: e})}>
+                                                        <Select.Option value="Minor">Minor</Select.Option>
+                                                        <Select.Option value="Intermediate">Intermediate</Select.Option>
+                                                        <Select.Option value="Major">Major</Select.Option>
+                                                    </Select>
+                                                </Form.Item>
+                                                <br/>
+                                                <Button type='primary' htmlType="button"
+                                                        onClick={() => this.forwardToOperations(loadedRepair.id)}>
+                                                    Forward to Operation Manager
+                                                </Button>
+                                            </div>
                                         ) : loadedRepair.status === 'NS' ? (
                                             <Tag color="green">Forwarded to Operations manager</Tag>
                                         ) : loadedRepair.status === 'SR' && (
                                             <div>
-                                                {new Date() < loadedRepair.schedule && <Tag color='blue'> Schedule: {loadedRepair.schedule}</Tag>}
+                                                {new Date() < loadedRepair.schedule &&
+                                                <Tag color='blue'> Schedule: {loadedRepair.schedule}</Tag>}
                                                 <br/>
                                                 {new Date(loadedRepair.schedule) < new Date() &&
                                                 <Button type='primary'
