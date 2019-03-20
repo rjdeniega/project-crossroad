@@ -2530,6 +2530,7 @@ class NotificationItems(APIView):
 
     @staticmethod
     def get_member_notifs(user):
+        Notification.objects.filter(user__id=user['id']).hard_delete()
         member_id = user['id']
         shares = Share.objects.filter(member=Member.objects.get(pk=member_id))
         serialized_shares = ShareSerializer(shares, many=True)
@@ -2549,6 +2550,7 @@ class NotificationItems(APIView):
     @staticmethod
     def get_om_notifs(user_id):
         member_id = user_id
+        Notification.objects.filter(user__id=user_id).hard_delete()
         notification = None
         for item in ItemCategory.objects.all():
             if item.quantity <= 3:
