@@ -32,7 +32,7 @@ export class PassengerPerRoute extends React.Component {
             "chart_data": [],
             "start_date": null,
             "end_date": null,
-            "start": 0
+            "start": 1
         };
 
         this.fetchChartData = this.fetchChartData.bind(this);
@@ -146,7 +146,7 @@ export class PassengerPerRoute extends React.Component {
 
     changeContents = (array) => {
         console.log(this.state.start);
-        let index = this.state.start
+        let index = this.state.start - 1;
         let new_array = [];
         new_array.push(array[index]);
         return new_array;

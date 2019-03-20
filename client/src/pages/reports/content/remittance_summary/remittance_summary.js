@@ -16,6 +16,8 @@ import { fileTextO } from 'react-icons-kit/fa/fileTextO'
 import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
+import LBATSCLogo from '../../../../images/LBATSCLogo.png'
+
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -26,11 +28,14 @@ class ComponentToPrint extends React.Component {
         const { data } = this.props;
         return (
             <div className="container">
+                 <div className="lbatsc-container">
+                    <img className="lbatsc" src={LBATSCLogo}/>
+                </div>
                 <div className="report-labels">
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Remittance Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p> <b>Remittance Report for {this.props.data.start_date} to {this.props.data.end_date}</b> </p>
                         }
                     </Fragment>
                     }
