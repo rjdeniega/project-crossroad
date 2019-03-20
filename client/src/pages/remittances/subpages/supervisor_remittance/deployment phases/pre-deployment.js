@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message, Select, Tag, Popover, Empty, Badge, Row, Col, Divider } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Tag, Popover, Empty, Badge, Row, Col, Divider, Icon, Tooltip } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
 import { postData } from '../../../../../network_requests/general';
+import ButtonGroup from 'antd/lib/button/button-group';
 
 export class PreDeployment extends React.Component {
     constructor(props) {
@@ -27,10 +28,185 @@ export class PreDeployment extends React.Component {
 function Header(props) {
     return (
         <div className="phase-header">
-            <h3 className="phase-header-title"> {props.title} </h3>
+            <DeploySubButtons />
+            <h3 className="phase-header-title"> {props.title} </h3>       
             <h5 className="phase-header-description"> {props.description} </h5>
+            
         </div>
     );
+}
+
+
+class DeploySubButtons extends React.Component {
+    constructor(props){
+        super(props)
+    }
+
+    render() {
+        return(
+            <span className="deploy-sub-container">
+                <Button.Group>
+                    <RevisedSubButton />
+                    <Button value="small" icon="user-add">
+                        Temp
+                    </Button>
+                </Button.Group>
+                
+            </span>
+        )
+    }
+}
+
+class RevisedSubButton extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.state = {
+            "modal_is_visible": false
+        }
+    }
+
+    showModal = () => {
+        this.setState({
+            'modal_is_visible': true,
+        });
+    }
+
+    handleOk = () => {
+        this.setState({
+            'modal_is_visible': false,
+        });
+    }
+
+    handleCancel = () => {
+        this.setState({
+            'modal_is_visible': false,
+        });
+    }
+
+    render(){
+        return(
+            <span>
+                <Button value="small" icon="user-add" onClick={this.showModal}>
+                        Sub
+                </Button>
+                <Modal
+                    title="Deploy a sub-driver"
+                    visible={this.state.modal_is_visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                    okText="Deploy"
+                >
+                    <RevisedSubContent />
+                </Modal>
+            </span>
+        );
+    }
+}
+
+class RevisedSubContent extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.state = {
+            "subDrivers": []
+        }
+    }
+
+    componentDidMount() {
+        this.fetchSubDrivers();
+    }
+
+    fetchSubDrivers() {
+        let supervisor = JSON.parse(localStorage.user_staff);
+        fetch('/remittances/shifts/sub_drivers/' + supervisor.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        subDrivers: data.sub_drivers
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
+    render() {
+        return(
+            <div className="modal-container">
+                <div className="select-group">
+                    <label className="sub-driver-label">
+                        Absent Driver:
+                    </label>
+                    <Select onChange={this.handleChange} style={{ width: 200 }}>
+                        {
+                            this.state.subDrivers.map((item) => (
+                                <option value={item.driver.id} key={item.driver.id}>
+                                    {item.driver.name}
+                                </option>
+                            ))
+                        }
+                    </Select>
+                </div>
+                <div className="select-group">
+                    <label className="sub-driver-label">
+                        Subdrivers:
+                    </label>
+                    <Select onChange={this.handleChange} style={{ width: 200 }}>
+                        {
+                            this.state.subDrivers.map((item) => (
+                                <option value={item.driver.id} key={item.driver.id}>
+                                    {item.driver.name}
+                                </option>
+                            ))
+                        }
+                    </Select>
+                </div>
+                <div className="sub-deployment-details">
+                    <Divider orientation="left">
+                        Deployment Details
+                    </Divider>
+                    <DetailItems
+                        title="Subbing in for "
+                        value={this.props.driver_name}
+                    />
+                    <DetailItems
+                        title="Shuttle: "
+                        value={this.props.shuttle}
+                    />
+                    <DetailItems
+                        title="Route: "
+                        value={this.props.route}
+                    />
+
+                    <div className="ticket-tags-container">
+                        <TicketDisplay
+                            amount="₱10"
+                            tickets={this.props.ten_peso_tickets}
+                            total={this.props.ten_total}
+                        />
+                        <TicketDisplay
+                            amount="₱12"
+                            tickets={this.props.twelve_peso_tickets}
+                            total={this.props.twelve_total}
+                        />
+                        {this.props.route == 'Main Road' &&
+                            <TicketDisplay
+                                amount="₱15"
+                                tickets={this.props.fifteen_peso_tickets}
+                                total={this.props.fifteen_total}
+                            />
+                        }
+                    </div>
+                </div>
+            </div>
+        );
+    }
 }
 
 function DeploymentList(props) {
@@ -90,8 +266,6 @@ function DeploymentListDetails(props) {
         var tag_color = 'green';
         var is_disabled = props.ten_total >= 100 && props.twelve_total >= 100 ? false : true;
     }
-
-
 
     return (
         <div>

@@ -29,7 +29,7 @@
 }
 
 .list-container {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .deployment-list-container {
@@ -185,4 +185,9 @@ Col {
 
 .late-tag {
     margin-left: 5px;
+}
+
+.deploy-sub-container {
+    margin-top: 7.5px;
+    float: right;
 }
