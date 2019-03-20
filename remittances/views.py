@@ -867,7 +867,34 @@ class DeploySubDriver(APIView):
                 "errors": error_message
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
 class MarkAsPresent(APIView):
+    @staticmethod
+    def get(request, driver_id):
+        active_sched = RemittanceUtilities.get_active_schedule();
+        
+        driver = None
+        for shift in Shift.objects.filter(schedule=active_sched):
+            for assignedDriver in DriversAssigned.objects.filter(shift=shift):
+                if assignedDriver.driver.id == driver_id:
+                    driver = assignedDriver
+
+        presents = PresentDrivers.objects.filter(
+                    assignedDriver=driver, 
+                    datetime__year=datetime.now().year,
+                    datetime__month=datetime.now().month,
+                    datetime__day=datetime.now().day
+                    )
+
+        if presents:
+            toReturn = presents[0].datetime.strftime("%r")
+        else:
+            toReturn = None
+
+        return Response(data={
+            "timeIn": toReturn
+        }, status=status.HTTP_200_OK)
+
     @staticmethod
     def post(request):
         data = json.loads(request.body)

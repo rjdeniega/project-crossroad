@@ -5,6 +5,21 @@
     padding: 20px;
 }
 
+.deployment-container {
+    width: 200px;
+    padding: 10px 5px;
+}
+
+.time-in-label {
+    font-weight: 450;
+    padding-right: 5px;
+    padding-left: 3px;
+}
+
+.time-in-time {
+    font-weight: 350;
+}
+
 .item-date {
     font-weight: 700;
 }

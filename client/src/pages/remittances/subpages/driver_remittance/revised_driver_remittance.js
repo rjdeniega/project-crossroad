@@ -18,11 +18,6 @@ export class DriverRemittance extends React.Component {
             <div className="page-container">
                 <PerfectScrollbar>
                     <Header />
-                    <Row className="deployment-body">
-                        <Col span={24}>
-                            <OngoingDeployment />
-                        </Col>
-                    </Row>
                     <Row className="remittance-body">
                         <Col span={24}>
                             <DeploymentList />
@@ -37,8 +32,35 @@ export class DriverRemittance extends React.Component {
 class OngoingDeployment extends React.Component {
     constructor(props){
         super(props);
+        
+        this.state = {
+            "timeIn": null
+        }
 
         this.handleMarkAsPresent = this.handleMarkAsPresent.bind(this);
+    }
+
+    componentDidMount(){
+        this.fetchPresent();
+    }
+
+    fetchPresent(){
+        let driver = JSON.parse(localStorage.user_staff);
+        fetch('/remittances/deployments/present/' + driver.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        timeIn: data.timeIn
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
     }
 
     handleMarkAsPresent = () => {
@@ -62,7 +84,12 @@ class OngoingDeployment extends React.Component {
     render() {
         return(
             <div className="deployment-container">
-                <MarkAsPresentButton handleMarkAsPresent={this.handleMarkAsPresent}/>
+                {this.state.timeIn != null ? (
+                    <TimeInDisplay timeIn={this.state.timeIn} />
+                ) : (
+                    <MarkAsPresentButton handleMarkAsPresent={this.handleMarkAsPresent}/>
+                )}
+                
             </div>
         )
     }
@@ -81,9 +108,24 @@ class MarkAsPresentButton extends React.Component {
 
     render(){
         return(
-            <Button type="primary" onClick={this.handleClick}>Ready for Deployment</Button>
+            <Tooltip 
+                title="click time-in to ready for deployment"
+                placement="right"
+                >
+                <Button type="primary" icon="clock-circle" onClick={this.handleClick} block>Time-In</Button>
+            </Tooltip>
         ) 
     }
+}
+
+function TimeInDisplay(props){
+    return (
+        <div>
+            <Icon type="clock-circle" />
+            <label className="time-in-label">Time-In: </label>
+            <span className="time-in-time">{props.timeIn}</span>
+        </div>
+    )
 }
 
 class DeploymentList extends React.Component {
@@ -143,6 +185,7 @@ class DeploymentList extends React.Component {
 
         return (
             <div className="list-container">
+                <OngoingDeployment />
                 <List
                     header={<div> List of Deployments </div>}
                     dataSource={this.state.deployments}
