@@ -2703,7 +2703,7 @@ class PassengerPerRoute(APIView):
 
 class PeakHourReport(APIView):
     @staticmethod
-    def get_passenger_per_hour(route, start_date, end_date):
+    def get_passenger_per_hour(route, start_date, end_date, filter):
         print(start_date)
         print(end_date)
         one = 0
@@ -2731,8 +2731,9 @@ class PeakHourReport(APIView):
         twentythree = 0
         twentyfour = 0
 
-        for transaction in BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
-                                                          transaction_date_time__lte=end_date):
+        transactions = PeakHourReport.get_transactions(route,start_date,end_date,filter)
+
+        for transaction in transactions:
             if transaction.transaction_date_time.hour == 1:
                 one += 1
             elif transaction.transaction_date_time.hour == 2:
@@ -2787,9 +2788,51 @@ class PeakHourReport(APIView):
                 twentytwo, twentythree, twentyfour]
 
     @staticmethod
+    def get_transactions(route,start_date,end_date,filter):
+        if filter == "All":
+            return BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                                          transaction_date_time__lte=end_date)
+        elif filter =="Mon":
+            transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                           transaction_date_time__lte=end_date)
+            transactions = [item for item in transactions if item.transaction_date_time.weekday() == 0]
+            return transactions
+        elif filter =="Tue":
+            transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                           transaction_date_time__lte=end_date)
+            transactions = [item for item in transactions if item.transaction_date_time.weekday() == 1]
+            return transactions
+        elif filter == "Wed":
+            transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                                          transaction_date_time__lte=end_date)
+            transactions = [item for item in transactions if item.transaction_date_time.weekday() == 2]
+            return transactions
+        elif filter == "Thu":
+            transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                                          transaction_date_time__lte=end_date)
+            transactions = [item for item in transactions if item.transaction_date_time.weekday() == 3]
+            return transactions
+        elif filter == "Fri":
+            transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                                          transaction_date_time__lte=end_date)
+            transactions = [item for item in transactions if item.transaction_date_time.weekday() == 4]
+            return transactions
+        elif filter == "Sat":
+            transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                                          transaction_date_time__lte=end_date)
+            transactions = [item for item in transactions if item.transaction_date_time.weekday() == 5]
+            return transactions
+        elif filter == "Sun":
+            transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
+                                                          transaction_date_time__lte=end_date)
+            transactions = [item for item in transactions if item.transaction_date_time.weekday() == 6]
+            return transactions
+
+    @staticmethod
     def post(request):
         data = json.loads(request.data)
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        filter = data['filter']
         end_date = start_date + timedelta(days=7)
         week2 = end_date + timedelta(days=1)
         week2_end = week2 + timedelta(days=7)
@@ -2798,21 +2841,21 @@ class PeakHourReport(APIView):
         week4 = week3_end + timedelta(days=1)
         week4_end = week4 + timedelta(days=7)
 
-        week1_main_road_values = PeakHourReport.get_passenger_per_hour('M', start_date, end_date)
-        week1_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', start_date, end_date)
-        week1_kanan_values = PeakHourReport.get_passenger_per_hour('R', start_date, end_date)
+        week1_main_road_values = PeakHourReport.get_passenger_per_hour('M', start_date, end_date,filter)
+        week1_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', start_date, end_date, filter)
+        week1_kanan_values = PeakHourReport.get_passenger_per_hour('R', start_date, end_date, filter)
 
-        week2_main_road_values = PeakHourReport.get_passenger_per_hour('M', week2, week2_end)
-        week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week2, week2_end)
-        week2_kanan_values = PeakHourReport.get_passenger_per_hour('R', week2, week2_end)
+        week2_main_road_values = PeakHourReport.get_passenger_per_hour('M', week2, week2_end, filter)
+        week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week2, week2_end, filter)
+        week2_kanan_values = PeakHourReport.get_passenger_per_hour('R', week2, week2_end,filter)
 
-        week3_main_road_values = PeakHourReport.get_passenger_per_hour('M', week3, week3_end)
-        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week3, week3_end)
-        week3_kanan_values = PeakHourReport.get_passenger_per_hour('R', week3, week3_end)
+        week3_main_road_values = PeakHourReport.get_passenger_per_hour('M', week3, week3_end,filter)
+        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week3, week3_end,filter)
+        week3_kanan_values = PeakHourReport.get_passenger_per_hour('R', week3, week3_end,filter)
 
-        week4_main_road_values = PeakHourReport.get_passenger_per_hour('M', week4, week4_end)
-        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week4, week4_end)
-        week4_kanan_values = PeakHourReport.get_passenger_per_hour('R', week4, week4_end)
+        week4_main_road_values = PeakHourReport.get_passenger_per_hour('M', week4, week4_end,filter)
+        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week4, week4_end,filter)
+        week4_kanan_values = PeakHourReport.get_passenger_per_hour('R', week4, week4_end,filter)
 
         return Response(data={
             "week1_main_road_values": week1_main_road_values,

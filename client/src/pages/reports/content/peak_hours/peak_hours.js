@@ -15,7 +15,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Row, Col, Radio } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Row, Col, Radio, Dropdown, Menu, Form } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -29,7 +29,16 @@ const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
 
-
+const formItemLayout = {
+    labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 },
+    },
+    wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+    },
+};
 class ComponentToPrint extends React.Component {
     componentDidMount() {
         console.log(this.props.data)
@@ -401,7 +410,8 @@ class ComponentToPrint extends React.Component {
 }
 export class PeakHours extends Component {
     state = {
-        size : 12
+        size: 12,
+        day: "All"
     };
 
     componentDidMount() {
@@ -410,6 +420,7 @@ export class PeakHours extends Component {
     fetchTransactions() {
         let data = {
             "start_date": this.state.start_date,
+            "filter": this.state.day,
         };
         postData('/peak_hours/', JSON.stringify(data)).then(data => {
             console.log(data);
@@ -436,31 +447,81 @@ export class PeakHours extends Component {
         }, () => this.fetchTransactions())
     };
     handleSizeChange = (e) => {
-        if(e.target.value == "small"){
+        if (e.target.value == "small") {
             this.setState({ size: 12 });
-        }else{
+        }
+        else {
             this.setState({ size: 24 });
         }
 
     }
+    // handleDaySelect = event => {
+    //     //.children gives name
+    //     //.eventKey gives PK
+    //     console.log(event.item.props.children);
+    //     console.log(event.item.props.eventKey);
+    //     this.setState({
+    //         day: event.item.props.eventKey,
+    //         day_key: event.item.props.eventKey
+    //     })
+    //
+    // };
+
+    handleDaySelect = (value) =>  {
+        console.log(value)
+        this.setState({
+            day: value,
+            day_key: value
+        }, () => this.fetchTransactions())
+    }
+
 
     render() {
 
         return (
             <div className="report-body">
-                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
-                <Radio.Group onChange={this.handleSizeChange}>
-                    <Radio.Button value="small">Small</Radio.Button>
-                    <Radio.Button value="large">Large</Radio.Button>
-                </Radio.Group>
+                <Form>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Select Date"
+                    >
+                        <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Select Day"
+                    >
+                        <Select defaultValue="All" style={{ width: 150 }} onChange={this.handleDaySelect}>
+                            <Option value="All">All</Option>
+                            <Option value="Mon">Monday</Option>
+                            <Option value="Tue">Tuesday</Option>
+                            <Option value="Wed">Wednesday</Option>
+                            <Option value="Thu">Thursday</Option>
+                            <Option value="Fri">Friday</Option>
+                            <Option value="Sat">Saturday</Option>
+                            <Option value="Sun">Sunday</Option>
+                        </Select>
+                    </Form.Item>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="Chart Size"
+                    >
+                        <Radio.Group onChange={this.handleSizeChange}>
+                            <Radio.Button value="small">Small</Radio.Button>
+                            <Radio.Button value="large">Large</Radio.Button>
+                        </Radio.Group>
+                    </Form.Item>
+                </Form>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}
                         content={() => this.componentRef}
                     />
-                    <ComponentToPrint size={this.state.size} data={this.state.data} ref={el => (this.componentRef = el)}/>
+                    <ComponentToPrint size={this.state.size} data={this.state.data}
+                                      ref={el => (this.componentRef = el)}/>
                 </div>
             </div>
-        );
+        )
+            ;
     }
 }
