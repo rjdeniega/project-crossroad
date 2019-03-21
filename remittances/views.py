@@ -2396,13 +2396,15 @@ class CarwashTransactionView(APIView):
 
     @staticmethod
     def post(request):
+
         data = {
             "date": request.POST.get('date'),
             "member": request.POST.get('member'),
             "receipt": request.POST.get('receipt'),
             "total": request.POST.get('total'),
-            "photo": request.FILES.get('image')
         }
+        # "photo": request.FILES.get('image')
+
         print(data['date'])
         if data['date'] == "now":
             data['date'] = datetime.now().date()

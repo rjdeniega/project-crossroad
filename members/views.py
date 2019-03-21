@@ -381,8 +381,9 @@ class MemberSharesView(APIView):
             "date_of_update": request.POST.get('date'),
             "receipt": request.POST.get('receipt'),
             "value": value,
-            "photo": request.FILES.get('image')
         }
+        # "photo": request.FILES.get('image')
+
         if data['date_of_update'] == "now":
             data['date_of_update'] = datetime.now().date()
         print(data['date_of_update'])

@@ -14,7 +14,7 @@ import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { message, Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form } from "antd";
+import { message, Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form, Select } from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
@@ -27,6 +27,7 @@ import moment from "moment";
 const TabPane = Tabs.TabPane;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
+const Option = Select.Option
 const antIcon = (
     <AntIcon
         type="loading"
@@ -221,11 +222,17 @@ export class TransactionsPane extends Component {
             image: e.target.files[0]
         })
     };
-     onChangeTransaction = (e) => {
+    onChangeTransaction = (e) => {
         this.setState({
             with_select: e.target.value
         })
         console.log(`radio checked:${e.target.value}`);
+    }
+    handleValueSelect = (value) => {
+        console.log(value)
+        this.setState({
+            total: value,
+        })
     }
 
     render() {
@@ -270,20 +277,32 @@ export class TransactionsPane extends Component {
                             >
                                 <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
                             </Form.Item>
+                            {/*<Form.Item*/}
+                            {/*{...formItemLayout}*/}
+                            {/*label="Upload Receipt Image:"*/}
+                            {/*>*/}
+                            {/*<Input className="upload-input" type="file" placeholder="select image"*/}
+                            {/*onChange={this.handleFileChange}/>*/}
+                            {/*</Form.Item>*/}
                             <Form.Item
                                 {...formItemLayout}
-                                label="Upload Receipt Image:"
+                                label="Value Of Transaction"
                             >
-                                <Input className="upload-input" type="file" placeholder="select image"
-                                       onChange={this.handleFileChange}/>
+                                <Select defaultValue={120} style={{ width: 200 }} onChange={this.handleDaySelect}>
+                                    <Option value={120}> ₱120 - Small (Sedan)</Option>
+                                    <Option value={130}>₱130 - Medium (Minivan)</Option>
+                                    <Option value={170}>₱170 - Large (SUV) </Option>
+                                    <Option value={230}> ₱230 - XL (L300) </Option>
+                                    <Option value={380}>₱380 - XXL (Van)</Option>
+                                </Select>
                             </Form.Item>
-                            <Form.Item
-                                {...formItemLayout}
-                                label="Value of Transaction:"
-                            >
-                                <InputNumber className="user-input" addOnBefore="Php" placeholder="value"
-                                             onChange={this.formListener("total")}/>
-                            </Form.Item>
+                            {/*<Form.Item*/}
+                            {/*{...formItemLayout}*/}
+                            {/*label="Value of Transaction:"*/}
+                            {/*>*/}
+                            {/*<InputNumber className="user-input" addOnBefore="Php" placeholder="value"*/}
+                            {/*onChange={this.formListener("total")}/>*/}
+                            {/*</Form.Item>*/}
                         </Form>
                     </Modal>
                     <div className="table-container">
@@ -477,7 +496,7 @@ export class SharesManagementPane extends Component {
         })
         console.log(`radio checked:${e.target.value}`);
     }
-    onChangeShares= (e) => {
+    onChangeShares = (e) => {
         this.setState({
             with_select_shares: e.target.value
         })
@@ -530,13 +549,13 @@ export class SharesManagementPane extends Component {
                             >
                                 <Input placeholder="Receipt Number" onChange={this.handleReceipt}/>
                             </Form.Item>
-                            <Form.Item
-                                {...formItemLayout}
-                                label="Upload Receipt Image:"
-                            >
-                                <Input className="upload-input" type="file" placeholder="select image"
-                                       onChange={this.handleFileChange}/>
-                            </Form.Item>
+                            {/*<Form.Item*/}
+                            {/*{...formItemLayout}*/}
+                            {/*label="Upload Receipt Image:"*/}
+                            {/*>*/}
+                            {/*<Input className="upload-input" type="file" placeholder="select image"*/}
+                            {/*onChange={this.handleFileChange}/>*/}
+                            {/*</Form.Item>*/}
                             <Form.Item
                                 {...formItemLayout}
                                 label="Shares Added:"
