@@ -30,6 +30,7 @@ DRIVER_DEPLOYMENT_TYPE = [
 
 DEPLOYMENT_STATUS = [
     ('O', 'Ongoing'),
+    ('P', 'Pending for Remittance'),
     ('F', 'Finished')
 ]
 
@@ -169,6 +170,8 @@ class Deployment(models.Model):
     def get_status_display(self):
         if self.status is 'O':
             return 'Ongoing'
+        elif self.status is 'P':
+            return 'Pending for Remittance'
         return 'Finished'
 
     def get_route_display(self):
@@ -190,14 +193,20 @@ class Deployment(models.Model):
         self.save()
 
     def set_deployment_success(self):
+        self.end_time = datetime.now()
+        self.status = 'F'
         self.result = 'S'
         self.save()
 
     def set_deployment_early(self):
+        self.end_time = datetime.now()
+        self.status = 'P'
         self.result = 'E'
         self.save()
 
     def set_deployment_breakdown(self):
+        self.end_time = datetime.now()
+        self.status = 'P'
         self.result = 'B'
         self.save()
 
@@ -224,6 +233,10 @@ class SubbedDeployments(models.Model):
 class Redeployments(models.Model):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
     prior_deployment = ForeignKey(Deployment, related_name="prior_deployment", on_delete=models.CASCADE)
+
+    def __str__(self):
+        date = self.deployment.shift_iteration.date.strftime('%m/%d/%Y')
+        return self.deployment.driver.name + " redeployed on " + date
 
 
 class AssignedTicket(models.Model):

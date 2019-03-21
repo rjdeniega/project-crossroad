@@ -1098,7 +1098,6 @@ class ShuttleBreakdown(APIView):
         )
 
         deployment.set_deployment_breakdown()
-        deployment.end_deployment()
 
         shuttle.status = 'UM'
         shuttle.save()

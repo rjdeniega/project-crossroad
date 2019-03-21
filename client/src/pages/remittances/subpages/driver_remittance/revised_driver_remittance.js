@@ -213,11 +213,21 @@ class DeploymentList extends React.Component {
 }
 
 export function DeploymentListDetails(props) {
-    let tag_color = props.status == 'O' ? 'blue' : 'green';
-    let status = props.status == 'O' ? 'Ongoing' : 'Finished';
+    
+    if(props.status == 'O'){
+        var tag_color = 'blue';
+        var status = 'Ongoing';
+    } else if(props.status == 'P'){
+        var tag_color = 'orange';
+        var status = 'Pending for Remittance';
+    } else {
+        var tag_color = 'green';
+        var status = 'Finished'
+    }
+
     let end_time = props.end_time == null ? 'N/A' : props.end_time;
     console.log(props.driver_object);
-    if (status == 'Ongoing') {
+    if (status == 'Ongoing' || status == 'Pending for Remittance') {
         return (
             <div className="deployment-list-container">
                 <div className="list-header">
