@@ -1063,3 +1063,17 @@ class RequestItem(APIView):
         return Response(data={
             'item_request': item_request.data
         }, status=status.HTTP_200_OK)
+
+
+class ReturnToOperationsManager(APIView):
+    @staticmethod
+    def put(request):
+        data = json.loads(request.body)
+        repair = Repair.objects.get(id=data['repair'])
+        repair.status = "RO"
+        repair.remarks = data['remarks']
+        repair.save()
+
+        return Response(data={
+            'foo': 'bar'
+        }, status=status.HTTP_200_OK)

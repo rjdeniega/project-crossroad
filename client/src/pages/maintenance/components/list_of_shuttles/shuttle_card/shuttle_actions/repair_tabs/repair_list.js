@@ -66,7 +66,13 @@ export class RepairsTable extends Component{
                                     style={{color: '#E9C46A', verticalAlign: 'middle'}}/>
                                     &ensp; Scheduled Repair</span>
                     )
-                }  else {
+                } else if (record === "RO"){
+                    return(
+                        <span><Icon icon={ic_pageview} size={24}
+                                    style={{color: '#E9C46A', verticalAlign: 'middle'}}/>
+                                    &ensp;For Outsource</span>
+                    )
+                } else {
                     return(
                         <span> <Icon icon={ic_done}
                                      size={24}

@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {Icon} from 'react-icons-kit'
 import PerfectScrollbar from '@opuscapita/react-perfect-scrollbar';
-import {List, Row, Col, Menu, Button, Modal, Form, message, Input, Tag, Select} from 'antd'
+import {List, Row, Col, Menu, Button, Modal, Form, message, Input, Tag, Select, Popover} from 'antd'
 import {ic_loop} from 'react-icons-kit/md/ic_loop'
 import {postData, getData, putData} from "../../../network_requests/general"
 import {ic_access_time} from 'react-icons-kit/md/ic_access_time'
@@ -25,6 +25,75 @@ const div_style = {
 
 function hasErrors(fieldsError) {
     return Object.keys(fieldsError).some(field => fieldsError[field])
+}
+
+class ContactOperationManager extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            remarks: null
+        };
+
+        this.sendToOperationsManager = this.sendToOperationsManager.bind(this)
+    }
+
+    sendToOperationsManager() {
+        const {remarks} = this.state;
+        /**
+         * @param this.props.repair_id  The Repair id of the repair in the parent component.
+         */
+        if (!remarks) {
+            message.error("Please fill in the remarks field")
+        } else {
+            let data = {
+                remarks: remarks,
+                repair: this.props.repair_id
+            };
+            console.log(data);
+            putData('inventory/return_to_operations_manager/', data).then(data => {
+                console.log(data);
+                this.props.loadNewRepair(this.props.repair_id);
+            })
+
+        }
+    }
+
+    render() {
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 8},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 16},
+            },
+        };
+        const tailFormItemLayout = {
+            wrapperCol: {
+                xs: {
+                    span: 24,
+                    offset: 0,
+                },
+                sm: {
+                    span: 16,
+                    offset: 8,
+                },
+            },
+        };
+
+        return (
+            <div style={{width: 400}}>
+                <Form.Item label="Remarks" {...formItemLayout}>
+                    <Input.TextArea rows={3}
+                                    onChange={e => this.setState({remarks: e.target.value}, () => console.log(this.state))}/>
+                </Form.Item>
+                <Form.Item {...tailFormItemLayout}>
+                    <Button htmlType="button" type="primary" onClick={this.sendToOperationsManager}>Send</Button>
+                </Form.Item>
+            </div>
+        )
+    }
 }
 
 class FindingsForm extends Component {
@@ -132,11 +201,13 @@ export class MechanicView extends Component {
             items: [],
             categories: [],
             suggestion: "Minor",
+            popover: false,
         };
 
         this.setfindingsVisible = this.setfindingsVisible.bind(this);
         this.setItemsVisible = this.setItemsVisible.bind(this);
         this.forwardToOperations = this.forwardToOperations.bind(this);
+        this.loadNewRepair = this.loadNewRepair.bind(this);
     }
 
     unloadRepair() {
@@ -352,6 +423,12 @@ export class MechanicView extends Component {
         this.loadRepairs()
     }
 
+    handleVisibleChange = (popover) => {
+        this.setState({
+            popover
+        })
+    };
+
     completeRepair(id) {
         message.success('Repair completed!');
         let data = {
@@ -360,12 +437,12 @@ export class MechanicView extends Component {
         };
 
         putData('inventory/repair/update_status/' + id, data).then(data => {
-            this.loadNewRepair(data.repair)
+            console.log(data)
         });
     }
 
     render() {
-        const {repairs, loadedRepair, problems, findings, modifications} = this.state;
+        const {repairs, loadedRepair, problems, findings, modifications, popover} = this.state;
         const loadNewRepair = this.loadNewRepair;
         const formItemLayout = {
             labelCol: {
@@ -441,14 +518,29 @@ export class MechanicView extends Component {
                                                 </Modal>
                                             </div>
                                         ) : loadedRepair.status === 'IP' ? (
-                                            <Button type='primary' onClick={() => this.completeRepair(loadedRepair.id)}>
-                                                <Icon icon={ic_check} size={18}
-                                                      style={{verticalAlign: 'middle'}}/> Complete Repair
-                                            </Button>
+                                            <div>
+                                                <Button type='primary'
+                                                        onClick={() => this.completeRepair(loadedRepair.id)}>
+                                                    <Icon icon={ic_check} size={18}
+                                                          style={{verticalAlign: 'middle'}}/> Complete Repair
+                                                </Button>
+                                                <Popover
+                                                    placement="bottom"
+                                                    trigger="click"
+                                                    content={
+                                                        <ContactOperationManager repair_id={loadedRepair.id}
+                                                                                 loadNewRepair={loadNewRepair}/>
+                                                    }
+                                                    visible={popover}
+                                                    onVisibleChange={this.handleVisibleChange}>
+                                                    <Button style={{marginLeft: 5}}>Contact Operation Manager</Button>
+                                                </Popover>
+                                            </div>
                                         ) : loadedRepair.status === 'FI' ? (
                                             <div>
                                                 <Form.Item label="Suggested Degree" {...formItemLayout}>
-                                                    <Select style={{width: '20%'}} defaultValue="Minor" onSelect={e => this.setState({suggestion: e})}>
+                                                    <Select style={{width: '20%'}} defaultValue="Minor"
+                                                            onSelect={e => this.setState({suggestion: e})}>
                                                         <Select.Option value="Minor">Minor</Select.Option>
                                                         <Select.Option value="Intermediate">Intermediate</Select.Option>
                                                         <Select.Option value="Major">Major</Select.Option>
@@ -460,7 +552,7 @@ export class MechanicView extends Component {
                                                     Forward to Operation Manager
                                                 </Button>
                                             </div>
-                                        ) : loadedRepair.status === 'NS' ? (
+                                        ) : loadedRepair.status === 'NS' || loadedRepair.status === 'RO' ? (
                                             <Tag color="green">Forwarded to Operations manager</Tag>
                                         ) : loadedRepair.status === 'SR' && (
                                             <div>
@@ -484,7 +576,7 @@ export class MechanicView extends Component {
                                             <Menu.Item key={2}>
                                                 Findings
                                             </Menu.Item>
-                                            {loadedRepair.status === "IP" ? (
+                                            {loadedRepair.status === "IP" || loadedRepair.status === "RO" ? (
                                                 <Menu.Item key={3}>
                                                     Items Used
                                                 </Menu.Item>

@@ -81,6 +81,12 @@ export class RepairDisplay extends Component {
                                         color: '#E9C46A',
                                         verticalAlign: 'middle'
                                     }}/> Scheduled Repair</span>);
+            case 'RO':
+                return (<span><Icon icon={ic_pageview} size={24}
+                                    style={{
+                                        color: '#E9C46A',
+                                        verticalAlign: 'middle'
+                                    }}/> For Outsource</span>);
             default:
                 return (<span><Icon icon={ic_done}
                                     size={24}
@@ -218,6 +224,15 @@ export class RepairDisplay extends Component {
                                                     onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major</Button>
                                         </Tooltip>
                                     </Button.Group>
+                                </div>
+                            )}
+                            {repair.status === "RO" && (
+                                <div>
+                                    <Typography.Text strong>Mechanic Remarks: </Typography.Text>
+                                    <Typography>{repair.remarks}</Typography>
+                                    <br/>
+                                    <Button htmlType='button' type='primary'
+                                                    onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Send to Repair Shop</Button>
                                 </div>
                             )}
                         </PerfectScrollbar>

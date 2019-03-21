@@ -32,7 +32,8 @@ REPAIR_STATUS = [
     ('IP', 'In Progress'),  # Mechanic (Start repairs)
     ('C', 'Completed'),  # Operations manager
     ('FO', 'For Outsource'),  # Mechanic (Add outsourced costs )
-    ('SR', 'Scheduled Repair')
+    ('SR', 'Scheduled Repair'),
+    ('RO', 'Returned to Operations Manager')  # When mechanic can't finish a repair and it must be outsourced
 ]
 REPAIR_DEGREE = [
     ('MIN', 'Minor'),  # Operations Manager (Determine what kind of repair)
@@ -201,6 +202,7 @@ class Repair(SoftDeletionModel):
     schedule = DateField(null=True)
     status = CharField(max_length=2, choices=REPAIR_STATUS)
     labor_fee = DecimalField(max_digits=10, decimal_places=2, null=True)
+    remarks = CharField(max_length=256, null=True)
     problems = ManyToManyField(RepairProblem)
     findings = ManyToManyField(RepairFinding)
     modifications = ManyToManyField(RepairModifications)
