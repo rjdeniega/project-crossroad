@@ -9,7 +9,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Pagination } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -81,6 +81,17 @@ class ComponentToPrint extends React.Component {
                                     ))}
                                 </Fragment>
                             ))}
+                            <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td colSpan={3}>
+                                <Pagination onChange={this.props.handlePagination} defaultCurrent={1}
+                                            total={this.props.length}/>
+                            </td>
+                        </tr>
                             <tr>
                                 <td>
                                     <div>&nbsp;</div>
@@ -188,6 +199,31 @@ export class RemittanceSummary extends Component {
             end_date: dateString
         }, () => this.fetchTransactions())
     };
+     handlePagination = (current) => {
+        let new_array = {...this.state.original_data};
+        this.setState({
+            start: current
+        }, () => {
+            new_array.rows = this.changeContents([...this.state.original_data.rows]);
+            console.log(new_array.rows);
+            this.setState({
+                data: new_array
+            })
+        })
+        console.log(this.state.data)
+    }
+
+    changeContents = (array) => {
+        console.log(this.state.start);
+        let index = (this.state.start * 7) - 7
+        let new_array = [];
+        for (let i = index; i <= index + 6; i++) {
+            if (i < array.length) {
+                new_array.push(array[i])
+            }
+        }
+        return new_array;
+    }
 
 
     render() {
@@ -200,7 +236,7 @@ export class RemittanceSummary extends Component {
                         trigger={() => <a href="#">Print this out!</a>}
                         content={() => this.componentRef}
                     />
-                    <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>
+                    <ComponentToPrint length={this.state.length} handlePagination = {this.handlePagination} data={this.state.data} ref={el => (this.componentRef = el)}/>
                 </div>
             </div>
         );

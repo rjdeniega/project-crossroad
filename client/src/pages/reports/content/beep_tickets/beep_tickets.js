@@ -171,7 +171,7 @@ export class BeepTickets extends Component {
         postData('/beep_tickets/', data).then(data => {
             console.log(data);
             console.log(data.rows.length);
-            let length = Math.round(data.rows.length / 7)
+            let length = Math.ceil(data.rows.length / 7)
 
             if (!data.error) {
                 this.setState({
@@ -214,7 +214,7 @@ export class BeepTickets extends Component {
 
     changeContents = (array) => {
         console.log(this.state.start);
-        let index = (this.state.start * 7) - 1
+        let index = (this.state.start * 7) - 7
         let new_array = [];
         for (let i = index; i <= index + 6; i++) {
             if (i < array.length) {

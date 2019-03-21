@@ -12,7 +12,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Pagination } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -20,7 +20,6 @@ import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
-
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -38,7 +37,8 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Remittance Per Route Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p><b>Remittance Per Route Report for {this.props.data.start_date}
+                            to {this.props.data.end_date}</b></p>
                         }
                     </Fragment>
                     }
@@ -105,17 +105,6 @@ class ComponentToPrint extends React.Component {
                                 </tr>
                                 <tr>
                                     <td></td>
-                                    <td><b> Kaliwa Total </b></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td className="monetary"><b>{item.l_route_total}</b></td>
-                                </tr>
-                                <tr>
-                                    <td></td>
                                     <td><b> Kanan Total </b></td>
                                     <td></td>
                                     <td></td>
@@ -124,6 +113,17 @@ class ComponentToPrint extends React.Component {
                                     <td></td>
                                     <td></td>
                                     <td className="monetary"><b>{item.r_route_total}</b></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td><b> Kaliwa Total </b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td className="monetary"><b>{item.l_route_total}</b></td>
                                 </tr>
                                 <tr>
                                     <td></td>
@@ -138,6 +138,18 @@ class ComponentToPrint extends React.Component {
                                 </tr>
                             </Fragment>
                         ))}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td colSpan={3}>
+                                <Pagination onChange={this.props.handlePagination} defaultCurrent={1}
+                                            total={this.props.length}/>
+                            </td>
+                        </tr>
                         {this.props.data &&
                         <Fragment>
                             <tr>
@@ -153,17 +165,6 @@ class ComponentToPrint extends React.Component {
                             </tr>
                             <tr>
                                 <td></td>
-                                <td><b> Kaliwa Grand Total </b></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td className="monetary"><b>{this.props.data.l_grand_remit_total}</b></td>
-                            </tr>
-                            <tr>
-                                <td></td>
                                 <td><b> Kanan Grand Total </b></td>
                                 <td></td>
                                 <td></td>
@@ -172,6 +173,17 @@ class ComponentToPrint extends React.Component {
                                 <td></td>
                                 <td></td>
                                 <td className="monetary"><b>{this.props.data.r_grand_remit_total}</b></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><b> Kaliwa Grand Total </b></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td className="monetary"><b>{this.props.data.l_grand_remit_total}</b></td>
                             </tr>
                             <tr>
                                 <td></td>
@@ -195,7 +207,9 @@ class ComponentToPrint extends React.Component {
     }
 }
 export class RemittanceSummaryRoute extends Component {
-    state = {};
+    state = {
+        start: 1
+    };
 
     componentDidMount() {
     }
@@ -208,11 +222,60 @@ export class RemittanceSummaryRoute extends Component {
         postData('/beep_tickets_per_route/', data).then(data => {
             console.log(data);
             if (!data.error) {
-                this.setState({
-                    data: data
-                })
+                console.log(data);
+                console.log(data.rows.length);
+                let length = Math.ceil(data.rows.length / 3);
+
+                if (!data.error) {
+                    this.setState({
+                        original_data: data,
+                        data: data,
+                    });
+                    if (data.rows.length < 4) {
+                        this.setState({
+                            data: data,
+                            length: length * 10,
+                        })
+                    }
+                    else {
+                        let new_data = { ...data };
+                        new_data.rows = this.changeContents([...this.state.original_data.rows]);
+                        console.log(new_data.rows);
+                        this.setState({
+                            data: new_data,
+                            length: length * 10,
+                        });
+                        console.log(this.state.original_data.rows.length)
+                    }
+                }
             }
         });
+    }
+
+    handlePagination = (current) => {
+        let new_array = { ...this.state.original_data };
+        this.setState({
+            start: current
+        }, () => {
+            new_array.rows = this.changeContents([...this.state.original_data.rows]);
+            console.log(new_array.rows);
+            this.setState({
+                data: new_array
+            })
+        })
+        console.log(this.state.data)
+    }
+
+    changeContents = (array) => {
+        console.log(this.state.start);
+        let index = (this.state.start * 3) - 3;
+        let new_array = [];
+        for (let i = index; i <= index + 2; i++) {
+            if (i < array.length) {
+                new_array.push(array[i])
+            }
+        }
+        return new_array;
     }
 
     handleStartDateChange = (date, dateString) => {
@@ -239,7 +302,8 @@ export class RemittanceSummaryRoute extends Component {
                         trigger={() => <a href="#">Print this out!</a>}
                         content={() => this.componentRef}
                     />
-                    <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>
+                    <ComponentToPrint length={this.state.length} handlePagination={this.handlePagination}
+                                      data={this.state.data} ref={el => (this.componentRef = el)}/>
                 </div>
             </div>
         );

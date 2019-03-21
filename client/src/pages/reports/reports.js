@@ -49,16 +49,6 @@ import { DriverPerformance } from './content/driver_performance/driver_performan
 
 const { Meta } = Card;
 const REMITTANCE_CARDS = [{
-    'title': 'Remittance Queries',
-    'description': 'view remittances for a time period',
-    'icon': money,
-    'content': <RemittanceReport/>
-},{
-    'title': 'Passenger Queries',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <PassengerCount/>
-},{
     'title': 'Remittance Report',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
