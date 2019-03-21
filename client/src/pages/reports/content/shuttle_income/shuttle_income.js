@@ -61,26 +61,26 @@ class ComponentToPrint extends React.Component {
                                 <Fragment>
                                     <tr>
                                         <td>{item.shuttle_id}</td>
-                                        <td className="monetary">{parseFloat(Math.round(item.purchase_cost * 100) / 100).toFixed(2)}</td>
-                                        <td className="monetary">{parseFloat(Math.round(item.revenue * 100) / 100).toFixed(2)}</td>
-                                        <td className="monetary">{parseFloat(Math.round(item.fuel_cost * 100) / 100).toFixed(2)}</td>
-                                        <td className="monetary">{parseFloat(Math.round(item.cost * 100) / 100).toFixed(2)}</td>
-                                        <td className="monetary"><b>{parseFloat(Math.round(item.value * 100) / 100).toFixed(2)}</b></td>
-                                        <td className="monetary"><b>{parseFloat(Math.round(item.depreciation * 100) / 100).toFixed(2)}</b></td>
-                                        <td className="monetary"><b>{parseFloat(Math.round(item.net_value * 100) / 100).toFixed(2)}</b></td>
+                                        <td className="monetary">{item.purchase_cost}</td>
+                                        <td className="monetary">{item.revenue}</td>
+                                        <td className="monetary">{item.fuel_cost}</td>
+                                        <td className="monetary">{item.cost}</td>
+                                        <td className="monetary"><b>{item.value}</b></td>
+                                        <td className="monetary"><b>{item.depreciation}</b></td>
+                                        <td className="monetary"><b>{item.net_value}</b></td>
 
                                     </tr>
                                 </Fragment>
                             ))}
                             <tr>
                                 <td><b> Grand Total </b></td>
-                                <td className="total-line monetary"><b>{parseFloat(Math.round(this.props.data.total_purchase_cost * 100) / 100).toFixed(2)}</b></td>
-                                <td className="total-line monetary"><b>{parseFloat(Math.round(this.props.data.total_remittance * 100) / 100).toFixed(2)}</b></td>
-                                <td className="total-line monetary"><b>{parseFloat(Math.round(this.props.data.total_fuel * 100) / 100).toFixed(2)}</b></td>
-                                <td className="total-line monetary"><b>{parseFloat(Math.round(this.props.data.total_costs * 100) / 100).toFixed(2)}</b></td>
-                                <td className="total-line monetary"><b>{parseFloat(Math.round(this.props.data.grand_total * 100) / 100).toFixed(2)}</b></td>
-                                <td className="total-line monetary"><b>{parseFloat(Math.round(this.props.data.total_depreciation * 100) / 100).toFixed(2)}</b></td>
-                                <td className="total-line monetary"><b>{parseFloat(Math.round(this.props.data.grand_net * 100) / 100).toFixed(2)}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.total_purchase_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.total_remittance}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.total_fuel}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.total_costs}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_total}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.total_depreciation}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_net}</b></td>
                             </tr>
                         </Fragment>
                         }
