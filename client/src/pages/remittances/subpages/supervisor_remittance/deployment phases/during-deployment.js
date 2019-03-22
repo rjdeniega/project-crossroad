@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message, Select, Icon, Tooltip, Divider, Tag, Popover, Badge, Empty } from 'antd';
+import { List, Avatar, Radio, Button, Modal, message, Select, Icon, Tooltip, Divider, Tag, Popover, Badge, Empty } from 'antd';
 import '../revised-style.css';
 import { postData } from '../../../../../network_requests/general';
 
@@ -297,6 +297,7 @@ class StopDeploymentButton extends React.Component {
 
         this.handleShuttleChange = this.handleShuttleChange.bind(this);
         this.handleDriverChange = this.handleDriverChange.bind(this);
+        this.handleRadioChange = this.handleRadioChange.bind(this);
 
         const shuttleBreakdown = (
             <ShuttleBreakdown
@@ -315,6 +316,7 @@ class StopDeploymentButton extends React.Component {
             shuttle_replacement: null,
             confirmLoading: false,
             is_disabled: true,
+            is_shuttle_breakdown: true,
             'ten_peso_tickets': [],
             'twelve_peso_tickets': [],
             'fifteen_peso_tickets': [],
@@ -349,8 +351,10 @@ class StopDeploymentButton extends React.Component {
 
         if (this.state.modal_body == 1) {
             this.handleBreakdownRedeploy()
-        } else {
+        } else if (this.state.modal_body == 2){
             this.handleDriverRedeploy()
+        } else {
+            this.handleAccident()
         }
 
         setTimeout(() => {
@@ -397,6 +401,16 @@ class StopDeploymentButton extends React.Component {
             });
     }
 
+    handleAccident(){
+        console.log(this.state.is_shuttle_breakdown);
+        console.log(this.props.deployment_id);
+        let data = {
+            "is_breakdown": this.state.is_shuttle_breakdown,
+            "deployment_id": this.props.deployment_id
+        }
+        console.log(data);
+    }
+
     handleShuttleChange(value) {
         this.setState({
             shuttle_replacement: value,
@@ -409,6 +423,12 @@ class StopDeploymentButton extends React.Component {
             driver_replacement: value
         });
         this.fetchSubDriverTickets(value)
+    }
+
+    handleRadioChange(value) {
+        this.setState({
+            is_shuttle_breakdown: value
+        })
     }
 
     fetchSubDriverTickets(sub_driver_id) {
@@ -472,9 +492,16 @@ class StopDeploymentButton extends React.Component {
         let modal_body = value;
         let breakdown_message = "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment";
         let earlyend_message = "early leave of driver is when the driver requests for an early end of deployment for personal reasons";
-        let tooltip_message = ((value == 1) ? breakdown_message : earlyend_message);
+        let accident_message = "accident is when the driver met with an unexpected accident that makes him/her unable to continue the deployment";
 
-        let is_disabled = (value == 1) ? false : true;
+        if(value == 1)
+            var tooltip_message = breakdown_message;
+        else if(value == 2)
+            var tooltip_message = earlyend_message;
+        else
+            var tooltip_message = accident_message;
+
+        let is_disabled = (value == 1 || value == 3) ? false : true;
 
         //clear tickets when it returns to shuttleBreakdown
         if (value == 1) {
@@ -512,8 +539,20 @@ class StopDeploymentButton extends React.Component {
                 fifteen_total={this.state.fifteen_total}
             />
         )
+        
+        const accident = (
+            <Accident 
+                onRadioChange={this.handleRadioChange}
+            />
+        )
 
-        let content = (value == 1) ? shuttleBreakdown : earlyLeave;
+        if(value == 1)
+            var content = shuttleBreakdown;
+        else if(value == 2)
+            var content = earlyLeave;
+        else
+            var content = accident;
+        
 
         this.setState({
             modal_body: modal_body,
@@ -563,6 +602,7 @@ class StopDeploymentButton extends React.Component {
                             >
                                 <Option value='1'>Shuttle Breakdown</Option>
                                 <Option value='2'>Early Leave of Driver</Option>
+                                <Option value='3'>Accident</Option>
                             </Select>
 
                         </span>
@@ -573,6 +613,35 @@ class StopDeploymentButton extends React.Component {
         );
     }
 }
+
+
+class Accident extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.onSelectChange = this.onSelectChange.bind(this);
+    }
+
+    onSelectChange = (e) => {
+        this.props.onRadioChange(e.target.value);
+    }
+
+    render() {
+        const RadioGroup = Radio.Group;
+        return(
+            <div>
+                <Divider />
+                <label>Is the shuttle in need of inspection?</label>
+                <RadioGroup onChange={this.onSelectChange} defaultValue={true}>
+                    <Radio value={true}>Yes</Radio>
+                    <Radio value={false}>No</Radio>
+                </RadioGroup>
+            </div>
+            
+        );
+    }
+}
+
 
 class ShuttleBreakdown extends React.Component {
     constructor(props) {

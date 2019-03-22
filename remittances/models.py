@@ -47,7 +47,8 @@ ITERATION_STATUS = [
 DEPLOYMENT_RESULTS = [
     ('S', 'Successful'),
     ('E', 'Early-end'),
-    ('B', 'Breakdown')
+    ('B', 'Breakdown'),
+    ('A', 'Accident')
 ]
 
 
