@@ -349,6 +349,7 @@ class StopDeploymentButton extends React.Component {
             confirmLoading: true,
         })
 
+        console.log(this.state.modal_body)
         if (this.state.modal_body == 1) {
             this.handleBreakdownRedeploy()
         } else if (this.state.modal_body == 2){
@@ -402,13 +403,21 @@ class StopDeploymentButton extends React.Component {
     }
 
     handleAccident(){
-        console.log(this.state.is_shuttle_breakdown);
-        console.log(this.props.deployment_id);
         let data = {
             "is_breakdown": this.state.is_shuttle_breakdown,
             "deployment_id": this.props.deployment_id
         }
-        console.log(data);
+
+        let notice = "Deployment stopped because of an accident"
+
+        postData('remittances/deployments/accident/', data)
+            .then(response => {
+                if (!response.error) {
+                    message.success(notice);
+                } else {
+                    console.log(response.error);
+                }
+            });
     }
 
     handleShuttleChange(value) {

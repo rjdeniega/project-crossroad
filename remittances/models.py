@@ -210,6 +210,12 @@ class Deployment(models.Model):
         self.status = 'P'
         self.result = 'B'
         self.save()
+    
+    def set_deployment_accident(self):
+        self.end_time = datetime.now()
+        self.status = 'P'
+        self.result = 'A'
+        self.save()
 
 
 class PresentDrivers(models.Model):

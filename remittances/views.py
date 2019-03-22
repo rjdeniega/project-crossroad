@@ -1099,7 +1099,7 @@ class ShuttleBreakdown(APIView):
 
         deployment.set_deployment_breakdown()
 
-        shuttle.status = 'UM'
+        shuttle.status = 'FI'
         shuttle.save()
 
         serialized_deployment = DeploymentSerializer(new_deployment)
@@ -1159,6 +1159,24 @@ class RedeployDriver(APIView):
 
         return Response(data={
             "redeployment": serialized_deployment.data
+        }, status=status.HTTP_200_OK)
+
+
+class AccidentDeployment(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+
+        deployment = Deployment.objects.get(id=data["deployment_id"])
+        
+        deployment.set_deployment_accident()
+        
+        if data["is_breakdown"]:
+            deployment.shuttle.status = 'FI'
+        
+        return Response(data={
+            "message": "Deployment has been successfully stopped",
+            "deployment_id": deployment.id
         }, status=status.HTTP_200_OK)
 
 
