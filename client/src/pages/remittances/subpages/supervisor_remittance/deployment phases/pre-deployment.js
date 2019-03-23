@@ -673,13 +673,7 @@ function DeploymentButtons(props) {
             <DayOffButton 
                 driver_id={props.driver_id}
             />
-            <SubButton
-                shuttle={props.shuttle}
-                route={props.route}
-                driver_id={props.driver_id}
-                supervisor_id={supervisor_id}
-                driver_name={driver_name}
-            />
+            
             {props.shuttle_obj.status == 'A' ? (
                 <Button
                     type="primary"

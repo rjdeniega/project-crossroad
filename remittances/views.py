@@ -627,11 +627,13 @@ class SubDrivers(APIView):
             many=True)
 
         sub_drivers = drivers_assigned.data
-
-        supervisor = DriverSerializer(Driver.objects.get(id=supervisor_id))
-        sub_drivers.append({
-            "driver": supervisor.data
-        })
+        supervisors = Driver.objects.filter(is_supervisor=True)
+        print(supervisors)
+        for supervisor in supervisors:
+            info = DriverSerializer(supervisor)
+            sub_drivers.append({
+                "driver": info.data
+            })
         return Response(data={
             "sub_drivers": sub_drivers
         }, status=status.HTTP_200_OK)
