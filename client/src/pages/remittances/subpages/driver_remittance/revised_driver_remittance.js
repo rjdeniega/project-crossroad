@@ -920,15 +920,15 @@ class RemittanceForm extends React.Component {
                     {...formItemLayout}
                     label={
                         <span>
-                            <Tooltip title="Input other costs acquired during deployment">
+                            <Tooltip title="Input cost for vulcanizing">
                                 <Icon type="question-circle-o" className="field-guide"/>
                             </Tooltip>
-                            Other Costs
+                            Vulcanizing Cost
                         </span>
                     }
                 >
                     {
-                        getFieldDecorator('other_costs', {
+                        getFieldDecorator('vulcanizing_cost', {
                             rules: []
                         })(
                             <Input />

@@ -1275,22 +1275,22 @@ class SubmitRemittance(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body);
-
+        print(data)
         deployment = Deployment.objects.get(id=data["deployment_id"]);
 
         # create remittance form
         rem_form = RemittanceForm()
         rem_form.deployment = deployment
-        if data["fuel_costs"]:
+        if "fuel_costs" in data:
             rem_form.fuel_cost = data["fuel_costs"]
         else:
             rem_form.fuel_cost = 0
 
-        if data["or_number"]:
+        if "or_number" in data:
             rem_form.fuel_receipt = data["or_number"]
 
-        if data["other_costs"]:
-            rem_form.other_cost = data["other_costs"]
+        if "vulcanizing_cost" in data:
+            rem_form.other_cost = data["vulcanizing_cost"]
         else:
             rem_form.fuel_cost = 0
 
