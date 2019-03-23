@@ -191,4 +191,5 @@ Col {
 .deploy-sub-container {
     margin-top: 7.5px;
     float: right;
+    width: 150px;
 }

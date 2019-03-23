@@ -45,13 +45,7 @@ class DeploySubButtons extends React.Component {
     render() {
         return(
             <span className="deploy-sub-container">
-                <Button.Group>
-                    <RevisedSubButton />
-                    <Button value="small" icon="user-add">
-                        Temp
-                    </Button>
-                </Button.Group>
-                
+                <RevisedSubButton />
             </span>
         )
     }
@@ -158,7 +152,7 @@ class RevisedSubButton extends React.Component {
     render(){
         return(
             <span>
-                <Button value="small" icon="user-add" onClick={this.showModal}>
+                <Button value="small" block icon="user-add" onClick={this.showModal}>
                         Sub
                 </Button>
                 <Modal
@@ -275,6 +269,7 @@ class RevisedSubContent extends React.Component {
     }
 
     render() {
+        const { Option, OptGroup } = Select;
         return(
             <div className="modal-container">
                 <div className="select-group">
@@ -296,13 +291,32 @@ class RevisedSubContent extends React.Component {
                         Subdrivers:
                     </label>
                     <Select onChange={this.handleSubChange} style={{ width: 200 }}>
+                        <OptGroup label="Supervisor">
+                            {
+                                this.state.subDrivers.map((item) =>{
+                                    if(item.driver.is_supervisor == true)
+                                        return (
+                                            <option value={item.driver.id} key={item.driver.id}>
+                                                {item.driver.name}
+                                            </option>
+                                        )
+
+                                })
+                            }
+                        </OptGroup>
+                        <OptGroup label="Other Drivers">
                         {
-                            this.state.subDrivers.map((item) => (
-                                <option value={item.driver.id} key={item.driver.id}>
-                                    {item.driver.name}
-                                </option>
-                            ))
-                        }
+                                this.state.subDrivers.map((item) =>{
+                                    if(item.driver.is_supervisor == false)
+                                        return (
+                                            <option value={item.driver.id} key={item.driver.id}>
+                                                {item.driver.name}
+                                            </option>
+                                        )
+
+                                })
+                            }
+                        </OptGroup>
                     </Select>
                 </div>
                 <div className="sub-deployment-details">
