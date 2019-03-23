@@ -1277,6 +1277,20 @@ class SubmitRemittance(APIView):
         data = json.loads(request.body);
         print(data)
         deployment = Deployment.objects.get(id=data["deployment_id"]);
+        
+        ten_valid = SubmitRemittance.isTicketsValid(data["ten_peso_tickets"])
+        twelve_valid = SubmitRemittance.isTicketsValid(data["twelve_peso_tickets"])
+        fifteen_valid = SubmitRemittance.isTicketsValid(data["fifteen_peso_tickets"])
+
+        if SubmitRemittance.isMileageValid(data["mileage"], deployment.shuttle) == False:
+            return Response(data={
+                "error": "Mileage is invalid"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if ten_valid == False or twelve_valid == False or fifteen_valid == False:
+            return Response(data={
+                "error": "Ticket Range is Not Valid"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
         # create remittance form
         rem_form = RemittanceForm()
@@ -1386,6 +1400,32 @@ class SubmitRemittance(APIView):
             "remittance_form": serialized_rem_form.data
         }, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def isTicketsValid(tickets):
+        valid = True
+        for ticket in tickets:
+            assigned = AssignedTicket.objects.get(id=ticket["id"])
+
+            if ticket["value"]:
+                val = ticket["value"]
+                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                last_consumed = consumed_tickets.order_by('-end_ticket').first()
+
+                if last_consumed is not None:
+                    if int(val) <= last_consumed.end_ticket or int(val) > assigned.range_to:
+                        valid = False
+                else:
+                    if int(val) < assigned.range_from or int(val) > assigned.range_to:
+                        valid = False
+        
+        return valid
+
+    @staticmethod
+    def isMileageValid(mileage, shuttle):
+        if int(mileage) <= shuttle.mileage:
+            return False
+        return True
+    
 
 class PendingRemittances(APIView):
     @staticmethod

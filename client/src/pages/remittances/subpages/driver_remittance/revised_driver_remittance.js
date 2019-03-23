@@ -712,6 +712,7 @@ class RemittanceForm extends React.Component {
                             message.success("Remittance form has been submitted");
                         }
                         else {
+                            message.error(response.error);
                             console.log(response.error);
                         }
                     });
