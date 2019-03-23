@@ -29,7 +29,7 @@
 }
 
 .list-container {
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 .deployment-list-container {
@@ -163,6 +163,7 @@ Col {
 
 .select-group {
     margin-left: 20px;
+    margin-bottom: 5px;
 }
 
 .modal-container {
@@ -183,3 +184,12 @@ Col {
     font-size: 11px;
 }
 
+.late-tag {
+    margin-left: 5px;
+}
+
+.deploy-sub-container {
+    margin-top: 7.5px;
+    float: right;
+    width: 150px;
+}

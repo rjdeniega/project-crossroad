@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, Avatar, Drawer, Button, List, Divider, Tooltip, Icon, Form, message, Input, InputNumber } from 'antd';
+import { Row, Col, Tag, Popconfirm, Avatar, Drawer, Button, List, Divider, Tooltip, Icon, Form, message, Input, InputNumber } from 'antd';
 import { postData } from '../../../../../network_requests/general';
 
 import '../revised-style.css';
@@ -49,12 +49,12 @@ function DeploymentList(props) {
                                     id={item.driver.id}
                                     name={item.driver.name}
                                     shuttle={"#" + item.shuttle.shuttle_number + " - " + item.shuttle.plate_number}
-                                    route={item.shuttle.route}
+                                    route={item.route}
                                     start_time={item.start_time}
                                     end_time={item.end_time}
-                                    tickets="130pcs"
                                     photo={item.driver.photo}
                                     absent_driver={item.absent_driver}
+                                    date={item.date}
                                 />
                             </List.Item>
                         </div>
@@ -83,14 +83,35 @@ function DeploymentListDetails(props) {
     const supervisor = JSON.parse(localStorage.user_staff);
     const absent_driver = props.absent_driver
 
+    if (props.route == 'Main Road' || props.route == 'Main Route' || props.route == 'M') {
+        var route_label = 'Main Road'
+        var tag_color = 'blue';
+    }
+    else if (props.route == 'Kaliwa' || props.route == 'Left Route' || props.route == 'L') {
+        var tag_color = 'orange';
+        var route_label = 'Left Route';
+    }
+    else {
+        var tag_color = 'green';
+        var route_label = 'Right Route';
+    }
+
     if (typeof absent_driver == "undefined") {
         return (
             <div>
                 <div className="deployment-header">
-                    <Avatar src={props.photo} shape="square" />
+                    <Avatar 
+                        src={props.photo} 
+                        style={{ backgroundColor: '#68D3B7' }} 
+                        shape="square"
+                        icon="user"
+                        />
                     <span className="deployment-name">
                         {props.name}
                     </span>
+                    <Tag color={tag_color} className="route-tag">
+                        {route_label}
+                    </Tag>
                 </div>
 
                 <div className="deployment-list-container">
@@ -99,8 +120,8 @@ function DeploymentListDetails(props) {
                         value={props.shuttle}
                     />
                     <DetailItems
-                        title="Route"
-                        value={props.route}
+                        title="Deployment Date"
+                        value={props.date}
                     />
                     <DetailItems
                         title="Start Time"
@@ -109,10 +130,6 @@ function DeploymentListDetails(props) {
                     <DetailItems
                         title="End Time"
                         value={props.end_time}
-                    />
-                    <DetailItems
-                        title="Tickets Onhand"
-                        value={props.tickets}
                     />
                 </div>
 
@@ -129,12 +146,25 @@ function DeploymentListDetails(props) {
             <div>
                 <div className="deployment-header">
                     <Tooltip title={prompt_text} placement="topLeft">
-                        <Avatar src={absent_driver.photo} shape="square" />
+                        <Avatar 
+                            src={absent_driver.photo}
+                            style={{ backgroundColor: '#68D3B7' }} 
+                            shape="square"
+                            icon="user"
+                            />
                         <Icon type="arrow-right" className="sub-arrow" />
-                        <Avatar src={props.photo} shape="square" />
+                        <Avatar 
+                            src={props.photo} 
+                            style={{ backgroundColor: '#68D3B7' }} 
+                            shape="square"
+                            icon="user"
+                            />
                         <span className="deployment-name">
                             {props.name}
                         </span>
+                        <Tag color={tag_color} className="route-tag">
+                            {props.route}
+                        </Tag>
                     </Tooltip>
                 </div>
 
@@ -144,8 +174,8 @@ function DeploymentListDetails(props) {
                         value={props.shuttle}
                     />
                     <DetailItems
-                        title="Route"
-                        value={props.route}
+                        title="Deployment Date"
+                        value={props.date}
                     />
                     <DetailItems
                         title="Start Time"
@@ -154,10 +184,6 @@ function DeploymentListDetails(props) {
                     <DetailItems
                         title="End Time"
                         value={props.end_time}
-                    />
-                    <DetailItems
-                        title="Tickets Onhand"
-                        value={props.tickets}
                     />
                 </div>
 
@@ -453,6 +479,7 @@ class RemittanceInfo extends React.Component {
                     <ConForm
                         onClose={this.props.onClose}
                         remittance_id={this.state.remittance_form.id}
+                        totalAmount={this.state.remittance_form.total}
                     />
                 </div>
             </div>
@@ -481,7 +508,6 @@ class ConfirmRemittanceForm extends React.Component {
         });
     }
 
-
     render() {
 
         const { getFieldDecorator } = this.props.form;
@@ -503,19 +529,26 @@ class ConfirmRemittanceForm extends React.Component {
                             rules: [{
                                 required: true,
                                 message: "Please input the actual cash received"
-                            },]
+                            },],
+                            initialValue: this.props.totalAmount
                         })(
                             <InputNumber />
                         )
                     }
                 </Form.Item>
                 <Form.Item>
-                    <Button
-                        type="primary"
-                        onClick={this.handleSubmit}
-                    >
-                        Confirm Remittance
-                    </Button>
+                    <Popconfirm 
+                        title="Are you sure?" 
+                        onConfirm={this.handleSubmit}
+                        okText="Yes"
+                        cancelText="No"
+                        >
+                        <Button
+                            type="primary"
+                        >
+                            Confirm Remittance
+                        </Button>
+                    </Popconfirm>
                 </Form.Item>
             </Form>
         );
