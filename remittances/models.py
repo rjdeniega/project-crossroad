@@ -30,6 +30,7 @@ DRIVER_DEPLOYMENT_TYPE = [
 
 DEPLOYMENT_STATUS = [
     ('O', 'Ongoing'),
+    ('P', 'Pending for Remittance'),
     ('F', 'Finished')
 ]
 
@@ -46,7 +47,8 @@ ITERATION_STATUS = [
 DEPLOYMENT_RESULTS = [
     ('S', 'Successful'),
     ('E', 'Early-end'),
-    ('B', 'Breakdown')
+    ('B', 'Breakdown'),
+    ('A', 'Accident')
 ]
 
 
@@ -81,6 +83,12 @@ class Schedule(models.Model):
             return 'completed'
         else:
             return 'pending'
+    
+    def get_display(self):
+        return self.start_date.strftime("%m\%d\%y") + " to " + self.end_date.strftime("%m\%d\%y")
+
+    def __str__(self):
+        return self.start_date.strftime("%m\%d\%y") + " to " + self.end_date.strftime("%m\%d\%y")
 
 
 class Shift(models.Model):
@@ -115,8 +123,7 @@ class DriversAssigned(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.driver.name + ' driving '
-
+        return self.driver.name + ' driving on ' + self.shift.get_type_display() + " shift (" + self.shift.schedule.get_display() + ") "
 
 class ShiftIteration(models.Model):
     shift = ForeignKey(Shift, on_delete=models.CASCADE)
@@ -164,6 +171,8 @@ class Deployment(models.Model):
     def get_status_display(self):
         if self.status is 'O':
             return 'Ongoing'
+        elif self.status is 'P':
+            return 'Pending for Remittance'
         return 'Finished'
 
     def get_route_display(self):
@@ -185,16 +194,38 @@ class Deployment(models.Model):
         self.save()
 
     def set_deployment_success(self):
+        self.end_time = datetime.now()
+        self.status = 'F'
         self.result = 'S'
         self.save()
 
     def set_deployment_early(self):
+        self.end_time = datetime.now()
+        self.status = 'P'
         self.result = 'E'
         self.save()
 
     def set_deployment_breakdown(self):
+        self.end_time = datetime.now()
+        self.status = 'P'
         self.result = 'B'
         self.save()
+    
+    def set_deployment_accident(self):
+        self.end_time = datetime.now()
+        self.status = 'P'
+        self.result = 'A'
+        self.save()
+
+
+class PresentDrivers(models.Model):
+    assignedDriver = ForeignKey(DriversAssigned, related_name="assigned_driver", on_delete=models.CASCADE)
+    datetime = DateTimeField(default=timezone.now)
+    deployment = ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
+    is_dayoff = BooleanField(default=False)
+
+    def __str__(self):
+        return self.assignedDriver.driver.name + ' is present on ' + self.datetime.strftime("%m-%d-%y %H:%M:%S")
 
 
 class SubbedDeployments(models.Model):
@@ -209,6 +240,10 @@ class SubbedDeployments(models.Model):
 class Redeployments(models.Model):
     deployment = ForeignKey(Deployment, related_name="deployment", on_delete=models.CASCADE)
     prior_deployment = ForeignKey(Deployment, related_name="prior_deployment", on_delete=models.CASCADE)
+
+    def __str__(self):
+        date = self.deployment.shift_iteration.date.strftime('%m/%d/%Y')
+        return self.deployment.driver.name + " redeployed on " + date
 
 
 class AssignedTicket(models.Model):

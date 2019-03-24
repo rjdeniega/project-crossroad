@@ -16,6 +16,10 @@ remittance_urls = [
     path('tickets/<int:deployment_id>', DeploymentTickets.as_view()),
     path('tickets/driver/<int:driver_id>', SpecificDriverTicket.as_view()),
 
+    path('deployments/present/', MarkAsPresent.as_view()),
+    path('deployments/present/<int:driver_id>', MarkAsPresent.as_view()),
+    path('deployments/absent/<int:supervisor_id>', AbsentDrivers.as_view()),
+    path('deployments/dayoff/', DayOffDriver.as_view()),
     path('deployments/', DeploymentView.as_view()),
     path('deployments/<int:pk>', DeploymentView.as_view()),
     path('specific_deployments/<int:shift_id>', SpecificDeploymentView.as_view()),
@@ -29,6 +33,7 @@ remittance_urls = [
     path('deployments/shuttle-breakdown/redeploy/', ShuttleBreakdown.as_view()),
     path('deployments/<int:deployment_id>/available-drivers', RedeployDriver.as_view()),
     path('deployments/early-leave/redeploy/', RedeployDriver.as_view()),
+    path('deployments/accident/', AccidentDeployment.as_view()),
     path('deployments/driver/<int:driver_id>', DriverDeployment.as_view()),
 
     path('shifts/', ShiftView.as_view()),
