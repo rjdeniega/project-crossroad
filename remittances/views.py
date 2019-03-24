@@ -1474,7 +1474,7 @@ class PendingRemittances(APIView):
         data = json.loads(request.body);
 
         rem_form = RemittanceForm.objects.get(id=remittance_id)
-        rem_form.discrepancy = abs(data["actual"] - rem_form.total)
+        rem_form.discrepancy = abs(float(data["actual"]) - float(rem_form.total))
         rem_form.status = 'C'
         rem_form.save()
 
