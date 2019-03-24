@@ -388,6 +388,7 @@ function DeploymentList(props) {
                                     twelve_total={item.twelve_total}
                                     is_late={item.is_late}
                                     is_shuttle_deployed={item.is_shuttle_deployed}
+                                    deploy_with_back_up={item.deploy_with_back_up}
                                 />
                             </List.Item>
                         </div>
@@ -408,21 +409,21 @@ function DeploymentListDetails(props) {
     if (props.route == 'Main Road' || props.route == 'M') {
         var route_label = 'Main Road'
         var tag_color = 'blue';
-        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.fifteen_total >= 50 && props.is_shuttle_deployed == false)
+        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.fifteen_total >= 50 && (props.is_shuttle_deployed == false || props.deploy_with_back_up == true))
             var is_disabled = false;
         else
             var is_disabled = true;
     } else if (props.route == 'Kaliwa' || props.route == 'L') {
         var route_label = "Left Route"
         var tag_color = 'orange';
-        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.is_shuttle_deployed == false)
+        if (props.ten_total >= 50 && props.twelve_total >= 80 && (props.is_shuttle_deployed == false || props.deploy_with_back_up == true))
             var is_disabled = false;
         else
             var is_disabled = true;
     } else {
         var route_label = "Right Route"
         var tag_color = 'green';
-        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.is_shuttle_deployed == false)
+        if (props.ten_total >= 50 && props.twelve_total >= 80 && (props.is_shuttle_deployed == false || props.deploy_with_back_up == true))
             var is_disabled = false;
         else
             var is_disabled = true;
@@ -513,6 +514,7 @@ function DeploymentListDetails(props) {
                 route={route_label}
                 shuttle_obj={props.shuttle_obj}
                 is_disabled={is_disabled}
+                deploy_with_back_up={props.deploy_with_back_up}
             />
         </div>
     );
@@ -648,6 +650,12 @@ function DeploymentButtons(props) {
     const driver_id = props.driver_id
     const driver_name = props.driver_name
 
+    if(props.shuttle_obj.status == 'A' && props.deploy_with_back_up == false){
+        var is_normal = true
+    } else {
+        var is_normal = false
+    }
+
     function showConfirm() {
         Modal.confirm({
             title: 'Are you sure you want to deploy this driver?',
@@ -688,7 +696,7 @@ function DeploymentButtons(props) {
                 driver_id={props.driver_id}
             />
             
-            {props.shuttle_obj.status == 'A' ? (
+            {is_normal ? (
                 <Button
                     type="primary"
                     className="deployment-button"
@@ -698,14 +706,15 @@ function DeploymentButtons(props) {
                     Deploy
                 </Button>
             ) : (
-                    <DeployWithDiffShuttle
-                        driver_id={props.driver_id}
-                        shuttle_display={props.shuttle}
-                        supervisor_id={supervisor_id}
-                        driver_name={driver_name}
-                        is_disabled={props.is_disabled}
-                    />
-                )}
+                <DeployWithDiffShuttle
+                    driver_id={props.driver_id}
+                    shuttle_display={props.shuttle}
+                    supervisor_id={supervisor_id}
+                    driver_name={driver_name}
+                    is_disabled={props.is_disabled}
+                    is_shuttle_available={props.shuttle_obj.status == "A" ? true : false}
+                />
+            )}
         </div>
     );
 }
@@ -746,8 +755,14 @@ class DeployWithDiffShuttle extends React.Component {
             'modal_is_visible': false,
             'shuttle_id': null,
             'driver_id': this.props.driver_id,
+            'backup_shuttles': [],
+            'is_modal_ok_disabled': false
         }
         this.handleShuttleChange = this.handleShuttleChange.bind(this);
+    }
+
+    componentDidMount() {
+        this.fetchBackUpShuttles();
     }
 
     showModal = () => {
@@ -793,6 +808,29 @@ class DeployWithDiffShuttle extends React.Component {
             });
     }
 
+    fetchBackUpShuttles() {
+        fetch('/remittances/deployments/back-up-shuttles/')
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        backup_shuttles: data.shuttles
+                    });
+
+                    if(data.shuttles.length == 0)
+                        this.setState({
+                            is_modal_ok_disabled: true
+                        }) 
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+    
     render() {
         return (
             <div className="subButton-container">
@@ -810,10 +848,13 @@ class DeployWithDiffShuttle extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     okText="Deploy"
+                    
                 >
                     <DeployShuttleContent
                         shuttle_display={this.props.shuttle_display}
                         handleShuttleChange={this.handleShuttleChange}
+                        is_shuttle_available={this.props.is_shuttle_available}
+                        backUpShuttles={this.state.backup_shuttles}
                     />
                 </Modal>
             </div>
@@ -825,49 +866,36 @@ class DeployShuttleContent extends React.Component {
     constructor(props) {
         super(props)
 
-        this.state = {
-            "backUpShuttles": []
-        }
-
         this.handleChange = this.handleChange.bind(this);
-    }
-
-    componentDidMount() {
-        this.fetchBackUpShuttles();
     }
 
     handleChange(value) {
         this.props.handleShuttleChange(value);
     }
 
-    fetchBackUpShuttles() {
-        fetch('/remittances/deployments/back-up-shuttles/')
-            .then(response => {
-                return response;
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.error) {
-                    this.setState({
-                        backUpShuttles: data.shuttles
-                    });
-                }
-                else {
-                    console.log(data.error)
-                }
-            }).catch(error => console.log(error));
-    }
-
     render() {
         return (
             <div className="modal-container">
                 <div>
-                    <span>
-                        {"Shuttle No." + this.props.shuttle_display + " "}
-                    </span>
-                    <span>
-                        is currently <b>under maintenance</b>
-                    </span>
+                    {this.props.is_shuttle_available ? (
+                        <span>
+                            <span>
+                                {"Shuttle No." + this.props.shuttle_display + " "}
+                            </span>
+                            <span>
+                                is still <b>on deployment</b> with another driver
+                            </span>
+                        </span>
+                    ) : (
+                        <span>
+                            <span>
+                                {"Shuttle No." + this.props.shuttle_display + " "}
+                            </span>
+                            <span>
+                                is currently <b>under maintenance</b>
+                            </span>
+                        </span>
+                    )}
                 </div>
                 <Divider></Divider>
                 <Row gutter={16}>
@@ -879,7 +907,7 @@ class DeployShuttleContent extends React.Component {
                     <Col span={16}>
                         <Select onChange={this.handleChange} style={{ width: 200 }}>
                             {
-                                this.state.backUpShuttles.map((item) => (
+                                this.props.backUpShuttles.map((item) => (
                                     <option value={item.id} key={item.id}>
                                         Shuttle#{item.shuttle_number} - {item.plate_number}
                                     </option>

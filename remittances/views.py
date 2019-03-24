@@ -532,6 +532,8 @@ class NonDeployedDrivers(APIView):
             item["fifteen_total"] = fifteen_total
 
             item["is_shuttle_deployed"] = NonDeployedDrivers.is_shuttle_deployed(item["shuttle"])
+
+            item["deploy_with_back_up"] = NonDeployedDrivers.should_be_deployed(item['deployment_type'], item['shift']['type'], item["is_shuttle_deployed"])
         
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
@@ -562,10 +564,39 @@ class NonDeployedDrivers(APIView):
         
         return False
 
+    @staticmethod
+    def should_be_deployed(dep_type, shift_type, is_shuttle_deployed):
+        if dep_type == 'Early' and shift_type == 'A':
+            date = datetime.now()
+            force_dep = date.replace(hour=5, minute=30)
+        elif dep_type == 'Regular' and shift_type == 'A':
+            date = datetime.now()
+            force_dep = date.replace(hour=7, minute=30)
+        elif dep_type == 'Regular' and shift_type == 'P':
+            date = datetime.now()
+            force_dep = date.replace(hour=14, minute=30)
+        else:
+            date = datetime.now()
+            force_dep = date.replace(hour=16, minute=30)
+        
+        if force_dep <= datetime.now() and is_shuttle_deployed == True:
+            return True
+        return False
+
+
 class BackUpShuttles(APIView):
     @staticmethod
     def get(request):
         shuttles = Shuttle.objects.filter(status='B')
+
+        deployed_shuttles = []
+        for shuttle in shuttles:
+            if BackUpShuttles.is_shuttle_deployed(shuttle):
+                deployed_shuttles.append(shuttle.id)
+            
+        for shuttle_id in deployed_shuttles:
+            shuttles.exclude(id=shuttle_id)
+                
 
         serialized_shuttles = ShuttlesSerializer(shuttles, many=True)
 
@@ -627,6 +658,15 @@ class BackUpShuttles(APIView):
                 "errors": ""
             }, status=status.HTTP_400_BAD_REQUEST)
 
+    @staticmethod
+    def is_shuttle_deployed(shuttle):
+        deployments = Deployment.objects.filter(status="O")
+
+        for deployment in deployments:
+            if shuttle.id == deployment.shuttle.id:
+                return True
+        
+        return False
 
 class SubDrivers(APIView):
     @staticmethod
