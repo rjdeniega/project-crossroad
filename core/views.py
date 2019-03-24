@@ -505,15 +505,36 @@ class MemberTransactionByReport(APIView):
         report_items = []
         for member in Member.objects.all():
             member_data = MemberSerializer(member).data
-            try:
-                id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member.id))
-            except ObjectDoesNotExist:
+            id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member.id))
+            if len(id_cards) == 0:
+                carwash_transactions = [item for item in
+                                        CarwashTransaction.objects.filter(member=member)]
+                if end_date is not None:
+                    carwash_transactions = [item for item in carwash_transactions if
+                                            start_date.date() <= item.date <= end_date.date()]
+                else:
+                    carwash_transactions = [item for item in carwash_transactions if
+                                            start_date.date() == item.date]
+
+                carwash_transactions = CarwashTransactionSerializer(carwash_transactions, many=True).data
                 report_items.append({
-                    "member": MemberSerializer(member).data,
-                    "transactions": None,
-                    "total_transactions": 0
+                    "member_id": member.id,
+                    "member": member_data,
+                    "member_card": None,
+                    "no_of_beep": 0,
+                    "has_beep": False,
+                    "no_of_carwash": len(carwash_transactions),
+                    "beep_total": 0,
+                    "beep_total_decimal": "{0:,.2f}".format(0),
+                    "carwash_total_decimal": "{0:,.2f}".format(
+                        sum([float(item['total']) for item in carwash_transactions])),
+                    "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
+                    "beep_transactions": [],
+                    "carwash_transactions": carwash_transactions,
+                    "total_transactions": sum([float(item['total']) for item in carwash_transactions]),
+                    "total_transactions_decimal": "{0:,.2f}".format(
+                        sum([float(item['total']) for item in carwash_transactions]))
                 })
-                id_cards = None
 
             if len(id_cards) > 0:
                 member_data["id_card"] = id_cards[0].can
@@ -527,21 +548,21 @@ class MemberTransactionByReport(APIView):
                 if end_date is not None:
                     transactions = [item for item in transactions if
                                     start_date.date() <= item.shift.date <= end_date.date()]
-                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+                    carwash_transactions = [item for item in carwash_transactions if
                                             start_date.date() <= item.date <= end_date.date()]
                 else:
-
                     transactions = [item for item in transactions if start_date.date() == item.shift.date]
-                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+                    carwash_transactions = [item for item in carwash_transactions if
                                             start_date.date() == item.date]
 
                 serialized_transactions = BeepTransactionSerializer(transactions, many=True)
                 for item in serialized_transactions.data:
                     item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
-
+                carwash_transactions = CarwashTransactionSerializer(carwash_transactions, many=True).data
                 report_items.append({
                     "member_id": member.id,
                     "member": member_data,
+                    "has_beep": True,
                     "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
                     "no_of_beep": len(transactions),
                     "no_of_carwash": len(carwash_transactions),
@@ -559,6 +580,7 @@ class MemberTransactionByReport(APIView):
                         sum([float(item.total) for item in transactions]) + sum(
                             [float(item['total']) for item in carwash_transactions]))
                 })
+        print(report_items)
         return Response(data={
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
             "no_of_carwash_total": sum(item['no_of_carwash'] for item in report_items),
@@ -2188,7 +2210,8 @@ class ShuttleCostVRevenueReport(APIView):
                 "major_total": "{0:,.2f}".format(major_repairs_cost),
                 "depreciation": "{0:,.2f}".format(float(total_depreciation)),
                 "cost": "{0:,.2f}".format(float(initialMaintenanceCost)),
-                "value": "{0:,.2f}".format(float(shuttle_remittance) - float(shuttle_fuel_cost) - initialMaintenanceCost),
+                "value": "{0:,.2f}".format(
+                    float(shuttle_remittance) - float(shuttle_fuel_cost) - initialMaintenanceCost),
                 "net_value": "{0:,.2f}".format(float(net_value)),
             })
             grand_depreciation += total_depreciation
@@ -2203,10 +2226,11 @@ class ShuttleCostVRevenueReport(APIView):
             "grand_net": "{0:,.2f}".format(grand_net),
             "total_purchase_cost": "{0:,.2f}".format(total_purchase_cost),
             "total_depreciation": "{0:,.2f}".format(grand_depreciation),
-            "shuttle_maintenance_costs": [(float(item['cost'].replace(',', '')) + float(item['fuel_cost'])) for item in rows],
+            "shuttle_maintenance_costs": [(float(item['cost'].replace(',', '')) + float(item['fuel_cost'])) for item in
+                                          rows],
             "shuttle_revenues": [item['revenue'] for item in rows],
             "shuttle_fuel_costs": [item['fuel_cost'] for item in rows],
-            "shuttle_depreciations": [float(item['depreciation'].replace(',','')) for item in rows],
+            "shuttle_depreciations": [float(item['depreciation'].replace(',', '')) for item in rows],
             "shuttle_major_repairs": [item['major_total'] for item in rows],
             "start_date": start_date.date(),
             "end_date": end_date.date(),
@@ -2468,7 +2492,8 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='N')).filter(user__id=user_id).order_by('-created'), many=True)
+                                                   .filter(Q(type='I') | Q(type='N')).filter(user__id=user_id).order_by(
+                '-created'), many=True)
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by(
                 '-created'), many=True)
@@ -2732,7 +2757,7 @@ class PeakHourReport(APIView):
         twentythree = 0
         twentyfour = 0
 
-        transactions = PeakHourReport.get_transactions(route,start_date,end_date,filter)
+        transactions = PeakHourReport.get_transactions(route, start_date, end_date, filter)
 
         for transaction in transactions:
             if transaction.transaction_date_time.hour == 1:
@@ -2789,18 +2814,18 @@ class PeakHourReport(APIView):
                 twentytwo, twentythree, twentyfour]
 
     @staticmethod
-    def get_transactions(route,start_date,end_date,filter):
+    def get_transactions(route, start_date, end_date, filter):
         if filter == "All":
             return BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
-                                                          transaction_date_time__lte=end_date)
-        elif filter =="Mon":
+                                                  transaction_date_time__lte=end_date)
+        elif filter == "Mon":
             transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
-                                           transaction_date_time__lte=end_date)
+                                                          transaction_date_time__lte=end_date)
             transactions = [item for item in transactions if item.transaction_date_time.weekday() == 0]
             return transactions
-        elif filter =="Tue":
+        elif filter == "Tue":
             transactions = BeepTransaction.objects.filter(shuttle__route=route, transaction_date_time__gte=start_date,
-                                           transaction_date_time__lte=end_date)
+                                                          transaction_date_time__lte=end_date)
             transactions = [item for item in transactions if item.transaction_date_time.weekday() == 1]
             return transactions
         elif filter == "Wed":
@@ -2842,21 +2867,21 @@ class PeakHourReport(APIView):
         week4 = week3_end + timedelta(days=1)
         week4_end = week4 + timedelta(days=7)
 
-        week1_main_road_values = PeakHourReport.get_passenger_per_hour('M', start_date, end_date,filter)
+        week1_main_road_values = PeakHourReport.get_passenger_per_hour('M', start_date, end_date, filter)
         week1_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', start_date, end_date, filter)
         week1_kanan_values = PeakHourReport.get_passenger_per_hour('R', start_date, end_date, filter)
 
         week2_main_road_values = PeakHourReport.get_passenger_per_hour('M', week2, week2_end, filter)
         week2_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week2, week2_end, filter)
-        week2_kanan_values = PeakHourReport.get_passenger_per_hour('R', week2, week2_end,filter)
+        week2_kanan_values = PeakHourReport.get_passenger_per_hour('R', week2, week2_end, filter)
 
-        week3_main_road_values = PeakHourReport.get_passenger_per_hour('M', week3, week3_end,filter)
-        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week3, week3_end,filter)
-        week3_kanan_values = PeakHourReport.get_passenger_per_hour('R', week3, week3_end,filter)
+        week3_main_road_values = PeakHourReport.get_passenger_per_hour('M', week3, week3_end, filter)
+        week3_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week3, week3_end, filter)
+        week3_kanan_values = PeakHourReport.get_passenger_per_hour('R', week3, week3_end, filter)
 
-        week4_main_road_values = PeakHourReport.get_passenger_per_hour('M', week4, week4_end,filter)
-        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week4, week4_end,filter)
-        week4_kanan_values = PeakHourReport.get_passenger_per_hour('R', week4, week4_end,filter)
+        week4_main_road_values = PeakHourReport.get_passenger_per_hour('M', week4, week4_end, filter)
+        week4_kaliwa_values = PeakHourReport.get_passenger_per_hour('L', week4, week4_end, filter)
+        week4_kanan_values = PeakHourReport.get_passenger_per_hour('R', week4, week4_end, filter)
 
         return Response(data={
             "week1_main_road_values": week1_main_road_values,

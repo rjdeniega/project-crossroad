@@ -97,8 +97,9 @@ class PopulateMembers:
     def add_ID_cards():
         x = 1000
         for member in Member.objects.all():
-            x += 1
-            IDCards.objects.create(member=member, can=x, register_date=datetime.now())
+            if member.pk % 2 == 0:
+                x += 1
+                IDCards.objects.create(member=member, can=x, register_date=datetime.now())
 
     @staticmethod
     def add_member_shares():
