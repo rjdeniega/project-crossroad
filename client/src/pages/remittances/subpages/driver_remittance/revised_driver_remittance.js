@@ -570,6 +570,21 @@ class RemittanceInfo extends React.Component {
                         </span>
                     </Col>
                 </Row>
+                {this.state.remittance_form.discrepancy != 0 &&
+                    <Row gutter={16} style={{ marginTop: "40px"}}>
+                        <Col span={16}>
+                            <span className="view-remittances-tag">
+                                Discrepancy:
+                            </span>
+                        </Col>
+                        <Col span={8}>
+                            <Divider type="vertical"/>
+                            <span className="item-total">
+                                (Php) {parseFloat(Math.round(this.state.remittance_form.discrepancy * 100) / 100).toFixed(2)}
+                            </span>
+                        </Col>
+                    </Row>
+                }
             </div>
         );
     }

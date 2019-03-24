@@ -1456,6 +1456,8 @@ class PendingRemittances(APIView):
             item["shuttle"] = shuttle.data
             item["start_time"] = start_time.strftime("%I:%M %p")
             item["end_time"] = end_time.strftime("%I:%M %p")
+            item["route"] = deployment.route
+            item["date"] = start_time.strftime("%m-%d-%Y")
 
             if DeployedDrivers.is_sub(item['id']):
                 sub_deployment = SubbedDeployments.objects.filter(deployment_id=item['id']).get()
