@@ -905,7 +905,7 @@ class DeploySubDriver(APIView):
     def post(request):
         data = json.loads(request.body)
         is_valid = True
-
+        print(data)
         supervisor_id = data['supervisor_id']
         driver_id = data['driver_id']
         absent_id = data['absent_id']
@@ -1074,7 +1074,7 @@ class DeployedDrivers(APIView):
                 absent_driver_id = sub_deployment.absent_driver.driver.id
                 absent_driver_obj = DriverSerializer(Driver.objects.get(id=absent_driver_id))
                 item["absent_driver"] = absent_driver_obj.data
-                tickets = TicketUtilities.get_assigned_with_void_of_driver(absent_driver_id)
+                tickets = TicketUtilities.get_assigned_with_void_of_driver(item["driver"]["id"])
 
                 item["ten_peso_tickets"] = []
                 item["twelve_peso_tickets"] = []

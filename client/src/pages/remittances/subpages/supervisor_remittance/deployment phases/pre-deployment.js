@@ -82,9 +82,31 @@ class RevisedSubButton extends React.Component {
     }
 
     handleOk = () => {
+        this.handleDeploy();
         this.setState({
             'modal_is_visible': false,
         });
+
+
+    }
+
+    handleDeploy() {
+        const supervisor = JSON.parse(localStorage.user_staff);
+        console.log(supervisor)
+        let deploy = {
+            'supervisor_id': supervisor.id,
+            'driver_id': this.state.sub_driver_id,
+            'absent_id': this.state.absent_id
+        }
+
+        postData('remittances/deployments/deploy-sub/', deploy)
+            .then(response => {
+                if (!response.error) {
+                    message.success("A sub-driver has been deployed");
+                } else {
+                    console.log(response.error);
+                }
+            });
     }
 
     handleCancel = () => {

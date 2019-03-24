@@ -173,7 +173,7 @@ function DeploymentListDetails(props) {
                             {props.name}
                         </span>
                         <Tag color={tag_color} className="route-tag">
-                            {props.route}
+                            {route_label}
                         </Tag>
                     </Tooltip>
                 </div>
@@ -182,10 +182,6 @@ function DeploymentListDetails(props) {
                     <DetailItems
                         title="Shuttle"
                         value={props.shuttle}
-                    />
-                    <DetailItems
-                        title="Route"
-                        value={props.route}
                     />
                     <DetailItems
                         title="Start Time"
