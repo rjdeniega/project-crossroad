@@ -159,7 +159,7 @@ export class BeepPane extends Component {
             shift_type: null,
         });
     };
-     handleStartDateChange = (date, dateString) => {
+    handleStartDateChange = (date, dateString) => {
         this.setState({
             start_date_object: date,
             start_date: dateString
@@ -338,26 +338,23 @@ export class BeepPane extends Component {
                     />
                 </Modal>
                 <Form className="date-form">
-                     <Row>
-                        <Col span={12}>
-                            <Form.Item
-                            >
-                                <Button type="primary" className="upload-button" onClick={this.showModal()}>Upload
-                                    CSV</Button>
-                            </Form.Item>
-                        </Col>
-
-                    </Row>
-                    <Col span={12}>
-                            <Form.Item
-                            >
-                                <DatePicker className="user-input" placeHolder="Start Date" onChange={this.handleStartDateChange}
-                                            format={dateFormat}/>
-                                <DatePicker className="user-input" placeHolder= "End Date" onChange={this.handleEndDateChange}
-                                            format={dateFormat}/>
-                            </Form.Item>
-                        </Col>
-
+                    <Form.Item
+                            style={{ 'margin-right': '10px' }}
+                            label="Filter Dates"
+                        >
+                            <DatePicker className="user-input" placeholder="Filter Start Date"
+                                        onChange={this.handleStartDateChange}
+                                        format={dateFormat}/>
+                            <DatePicker className="user-input" placeholder="Filter End Date"
+                                        onChange={this.handleEndDateChange}
+                                        format={dateFormat}/>
+                        </Form.Item>
+                        <Form.Item
+                            label="Beep Upload"
+                        >
+                            <Button type="primary" className="upload-button" onClick={this.showModal()}>Upload
+                                CSV</Button>
+                        </Form.Item>
                 </Form>
                 <div className="table-div">
                     <Table bordered size="medium"
