@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Header } from '../../components/header/remittance_header';
-import { Row, Col, Tag, Drawer, Button, List, Divider, Form, Input, Tooltip, Icon, message } from 'antd';
+import { Row, Col, Tag, Select, Modal, Drawer, Button, List, Divider, Form, Input, Tooltip, Icon, message } from 'antd';
 
 import './revised-style.css'
 import { list } from 'react-icons-kit/feather';
@@ -201,6 +201,8 @@ class DeploymentList extends React.Component {
                                         end_time={item.end_time}
                                         status={item.status}
                                         shuttle={item.shuttle}
+                                        route={item.route}
+                                        is_redeploy_shown={item.is_redeploy_shown}
                                     />
                                 </List.Item>
                             </div>
@@ -227,7 +229,45 @@ export function DeploymentListDetails(props) {
 
     let end_time = props.end_time == null ? 'N/A' : props.end_time;
     console.log(props.driver_object);
-    if (status == 'Ongoing' || status == 'Pending for Remittance') {
+    if (status == 'Ongoing') {
+        return (
+            <div className="deployment-list-container">
+                <div className="list-header">
+                    <span className="list-header-date">
+                        {props.driver_object ? props.driver_object.name : props.date}
+                    </span>
+                    <Tag color={tag_color}>
+                        {status}
+                    </Tag>
+                    {props.is_redeploy_shown &&
+                        <StopDeployment 
+                            deployment_id={props.id}
+                            route={props.route}
+                        />
+                    }
+                </div>
+                <div className="list-details">
+                    <DetailItem
+                        title="Shuttle"
+                        value={props.shuttle}
+                    />
+
+                    <DetailItem
+                        title="Start Time"
+                        value={props.start_time}
+                    />
+                    <DetailItem
+                        title="End Time"
+                        value={end_time}
+                    />
+                </div>
+                
+                <SubmitRemittance
+                    deployment_id={props.id}
+                />
+            </div>
+        );
+    } else if(status == 'Pending for Remittance'){
         return (
             <div className="deployment-list-container">
                 <div className="list-header">
@@ -253,13 +293,13 @@ export function DeploymentListDetails(props) {
                         value={end_time}
                     />
                 </div>
+                
                 <SubmitRemittance
                     deployment_id={props.id}
                 />
             </div>
         );
-    }
-    else {
+    } else {
         return (
             <div className="deployment-list-container">
                 <div className="list-header">
@@ -962,4 +1002,214 @@ class RemittanceForm extends React.Component {
             </Form>
         );
     }
+}
+
+class StopDeployment extends React.Component {
+    constructor(props){
+        super(props);
+
+        this.handleShuttleChange = this.handleShuttleChange.bind(this);
+
+        this.state = {
+            modal_visibility: false,
+            tooltip_message: null,
+            shuttle_replacement: null,
+            confirmLoading: false,
+            is_disabled: true,
+            is_shuttle_breakdown: true,
+        }
+    }
+
+    componentDidMount() {
+        this.setState({
+            tooltip_message: "shuttle breakdown is when the driver's shuttle breaksdown mid-deployment"
+        })
+    }
+
+    showModal = () => {
+        this.setState({
+            modal_visibility: true
+        });
+    }
+
+    handleCancel = () => {
+        this.setState({
+            modal_visibility: false,
+        });
+    }
+
+    handleOk = () => {
+        this.setState({
+            confirmLoading: true,
+        })
+
+        this.handleBreakdownRedeploy()
+        
+
+        setTimeout(() => {
+            this.setState({
+                modal_visibility: false,
+                confirmLoading: false,
+            });
+        }, 1000);
+    }
+
+    handleBreakdownRedeploy() {
+        console.log(this.props.deployment_id)
+        console.log(this.state.shuttle_replacement)
+        let breakdown = {
+            'deployment_id': this.props.deployment_id,
+            'shuttle_id': this.state.shuttle_replacement
+        }
+
+        postData('remittances/deployments/shuttle-breakdown/redeploy/', breakdown)
+            .then(response => {
+                if (!response.error) {
+                    message.success("Driver has been redeployed with a new shuttle");
+                } else {
+                    console.log(response.error);
+                }
+            });
+    }
+
+    handleShuttleChange(value) {
+        this.setState({
+            shuttle_replacement: value,
+            is_disabled: false
+        });
+    }
+
+    render() {
+        const Option = Select.Option
+
+        return (
+            <span>
+                <Button
+                    type="danger"
+                    className="deployment-button"
+                    onClick={this.showModal}
+                    size="small"
+                >
+                    Redeploy
+                </Button>
+
+                <Modal
+                    title="Stop Deployment"
+                    visible={this.state.modal_visibility}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                    confirmLoading={this.state.confirmLoading}
+                    okButtonProps={this.state.is_disabled ?
+                        { disabled: true } : { disabled: false }
+                    }
+                >
+                    <div className="modal-container">
+                        <ShuttleBreakdown
+                            deployment_id={this.props.deployment_id}
+                            route={this.props.route}
+                            onSelectChange={this.handleShuttleChange}
+                        />
+                    </div>
+                </Modal>
+            </span>
+        );
+    }
+}
+
+
+class ShuttleBreakdown extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            availableShuttles: [],
+        }
+
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    componentDidMount() {
+        this.fetchAvailableShuttles();
+    }
+
+    fetchAvailableShuttles() {
+        console.log(this.props.deployment_id)
+        fetch('/remittances/deployments/' + this.props.deployment_id + '/available-shuttles')
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        availableShuttles: data.shuttles
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
+    handleChange(value) {
+        this.props.onSelectChange(value);
+    }
+
+    render() {
+        const { Option, OptGroup } = Select;
+        return (
+            <div>
+                <Divider orientation="left">
+                    Redeploy with a new shuttle
+                </Divider>
+                <label className="modal-detail-title">Available Shuttles: </label>
+                <Select
+                    style={{ width: 200 }}
+                    onChange={this.handleChange}
+                    className="modal-detail-value"
+                >
+                    <OptGroup label="Back-up Shuttles">
+                        {
+                            this.state.availableShuttles.map((item) => {
+                                if(item.route == 'B')
+                                    return (
+                                        <option value={item.id} key={item.id}>
+                                            Shuttle#{item.shuttle_number} - {item.plate_number}
+                                        </option>
+                                    )
+                            })
+                        }
+                    </OptGroup>
+                    <OptGroup label="Other Available Shuttles">
+                        {
+                            this.state.availableShuttles.map((item) => {
+                                if(item.route != 'B')
+                                    return (
+                                        <option value={item.id} key={item.id}>
+                                            Shuttle#{item.shuttle_number} - {item.plate_number}
+                                        </option>
+                                    )
+                            })
+                        }
+                    </OptGroup>
+                </Select>
+                <ModalDetails
+                    title="Route"
+                    value={this.props.route}
+                />
+            </div>
+        );
+    }
+}
+
+function ModalDetails(props) {
+    return (
+        <div className="modal-detail-container">
+            <span className="modal-detail-title">
+                {props.title}:
+            </span>
+            <span className="modal-detail-value">
+                {props.value}
+            </span>
+        </div>
+    );
 }

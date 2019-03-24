@@ -1253,7 +1253,9 @@ class DriverDeployment(APIView):
                 'start_time': deployment.start_time.strftime("%I:%M %p"),
                 'end_time': endtime,
                 'status': deployment.status,
-                'shuttle': shuttle
+                'shuttle': shuttle,
+                'route': deployment.route,
+                'is_redeploy_shown': DriverDeployment.is_redeploy_shown(deployment.shift_iteration.shift.supervisor, deployment.status)
             })
 
         print(data)
@@ -1261,6 +1263,13 @@ class DriverDeployment(APIView):
             'deployments': data
         }, status=status.HTTP_200_OK)
 
+    @staticmethod
+    def is_redeploy_shown(supervisor, status):
+        deployments = Deployment.objects.filter(status='O', driver=supervisor)
+
+        if deployments and status == 'O':
+            return True
+        return False
 
 class DeploymentTickets(APIView):
     @staticmethod
