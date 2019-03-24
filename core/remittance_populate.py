@@ -150,17 +150,22 @@ class PopulateRemittances():
 
     @staticmethod
     def deploy_drivers(shift_iteration, date):
+        hasAbsent = False
         for driver in DriversAssigned.objects.filter(shift=shift_iteration.shift):
             # driver can be absent sometimes
             num = randint(1, 15)
-            if num <= 14:
+            if num <= 14 or hasAbsent == True:
+
+                deployment_times = PopulateRemittances.get_deployment_times(date, shift_iteration.shift.type, driver.deployment_type)
 
                 deployment = Deployment.objects.create(
                     driver=driver.driver,
                     shuttle=driver.shuttle,
                     route=driver.shuttle.route,
                     shift_iteration=shift_iteration,
-                    created=date
+                    created=date,
+                    start_time=deployment_times["start_time"],
+                    end_time=deployment_times["end_time"]
                 )
 
                 deployment.status = 'F'
@@ -170,6 +175,7 @@ class PopulateRemittances():
                 remittance.confirm_remittance()
             else:
                 #deploy supervisor as sub
+                hasAbsent = True
                 supervisor = Driver.objects.get(id=driver.shift.supervisor_id)
 
                 if driver.shuttle.route == 'Main Road':
@@ -197,6 +203,24 @@ class PopulateRemittances():
 
                 remittance = PopulateRemittances.submit_remittance(deployment, date)
                 remittance.confirm_remittance()
+
+    @staticmethod
+    def get_deployment_times(date, shift_type, deployment_type):
+        temp_date = date
+        if deployment_type == 'Early':
+            start_time = temp_date.replace(hour=5)
+            end_time = temp_date.replace(hour=12)
+        elif deployment_type == 'Regular' and shift_type == 'A':
+            start_time = temp_date.replace(hour=7)
+            end_time = temp_date.replace(hour=14)
+        elif deployment_type == 'Regular' and shift_type == 'P':
+            start_time = temp_date.replace(hour=14)
+            end_time = temp_date.replace(hour=21)
+        else:
+            start_time = temp_date.replace(hour=16)
+            end_time = temp_date.replace(hour=23)
+        
+        return {'start_time': start_time, 'end_time': end_time}
 
     @staticmethod
     def is_tickets_enough(assigned_ticket, amount):
@@ -293,8 +317,8 @@ class PopulateRemittances():
         return AssignedTicket.objects.filter(driver=driver, type=type).last()
 
     @staticmethod
-    def generate_OR(string, int):
-        return string + str(int)
+    def generate_OR(string, num):
+        return string + str(num)
 
     @staticmethod
     def generate_new_mileage(shuttle):
@@ -322,13 +346,7 @@ class PopulateRemittances():
         else:
             start_ticket = assigned_ticket.range_from
 
-        day = date.weekday()
-        if day == 0 or day == 6:
-            number_of_passengers = randint(15, 30)
-        elif day == 1 or day == 5:
-            number_of_passengers = randint(25, 60)
-        else:
-            number_of_passengers = randint(20, 40)
+        number_of_passengers = PopulateRemittances.get_number_of_passengers(assigned_ticket.type, date)
 
         if PopulateRemittances.is_tickets_enough(assigned_ticket, number_of_passengers):
             end_ticket = start_ticket + number_of_passengers
@@ -344,7 +362,7 @@ class PopulateRemittances():
                 assigned_ticket.type
             )
 
-        total = PopulateRemittances.compute_total(start_ticket,end_ticket, assigned_ticket.type)
+        total = PopulateRemittances.compute_total(start_ticket, end_ticket, assigned_ticket.type)
 
         return ConsumedTicket.objects.create(
             remittance_form=remittance_form,
@@ -355,12 +373,73 @@ class PopulateRemittances():
         )
 
     @staticmethod
+    def get_number_of_passengers(ticket_type, date):
+        #If its a holiday
+        if PopulateRemittances.is_holiday(date): 
+            if ticket_type == 'A':
+                return randint(10, 15)
+            elif ticket_type == 'B':
+                return randint(40, 45)
+            else:
+                return randint(15, 20)
+        #If it is a weekend but is before March 20 (before the school year ends)
+        elif PopulateRemittances.is_weekend(date) and PopulateRemittances.is_past_march_20(date) == False:
+            if ticket_type == 'A':
+                return randint(28, 33)
+            elif ticket_type == 'B':
+                return randint(55, 60)
+            else:
+                return randint(20, 25)
+        elif PopulateRemittances.is_past_march_20(date):
+            if ticket_type == 'A':
+                return randint(25, 30)
+            elif ticket_type == 'B':
+                return randint(45, 50)
+            else:
+                return randint(20, 25)
+        else:
+            if ticket_type == 'A':
+                return randint(30, 35)
+            elif ticket_type == 'B':
+                return randint(60, 65)
+            else:
+                return randint(25, 30)
+    
+    @staticmethod
+    def is_weekend(date):
+        day = date.weekday()
+
+        if day == 0 or day == 6:
+            return True
+        return False
+
+    @staticmethod
+    def is_holiday(date):
+        holidays = [
+            datetime(2019, 1, 1),
+            datetime(2019, 2, 5),
+            datetime(2019, 2, 23)
+        ]
+
+        for holiday in holidays:
+            if date == holiday:
+                return True
+        return False
+
+    @staticmethod
+    def is_past_march_20(date):
+        if date > datetime(2019, 3, 20):
+            return True
+        return False
+
+    @staticmethod
     def has_consumed(assigned_ticket):
         tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned_ticket)
         if not tickets:
             return False
         else:
             return True
+
 
     @staticmethod
     def compute_total(start_ticket, end_ticket, type):
