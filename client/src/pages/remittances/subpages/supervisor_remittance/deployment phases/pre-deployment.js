@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, Avatar, Button, Modal, message, Select, Tag, Popover, Empty, Badge, Row, Col, Divider, Icon, Tooltip } from 'antd';
+import { List, Avatar, Button, Modal, message, Select, Tag, Popover, Empty, Badge, Row, Col, Divider, Icon, Tooltip, Popconfirm } from 'antd';
 import '../revised-style.css';
 import { UserAvatar } from '../../../../../components/avatar/avatar';
 import { postData } from '../../../../../network_requests/general';
@@ -387,6 +387,7 @@ function DeploymentList(props) {
                                     fifteen_total={item.fifteen_total}
                                     twelve_total={item.twelve_total}
                                     is_late={item.is_late}
+                                    is_shuttle_deployed={item.is_shuttle_deployed}
                                 />
                             </List.Item>
                         </div>
@@ -403,24 +404,30 @@ function DeploymentListDetails(props) {
     const supervisor = JSON.parse(localStorage.user_staff);
     const firstLetter = props.name.split(" ")[0].charAt(0);
     const secondLetter = props.name.split(" ")[1].charAt(0);
-    const userPhoto = firstLetter + secondLetter
 
     if (props.route == 'Main Road' || props.route == 'M') {
         var route_label = 'Main Road'
         var tag_color = 'blue';
-        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.fifteen_total >= 50)
+        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.fifteen_total >= 50 && props.is_shuttle_deployed == false)
             var is_disabled = false;
         else
             var is_disabled = true;
     } else if (props.route == 'Kaliwa' || props.route == 'L') {
         var route_label = "Left Route"
         var tag_color = 'orange';
-        var is_disabled = props.ten_total >= 50 && props.twelve_total >= 80 ? false : true;
+        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.is_shuttle_deployed == false)
+            var is_disabled = false;
+        else
+            var is_disabled = true;
     } else {
         var route_label = "Right Route"
         var tag_color = 'green';
-        var is_disabled = props.ten_total >= 50 && props.twelve_total >= 80 ? false : true;
+        if (props.ten_total >= 50 && props.twelve_total >= 80 && props.is_shuttle_deployed == false)
+            var is_disabled = false;
+        else
+            var is_disabled = true;
     }
+
 
     return (
         <div>
@@ -447,7 +454,7 @@ function DeploymentListDetails(props) {
             </div>
 
             <div className="deployment-list-container">
-                {props.shuttle_obj.status == 'A' ? (
+                {props.shuttle_obj.status == 'A' && props.is_shuttle_deployed == false ? (
                     <DetailItems
                         title="Shuttle"
                         value={props.shuttle}
@@ -456,15 +463,22 @@ function DeploymentListDetails(props) {
                         <div className="detail-container">
                             <span className="detail-items-title">
                                 Shuttle:
-                        </span>
-                            <Badge dot>
-                                <span className="detail-items-value">
-                                    {props.shuttle}
-                                </span>
-                            </Badge>
+                            </span>
+                            {props.is_shuttle_deployed == true ? (
+                                <Tooltip title="shuttle under deployment" placement="right">
+                                    <span className="detail-items-value">
+                                        <Badge dot status="warning">{props.shuttle}</Badge>
+                                    </span>
+                                </Tooltip>
+                            ):(
+                                <Tooltip title="shuttle unavailable" placement="right">
+                                    <span className="detail-items-value">
+                                        <Badge dot status="error">{props.shuttle}</Badge>
+                                    </span>
+                                </Tooltip>
+                            )}
                         </div>
-                    )}
-
+                )}
                 <DetailItems
                     title="Expected Departure"
                     value={props.expected_departure}
@@ -717,7 +731,10 @@ class DayOffButton extends React.Component {
 
     render(){
         return(
-            <Button onClick={this.handleDayOff}>Day-off</Button>
+            <Popconfirm title="Are you sure?" onConfirm={this.handleDayOff} okText="Yes" cancelText="No">
+                <Button>Day-off</Button>
+            </Popconfirm>
+            
         );
     }
 }

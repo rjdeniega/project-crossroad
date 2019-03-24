@@ -530,6 +530,8 @@ class NonDeployedDrivers(APIView):
             item["ten_total"] = ten_total
             item["twelve_total"] = twelve_total
             item["fifteen_total"] = fifteen_total
+
+            item["is_shuttle_deployed"] = NonDeployedDrivers.is_shuttle_deployed(item["shuttle"])
         
         return Response(data={
             "non_deployed_drivers": non_deployed_drivers.data
@@ -550,6 +552,15 @@ class NonDeployedDrivers(APIView):
 
         return False
 
+    @staticmethod
+    def is_shuttle_deployed(shuttle):
+        deployments = Deployment.objects.filter(status="O")
+
+        for deployment in deployments:
+            if shuttle["id"] == deployment.shuttle.id:
+                return True
+        
+        return False
 
 class BackUpShuttles(APIView):
     @staticmethod
