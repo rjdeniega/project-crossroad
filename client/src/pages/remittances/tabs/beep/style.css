@@ -23,3 +23,7 @@
 .share-table{
     height: 320px!important;
     }
+.date-form{
+    display: flex;
+    margin-top: 5px;
+    }

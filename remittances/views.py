@@ -2249,7 +2249,7 @@ class BeepTransactionView(APIView):
                 shift_type = "P"
         else:
             shift_type = request.POST.get('shift_type')
-
+ 
         function = request.POST.get('function')
         beep_shift = BeepTransactionView.shift_get_or_create(date, shift_type)
         shuttle = Shuttle.objects.order_by("?").first()
@@ -2308,10 +2308,27 @@ class BeepTransactionView(APIView):
 
 class BeepCollapsedView(APIView):
     @staticmethod
-    def get(request):
+    def post(request):
+        data = json.loads(request.body)
         print("enters here")
         beep_shifts = []
-        for shift in BeepShift.objects.all():
+        print('start_date' not in request.data)
+        print('end_date' not in request.data)
+        if 'start_date' not in request.data:
+            start_date = datetime.now() - timedelta(days=30)
+        else:
+            start_date = data['start_date']
+        if 'end_date' not in request.data:
+            end_date = datetime.now()
+        else:
+            end_date = data['end_date']
+
+        shifts = BeepShift.objects.filter(date__gte=start_date, date__lte=end_date)
+
+        if 'start_date' in request.data and 'end_date' not in request.data:
+            shifts = BeepShift.objects.filter(date=start_date)
+
+        for shift in shifts:
             transactions = BeepTransaction.objects.filter(shift=shift.id)
             total = sum([item.total for item in transactions])
             # dict_transactions = []

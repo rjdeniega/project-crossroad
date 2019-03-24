@@ -5,8 +5,22 @@
 import React, { Component, Fragment } from 'react';
 import './style.css'
 import emptyStateImage from '../../../../images/empty_state_construction.png'
-import { Modal, Button, Input, Select, Icon, Table, Radio, Row, Col, Alert, Form, DatePicker, Pagination } from 'antd'
-import { postDataWithImage, postDataWithFile, getData } from "../../../../network_requests/general";
+import {
+    Modal,
+    Button,
+    Input,
+    Select,
+    Icon,
+    Table,
+    Radio,
+    Row,
+    Col,
+    Alert,
+    Form,
+    DatePicker,
+    Pagination,
+} from 'antd'
+import { postDataWithImage, postDataWithFile, getData, postData } from "../../../../network_requests/general";
 import moment from "moment";
 
 const Option = Select.Option;
@@ -110,7 +124,11 @@ export class BeepPane extends Component {
     }
 
     fetchTransactions = () => {
-        getData('/remittances/beep_modified/').then(data => {
+        let data = {
+            "start_date": this.state.start_date,
+            "end_date": this.state.end_date
+        };
+        postData('/remittances/beep_modified/', data).then(data => {
             if (!data.error) {
                 console.log(data.beep_shifts);
                 this.setState({
@@ -140,6 +158,18 @@ export class BeepPane extends Component {
             file: null,
             shift_type: null,
         });
+    };
+     handleStartDateChange = (date, dateString) => {
+        this.setState({
+            start_date_object: date,
+            start_date: dateString
+        }, () => this.fetchTransactions())
+    };
+    handleEndDateChange = (date, dateString) => {
+        this.setState({
+            end_date_object: date,
+            end_date: dateString
+        }, () => this.fetchTransactions())
     };
     handleCancel = (e) => {
         console.log(e);
@@ -307,14 +337,35 @@ export class BeepPane extends Component {
                            dataSource={this.state.transactions}
                     />
                 </Modal>
-                <Button type="primary" className="upload-button" onClick={this.showModal()}>Upload CSV</Button>
+                <Form className="date-form">
+                     <Row>
+                        <Col span={12}>
+                            <Form.Item
+                            >
+                                <Button type="primary" className="upload-button" onClick={this.showModal()}>Upload
+                                    CSV</Button>
+                            </Form.Item>
+                        </Col>
+
+                    </Row>
+                    <Col span={12}>
+                            <Form.Item
+                            >
+                                <DatePicker className="user-input" placeHolder="Start Date" onChange={this.handleStartDateChange}
+                                            format={dateFormat}/>
+                                <DatePicker className="user-input" placeHolder= "End Date" onChange={this.handleEndDateChange}
+                                            format={dateFormat}/>
+                            </Form.Item>
+                        </Col>
+
+                </Form>
                 <div className="table-div">
                     <Table bordered size="medium"
                            className="remittance-table"
                            columns={columns}
                            dataSource={this.state.shifts}
                            pagination={{
-                               pageSize: 5,
+                               pageSize: 4,
                            }}
                            onRow={(record) => {
                                return {
