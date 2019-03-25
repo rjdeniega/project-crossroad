@@ -1994,10 +1994,37 @@ class SupervisorWeeklyReport(APIView):
                         type = "Redeployed"
                     print([item.deployment.driver for item in redeployments])
 
+                    rem = RemittanceForm.objects.get(deployment=deployment)
+                    driver_assigned = DriversAssigned.objects.filter(driver=deployment.driver,
+                                                                     shift=deployment.shift_iteration.shift).first()
+                    shift_type = rem.deployment.shift_iteration.shift.type
+                    deployment_type = 'R'
+
+                    if driver_assigned is not None:
+                        shift_type = driver_assigned.shift.type
+                        deployment_type = driver_assigned.deployment_type
+
+                        print(shift_type)
+                        print(deployment_type)
+
+                    expected_arrival = None
+                    if shift_type == "A" and deployment_type == "R":
+                        expected_arrival = rem.created.replace(hour=7)
+                    if shift_type == "A" and deployment_type == "E":
+                        expected_arrival = rem.created.replace(hour=5)
+                    if shift_type == "P" and deployment_type == "R":
+                        expected_arrival = rem.created.replace(hour=14)
+                    if shift_type == "P" and deployment_type == "L":
+                        expected_arrival = rem.created.replace(hour=16)
+
+                    r_status = "Late" if rem.created > expected_arrival else "On Time"
+
                     # if deployment.driver.id not in [item['driver_id'] for item in
                     #                                 deployed_drivers] and not driver_remit == 0:
+
                     deployed_drivers.append({
                         "type": type,
+                        "status": r_status,
                         "driver_id": deployment.driver.id,
                         "driver_name": deployment.driver.name,
                         "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
@@ -2945,19 +2972,49 @@ class DriverPerformance(APIView):
         absences_total = 0
         remittance_total = 0
         payables_total = 0
+        lates_total = 0
 
         for driver in Driver.objects.filter(is_supervisor=False).order_by('name'):
             remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
                                                         created__lte=end_date)
-            sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver))
-            absences = len(SubbedDeployments.objects.filter(absent_driver__driver=driver))
+            sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver,deployment__shift_iteration__date__gte=start_date,deployment__shift_iteration__date__lte=end_date))
+            absences = len(SubbedDeployments.objects.filter(absent_driver__driver=driver,deployment__shift_iteration__date__gte=start_date,deployment__shift_iteration__date__lte=end_date))
             total = sum([item.total for item in remittances])
             payables = sum([item.discrepancy for item in remittances])
+            lates = 0
+
+            for item in remittances:
+                driver_assigned = DriversAssigned.objects.filter(shift__schedule__start_date__gte=start_date,shift__schedule__end_date__gte=end_date).first()
+                shift_type = item.deployment.shift_iteration.shift.type
+                deployment_type = 'R'
+
+                if driver_assigned is not None:
+                    shift_type = driver_assigned.shift.type
+                    deployment_type = driver_assigned.deployment_type
+
+                    print(shift_type)
+                    print(deployment_type)
+
+                expected_arrival = None
+                if shift_type == "A" and deployment_type == "R":
+                    expected_arrival = item.created.replace(hour=7)
+                if shift_type == "A" and deployment_type == "E":
+                    expected_arrival = item.created.replace(hour=5)
+                if shift_type == "P" and deployment_type == "R":
+                    expected_arrival = item.created.replace(hour=14)
+                if shift_type == "P" and deployment_type == "L":
+                    expected_arrival = item.created.replace(hour=16)
+
+
+                if item.created > expected_arrival:
+                    lates += 1
+
 
             sub_freq_total += sub_freq
             absences_total += absences
             remittance_total += total
             payables_total += payables
+            lates_total += lates
 
             data.append({
                 "driver": DriverSerializer(driver).data,
@@ -2965,6 +3022,7 @@ class DriverPerformance(APIView):
                 "payables": "{0:,.2f}".format(payables),
                 "sub_freq": sub_freq,
                 "absences": absences,
+                "lates": lates,
             })
 
         print(data)
@@ -2973,6 +3031,7 @@ class DriverPerformance(APIView):
             "end_date": end_date.date(),
             "data": data,
             "payables_total": "{0:,.2f}".format(payables_total),
+            "lates_total": lates_total,
             "absences_total": absences_total,
             "sub_freq_total": sub_freq_total,
             "remittance_total": "{0:,.2f}".format(remittance_total)
