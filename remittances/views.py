@@ -1380,7 +1380,7 @@ class SubmitRemittance(APIView):
         for ticket_used in data["ten_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
-            if ticket_used["value"]:
+            if "value" in ticket_used:
                 # Get current tickets
                 consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
                 last_consumed = consumed_tickets.order_by('-end_ticket').first()
@@ -1405,7 +1405,7 @@ class SubmitRemittance(APIView):
         for ticket_used in data["twelve_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
-            if ticket_used["value"]:
+            if "value" in ticket_used:
                 # Get current tickets
                 consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
                 last_consumed = consumed_tickets.order_by('-end_ticket').first()
@@ -1430,7 +1430,7 @@ class SubmitRemittance(APIView):
         for ticket_used in data["fifteen_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
-            if ticket_used["value"]:
+            if "value" in ticket_used:
                 # Get current tickets
                 consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
                 last_consumed = consumed_tickets.order_by('-end_ticket').first()
