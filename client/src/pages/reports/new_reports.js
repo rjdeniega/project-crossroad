@@ -45,6 +45,7 @@ import { InventoryReport } from './content/inventory_report/inventory_report'
 import { ItemMovementReport } from './content/item_movement/inventory_movement'
 import { PassengerPerRoute } from './content/passenger_per_route/passenger_per_route';
 import { DriverPerformance } from './content/driver_performance/driver_performance';
+import {VendorReport} from "./content/vendors/vendor_report";
 
 const TabPane = Tabs.TabPane;
 const { Meta } = Card;
@@ -141,6 +142,11 @@ const MAINTENANCE_CARDS = [{
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
     'content': <ItemMovementReport/>
+}, {
+    'title': 'Vendor Report',
+    'description': 'View vendor performance',
+    'icon': wrench,
+    'content': <VendorReport/>
 }];
 const MEMBER_CARDS = [{
     'title': 'Shares Report',

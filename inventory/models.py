@@ -148,6 +148,15 @@ class VendorPerformance(SoftDeletionModel):
     expected_delivery = models.DateTimeField(null=True)
     actual_delivery = models.DateTimeField(null=True)
     remarks = CharField(max_length=255, null=True)
+    created = models.DateTimeField(editable=False, null=True)
+    modified = models.DateTimeField(null=True)
+    
+    def save(self, *args, **kwargs):
+        if not self.id:
+            self.created = timezone.now()
+            self.modified = timezone.now()
+        self.modified = timezone.now()
+        return super(VendorPerformance, self).save(*args, **kwargs)
 
 
 class Item(SoftDeletionModel):
