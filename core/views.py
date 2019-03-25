@@ -1947,32 +1947,7 @@ class SupervisorWeeklyReport(APIView):
                 daily_income = 0
 
                 deployed_drivers = []
-
-                for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
-                    driver_remit = 0
-                    driver_fuel = 0
-                    driver_cost = 0
-                    for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
-                        daily_remittance += consumed_ticket.total
-                        driver_remit += consumed_ticket.total
-                    for remittance in RemittanceForm.objects.filter(deployment=deployment):
-                        daily_cost += remittance.fuel_cost + remittance.other_cost
-                        daily_income += remittance.total
-                        driver_cost += remittance.fuel_cost + remittance.other_cost
-
-                    deployed_drivers.append({
-                        "driver_id": deployment.driver.id,
-                        "driver_name": deployment.driver.name,
-                        "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
-                        "remittance": "{0:,.2f}".format(driver_remit),
-                        "cost": "{0:,.2f}".format(driver_cost),
-                        "total": "{0:,.2f}".format(driver_remit - driver_cost),
-                    })
-
-                    number_of_drivers += 1
-
                 absent_drivers = []
-
                 for drivers_assigned in DriversAssigned.objects.filter(shift=shift_iteration.shift):
                     absent = True
                     for deployed_driver in deployed_drivers:
@@ -1995,6 +1970,43 @@ class SupervisorWeeklyReport(APIView):
                             "driver_name": drivers_assigned.driver.name,
                             "sub_driver": driver_name
                         })
+
+                for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
+                    driver_remit = 0
+                    driver_fuel = 0
+                    driver_cost = 0
+                    for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
+                        daily_remittance += consumed_ticket.total
+                        driver_remit += consumed_ticket.total
+                    for remittance in RemittanceForm.objects.filter(deployment=deployment):
+                        daily_cost += remittance.fuel_cost + remittance.other_cost
+                        daily_income += remittance.total
+                        driver_cost += remittance.fuel_cost + remittance.other_cost
+
+                    temp_absent_drivers = [item['sub_driver'] for item in absent_drivers]
+                    type = "Normal"
+                    if deployment.driver.name in temp_absent_drivers:
+                        type = "Sub-in"
+
+                    redeployments = Redeployments.objects.filter(deployment=deployment)
+
+                    if deployment.driver in [item.deployment.driver for item in redeployments]:
+                        type = "Redeployed"
+                    print([item.deployment.driver for item in redeployments])
+
+                    # if deployment.driver.id not in [item['driver_id'] for item in
+                    #                                 deployed_drivers] and not driver_remit == 0:
+                    deployed_drivers.append({
+                        "type": type,
+                        "driver_id": deployment.driver.id,
+                        "driver_name": deployment.driver.name,
+                        "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
+                        "remittance": "{0:,.2f}".format(driver_remit),
+                        "cost": "{0:,.2f}".format(driver_cost),
+                        "total": "{0:,.2f}".format(driver_remit - driver_cost),
+                    })
+
+                    number_of_drivers += 1
 
                 rows.append({
                     "day": calendar.day_name[temp_start.weekday()],
@@ -2495,7 +2507,7 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='N')).filter(user__id=user_id).order_by(
+                .filter(Q(type='I') | Q(type='N')).filter(user__id=user_id).order_by(
                 '-created'), many=True)
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by(
@@ -2518,13 +2530,13 @@ class NotificationItems(APIView):
     @staticmethod
     def get_clerk_notifs(user_id):
         Notification.objects.filter(user__id=user_id,
-                                                   description="Please upload AM beep CSV").hard_delete()
+                                    description="Please upload AM beep CSV").hard_delete()
         Notification.objects.filter(user__id=user_id,
                                     description="Please upload PM beep CSV").hard_delete()
         is_am = NotificationItems.is_time_between(time(4, 00), time(13, 59))
         is_pm = NotificationItems.is_time_between(time(14, 00), time(1, 00))
-        beep_shift_am = BeepShift.objects.filter(date=datetime.now(),type='A')
-        beep_shift_pm = BeepShift.objects.filter(date=datetime.now(),type='P')
+        beep_shift_am = BeepShift.objects.filter(date=datetime.now(), type='A')
+        beep_shift_pm = BeepShift.objects.filter(date=datetime.now(), type='P')
         print(is_am)
         print(is_pm)
         print(f'the user id is {user_id}')
@@ -2987,7 +2999,9 @@ class RemittancePerYear(APIView):
             days = 365 * x
             for i in range(1, 13):
                 filter_date = (date - timedelta(days=days)).year
-                total = RemittancePerYear.get_total(BeepTransaction.objects.filter(transaction_date_time__year=filter_date, transaction_date_time__month=i))
+                total = RemittancePerYear.get_total(
+                    BeepTransaction.objects.filter(transaction_date_time__year=filter_date,
+                                                   transaction_date_time__month=i))
                 total = sum([item.total for item in
                              RemittanceForm.objects.filter(
                                  deployment__shift_iteration__date__year=filter_date,

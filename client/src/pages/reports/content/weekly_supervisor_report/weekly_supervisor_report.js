@@ -59,7 +59,7 @@ class ComponentToPrint extends React.Component {
                             <th colSpan={2}>Absent Driver/s ➜ Sub-in</th>
                             <th>Deployed Driver</th>
                             <th>Shuttle</th>
-                            {/*<th>Daily Remittance</th>*/}
+                            <th>Type</th>
                             <th>Remittance</th>
                             <th>Cost</th>
                             <th>Total</th>
@@ -113,6 +113,11 @@ class ComponentToPrint extends React.Component {
                                             </td>
                                             <td>
                                                 {item.deployed_drivers.map(item => (
+                                                    <p>{item.type}</p>
+                                                ))}
+                                            </td>
+                                            <td>
+                                                {item.deployed_drivers.map(item => (
                                                     <p className="monetary">{item.remittance}</p>
                                                 ))}
                                             </td>
@@ -130,6 +135,7 @@ class ComponentToPrint extends React.Component {
 
                                         </tr>
                                         <tr>
+                                            <td></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>
@@ -168,12 +174,14 @@ class ComponentToPrint extends React.Component {
                                     <td></td>
                                     <td></td>
                                     <td></td>
+                                    <td></td>
                                     <td colSpan={3}>
                                         <Pagination onChange={this.props.handlePagination} defaultCurrent={1}
                                                     total={this.props.length}/>
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                     <td></td>
