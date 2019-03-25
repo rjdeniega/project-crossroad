@@ -118,6 +118,7 @@ class PopulateMembers:
 
     @staticmethod
     def add_member_transactions(current_date, new_end_date):
+        offerings = [120, 130, 170]
 
         while current_date <= new_end_date:
             for member in Member.objects.all():
@@ -125,7 +126,17 @@ class PopulateMembers:
                 if x == 1:
                     CarwashTransaction.objects.create(date=current_date, member=member,
                                                       receipt="OR123" + str(random.randint(1, 10)),
-                                                      total=random.randint(200, 700))
+                                                      total=offerings[randint(0, 2)])
+                cards = IDCards.objects.filter(member=member)
+                if len(cards) > 0:
+                    shift = BeepShift.objects.get(date=current_date, type="A")
+                    am_today_random_time = current_date.replace(hour=randint(6, 23), minute=randint(0, 59))
+
+                    BeepTransaction.objects.create(shift=shift,
+                                                   card_number=PopulateMembers.random_with_n_digits(8),
+                                                   transaction_date_time=am_today_random_time,
+                                                   shuttle=Shuttle.objects.order_by("?").first(),
+                                                   total=12)
 
             current_date += timedelta(days=1)
 
