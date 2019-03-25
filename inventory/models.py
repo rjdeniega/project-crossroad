@@ -124,17 +124,28 @@ class PurchaseOrderItem(SoftDeletionModel):
     brand = CharField(max_length=64)
     delivery_date = models.DateTimeField(null=True)
     received = BooleanField(default=False)
+    returned = BooleanField(default=False)
+    remarks = CharField(max_length=255, null=True)
 
 
 class PurchaseOrder(SoftDeletionModel):
     po_number = CharField(max_length=6)
     vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateTimeField(editable=False)
+    expected_delivery = models.DateTimeField()
     completion_date = models.DateTimeField(null=True)
     po_items = ManyToManyField(PurchaseOrderItem)
     special_instruction = CharField(max_length=256)
     status = CharField(max_length=64)
     receipt = models.ImageField(null=True, upload_to='media')
+
+
+class VendorPerformance(SoftDeletionModel):
+    vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
+    defective_category = ForeignKey(ItemCategory, on_delete=models.CASCADE, null=True)
+    purchase_order = ForeignKey(PurchaseOrder, on_delete=models.CASCADE, null=True)
+    expected_delivery = models.DateTimeField(null=True)
+    actual_delivery = models.DateTimeField(null=True)
 
 
 class Item(SoftDeletionModel):
