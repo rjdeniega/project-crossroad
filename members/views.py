@@ -142,13 +142,31 @@ class AssignedDriverView(APIView):
 
 
 
+        ten_total = 0
+        twelve_total = 0
+        fifteen_total = 0
         for driver in drivers:
+            driver["ten_peso_tickets"] = []
+            driver["twelve_peso_tickets"] = []
+            driver["fifteen_peso_tickets"] = []
             tickets = TicketUtilities.get_assigned_with_void_of_driver(driver["id"])
-            driver['ten_total'] = len([item for item in tickets if item['ticket_type'] == '10 Pesos'])
-            driver['twelve_total'] = len([item for item in tickets if item['ticket_type'] == '12 Pesos'])
-            driver['fifteen_total'] = len([item for item in tickets if item['ticket_type'] == '15 Pesos'])
-            driver['has_missing'] = False if driver['ten_total'] == 0 or driver['twelve_total'] == 0 or driver[
-                                                                                                            'fifteen_total'] == 0 else True
+
+            for ticket in tickets:
+                if ticket["ticket_type"] == '10 Pesos':
+                    ten_total += ticket["range_to"] - ticket["range_from"] + 1
+                    driver["ten_peso_tickets"].append(ticket)
+                elif ticket["ticket_type"] == '12 Pesos':
+                    twelve_total += ticket["range_to"] - ticket["range_from"] + 1
+                    driver["twelve_peso_tickets"].append(ticket)
+                else:
+                    fifteen_total += ticket["range_to"] - ticket["range_from"] + 1
+                    driver["fifteen_peso_tickets"].append(ticket)
+
+            driver["ten_total"] = ten_total
+            driver["twelve_total"] = twelve_total
+            driver["fifteen_total"] = fifteen_total
+            driver["has_misssing"] = False if driver['ten_total'] >= 50 or driver['twelve_total'] >= 50 or driver[
+                                                                                                            'fifteen_total'] >=80 else True
 
         return Response(data={
             "drivers": drivers

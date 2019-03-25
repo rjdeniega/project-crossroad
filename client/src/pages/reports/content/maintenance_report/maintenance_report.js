@@ -31,7 +31,7 @@ class ComponentToPrint extends React.Component {
         const { data } = this.props;
         return (
             <div className="container">
-                <div classname="lbatsc-container">
+                <div className="lbatsc-container">
                     <img className="lbatsc" src={LBATSCLogo}/>
                 </div>
                 <div className="report-labels">
