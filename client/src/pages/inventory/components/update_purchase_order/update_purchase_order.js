@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Card, Form, Input, Select, Tag, Divider, Button, message, Modal, Upload, Icon, Checkbox, Typography} from 'antd'
+import {Card, Form, Input, Select, Tag, Divider, Button, message, Modal, Upload, Icon, Checkbox, Typography, Popover} from 'antd'
 import update from 'react-addons-update'
 import './style.css';
 import {getData, postData, putData, putDataWithImage} from "../../../../network_requests/general";
@@ -85,8 +85,7 @@ export class UpdatePurchaseOrder extends Component {
                         item_type: "Single Item",
                         item_code: generateCode(),
                     };
-                    item_details.push(item_detail)
-
+                    item_details.push(item_detail);
                 });
                 this.setState({
                     item_details: item_details,
@@ -284,8 +283,12 @@ export class UpdatePurchaseOrder extends Component {
         })
     };
 
+    handleVisibleChange = (visibility) => {
+        this.setState({visibility});
+    };
+
     render() {
-        const {items, previewVisible, previewImage, fileList, confirmation, categories, confirm_disabled} = this.state;
+        const {items, previewVisible, previewImage, fileList, confirmation, categories, confirm_disabled, visible} = this.state;
         const {po_id} = this.props;
         const formItemLayout = {
             labelCol: {
@@ -309,6 +312,7 @@ export class UpdatePurchaseOrder extends Component {
             <span>
                 <a onClick={this.updateModal}>Update</a>
                 <Modal
+                    width={700}
                     title="Update Status"
                     visible={this.state.update_modal}
                     onCancel={this.handleCancel2}
@@ -323,7 +327,15 @@ export class UpdatePurchaseOrder extends Component {
                         <h3>Add to Inventory</h3>
                         {items.map((item, index) => {
                             return (
-                                <Card title={item.delivery_date ? "Delivery Date: " + new Date(item.delivery_date.substring(0, 10)).toLocaleDateString(): <Button htmlType='button' type="primary" onClick={() => this.receiveItem(item.id)}>Receive Item</Button>}
+                                <Card title={item.delivery_date ? "Delivery Date: " + new Date(item.delivery_date.substring(0, 10)).toLocaleDateString():
+                                    <span>
+                                        <Button htmlType='button' type="primary" onClick={() => this.receiveItem(item.id)}>Receive Item</Button>
+                                        <Popover placement='bottom'
+                                                 content={<p>charing {index}</p>}
+                                                 trigger='click'>
+                                            <Button style={{marginLeft: 5}} htmlType='button' type='danger' >Report Problem</Button>
+                                        </Popover>
+                                    </span>}
                                       extra={(
                                           <span>
                                       <Tag color="blue">{item.quantity} pc</Tag>

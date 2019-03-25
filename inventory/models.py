@@ -146,6 +146,7 @@ class VendorPerformance(SoftDeletionModel):
     purchase_order = ForeignKey(PurchaseOrder, on_delete=models.CASCADE, null=True)
     expected_delivery = models.DateTimeField(null=True)
     actual_delivery = models.DateTimeField(null=True)
+    remarks = CharField(max_length=255, null=True)
 
 
 class Item(SoftDeletionModel):
