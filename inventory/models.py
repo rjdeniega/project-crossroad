@@ -126,6 +126,7 @@ class PurchaseOrderItem(SoftDeletionModel):
     received = BooleanField(default=False)
     returned = BooleanField(default=False)
     remarks = CharField(max_length=255, null=True)
+    status = CharField(max_length=25)
 
 
 class PurchaseOrder(SoftDeletionModel):
