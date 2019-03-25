@@ -723,7 +723,7 @@ class PurchaseOrderView(APIView):
 
         purchase_order = PurchaseOrder(po_number=data["po_num"], vendor=vendor, order_date=datetime.now(),
                                        special_instruction=data["special_instruction"], status="Processing",
-                                       expected_delivery=datetime.fromisoformat(data['expected_delivery']))
+                                       expected_delivery=datetime.strptime(data['expected_delivery'], '%Y-%m-%d'))
 
         purchase_order.save()
 
