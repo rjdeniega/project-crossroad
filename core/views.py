@@ -47,16 +47,16 @@ class SignInView(APIView):
         password = request.data["password"]
         print(username)
         print(password)
-        print(User.objects.get(username=username))
         user = authenticate(username=username, password=password)
         # if user is None:
         #     return Response(data={
         #         "error": "Invalid credentials"
         #     }, status=401)
-        try:
-            if user is None:
-                user = User.objects.get(username=username)
-        except ObjectDoesNotExist:
+
+        users = User.objects.filter(username=username)
+        if user is None:
+            user = User.objects.filter(username=username).first()
+        if len(users) <= 0:
             return Response(data={
                 "error": "Invalid credentials"
             }, status=401)
