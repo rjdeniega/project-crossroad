@@ -50,16 +50,6 @@ import {VendorReport} from "./content/vendors/vendor_report";
 const TabPane = Tabs.TabPane;
 const { Meta } = Card;
 const REMITTANCE_CARDS = [{
-    'title': 'Remittance Queries',
-    'description': 'view remittances for a time period',
-    'icon': money,
-    'content': <RemittanceReport/>
-}, {
-    'title': 'Passenger Queries',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <PassengerCount/>
-}, {
     'title': 'Remittance Report',
     'description': 'view beep and ticketing passenger count',
     'icon': money,
@@ -155,11 +145,6 @@ const MEMBER_CARDS = [{
     'content': <SharesReport/>
 },
     {
-        'title': 'Transaction Queries',
-        'description': 'View transactions of members over a period of time',
-        'icon': driversLicenseO,
-        'content': <TransactionReport/>
-    }, {
         'title': 'Shares Accumulation Report',
         'description': 'View transactions of members over a period of time',
         'icon': driversLicenseO,

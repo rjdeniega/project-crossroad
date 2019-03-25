@@ -2264,6 +2264,8 @@ class RemittanceForTheMonth(APIView):
         new_days = []
         rem = RemittanceForTheMonth()
 
+        print(data['interval'])
+
         if data["interval"] == "day":
             year = date.year
             month = date.month
@@ -2306,6 +2308,7 @@ class RemittanceForTheMonth(APIView):
 
                 main_road_value = rem.get_remittance_total_monthly("M", temp_date) + rem.get_beep_total_monthly("M",
                                                                                                                 temp_date)
+                print(main_road_value)
                 kaliwa_value = rem.get_remittance_total_monthly("L", temp_date) + rem.get_beep_total_monthly("L",
                                                                                                              temp_date)
                 kanan_value = rem.get_remittance_total_monthly("R", temp_date) + rem.get_beep_total_monthly("R",
@@ -2607,7 +2610,7 @@ class NotificationItems(APIView):
         # Notification.objects.filter(user__id=user_id).hard_delete()
         notification = None
         for item in ItemCategory.objects.all():
-            if item.quantity <= 3:
+            if item.quantity <= item.minimum_quantity:
                 notification = Notification.objects.filter(user__id=user_id,
                                                            description=f'{item.category} is low on stocks ({item.quantity} pcs)')
                 if len(notification) == 0:
@@ -2983,15 +2986,19 @@ class RemittancePerYear(APIView):
             months = []
             days = 365 * x
             for i in range(1, 13):
+                filter_date = (date - timedelta(days=days)).year
+                total = RemittancePerYear.get_total(BeepTransaction.objects.filter(transaction_date_time__year=filter_date, transaction_date_time__month=i))
                 total = sum([item.total for item in
                              RemittanceForm.objects.filter(
-                                 deployment__shift_iteration__date__year=(date - timedelta(days=days)).year,
-                                 deployment__shift_iteration__date__month=i)]) + sum([item.total for item in
-                                                                                      BeepTransaction.objects.filter(
-                                                                                          transaction_date_time__year=(
-                                                                                              date - timedelta(
-                                                                                                  days=days)).year,
-                                                                                          transaction_date_time__month=i)])
+                                 deployment__shift_iteration__date__year=filter_date,
+                                 deployment__shift_iteration__date__month=i)]) + total
+
+                # + sum([item.total for item in
+                #        BeepTransaction.objects.filter(
+                #            transaction_date_time__year=(
+                #                date - timedelta(
+                #                    days=days)).year,
+                #            transaction_date_time__month=i)])
                 months.append("{0:,.2f}".format(total))
             years.append({
                 "year": (date - timedelta(days=days)).year,
@@ -3073,3 +3080,10 @@ class RemittancePerYear(APIView):
         }
 
         return Response(data=data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def get_total(set):
+        total = 0
+        for item in set:
+            total += item.total
+        return total
