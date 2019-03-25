@@ -2507,10 +2507,13 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects.all()
                                             .filter(type='M').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'supervisor':
-            notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='R') | Q(type='N')).order_by('-created'), many=True)
-            unread = NotificationSerializer(Notification.objects.all()
-                                            .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
+            notifications = None
+            unread = None
+            pass
+            # notifications = NotificationSerializer(Notification.objects
+            #                                        .filter(Q(type='R') | Q(type='N')).order_by('-created'), many=True)
+            # unread = NotificationSerializer(Notification.objects.all()
+            #                                 .filter(type='R').filter(is_read=False).order_by('-created'), many=True)
         elif user_type == 'operations_manager':
             NotificationItems.get_om_repairs(user_id)
             NotificationItems.get_om_notifs(user_id)
@@ -2562,7 +2565,7 @@ class NotificationItems(APIView):
                 '-created'), many=True)
 
         return Response(data={
-            'notifications': notifications.data,
+            'notifications': notifications.data if notifications is not None else [],
             'unread': unread.data,
         }, status=status.HTTP_200_OK)
 
