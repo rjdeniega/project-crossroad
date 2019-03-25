@@ -22,7 +22,6 @@ import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 
 
-
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
@@ -53,7 +52,8 @@ class ComponentToPrint extends React.Component {
                             <th colSpan={3}>M. Frequency</th>
                             <th colSpan={3}>M. Cost</th>
                             <th colSpan={3}>Ave. M. Cost</th>
-                             <th>Cost Total</th>
+                            <th>Frequency Total</th>
+                            <th>Cost Total</th>
                         </tr>
                         <tr>
                             <th></th>
@@ -89,6 +89,7 @@ class ComponentToPrint extends React.Component {
                                         <td className="monetary">{item.minor_average_cost}</td>
                                         <td className="monetary">{item.intermediate_average_cost}</td>
                                         <td className="monetary">{item.major_average_cost}</td>
+                                        <td className="monetary"><b>{item.frequency_total}</b></td>
                                         <td className="monetary"><b>{item.total}</b></td>
                                     </tr>
                                 </Fragment>
@@ -100,13 +101,22 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line"><b>{this.props.data.minor_count}</b></td>
                                 <td className="total-line"><b>{this.props.data.intermediate_count}</b></td>
                                 <td className="total-line"><b>{this.props.data.major_count}</b></td>
-                                <td className="total-line monetary"><b>{this.props.data.minor_total_maintenance_cost}</b></td>
-                                <td className="total-line monetary"><b>{this.props.data.intermediate_total_maintenance_cost}</b></td>
-                                <td className="total-line monetary"><b>{this.props.data.major_total_maintenance_cost}</b></td>
-                                <td className="total-line monetary"><b>{this.props.data.minor_average_maintenance_cost}</b></td>
-                                <td className="total-line monetary"><b>{this.props.data.intermediate_average_maintenance_cost}</b></td>
-                                <td className="total-line monetary"><b>{this.props.data.major_average_maintenance_cost}</b></td>
+                                <td className="total-line monetary">
+                                    <b>{this.props.data.minor_total_maintenance_cost}</b></td>
+                                <td className="total-line monetary">
+                                    <b>{this.props.data.intermediate_total_maintenance_cost}</b></td>
+                                <td className="total-line monetary">
+                                    <b>{this.props.data.major_total_maintenance_cost}</b></td>
+                                <td className="total-line monetary">
+                                    <b>{this.props.data.minor_average_maintenance_cost}</b></td>
+                                <td className="total-line monetary">
+                                    <b>{this.props.data.intermediate_average_maintenance_cost}</b></td>
+                                <td className="total-line monetary">
+                                    <b>{this.props.data.major_average_maintenance_cost}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_total_frequency}</b></td>
+
                                 <td className="total-line monetary"><b>{this.props.data.grand_total}</b></td>
+
                             </tr>
                         </Fragment>
                         }
@@ -129,7 +139,7 @@ export class MaintenanceReport extends Component {
             "start_date": this.state.start_date,
             "end_date": this.state.end_date,
         };
-        postData('/inventory/shuttles/maintenance_report/',data).then(data => {
+        postData('/inventory/shuttles/maintenance_report/', data).then(data => {
             console.log(data);
             if (!data.error) {
                 this.setState({
