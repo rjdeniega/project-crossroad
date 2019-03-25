@@ -105,6 +105,7 @@ class ItemCategory(SoftDeletionModel):
     category = CharField(max_length=64, unique=True)
     code_prefix = CharField(max_length=3)
     quantity = PositiveIntegerField()
+    minimum_quantity = PositiveIntegerField()
 
 
 class VendorItem(SoftDeletionModel):

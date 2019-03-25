@@ -516,7 +516,7 @@ class ShuttleMaintenanceFrequency(APIView):
                                 float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
                     else:
                         major_maintenanceCost = major_maintenanceCost + (
-                                    float(item_used.quantity) * float(item.unit_price))
+                                float(item_used.quantity) * float(item.unit_price))
 
                     # Minor repairs
             for repair in Repair.objects.all().filter(shuttle=shuttle, degree='Minor', end_date__gte=start_date,
@@ -839,7 +839,8 @@ class ItemCategoryView(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        item_category = ItemCategory(category=data['category'], code_prefix=data['code_prefix'], quantity=0)
+        item_category = ItemCategory(category=data['category'], code_prefix=data['code_prefix'], quantity=0,
+                                     minimum_quantity=data['minimum_quantity'])
         item_category.save()
         return Response(data={
             'success': 'success'

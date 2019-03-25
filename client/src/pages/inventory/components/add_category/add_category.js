@@ -12,6 +12,7 @@ export class AddCategory extends Component {
         this.state = {
             category: '',
             code_prefix: '',
+            minimum_quantity: null,
             visible: false,
         };
 
@@ -29,6 +30,7 @@ export class AddCategory extends Component {
             visible: false,
             category: '',
             code_prefix: '',
+            minimum_quantity: null,
         });
     };
 
@@ -36,26 +38,27 @@ export class AddCategory extends Component {
         if(field === "category"){
             this.setState({
                 category: data
-            }, () => {
-                console.log(this.state)
+            });
+        } else if (field === "code_prefix") {
+            this.setState({
+                code_prefix: data
             });
         } else {
             this.setState({
-                code_prefix: data
-            }, () => {
-                console.log(this.state)
-            });
+                minimum_quantity: data
+            })
         }
     };
 
     submitData(){
-        const {category, code_prefix} = this.state;
+        const {category, code_prefix, minimum_quantity} = this.state;
         if(!category || !code_prefix){
             message.error("Please complete the fields")
         } else {
             let data = {
                 category: category,
                 code_prefix: code_prefix,
+                minimum_quantity: minimum_quantity,
             };
             postData('inventory/items/item_category/', data).then(data => {
                 console.log(data)
@@ -67,7 +70,7 @@ export class AddCategory extends Component {
     }
 
     render() {
-        const {visible, category, code_prefix} = this.state;
+        const {visible, category, code_prefix, minimum_quantity} = this.state;
 
         const formItemLayout = {
             labelCol: {
@@ -94,6 +97,9 @@ export class AddCategory extends Component {
                 </Item>
                 <Item label="Code-Prefix" {...formItemLayout}>
                     <Input value={code_prefix} maxLength={3} onChange={e => this.updateFields(e.target.value, 'code_prefix')}/>
+                </Item>
+                <Item label="Minimum Quantity" {...formItemLayout}>
+                    <Input value={minimum_quantity} onChange={e => this.updateFields(e.target.value, 'minimum_quantity')}/>
                 </Item>
             </Modal>
         </span>)

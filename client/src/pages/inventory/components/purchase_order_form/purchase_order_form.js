@@ -154,7 +154,7 @@ class ItemForm extends Component {
         let low_inventory = [];
         let normal_stock = [];
         categories.forEach(function (category) {
-            if (category.quantity < 4) {
+            if (category.quantity < category.minimum_quantity) {
                 low_inventory.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
             } else {
                 normal_stock.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
