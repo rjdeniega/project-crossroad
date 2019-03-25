@@ -1,10 +1,25 @@
 import React, {Component} from 'react';
-import {Card, Form, Input, Select, Tag, Divider, Button, message, Modal, Upload, Icon, Checkbox, Typography} from 'antd'
+import {
+    Card,
+    Form,
+    Input,
+    Select,
+    Tag,
+    Divider,
+    Button,
+    message,
+    Modal,
+    Upload,
+    Icon,
+    Checkbox,
+    Typography,
+    Popover
+} from 'antd'
 import update from 'react-addons-update'
 import './style.css';
 import {getData, postData, putData, putDataWithImage} from "../../../../network_requests/general";
 
-const { Text } = Typography;
+const {Text} = Typography;
 
 const Option = Select.Option;
 const Search = Input.Search;
@@ -17,6 +32,65 @@ function generateCode() {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
 
     return text;
+}
+
+class ReportProblem extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            remarks: null,
+        };
+
+        this.submitRemarks = this.submitRemarks.bind(this);
+    }
+
+    submitRemarks() {
+        const {remarks} = this.state;
+        let data = {
+            remarks: remarks,
+            po_id: this.props.po_id,
+            category: this.props.category,
+            item: this.props.item,
+        };
+
+        postData('inventory/purchase_order/submit_remarks/', data).then(() => {
+            message.success('Submitted problem');
+            this.props.loadItems();
+        })
+
+    }
+
+    render() {
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 8},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 16},
+            },
+        };
+        const buttonLayout = {
+            wrapperCol: {
+                sm: {
+                    span: 16,
+                    offset: 8,
+                },
+            }
+        };
+        return (
+            <div>
+                <Form.Item label="Remarks" {...formItemLayout}>
+                    <Input.TextArea rows={3} onChange={e => this.setState({remarks: e.target.value})}/>
+                </Form.Item>
+                <Form.Item {...buttonLayout}>
+                    <Button htmlType="button" type="primary" onClick={this.submitRemarks}>Submit</Button>
+                </Form.Item>
+            </div>
+        )
+    }
 }
 
 export class UpdatePurchaseOrder extends Component {
@@ -45,7 +119,7 @@ export class UpdatePurchaseOrder extends Component {
         this.loadItems()
     }
 
-    loadItems(){
+    loadItems() {
         let po_id = this.props.po_id;
         getData('inventory/purchase_order/' + po_id).then(data => {
             let fileList = [];
@@ -85,8 +159,7 @@ export class UpdatePurchaseOrder extends Component {
                         item_type: "Single Item",
                         item_code: generateCode(),
                     };
-                    item_details.push(item_detail)
-
+                    item_details.push(item_detail);
                 });
                 this.setState({
                     item_details: item_details,
@@ -284,8 +357,12 @@ export class UpdatePurchaseOrder extends Component {
         })
     };
 
+    handleVisibleChange = (visibility) => {
+        this.setState({visibility});
+    };
+
     render() {
-        const {items, previewVisible, previewImage, fileList, confirmation, categories, confirm_disabled} = this.state;
+        const {items, previewVisible, previewImage, fileList, confirmation, categories, confirm_disabled, visible} = this.state;
         const {po_id} = this.props;
         const formItemLayout = {
             labelCol: {
@@ -309,6 +386,7 @@ export class UpdatePurchaseOrder extends Component {
             <span>
                 <a onClick={this.updateModal}>Update</a>
                 <Modal
+                    width={700}
                     title="Update Status"
                     visible={this.state.update_modal}
                     onCancel={this.handleCancel2}
@@ -323,14 +401,29 @@ export class UpdatePurchaseOrder extends Component {
                         <h3>Add to Inventory</h3>
                         {items.map((item, index) => {
                             return (
-                                <Card title={item.delivery_date ? "Delivery Date: " + new Date(item.delivery_date.substring(0, 10)).toLocaleDateString(): <Button htmlType='button' type="primary" onClick={() => this.receiveItem(item.id)}>Receive Item</Button>}
-                                      extra={(
-                                          <span>
+                                <Card
+                                    title={item.delivery_date ? "Delivery Date: " + new Date(item.delivery_date.substring(0, 10)).toLocaleDateString() :
+                                        <span>
+                                        <Button htmlType='button' type="primary"
+                                                onClick={() => this.receiveItem(item.id)}>Receive Item</Button>
+                                        <Popover placement='bottom'
+                                                 content={<ReportProblem po_id={po_id} category={item.category} item={item.id} loadItems={this.loadItems}/>}
+                                                 trigger='click'>
+                                            <Button style={{marginLeft: 5}} htmlType='button' type='danger'>Report Problem</Button>
+                                        </Popover>
+                                    </span>}
+                                    extra={(
+                                        <span>
                                       <Tag color="blue">{item.quantity} pc</Tag>
                                       <Divider type="vertical"/>
                                       <Tag color="green">Php{item.unit_price}</Tag>
                                   </span>)} size="small"
-                                      className="item-form-container">
+                                    className="item-form-container">
+                                    {item.status === "Awaiting Delivery" ?
+                                        <Tag color="geekblue">Awaiting Delivery</Tag> :
+                                        item.status === "Returned" ? <Tag color="gold">Returned</Tag> :
+                                            item.status === "Delivered" && <Tag color="green">Delivered</Tag>}
+                                    <br/>
                                     <Text>{item.brand}&nbsp;{categories[item.id] && categories[item.id]}</Text>
                                     <br/>
                                     <Text>{item.description}</Text>

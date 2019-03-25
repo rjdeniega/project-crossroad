@@ -861,6 +861,7 @@ class PurchaseOrderItemView(APIView):
         item = PurchaseOrderItem.objects.get(id=pk)
         purchase_order = PurchaseOrder.objects.get(id=po)
         item.received = True
+        item.status = "Delivered"
         item.delivery_date = datetime.now()
         item.save()
         purchase_order.status = "Partially Delivered"
@@ -880,6 +881,11 @@ class PurchaseOrderItemView(APIView):
         added_item.save()
         item_movement = ItemMovement(item=added_item, type="B", quantity=item.quantity, unit_price=item.unit_price)
         item_movement.save()
+
+        vendor_performance = VendorPerformance(vendor=vendor, purchase_order=purchase_order,
+                                               expected_delivery=purchase_order.expected_delivery,
+                                               actual_delivery=datetime.now())
+        vendor_performance.save()
         return Response(data={
             'foo': added_item.description
         }, status=status.HTTP_200_OK)
@@ -1075,6 +1081,27 @@ class ReturnToOperationsManager(APIView):
         repair.status = "RO"
         repair.remarks = data['remarks']
         repair.save()
+
+        return Response(data={
+            'foo': 'bar'
+        }, status=status.HTTP_200_OK)
+
+
+class AddItemRemark(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        po_item = PurchaseOrderItem.objects.get(id=data['item'])
+        po_item.status = "Returned"
+        po_item.save()
+        purchase_order = PurchaseOrder.objects.get(id=data['po_id'])
+        item_category = ItemCategory.objects.get(id=data['category'])
+        remarks = data['remarks']
+
+        vendor_performance = VendorPerformance(vendor=purchase_order.vendor, defective_category=item_category,
+                                               purchase_order=purchase_order, remarks=remarks,
+                                               actual_delivery=datetime.now())
+        vendor_performance.save()
 
         return Response(data={
             'foo': 'bar'

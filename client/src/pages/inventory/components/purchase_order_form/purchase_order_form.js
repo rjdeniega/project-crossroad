@@ -15,6 +15,7 @@ import {
     Checkbox,
     Cascader,
     Tooltip,
+    Avatar,
     DatePicker,
 } from 'antd';
 import update from 'react-addons-update';
@@ -22,6 +23,7 @@ import './style.css';
 import NumberFormat from 'react-number-format';
 import {getData, postData} from "../../../../network_requests/general";
 import moment from 'moment'
+import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 
 function disabledDate(current) {
     // Can not select days before today and today
@@ -419,7 +421,7 @@ export class PurchaseOrderForm extends Component {
     saveForm() {
         const {items, vendorName, vendorAddress, vendorContact, po_num, special_instructions, expected_delivery} = this.state;
 
-        if (vendorName && vendorAddress && vendorContact && po_num && items[1].brand) {
+        if (vendorName && vendorAddress && vendorContact && po_num && items[1].brand && expected_delivery) {
             let final_items = [];
             items.forEach(function (item) {
                 if (item.brand) {
@@ -670,7 +672,10 @@ export class PurchaseOrderForm extends Component {
         return (
             <div className="purchase-order-form">
                 <Row type="flex" justify="space-between" align="bottom">
-                    <Col span={12}>
+                    <Col span={3}>
+                        <Avatar shape="square" size={84} src={LBATSCLogo}/>
+                    </Col>
+                    <Col span={9}>
                         <h2>Laguna Bel-Air Transport Service Cooperative</h2>
                     </Col>
                     <Col span={12}>
@@ -682,7 +687,7 @@ export class PurchaseOrderForm extends Component {
                         <p className="form-info">Sta. Ana Street, Laguna Bel-Air Subdivision 2, Ph 5</p>
                     </Col>
                     <Col span={12}>
-                        <p align="right" className="form-info">Date: {new Date(Date.now()).toLocaleDateString()}</p>
+                        <p align="right" className="form-info">PO #: {pad(po_num)}</p>
                     </Col>
                 </Row>
                 <Row>
@@ -690,7 +695,7 @@ export class PurchaseOrderForm extends Component {
                         <p className="form-info">Sta. Rosa City, Laguna, ZIP: 4026</p>
                     </Col>
                     <Col span={12}>
-                        <p align="right" className="form-info">PO #: {pad(po_num)}</p>
+                        <p align="right" className="form-info">Order Date: {new Date(Date.now()).toLocaleDateString()}</p>
                     </Col>
                 </Row>
                 <Row>

@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import './style.css'
 import {getData} from "../../../../network_requests/general";
-import {Table, Row, Col, Divider, message, Modal, Button} from 'antd'
+import {Table, Row, Col, Divider, message, Modal, Button, Avatar} from 'antd'
 import NumberFormat from 'react-number-format';
 import ReactToPrint from 'react-to-print';
 import {Icon} from 'react-icons-kit';
 import {printer} from 'react-icons-kit/icomoon/printer';
 import {ItemCodePrintout} from "../item_code_printout/item_code_printout";
+import LBATSCLogo from "../../../../images/LBATSCLogo.png";
 
 function pad(num) {
     let digits = 6 - num.toString().length;
@@ -91,6 +92,7 @@ export class PurchaseOrderView extends Component {
             categories: [],
             grand_total: '',
             date: '',
+            expected_delivery: '',
         }
     }
 
@@ -138,7 +140,8 @@ export class PurchaseOrderView extends Component {
                 special_instructions: data.purchase_order.special_instruction,
                 items: data.items,
                 order_date: data.purchase_order.order_date,
-                categories: data.categories
+                categories: data.categories,
+                expected_delivery: data.purchase_order.expected_delivery
             }, () => {
                 console.log(this.state.categories)
             })
@@ -146,7 +149,10 @@ export class PurchaseOrderView extends Component {
     }
 
     render() {
-        const {po_id, po_number, vendor_name, vendor_address, vendor_contact, special_instructions, order_date, items, categories} = this.state;
+        const {
+            po_id, po_number, vendor_name, vendor_address, vendor_contact, special_instructions, order_date, items,
+            categories, expected_delivery
+        } = this.state;
         const {status} = this.props;
         return (
             <span>
@@ -179,7 +185,10 @@ export class PurchaseOrderView extends Component {
                     <ItemCodePrintout ref={el => (this.componentRef2 = el)} po_id={po_id}/>
                     <div className="purchase-order-view" ref={el => (this.componentRef = el)}>
                         <Row type="flex" justify="space-between" align="bottom">
-                            <Col span={12}>
+                            <Col span={3}>
+                                <Avatar shape="square" size={84} src={LBATSCLogo}/>
+                            </Col>
+                            <Col span={9}>
                                 <h2>Laguna Bel-Air Transport Service Cooperative</h2>
                             </Col>
                             <Col span={12}>
@@ -191,8 +200,7 @@ export class PurchaseOrderView extends Component {
                                 <p className="form-info">Sta. Ana Street, Laguna Bel-Air Subdivision 2, Ph 5</p>
                             </Col>
                             <Col span={12}>
-                                <p align="right"
-                                   className="form-info">Date: {new Date(order_date).toLocaleDateString()}</p>
+                                <p align="right" className="form-info">PO #: {pad(po_number)}</p>
                             </Col>
                         </Row>
                         <Row>
@@ -200,12 +208,16 @@ export class PurchaseOrderView extends Component {
                                 <p className="form-info">Sta. Rosa City, Laguna, ZIP: 4026</p>
                             </Col>
                             <Col span={12}>
-                                <p align="right" className="form-info">PO #: {pad(po_number)}</p>
+                                <p align="right"
+                                   className="form-info">Order Date: {new Date(order_date).toLocaleDateString()}</p>
                             </Col>
                         </Row>
                         <Row>
-                            <Col span={24}>
+                            <Col span={12}>
                                 <p className="form-info">Phone: +63(49) 530-1166</p>
+                            </Col>
+                            <Col span={12}>
+                                <p align="right">Expected Delivery Date: {new Date(expected_delivery).toLocaleDateString()}</p>
                             </Col>
                         </Row>
                         <br/>
