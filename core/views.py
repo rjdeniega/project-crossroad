@@ -2240,8 +2240,9 @@ class ShuttleCostVRevenueReport(APIView):
                 shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
             print("{0:,.2f}".format(shuttle_remittance))
             rows.append({
+                "purchase_date": shuttle.date_acquired,
                 "purchase_cost": "{0:,.2f}".format(float(value)),
-                "shuttle_id": shuttle.id,
+                "shuttle_id": f'{shuttle.id}- {shuttle.model} - {shuttle.make}',
                 "shuttle_plate_number": shuttle.plate_number,
                 "shuttle_make": shuttle.make,
                 "revenue": "{0:,.2f}".format(shuttle_remittance),
