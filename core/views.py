@@ -2430,9 +2430,9 @@ class NotificationItems(APIView):
     def get(request, user_type, user_id):
         # user type gotten from localStorage.get('user_type')
         user = SignInView.get_user_staff(user_type, User.objects.get(pk=user_id))
-        Notification.objects.filter(is_read=True).hard_delete()
         notifications = NotificationSerializer(Notification.objects.all(), many=True)
         unread = NotificationSerializer(Notification.objects.all(), many=True)
+        Notification.objects.filter(is_read=True).hard_delete()
         print(user_type)
         print(user_id)
         print(user)
@@ -2514,13 +2514,19 @@ class NotificationItems(APIView):
 
     @staticmethod
     def get_clerk_notifs(user_id):
-        is_am = NotificationItems.is_time_between(time(15, 00), time(16, 30))
-        is_pm = NotificationItems.is_time_between(time(19, 00), time(20, 00))
+        Notification.objects.filter(user__id=user_id,
+                                                   description="Please upload AM beep CSV").hard_delete()
+        Notification.objects.filter(user__id=user_id,
+                                    description="Please upload PM beep CSV").hard_delete()
+        is_am = NotificationItems.is_time_between(time(4, 00), time(13, 59))
+        is_pm = NotificationItems.is_time_between(time(14, 00), time(1, 00))
+        beep_shift_am = BeepShift.objects.filter(date=datetime.now(),type='A')
+        beep_shift_pm = BeepShift.objects.filter(date=datetime.now(),type='P')
         print(is_am)
         print(is_pm)
         print(f'the user id is {user_id}')
 
-        if is_am:
+        if is_am and (len(beep_shift_am) == 0):
             notification = Notification.objects.filter(user__id=user_id,
                                                        description="Please upload AM beep CSV")
             if len(notification) == 0:
@@ -2529,7 +2535,7 @@ class NotificationItems(APIView):
                     type='R',
                     description='Please upload AM beep CSV'
                 )
-        elif is_pm:
+        elif is_pm and (len(beep_shift_pm) == 0):
             notification = Notification.objects.filter(user__id=user_id,
                                                        description="Please upload PM beep CSV")
             if len(notification) == 0:
