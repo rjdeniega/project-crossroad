@@ -8,15 +8,24 @@ class PopulateRemittances():
         current_date = datetime.strptime(start_date, '%Y-%m-%d')
         new_end_date = datetime.strptime(end_date, '%Y-%m-%d')
         pop = PopulateRemittances()
+        year = current_date.year
+
+        #get holidays in array
+        holidays = pop.get_holidays(year)
 
         while current_date <= new_end_date:
             sched = pop.create_schedule(current_date, current_date)
 
             temp_date = current_date
 
+
             while temp_date < current_date + timedelta(days=15):
                 if temp_date > new_end_date:
                     break
+
+                if pop.did_year_change(year, temp_date):
+                    #change holidays array to current year
+                    holidays = pop.get_holidays(year)
 
                 #create deployments
                 ctr = 0
@@ -30,7 +39,7 @@ class PopulateRemittances():
                     shift_iteration = pop.start_shift_iteration(temp_date, shift)
 
                     # deploy drivers (submit remittance, confirm)
-                    pop.deploy_drivers(shift_iteration, temp_date)
+                    pop.deploy_drivers(shift_iteration, temp_date, holidays)
 
                     # finish shift iteration
                     shift_iteration.finish_shift()
@@ -40,6 +49,30 @@ class PopulateRemittances():
                 temp_date = temp_date + timedelta(days=1)
 
             current_date = current_date + timedelta(days=15)
+
+    @staticmethod
+    def did_year_change(year, date):
+        if date.year != year:
+            return True
+        return False
+
+
+    @staticmethod
+    def get_holidays(year):
+        hapi = holidayapi.v1('3f451697-4669-42d8-a59c-09d14e6e47b4')
+
+        parameters = {
+            'country': 'PH',
+            'year': year
+        }
+
+        response = hapi.holidays(parameters)
+
+        holidays = list()
+        for holiday in response.holidays:
+            holidays.append(holiday.date)
+        
+        return holidays
 
     @staticmethod
     def create_schedule(start_date, current_date):
@@ -149,7 +182,7 @@ class PopulateRemittances():
             assigned_ticket=assigned_ticket).last()
 
     @staticmethod
-    def deploy_drivers(shift_iteration, date):
+    def deploy_drivers(shift_iteration, date, holidays):
         hasAbsent = False
         for driver in DriversAssigned.objects.filter(shift=shift_iteration.shift):
             # driver can be absent sometimes
@@ -171,7 +204,7 @@ class PopulateRemittances():
                 deployment.status = 'F'
                 deployment.save()
 
-                remittance = PopulateRemittances.submit_remittance(deployment, date)
+                remittance = PopulateRemittances.submit_remittance(deployment, date, holidays)
                 remittance.confirm_remittance()
             else:
                 #deploy supervisor as sub
@@ -201,7 +234,7 @@ class PopulateRemittances():
                 deployment.status = 'F'
                 deployment.save()
 
-                remittance = PopulateRemittances.submit_remittance(deployment, date)
+                remittance = PopulateRemittances.submit_remittance(deployment, date, holidays)
                 remittance.confirm_remittance()
 
     @staticmethod
@@ -241,7 +274,7 @@ class PopulateRemittances():
         return assigned_ticket.range_to - last_consumed.end_ticket
 
     @staticmethod
-    def submit_remittance(deployment, date):
+    def submit_remittance(deployment, date, holidays):
         pop = PopulateRemittances()
 
         #sometimes the shuttle needs fuel
@@ -294,15 +327,15 @@ class PopulateRemittances():
         # compute totals
         if pop.is_main_road(deployment):
             print('I am main road')
-            consumed_a = pop.generate_consumed(ticket_a, remittance_form, date)
-            consumed_b = pop.generate_consumed(ticket_b, remittance_form, date)
-            consumed_c = pop.generate_consumed(ticket_c, remittance_form, date)
+            consumed_a = pop.generate_consumed(ticket_a, remittance_form, date, holidays)
+            consumed_b = pop.generate_consumed(ticket_b, remittance_form, date, holidays)
+            consumed_c = pop.generate_consumed(ticket_c, remittance_form, date, holidays)
 
             remittance_form.total = consumed_a.total + consumed_b.total + consumed_c.total
         else:
             print('I am ' + remittance_form.deployment.get_route_display())
-            consumed_a = pop.generate_consumed(ticket_a, remittance_form, date)
-            consumed_b = pop.generate_consumed(ticket_b, remittance_form, date)
+            consumed_a = pop.generate_consumed(ticket_a, remittance_form, date, holidays)
+            consumed_b = pop.generate_consumed(ticket_b, remittance_form, date, holidays)
 
             remittance_form.total = consumed_a.total + consumed_b.total
 
@@ -339,14 +372,18 @@ class PopulateRemittances():
             return False
 
     @staticmethod
-    def generate_consumed(assigned_ticket, remittance_form, date):
+    def generate_consumed(assigned_ticket, remittance_form, date, holidays):
         if PopulateRemittances.has_consumed(assigned_ticket):
             consumed = PopulateRemittances.get_last_consumed(assigned_ticket)
             start_ticket = consumed.end_ticket + 1
         else:
             start_ticket = assigned_ticket.range_from
 
-        number_of_passengers = PopulateRemittances.get_number_of_passengers(assigned_ticket.type, date)
+        number_of_passengers = PopulateRemittances.get_number_of_passengers(
+                assigned_ticket.type, 
+                date,
+                remittance_form.deployment.route, 
+                holidays)
 
         if PopulateRemittances.is_tickets_enough(assigned_ticket, number_of_passengers):
             end_ticket = start_ticket + number_of_passengers
@@ -373,30 +410,52 @@ class PopulateRemittances():
         )
 
     @staticmethod
-    def get_number_of_passengers(ticket_type, date):
+    def get_number_of_passengers(ticket_type, date, route_type, holidays):
         #If its a holiday
-        if PopulateRemittances.is_holiday(date): 
+        pop = PopulateRemittances()
+        if pop.is_summer_vacation(date):
+            if pop.is_left_route(route_type):
+                if ticket_type == 'A':
+                    return randint(5, 8)
+                else:
+                    return randint(10, 15)
+            elif pop.is_right_route(route_type):
+                if ticket_type == 'A':
+                    return randint(20, 25)
+                else:
+                    return randint(30, 35)
+            else:
+                if ticket_type == 'A':
+                    return randint(25, 30)
+                elif ticket_type == 'B':
+                    return randint(50, 55)
+                else:
+                    return randint(18, 22)
+        elif pop.is_holiday(date, holidays): 
             if ticket_type == 'A':
                 return randint(10, 15)
             elif ticket_type == 'B':
                 return randint(40, 45)
             else:
                 return randint(15, 20)
-        #If it is a weekend but is before March 20 (before the school year ends)
-        elif PopulateRemittances.is_weekend(date) and PopulateRemittances.is_past_march_20(date) == False:
-            if ticket_type == 'A':
-                return randint(28, 33)
-            elif ticket_type == 'B':
-                return randint(55, 60)
+        elif pop.is_weekend(date):
+            if pop.is_left_route(route_type):
+                if ticket_type == 'A':
+                    return randint(25, 30)
+                else:
+                    return randint(48, 53)
+            elif pop.is_right_route(route_type):
+                if ticket_type == 'A':
+                    return randint(25, 30)
+                else:
+                    return randint(45, 50)
             else:
-                return randint(20, 25)
-        elif PopulateRemittances.is_past_march_20(date):
-            if ticket_type == 'A':
-                return randint(25, 30)
-            elif ticket_type == 'B':
-                return randint(45, 50)
-            else:
-                return randint(20, 25)
+                if ticket_type == 'A':
+                    return randint(25, 30)
+                elif ticket_type == 'B':
+                    return randint(50, 55)
+                else:
+                    return randint(20, 25)
         else:
             if ticket_type == 'A':
                 return randint(30, 35)
@@ -414,21 +473,33 @@ class PopulateRemittances():
         return False
 
     @staticmethod
-    def is_holiday(date):
-        holidays = [
-            datetime(2019, 1, 1),
-            datetime(2019, 2, 5),
-            datetime(2019, 2, 23)
-        ]
-
+    def is_holiday(date, holidays):
         for holiday in holidays:
             if date == holiday:
                 return True
         return False
 
     @staticmethod
-    def is_past_march_20(date):
-        if date > datetime(2019, 3, 20):
+    def is_route_main_road(route):
+        if route == 'M' or route == 'Main Road':
+            return True
+        return False
+    
+    @staticmethod
+    def is_right_route(route):
+        if route == "R" or route == 'Kanan' or route == 'Right Route' or route == 'Right':
+            return True
+        return False
+    
+    @staticmethod
+    def is_left_route(route):
+        if route == 'L' or route == 'Kaliwa' or route == 'Left Route' or route == 'Left':
+            return True
+        return False
+
+    @staticmethod
+    def is_summer_vacation(date):
+        if date > datetime(date.year, 3, 20) or date < datetime(date.year, 6, 5):
             return True
         return False
 
