@@ -140,12 +140,10 @@ class AssignedDriverView(APIView):
 
         drivers = DriverSerializer(new_drivers, many=True).data
 
-
-
-        ten_total = 0
-        twelve_total = 0
-        fifteen_total = 0
         for driver in drivers:
+            ten_total = 0
+            twelve_total = 0
+            fifteen_total = 0
             driver["ten_peso_tickets"] = []
             driver["twelve_peso_tickets"] = []
             driver["fifteen_peso_tickets"] = []
@@ -165,9 +163,8 @@ class AssignedDriverView(APIView):
             driver["ten_total"] = ten_total
             driver["twelve_total"] = twelve_total
             driver["fifteen_total"] = fifteen_total
-            driver["has_misssing"] = False if driver['ten_total'] >= 50 or driver['twelve_total'] >= 50 or driver[
-                                                                                                            'fifteen_total'] >=80 else True
-
+            driver["has_missing"] = "No" if driver['ten_total'] >= 50 or driver['twelve_total'] >= 50 or driver[
+                                                                                                               'fifteen_total'] >= 80 else "Yes"
         return Response(data={
             "drivers": drivers
         }, status=status.HTTP_200_OK)
