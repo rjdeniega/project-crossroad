@@ -51,27 +51,27 @@ const TabPane = Tabs.TabPane;
 const { Meta } = Card;
 const REMITTANCE_CARDS = [{
     'title': 'Remittance Report',
-    'description': 'view beep and ticketing passenger count',
+    'description': 'View Ticketing Remittances',
     'icon': money,
     'content': <RemittanceSummary/>
 }, {
     'title': 'Supervisor Report',
-    'description': 'view beep and ticketing passenger count',
+    'description': 'Weekly Supervisor Report for Drivers',
     'icon': money,
     'content': <WeeklySupervisorReport/>
 }, {
     'title': 'Remittance Per Route',
-    'description': 'view remittances per route',
+    'description': 'View Shuttle Remittances Per Route',
     'icon': money,
     'content': <RemittanceSummaryRoute/>
 }, {
     'title': 'Remittance Per Year',
-    'description': 'view monthly remittances per year',
+    'description': 'View monthly remittances per year',
     'icon': money,
     'content': <RemittancePerYear/>
 }, {
     'title': 'Driver Remittance & Payables',
-    'description': 'view driver deployment information',
+    'description': 'View Absences, Lates, and Payables of Drivers',
     'icon': money,
     'content': <DriverPerformance/>
 }, {
@@ -81,12 +81,12 @@ const REMITTANCE_CARDS = [{
     'content': <TicketReport/>
 }, {
     'title': 'Ticket Per Day',
-    'description': 'view beep and ticketing passenger count',
+    'description': 'View Passenger Count Per Shuttle Per Day',
     'icon': money,
     'content': <TicketPerDay/>
 }, {
     'title': 'Beep + Tickets',
-    'description': 'view beep and ticketing passenger count',
+    'description': 'View Beep and Ticketing passenger count',
     'icon': money,
     'content': <BeepTickets/>
 }, {
@@ -96,17 +96,17 @@ const REMITTANCE_CARDS = [{
     'content': <RemittanceChart/>
 }, {
     'title': 'Passenger Per Route',
-    'description': 'view the remittance per route comparison',
+    'description': 'View the remittance per route comparison',
     'icon': money,
     'content': <PassengerPerRoute />
 }, {
     'title': 'Peak Hours',
-    'description': 'view peak hours for beep transactions',
+    'description': 'View peak hours for beep transactions',
     'icon': money,
     'content': <PeakHours />
 }, {
     'title': 'Ticket chart per week',
-    'description': 'view beep and ticketing passenger count',
+    'description': 'View ticket breakdown per time interval',
     'icon': money,
     'content': <TicketStack/>
 },];
@@ -114,7 +114,7 @@ const REMITTANCE_CARDS = [{
 
 const MAINTENANCE_CARDS = [{
     'title': 'Maintenance Report',
-    'description': 'view maintenance cost per shuttle',
+    'description': 'View Minor, Intermediate, and Major repair frequency and costs',
     'icon': wrench,
     'content': <MaintenanceReport/>
 },{
@@ -124,7 +124,7 @@ const MAINTENANCE_CARDS = [{
     'content': <ShuttleValueChart/>
 }, {
     'title': 'Item Movement Report',
-    'description': 'view maintenance cost per shuttle',
+    'description': 'View Items Bought and Used for a time frame',
     'icon': wrench,
     'content': <ItemMovementReport/>
 }, {
@@ -133,15 +133,10 @@ const MAINTENANCE_CARDS = [{
     'icon': wrench,
     'content': <VendorReport/>
 }];
-const MEMBER_CARDS = [{
-    'title': 'Shares Report',
-    'description': 'View Shares of every member of the transport cooperative',
-    'icon': driversLicenseO,
-    'content': <SharesReport/>
-},
+const MEMBER_CARDS = [
     {
         'title': 'Shares Accumulation Report',
-        'description': 'View transactions of members over a period of time',
+        'description': 'View accumulation of member shares for a year',
         'icon': driversLicenseO,
         'content': <SharesAccumulationReport/>
     }, {
@@ -151,7 +146,7 @@ const MEMBER_CARDS = [{
         'content': <MemberTransactions/>
     }, {
         'title': 'Patronage Refund',
-        'description': 'View transactions of members over a period of time',
+        'description': 'Allocated Patronage Refund Per Member',
         'icon': driversLicenseO,
         'content': <PatronageRefund/>
     },];

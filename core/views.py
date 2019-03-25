@@ -2018,18 +2018,19 @@ class SupervisorWeeklyReport(APIView):
 
                         print(shift_type)
                         print(deployment_type)
-
+                    print(rem.deployment.start_time)
                     expected_arrival = None
-                    if shift_type == "A" and deployment_type == "R":
-                        expected_arrival = rem.created.replace(hour=7)
-                    if shift_type == "A" and deployment_type == "E":
-                        expected_arrival = rem.created.replace(hour=5)
-                    if shift_type == "P" and deployment_type == "R":
-                        expected_arrival = rem.created.replace(hour=14)
-                    if shift_type == "P" and deployment_type == "L":
-                        expected_arrival = rem.created.replace(hour=16)
+                    if shift_type == "A" and (deployment_type == "Regular" or deployment_type == "R"):
+                        expected_arrival = rem.deployment.start_time.replace(hour=5)
+                    if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
+                        expected_arrival = rem.deployment.start_time.replace(hour=4,minutes=30)
+                    if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
+                        expected_arrival = rem.deployment.start_time.replace(hour=14)
+                    if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
+                        expected_arrival = rem.deployment.start_time.replace(hour=16)
 
-                    r_status = "Late" if rem.created > expected_arrival else "On Time"
+                    print(expected_arrival)
+                    r_status = "Late" if rem.deployment.start_time > expected_arrival else "On Time"
 
                     # if deployment.driver.id not in [item['driver_id'] for item in
                     #                                 deployed_drivers] and not driver_remit == 0:

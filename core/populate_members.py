@@ -326,6 +326,7 @@ class PopulateMembers:
         pm_shift = BeepShift.objects.create(type='P', date=current_date)
         values = [10.00, 13.00, 15.00]
 
+
         last_six_to_nine = len(
             BeepTransaction.objects.filter(transaction_date_time__date=(current_date - timedelta(days=1)),
                                            transaction_date_time__hour__gte=6, transaction_date_time__hour__lte=9))
@@ -406,11 +407,11 @@ class PopulateMembers:
     def generate_beep(current_date):
         am_shift = BeepShift.objects.create(type='A', date=current_date)
         pm_shift = BeepShift.objects.create(type='P', date=current_date)
-
+        add_random = [-1, 1, 2, 3]
 
         # 6 - 9
         # 6 o clock
-        for i in range(1, 19):
+        for i in range(1, 19 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=6, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -419,7 +420,7 @@ class PopulateMembers:
                                                total=10)
         print(f'created {x}')
         # 7 o clock
-        for i in range(1, 15):
+        for i in range(1, 15 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=7, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -428,7 +429,7 @@ class PopulateMembers:
                                                total=10)
             print(f'created {x}')
         # 8 o clock
-        for i in range(1, 4):
+        for i in range(1, 4 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=8, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -437,7 +438,7 @@ class PopulateMembers:
                                                total=12)
             print(f'created {x}')
             # 9 o clock
-        for i in range(1, 4):
+        for i in range(1, 4 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=9, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -447,7 +448,7 @@ class PopulateMembers:
             print(f'created {x}')
 
             # 10 o clock
-        for i in range(1, 2):
+        for i in range(1, 2 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=10, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -456,7 +457,7 @@ class PopulateMembers:
                                                total=12)
             print(f'created {x}')
             # 11 o clock
-        for i in range(1, 3):
+        for i in range(1, 3 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=11, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -465,7 +466,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 12 o clock
-        for i in range(1, 6):
+        for i in range(1, 6 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=12, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -474,7 +475,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 1 o clock
-        for i in range(1, 3):
+        for i in range(1, 3 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=13, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -483,7 +484,7 @@ class PopulateMembers:
                                                total=12)
             print(f'created {x}')
             # 2 o clock
-        for i in range(1, 7):
+        for i in range(1, 7 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=14, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -492,7 +493,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 3 o clock
-        for i in range(1, 8):
+        for i in range(1, 8 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=15, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -501,7 +502,7 @@ class PopulateMembers:
                                                total=10)
             print(f'created {x}')
             # 4 o clock
-        for i in range(1, 14):
+        for i in range(1, 14 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=16, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -510,7 +511,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 5 o clock
-        for i in range(1, 25):
+        for i in range(1, 25 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=17, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -519,7 +520,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 6 o clock
-        for i in range(1, 20):
+        for i in range(1, 20 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=18, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -529,7 +530,7 @@ class PopulateMembers:
             print(f'created {x}')
 
             # 7 o clock
-        for i in range(1, 15):
+        for i in range(1, 15 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=19, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -539,7 +540,7 @@ class PopulateMembers:
             print(f'created {x}')
 
             # 8 o clock
-        for i in range(1, 10):
+        for i in range(1, 10 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=20, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -549,7 +550,7 @@ class PopulateMembers:
             print(f'created {x}')
 
             # 9 o clock
-        for i in range(1, 13):
+        for i in range(1, 13 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=21, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -558,7 +559,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 10 o clock
-        for i in range(1, 12):
+        for i in range(1, 12 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=22, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -567,7 +568,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 11 o clock
-        for i in range(1, 10):
+        for i in range(1, 10 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=23, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -576,7 +577,7 @@ class PopulateMembers:
                                                total=15)
             print(f'created {x}')
             # 12 o clock
-        for i in range(1, 5):
+        for i in range(1, 5 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=23, minute=59)
             x = BeepTransaction.objects.create(shift=pm_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -586,7 +587,7 @@ class PopulateMembers:
             print(f'created {x}')
 
             # 4AM o clock
-        for i in range(1, 5):
+        for i in range(1, 5 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=18, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
@@ -596,7 +597,7 @@ class PopulateMembers:
             print(f'created {x}')
 
             # 5AM o clock
-        for i in range(1, 13):
+        for i in range(1, 13 + add_random[randint(0,3)]):
             am_today_random_time = current_date.replace(hour=18, minute=randint(0, 59))
             x = BeepTransaction.objects.create(shift=am_shift,
                                                card_number=PopulateMembers.random_with_n_digits(8),
