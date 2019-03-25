@@ -78,7 +78,7 @@ export class InventoryTable extends Component {
         {title: "Item", dataIndex: "category", key: "category", align: 'left'},
         {title: "Quantity", dataIndex: "quantity", key: "quantity", align: 'center',
             render: (quantity, record) => {
-                return <span>{quantity} &nbsp; {quantity <= record.minimum_quantity && <Tag color="yellow">Low Quantity</Tag>}</span>
+                return <span>{quantity} &nbsp; {quantity < record.minimum_quantity && <Tag color="yellow">Low Quantity</Tag>}</span>
             }},
     ];
 

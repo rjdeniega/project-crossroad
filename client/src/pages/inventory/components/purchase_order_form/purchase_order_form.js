@@ -13,13 +13,20 @@ import {
     Button,
     Form,
     Checkbox,
-    Cascader
+    Cascader,
+    Tooltip,
+    DatePicker,
 } from 'antd';
 import update from 'react-addons-update';
 import './style.css';
 import NumberFormat from 'react-number-format';
 import {getData, postData} from "../../../../network_requests/general";
+import moment from 'moment'
 
+function disabledDate(current) {
+    // Can not select days before today and today
+    return current && current <= moment().endOf('day');
+}
 
 function pad(num) {
     let digits = 6 - num.toString().length;
@@ -155,7 +162,12 @@ class ItemForm extends Component {
         let normal_stock = [];
         categories.forEach(function (category) {
             if (category.quantity < category.minimum_quantity) {
-                low_inventory.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
+                low_inventory.push(<Select.Option value={category.category}>
+                    <Tooltip
+                        title={(category.minimum_quantity - category.quantity + 1) + " is recommended to stay above minimum quantity"}>
+                        <span>{category.category}</span>
+                    </Tooltip>
+                </Select.Option>)
             } else {
                 normal_stock.push(<Select.Option value={category.category}>{category.category}</Select.Option>)
             }
@@ -281,6 +293,7 @@ export class PurchaseOrderForm extends Component {
             items_submit: [],
             options: [],
             new_vendor: true,
+            expected_delivery: null,
         };
 
         this.updateFields = this.updateFields.bind(this);
@@ -404,7 +417,7 @@ export class PurchaseOrderForm extends Component {
     }
 
     saveForm() {
-        const {items, vendorName, vendorAddress, vendorContact, po_num, special_instructions} = this.state;
+        const {items, vendorName, vendorAddress, vendorContact, po_num, special_instructions, expected_delivery} = this.state;
 
         if (vendorName && vendorAddress && vendorContact && po_num && items[1].brand) {
             let final_items = [];
@@ -420,6 +433,7 @@ export class PurchaseOrderForm extends Component {
                 "vendor_contact": vendorContact,
                 "special_instruction": special_instructions,
                 "items": final_items,
+                "expected_delivery": expected_delivery
             };
             console.log(data);
             postData('inventory/purchase_order/', data).then(data => {
@@ -640,8 +654,19 @@ export class PurchaseOrderForm extends Component {
     }
 
     render() {
-        const { new_vendor, po_num, vendorName, vendorAddress, vendorContact, items, grand_total, data_source, categories, options} = this.state;
+        const {new_vendor, po_num, vendorName, vendorAddress, vendorContact, items, grand_total, data_source, categories, options} = this.state;
         const {filter} = this.filter;
+        const formItemLayout = {
+            labelCol: {
+                xs: {span: 24},
+                sm: {span: 16},
+            },
+            wrapperCol: {
+                xs: {span: 24},
+                sm: {span: 8},
+            },
+        };
+
         return (
             <div className="purchase-order-form">
                 <Row type="flex" justify="space-between" align="bottom">
@@ -669,8 +694,14 @@ export class PurchaseOrderForm extends Component {
                     </Col>
                 </Row>
                 <Row>
-                    <Col span={24}>
+                    <Col span={8}>
                         <p className="form-info">Phone: +63(49) 530-1166</p>
+                    </Col>
+                    <Col span={16}>
+                        <Form.Item label="Expected Delivery" {...formItemLayout}>
+                            <DatePicker onChange={(date, dateString) => this.setState({expected_delivery: dateString})}
+                                        disabledDate={disabledDate}/>
+                        </Form.Item>
                     </Col>
                 </Row>
                 <br/>
@@ -681,7 +712,7 @@ export class PurchaseOrderForm extends Component {
                 </Row>
                 <Row>
                     <Col span={12}>
-                         <Checkbox checked={new_vendor} onChange={this.newVendor}>New Vendor</Checkbox>
+                        <Checkbox checked={new_vendor} onChange={this.newVendor}>New Vendor</Checkbox>
                     </Col>
                 </Row>
                 <br/>
@@ -691,20 +722,20 @@ export class PurchaseOrderForm extends Component {
                     </Col>
                     <Col>
                         {new_vendor ? (<Input size='small'
-                            className='vendor-name-input'
-                            value={vendorName}
-                            onChange={e => this.updateDetails('vendor_name', e.target.value)}/>)
+                                              className='vendor-name-input'
+                                              value={vendorName}
+                                              onChange={e => this.updateDetails('vendor_name', e.target.value)}/>)
                             :
                             (<Cascader className='vendor-name-input'
-                                  size='small'
-                                  expandTrigger="hover"
-                                  fieldNames={{label: 'name', value: 'code', children: 'items'}}
-                                  options={options} showSearch={{filter}}
-                                  changeOnSelect
-                                    onChange={e => {
-                                        this.getVendorInfo(e[0]);
-                                        this.updateDetails('vendor_name', e[0])
-                                    }}/>)}
+                                       size='small'
+                                       expandTrigger="hover"
+                                       fieldNames={{label: 'name', value: 'code', children: 'items'}}
+                                       options={options} showSearch={{filter}}
+                                       changeOnSelect
+                                       onChange={e => {
+                                           this.getVendorInfo(e[0]);
+                                           this.updateDetails('vendor_name', e[0])
+                                       }}/>)}
 
                         {/*<AutoComplete*/}
                         {/*size='small'*/}
