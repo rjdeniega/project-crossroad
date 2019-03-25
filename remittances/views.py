@@ -1468,7 +1468,7 @@ class SubmitRemittance(APIView):
         for ticket in tickets:
             assigned = AssignedTicket.objects.get(id=ticket["id"])
 
-            if ticket["value"]:
+            if "value" in ticket:
                 val = ticket["value"]
                 consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
                 last_consumed = consumed_tickets.order_by('-end_ticket').first()
