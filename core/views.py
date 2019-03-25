@@ -2974,7 +2974,7 @@ class DriverPerformance(APIView):
         payables_total = 0
         lates_total = 0
 
-        for driver in Driver.objects.filter(is_supervisor=False).order_by('name'):
+        for driver in Driver.objects.all().order_by('name'):
             remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
                                                         created__lte=end_date)
             sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver,deployment__shift_iteration__date__gte=start_date,deployment__shift_iteration__date__lte=end_date))
