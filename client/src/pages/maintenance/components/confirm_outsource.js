@@ -28,7 +28,7 @@ class OutsourceFormInit extends Component{
         form.setFieldsValue({
             keys: keys.filter(key=> key !== k)
         })
-    }
+    };
 
     add = () => {
         const {form} = this.props;
@@ -36,41 +36,41 @@ class OutsourceFormInit extends Component{
         const nextKeys = keys.concat(this.state.uuid);
         this.setState({
             uuid: this.state.uuid + 1,
-        })
+        });
         form.setFieldsValue({
             keys: nextKeys,
         })
-    }
+    };
 
     handleSubmit(e){
         e.preventDefault();
-        const {repair} = this.props
+        const {repair} = this.props;
         this.props.form.validateFields((err, values) => {
             if(typeof values['items'] === 'undefined'){
                 message.warning('Add item fields!')
             }
             if(!err && typeof values['items'] !== 'undefined'){
                 let labor_cost = values['labor_cost'];
-                let items = []
-                values['item_name'] = values['item_name'].filter(function(n){return n!= undefined})
-                values['quantity'] = values['quantity'].filter(function(n){return n!= undefined})
-                values['unit_price'] = values['quantity'].filter(function(n){return n!= undefined})
+                let items = [];
+                values['item_name'] = values['item_name'].filter(function(n){return n !== undefined});
+                values['quantity'] = values['quantity'].filter(function(n){return n !== undefined});
+                values['unit_price'] = values['unit_price'].filter(function(n){return n !== undefined});
                 values['item_name'].map(function(value, index){
                     let item = {
                         item_name: values['item_name'][index],
                         quantity: values['quantity'][index],
                         unit_price: values['unit_price'][index]
-                    }
+                    };
                     items.push(item)
-                })
+                });
                 let data = {
                     labor_cost: labor_cost,
                     items: items
-                }
+                };
 
-                postData('inventory/finalize/' + repair.id, data)
-                this.props.unload()
-                this.props.close()
+                postData('inventory/finalize/' + repair.id, data);
+                this.props.unload();
+                this.props.close();
                 message.success('Repair ' + repair.id + ' complete!')
             }
         })
@@ -170,7 +170,7 @@ class OutsourceFormInit extends Component{
                     )}
                     {keys.length > 1 ?(
                         <Col span={2}>
-                            <Icon className='dynamid-delete-button' icon={withMinus}
+                            <Icon className='dynamic-delete-button' icon={withMinus}
                                   disabled={keys.length === 1} onClick={() => this.remove(k)}/>
                         </Col>
                     ):null}
