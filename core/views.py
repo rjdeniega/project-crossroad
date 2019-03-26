@@ -1982,7 +1982,8 @@ class SupervisorWeeklyReport(APIView):
                                                                           deployment__shift_iteration__date=temp_start)
                             if len(sub_driver) > 0:
 
-                                if sub_driver[0].deployment.driver.id not in [item['sub_driver_id'] for item in absent_drivers]:
+                                if sub_driver[0].deployment.driver.id not in [item['sub_driver_id'] for item in
+                                                                              absent_drivers]:
                                     sub_driver = sub_driver[0]
                                     driver = sub_driver.deployment.driver
                                     absent_drivers.append({
@@ -2031,13 +2032,14 @@ class SupervisorWeeklyReport(APIView):
                         expected_arrival = rem.deployment.start_time.replace(hour=5, minute=0, second=0, microsecond=0)
                     if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
                         expected_arrival = rem.deployment.start_time.replace(hour=4, minute=30, second=0,
-                                                                              microsecond=0)
+                                                                             microsecond=0)
                     if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
                         expected_arrival = rem.deployment.start_time.replace(hour=14, minute=0, second=0,
-                                                                              microsecond=0)
+                                                                             microsecond=0)
                     if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
-                                                                              microsecond=0)
-                   
+                        expected_arrival = rem.deployment.start_time.replace(hour=16, minute=0, second=0,
+                                                                             microsecond=0)
+
                     r_status = "Late" if rem.deployment.start_time > expected_arrival else "On Time"
 
                     # if deployment.driver.id not in [item['driver_id'] for item in
@@ -2518,7 +2520,6 @@ class NotificationItems(APIView):
         elif user_type == 'supervisor':
             notifications = None
             unread = None
-            pass
             # notifications = NotificationSerializer(Notification.objects
             #                                        .filter(Q(type='R') | Q(type='N')).order_by('-created'), many=True)
             # unread = NotificationSerializer(Notification.objects.all()
@@ -2570,6 +2571,10 @@ class NotificationItems(APIView):
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by(
                 '-created'), many=True)
+
+        elif user_type == 'driver':
+            notifications = None
+            unread = None
 
         return Response(data={
             'notifications': notifications.data if notifications is not None else [],
@@ -3035,13 +3040,13 @@ class DriverPerformance(APIView):
 
                 expected_arrival = None
                 if shift_type == "A" and (deployment_type == "Regular" or deployment_type == "R"):
-                    expected_arrival = item.deployment.start_time.replace(hour=5,minute=0,second = 0,microsecond=0)
+                    expected_arrival = item.deployment.start_time.replace(hour=5, minute=0, second=0, microsecond=0)
                 if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
-                    expected_arrival = item.deployment.start_time.replace(hour=4, minute=30, second = 0, microsecond=0)
+                    expected_arrival = item.deployment.start_time.replace(hour=4, minute=30, second=0, microsecond=0)
                 if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
-                    expected_arrival = item.deployment.start_time.replace(hour=14, minute=0,second = 0, microsecond=0)
+                    expected_arrival = item.deployment.start_time.replace(hour=14, minute=0, second=0, microsecond=0)
                 if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
-                    expected_arrival = item.deployment.start_time.replace(hour=16, minute=0,second = 0,microsecond=0)
+                    expected_arrival = item.deployment.start_time.replace(hour=16, minute=0, second=0, microsecond=0)
 
                 print(shift_type)
                 print(deployment_type)
