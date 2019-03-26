@@ -354,6 +354,7 @@ class OutsourceModification(APIView):
         repair.labor_fee = data['labor_cost']
         repair.status = 'C'
         repair.shuttle.status = "A"
+        repair.end_date = datetime.now()
         repair.shuttle.save()
         for item in data['items']:
             oi = OutSourcedItems(
@@ -490,11 +491,11 @@ class ShuttleMaintenanceFrequency(APIView):
 
         for shuttle in shuttles:
             major_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                      degree="Major").count()
+                                                                                      degree="Major", end_date__gte=start_date,end_date__lte=end_date).count()
             minor_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                      degree="Minor").count()
+                                                                                      degree="Minor", end_date__gte=start_date,end_date__lte=end_date).count()
             intermediate_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                             degree="Intermediate").count()
+                                                                                             degree="Intermediate", end_date__gte=start_date,end_date__lte=end_date).count()
             major_maintenanceCost = 0
             minor_maintenanceCost = 0
             intermediate_maintenanceCost = 0
@@ -503,9 +504,10 @@ class ShuttleMaintenanceFrequency(APIView):
             for repair in Repair.objects.all().filter(shuttle=shuttle, degree="Major", end_date__gte=start_date,
                                                       end_date__lte=end_date):
                 if repair.labor_fee:
-                    major_maintenanceCost = major_maintenanceCost + repair.labor_fee
+                    major_maintenanceCost = float(major_maintenanceCost) + float(repair.labor_fee)
 
                 for item in OutSourcedItems.objects.all().filter(repair=repair.id):
+                    print(item)
                     major_maintenanceCost = major_maintenanceCost + (item.unit_price * item.quantity)
 
                 for item_used in RepairModifications.objects.all().filter(repair=repair.id):
@@ -515,13 +517,13 @@ class ShuttleMaintenanceFrequency(APIView):
                     except ObjectDoesNotExist:
                         print(item_used.id)
                     if item.item_type == "Physical Measurement":
-                        major_maintenanceCost = major_maintenanceCost + (
+                        major_maintenanceCost = float(major_maintenanceCost) + (
                                 float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
                     elif item.item_type == "Liquid Measurement":
-                        major_maintenanceCost = major_maintenanceCost + (
+                        major_maintenanceCost = float(major_maintenanceCost) + (
                                 float(item.unit_price) / (float(item.measurement) / float(item_used.quantity)))
                     else:
-                        major_maintenanceCost = major_maintenanceCost + (
+                        major_maintenanceCost = float(major_maintenanceCost) + (
                                 float(item_used.quantity) * float(item.unit_price))
 
                     # Minor repairs

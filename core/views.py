@@ -604,8 +604,6 @@ class PatronageRefund(APIView):
         else:
             end_date = None
 
-
-
             # rate_of_refund = surplus / (sum([item.total for item in BeepTransaction.objects.all()]) + sum(
             #     [item.total for item in CarwashTransaction.objects.all()]))
             #
@@ -686,7 +684,6 @@ class PatronageRefund(APIView):
             # "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
             # "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
             #     [float(item['total']) for item in carwash_transactions])),
-
 
             # "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
             # "no_of_carwash_total": sum(item['no_of_carwash'] for item in report_items),
@@ -2023,7 +2020,7 @@ class SupervisorWeeklyReport(APIView):
                     if shift_type == "A" and (deployment_type == "Regular" or deployment_type == "R"):
                         expected_arrival = rem.deployment.start_time.replace(hour=5)
                     if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
-                        expected_arrival = rem.deployment.start_time.replace(hour=4,minutes=30)
+                        expected_arrival = rem.deployment.start_time.replace(hour=4, minutes=30)
                     if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
                         expected_arrival = rem.deployment.start_time.replace(hour=14)
                     if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
@@ -2209,33 +2206,33 @@ class ShuttleCostVRevenueReport(APIView):
                     for modification in repair.modifications.all():
                         item = Item.objects.get(id=modification.item_used.id)
                         if item.item_type == "Physical Measurement":
-                            major_repairs_cost = major_repairs_cost + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            major_repairs_cost = float(major_repairs_cost) + (
+                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         elif item.item_type == "Liquid Measurement":
-                            major_repairs_cost = major_repairs_cost + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            major_repairs_cost = float(major_repairs_cost) + (
+                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         else:
                             major_repairs_cost = major_repairs_cost + (
-                                float(modification.quantity) * float(item.unit_price))
+                                    float(modification.quantity) * float(item.unit_price))
 
                     for outsourced in repair.outsourced_items.all():
                         amount = outsourced.quantity * outsourced.unit_price
                         major_repairs_cost += amount
 
-                if (repair.labor_fee):
-                    initialMaintenanceCost = initialMaintenanceCost + repair.labor_fee
+                if repair.labor_fee:
+                    initialMaintenanceCost = float(initialMaintenanceCost) + float(repair.labor_fee)
 
                 for modification in repair.modifications.all():
                     item = Item.objects.get(id=modification.item_used.id)
                     if item.item_type == "Physical Measurement":
-                        initialMaintenanceCost = initialMaintenanceCost + (
-                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                        initialMaintenanceCost = float(initialMaintenanceCost) + (
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     elif item.item_type == "Liquid Measurement":
-                        initialMaintenanceCost = initialMaintenanceCost + (
-                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                        initialMaintenanceCost = float(initialMaintenanceCost) + (
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     else:
-                        initialMaintenanceCost = initialMaintenanceCost + (
-                            float(modification.quantity) * float(item.unit_price))
+                        initialMaintenanceCost = float(initialMaintenanceCost) + (
+                                float(modification.quantity) * float(item.unit_price))
 
                 for outsourced in repair.outsourced_items.all():
                     amount = outsourced.quantity * outsourced.unit_price
@@ -2254,6 +2251,7 @@ class ShuttleCostVRevenueReport(APIView):
             net_value = float(value) + float(shuttle_remittance) - float(
                 shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
             print("{0:,.2f}".format(shuttle_remittance))
+            print(str(major_repairs_cost) + " major repair")
             rows.append({
                 "purchase_date": shuttle.date_acquired,
                 "purchase_cost": "{0:,.2f}".format(float(value)),
@@ -2264,7 +2262,7 @@ class ShuttleCostVRevenueReport(APIView):
                 "fuel_value": shuttle_fuel_cost,
                 "revenue": "{0:,.2f}".format(shuttle_remittance),
                 "fuel_cost": "{0:,.2f}".format(float(shuttle_fuel_cost)),
-                "major_total": "{0:,.2f}".format(major_repairs_cost),
+                "major_total": "{0:,.2f}".format(float(initialMaintenanceCost)),
                 "depreciation": "{0:,.2f}".format(float(total_depreciation)),
                 "cost": "{0:,.2f}".format(float(initialMaintenanceCost)),
                 "cost_depreciation": "{0:,.2f}".format(float(initialMaintenanceCost + total_depreciation)),
@@ -2279,25 +2277,26 @@ class ShuttleCostVRevenueReport(APIView):
             total_purchase_cost += value
             grand_net += net_value
             grand_total_major += major_repairs_cost
-            cost_depreciation += (initialMaintenanceCost + total_depreciation)
+            grand_cost_depreciation += (initialMaintenanceCost + total_depreciation)
 
         return Response(data={
             "grand_net": "{0:,.2f}".format(grand_net),
             "total_purchase_cost": "{0:,.2f}".format(total_purchase_cost),
             "total_depreciation": "{0:,.2f}".format(grand_depreciation),
-            "shuttle_maintenance_costs": [(float(item['cost'].replace(',', '')) + float(item['fuel_cost'].replace(',', ''))) for item in
-                                          rows],
-            "shuttle_revenues": [float(item['revenue'].replace(',','')) for item in rows],
-            "shuttle_fuel_costs": [float(item['fuel_cost'].replace(',','')) for item in rows],
+            "shuttle_maintenance_costs": [
+                (float(item['cost'].replace(',', '')) + float(item['fuel_cost'].replace(',', ''))) for item in
+                rows],
+            "shuttle_revenues": [float(item['revenue'].replace(',', '')) for item in rows],
+            "shuttle_fuel_costs": [float(item['fuel_cost'].replace(',', '')) for item in rows],
             "shuttle_depreciations": [float(item['depreciation'].replace(',', '')) for item in rows],
-            "shuttle_major_repairs": [item['major_total'] for item in rows],
+            "shuttle_major_repairs": [float(item['major_total'].replace(',', '')) for item in rows],
             "start_date": start_date.date(),
             "end_date": end_date.date(),
             "total_remittance": "{0:,.2f}".format(total_remittance),
             "total_costs": "{0:,.2f}".format(total_cost),
             "total_fuel": "{0:,.2f}".format(total_fuel),
             "grand_total": "{0:,.2f}".format(float(total_remittance) - float(total_fuel) - total_cost),
-            "grand_cost_depreciation":"{0:,.2f}".format(grand_cost_depreciation),
+            "grand_cost_depreciation": "{0:,.2f}".format(grand_cost_depreciation),
             "shuttles": rows,
             "grand_total_major": "{0:,.2f}".format(grand_total_major),
         }, status=status.HTTP_200_OK)

@@ -5,238 +5,419 @@ from members.models import *
 from inventory.models import *
 import random
 
+vendors = ["Ace Hardware", "Handyman", "Budjolex", "Laguna Equipment"]
+
+vendor_items = {
+    'Ace Hardware': ['Oil', 'Windshield Wiper', 'Light Bulb'],
+    'Handyman': ["Oil", 'Brake Pads', 'Brake Fluid'],
+    'Budjolex': ["Windshield Wiper", 'Brake Pads'],
+    'Laguna Equipment': ["Light Bulb", 'Brake Fluid', 'Oil']
+}
+
+item_types = {
+    'Oil': ['Liquid Measurement', 300, 'mL', 'OIL'],
+    'Tire': ['Single Item', None, None, 'TIR'],
+    'Windshield Wiper': ['Physical Measurement', 2, 'pieces', 'WWR'],
+    'Light Bulb': ['Single Item', None, None, 'LBB'],
+    'Brake Pads': ['Physical Measurement', 2, 'pieces', 'BRP'],
+    'Brake Fluid': ['Liquid Measurement', 400, 'mL', 'BRF'],
+}
+
+brand = {
+    'Oil': ['NOW21', 'X-1R', 'MD10'],
+    'Windshield Wiper': ['Banana Blade', 'Black horse', 'Universal'],
+    'Light Bulb': ['Eso goal', 'Coromose', 'H4'],
+    'Brake Pads': ['Bendix', 'OEM', 'Hi Q'],
+    'Brake Fluid': ['Dynatext', 'Rock Oil', 'Gas Treatment']
+}
+
+categories = ['Oil', 'Windshield Wiper', 'Light Bulb', 'Brake Pads', 'Brake Fluid']
+
+weighted_shuttle_average = [1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 9]
+
+descriptions = {
+    'Oil': ['Engine Oil Enhancer', 'Magnesium Oil', 'An Engine Ceramic coating technology that will coat your '
+                                                    'metallic engine into ceramic'],
+    'Tire': ['205/70R15 96H FM316 Quality SUV Radial Tire', 'PILOT STREET TT/TL',
+             '65/65R17 RANGER HT603 112H'],
+    'Windshield Wiper': ['Silicone Wiper', 'Wiper Blade', '26" / 15" Aerotwin A432S '],
+    'Light Bulb': ['200W', '350W', '300W'],
+    'Brake Pads': ['GCT', 'KLE650', 'H4N'],
+    'Brake Fluid': ['Silicone Compound', 'Hi Performance', 'DOT3']
+}
+
+usernames = ['jerrysantos', 'martingarcia', 'waynemambugan', 'emmantolentino', 'noelpampango',
+             'carlsinang', 'choloagila', 'roelbautista', 'jonathanlakbayin', 'joserodrigo',
+             'benignosalo']
+
+findings = {
+    'Oil': ['Low oil', 'Faulty Oil'],
+    'Windshield Wiper': ["Old stock", 'Blade is broken'],
+    'Light Bulb': ['Rand out of power', 'It broke'],
+    'Brake Pads': ['Brake pads are smooth', 'The brake pad is cracked'],
+    'Brake Fluid': ['Low fluid', 'Very viscous']
+}
+
+problems = {
+    'Oil': ['Not running well', 'Making noises'],
+    'Windshield Wiper': ['Making noise when wiping', 'Residue when wiping'],
+    'Light Bulb': ['Flickering', 'No light'],
+    'Brake Pads': ['Noise when braking', 'Not braking well'],
+    'Brake Fluid': ['Noise when braking', 'Not braking well']
+}
+
+degree = ['Minor', 'Intermediate', 'Major']
+
 
 class PopulateDatabase:
     @staticmethod
     def populate_inventory():
+        category_oil = ItemCategory(category='Oil', code_prefix='OIL', quantity=0, minimum_quantity=2)
+        category_oil.save()
+        category_windshield = ItemCategory(category='Windshield Wiper', code_prefix='WWR', quantity=0,
+                                           minimum_quantity=4)
+        category_windshield.save()
+        category_light_bulb = ItemCategory(category="Light Bulb", code_prefix='LBB', quantity=0, minimum_quantity=4)
+        category_light_bulb.save()
+        category_brake_pad = ItemCategory(category="Brake Pads", code_prefix='BRP', quantity=0, minimum_quantity=4)
+        category_brake_pad.save()
+        category_brake_fluid = ItemCategory(category="Brake Fluid", code_prefix='BRF', quantity=0, minimum_quantity=2)
+        category_brake_fluid.save()
         vendor = Vendor(name="Ace Hardware", address="12 Karilagan St., Pasig City", contact_number="09178712380")
         vendor.save()
+        vendor_item_1 = VendorItem(vendor=vendor, category=ItemCategory.objects.get(category="Oil"))
+        vendor_item_1.save()
+        vendor_item_1 = VendorItem(vendor=vendor, category=ItemCategory.objects.get(category="Windshield Wiper"))
+        vendor_item_1.save()
+        vendor_item_1 = VendorItem(vendor=vendor, category=ItemCategory.objects.get(category="Light Bulb"))
+        vendor_item_1.save()
         vendor2 = Vendor(name="Handyman", address="5th Floor Megamall, Ortigas Avenue", contact_number="09266323535")
         vendor2.save()
+        vendor_item_1 = VendorItem(vendor=vendor2, category=ItemCategory.objects.get(category="Oil"))
+        vendor_item_1.save()
+        vendor_item_1 = VendorItem(vendor=vendor2, category=ItemCategory.objects.get(category="Brake Pads"))
+        vendor_item_1.save()
+        vendor_item_1 = VendorItem(vendor=vendor2, category=ItemCategory.objects.get(category="Brake Fluid"))
+        vendor_item_1.save()
         vendor3 = Vendor(name="Budjolex", address="427 Bel-air, Sta. Rosa City, Laguna", contact_number="09153552690")
         vendor3.save()
+        vendor_item_1 = VendorItem(vendor=vendor3, category=ItemCategory.objects.get(category="Windshield Wiper"))
+        vendor_item_1.save()
+        vendor_item_1 = VendorItem(vendor=vendor3, category=ItemCategory.objects.get(category="Brake Pads"))
+        vendor_item_1.save()
         vendor4 = Vendor(name="Laguna Equipment", address="759 Saturn St., Sta. Rosa City, Laguna",
                          contact_number="09173512562")
         vendor4.save()
-        category_oil = ItemCategory(category='Oil', code_prefix='OIL', quantity=0)
-        category_oil.save()
-        category_tire = ItemCategory(category='Tire', code_prefix='TIR', quantity=0)
-        category_tire.save()
-        category_windshield = ItemCategory(category='Windshield Wiper', code_prefix='WWR', quantity=0)
-        category_windshield.save()
-        category_light_bulb = ItemCategory(category="Light Bulb", code_prefix='LBB', quantity=0)
-        category_light_bulb.save()
-        category_brake_pad = ItemCategory(category="Brake Pads", code_prefix='BRP', quantity=0)
-        category_brake_pad.save()
-        category_brake_fluid = ItemCategory(category="Brake Fluid", code_prefix='BRF', quantity=0)
-        category_brake_fluid.save()
+        vendor_item_1 = VendorItem(vendor=vendor4, category=ItemCategory.objects.get(category="Light Bulb"))
+        vendor_item_1.save()
+        vendor_item_1 = VendorItem(vendor=vendor4, category=ItemCategory.objects.get(category="Oil"))
+        vendor_item_1.save()
+        vendor_item_1 = VendorItem(vendor=vendor4, category=ItemCategory.objects.get(category="Brake Fluid"))
+        vendor_item_1.save()
 
-        purchase_order_1 = PurchaseOrder(po_number=1, vendor=vendor,
-                                         order_date=datetime.strptime('27122018', "%d%m%Y").date(),
-                                         completion_date=datetime.strptime('01012019', "%d%m%Y").date(),
-                                         status="Complete")
-        purchase_order_1.save()
-        purchase_order_1_item_1 = PurchaseOrderItem(quantity=4, description="Windshield wiper for Toyota L300",
-                                                    unit_price=200, category=category_windshield,
-                                                    item_type="Physical Measurement", measurement=2, unit="pieces",
-                                                    brand="Vew Clear",
-                                                    delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
-                                                    received=True)
-        purchase_order_1_item_1.save()
-        purchase_order_1.po_items.add(purchase_order_1_item_1)
-        item = Item(category=category_windshield,
-                    description="Windshield wiper for Toyota L300",
-                    quantity=4,
-                    purchase_order=purchase_order_1,
-                    brand="Vew Clear",
-                    unit_price=200,
-                    item_type="Physical Measurement",
-                    measurement=2, unit="pieces", vendor=vendor, current_measurement=2,
-                    item_code="WWR001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
-        item.save()
-        item_movement = ItemMovement(item=item,
-                                     type="B",
-                                     quantity=6,
-                                     unit_price=150,
-                                     created=datetime.strptime(
-                                         '01112018', "%d%m%Y").date())
-        item_movement.save()
+        for i in range(1, 300):
+            start_date_year = randint(2017, 2019)
+            if start_date_year == 2019:
+                start_date_month = randint(1, 3)
+            else:
+                start_date_month = randint(1, 12)
 
-        category_windshield.quantity = 8
-        category_windshield.save()
+            start_date = datetime(start_date_year, start_date_month, randint(1, 28)).date()
+            end_date = datetime(start_date_year, start_date_month, randint(1, 28)).date()
+            while end_date <= start_date:
+                start_date = datetime(start_date_year, start_date_month, randint(1, 28)).date()
+                end_date = datetime(start_date_year, start_date_month, randint(1, 28)).date()
 
-        item2 = Item(category=category_light_bulb,
-                     description="Can be used for brake light or turn signal lights",
-                     quantity=8,
-                     purchase_order=purchase_order_1,
-                     brand="TTW",
-                     vendor=vendor,
-                     unit_price=250, item_type="Single Item", item_code="LBB001",
-                     delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
-        item2.save()
-        item_movement_2 = ItemMovement(item=item2,
-                                       type="B",
-                                       quantity=10,
-                                       unit_price=250,
-                                       created=datetime.strptime(
-                                           '02112018', "%d%m%Y").date())
-        item_movement_2.save()
-        category_light_bulb.quantity = 8
-        category_light_bulb.save()
+            is_late = randint(1, 5)
+            if is_late == 3:
+                expected_delivery = end_date - timedelta(days=1)
+            else:
+                expected_delivery = end_date
+            vendor = Vendor.objects.order_by("?").first()
+            purchase_order = PurchaseOrder(po_number=i, vendor=vendor, order_date=start_date, completion_date=end_date,
+                                           status="Complete", expected_delivery=expected_delivery)
+            purchase_order.save()
 
-        purchase_order_1_item_2 = PurchaseOrderItem(quantity=8,
-                                                    description="Can be used for brake light or turn signal lights",
-                                                    unit_price=250, category=category_light_bulb,
-                                                    item_type="Physical Measurement", measurement=10, unit="pieces",
-                                                    brand="TTW",
-                                                    delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
-                                                    received=True)
-        purchase_order_1_item_2.save()
-        purchase_order_1.po_items.add(purchase_order_1_item_2)
-        purchase_order_2 = PurchaseOrder(po_number=2, vendor=vendor2,
-                                         order_date=datetime.strptime('14022019', "%d%m%Y").date(),
-                                         completion_date=datetime.strptime('17022019', "%d%m%Y").date(),
-                                         status="Complete")
-        purchase_order_2.save()
+            shuttle = Shuttle.objects.get(shuttle_number=random.choice(weighted_shuttle_average))
+            print(shuttle.id)
 
-        purchase_order_2_item_3 = PurchaseOrderItem(quantity=2, description="Pair of brake pads for Mitsubishi L300",
-                                                    unit_price=800, category=category_brake_pad,
-                                                    item_type="Physical Measurement", measurement=2, unit="pieces",
-                                                    brand="Akebono",
-                                                    delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
-                                                    received=True)
-        purchase_order_2_item_3.save()
-        purchase_order_2.po_items.add(purchase_order_2_item_3)
-        item3 = Item(category=category_brake_pad,
-                     description="Pair of brake pads for Mitsubishi L300",
-                     quantity=2,
-                     purchase_order=purchase_order_2,
-                     brand="Akebono",
-                     vendor=vendor2,
-                     item_code="BRP001",
-                     unit_price=900,
-                     item_type="Physical Measurement", current_measurement=2,
-                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
-                     measurement=2, unit="Pieces")
-        item3.save()
+            degree_of_repair = degree[randint(0, 2)]
+            if degree_of_repair == "Major":
+                labor = randint(2500, 5000)
+            else:
+                labor = None
+            repair = Repair(shuttle=shuttle,
+                            driver_requested=Driver.objects.get(
+                                user=User.objects.get(username=usernames[shuttle.shuttle_number - 1])),
+                            date_requested=start_date,
+                            end_date=end_date,
+                            degree=degree_of_repair,
+                            status='C',
+                            labor_fee=labor)
+            repair.save()
 
-        item_movement3 = ItemMovement(item=item3,
-                                      type="B",
-                                      quantity=5,
-                                      unit_price=1300,
-                                      created=datetime.strptime(
-                                          '17022019', "%d%m%Y").date())
-        item_movement3.save()
+            for q in range(1, 4):
+                quantity = randint(1, 3)
+                category = random.choice(vendor_items[vendor.name])
+                item_description = random.choice(descriptions[category])
+                item_brand = random.choice(brand[category])
+                item_price = randint(200, 800)
+                item_details = item_types[category]
+                category = ItemCategory.objects.get(category=category)
+                category.save()
+                po_item = PurchaseOrderItem(quantity=quantity,
+                                            description=item_description,
+                                            unit_price=item_price,
+                                            category=category,
+                                            item_type=item_details[0],
+                                            measurement=item_details[1],
+                                            unit=item_details[2],
+                                            brand=item_brand, delivery_date=start_date,
+                                            received=True, status='Delivered')
+                po_item.save()
+                purchase_order.po_items.add(po_item)
+                vendor_performance = VendorPerformance(vendor=vendor,
+                                                       purchase_order=purchase_order,
+                                                       expected_delivery=expected_delivery,
+                                                       actual_delivery=end_date)
+                vendor_performance.save()
+                item = Item(category=category,
+                            description=item_description,
+                            quantity=0, brand=item_brand, unit_price=item_price,
+                            item_type=item_details[0],
+                            measurement=item_details[1], vendor=vendor,
+                            unit=item_details[2], item_code=(item_details[3] + str(randint(50, 999))),
+                            delivery_date=end_date, purchase_order=purchase_order)
+                item.save()
+                item_movement = ItemMovement(item=item, type="B", quantity=quantity, unit_price=item_price,
+                                             created=end_date)
+                item_movement.save()
 
-        purchase_order_2_item_4 = PurchaseOrderItem(quantity=5, description="Synthetic Performance Gasoline Oil",
-                                                    unit_price=455, category=category_oil,
-                                                    item_type="Liquid Measurement", measurement=400, unit="mL",
-                                                    brand="Apex",
-                                                    delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
-                                                    received=True)
+                repair_problem = RepairProblem(description=random.choice(problems[category.category]))
+                repair_problem.save()
+                repair.problems.add(repair_problem)
 
-        purchase_order_2_item_4.save()
-        purchase_order_2.po_items.add(purchase_order_2_item_4)
-        category_brake_pad.quantity = 4
-        category_brake_pad.save()
+                repair_finding = RepairFinding(description=random.choice(findings[category.category]),
+                                               item_defect=category)
+                repair_finding.save()
+                repair.findings.add(repair_finding)
+                if item_details[0] == "Liquid Measurement":
+                    repair_modification = RepairModifications(item_used=item, quantity=item_details[1])
+                else:
+                    repair_modification = RepairModifications(item_used=item, quantity=quantity)
+                repair_modification.save()
+                repair.modifications.add(repair_modification)
+                item_movement_2 = ItemMovement(item=item, type="G", quantity=quantity, repair=repair,
+                                               created=end_date)
+                item_movement_2.save()
+            repair.save()
 
-        item4 = Item(category=category_oil,
-                     description="Synthetic Performance Gasoline Oil",
-                     quantity=5,
-                     purchase_order=purchase_order_2,
-                     brand="Apex",
-                     vendor=vendor2,
-                     unit_price=455,
-                     item_type="Liquid Measurement", current_measurement=400,
-                     measurement=400, unit="mL", item_code="OIL001",
-                     delivery_date=datetime.strptime('17022019', "%d%m%Y").date())
-        item4.save()
-        category_oil.quantity = 5
-        category_oil.save()
-        item_movement4 = ItemMovement(item=item4,
-                                      type="B",
-                                      quantity=5,
-                                      unit_price=455,
-                                      created=datetime.strptime(
-                                          '17022019', "%d%m%Y").date())
-        item_movement4.save()
-
-        purchase_order_3 = PurchaseOrder(po_number=3, vendor=vendor4,
-                                         order_date=datetime.strptime('05032019', "%d%m%Y").date(),
-                                         completion_date=datetime.strptime('07032019', "%d%m%Y").date(),
-                                         status="Complete")
-        purchase_order_3.save()
-        purchase_order_3_item_1 = PurchaseOrderItem(quantity=5,
-                                                    description="Radial Tires",
-                                                    unit_price=2500,
-                                                    category=category_tire,
-                                                    item_type="Single Item",
-                                                    measurement=None,
-                                                    unit=None,
-                                                    brand="Goodyear",
-                                                    delivery_date=datetime.strptime('06032019', "%d%m%Y").date(),
-                                                    received=True)
-        purchase_order_3_item_1.save()
-        purchase_order_3.po_items.add(purchase_order_3_item_1)
-
-        item_tire = Item(description="Radial Tires",
-                         quantity=5,
-                         category=category_tire,
-                         unit_price=2500,
-                         item_type="Single Item",
-                         measurement=None,
-                         unit=None,
-                         brand="Goodyear",
-                         vendor=vendor4,
-                         delivery_date=datetime.strptime('06032019', "%d%m%Y"),
-                         item_code='TIR001',
-                         current_measurement=5,
-                         purchase_order=purchase_order_3)
-        item_tire.save()
-        item_tire_movement = ItemMovement(item=item_tire,
-                                          type="B",
-                                          quantity=5,
-                                          unit_price=2500,
-                                          created=datetime.strptime('06032019', "%d%m%Y"))
-        item_tire_movement.save()
-        category_tire.quantity = 5
-        category_tire.save()
-
-        purchase_order_3_item_2 = PurchaseOrderItem(quantity=6,
-                                                    description="Super Heavy duty brake and clutch fluid",
-                                                    unit_price=250,
-                                                    category=category_brake_fluid,
-                                                    item_type="Liquid Measurement",
-                                                    measurement=500,
-                                                    unit="mL",
-                                                    brand="Prestone",
-                                                    delivery_date=datetime.strptime('07032019', "%d%m%Y").date(),
-                                                    received=True)
-        purchase_order_3_item_2.save()
-        purchase_order_3.po_items.add(purchase_order_3_item_2)
-        item_brake_fluid = Item(description="Super Heavy duty brake and clutch fluid",
-                                quantity=6,
-                                category=category_brake_fluid,
-                                unit_price=250,
-                                item_type="Liquid Measurement",
-                                measurement=500,
-                                unit="mL",
-                                brand="Prestone",
-                                vendor=vendor4,
-                                item_code="BRF001",
-                                delivery_date=datetime.strptime('07032019', "%d%m%Y"),
-                                current_measurement=500,
-                                purchase_order=purchase_order_3)
-        item_brake_fluid.save()
-
-        item_brake_fluid_movement = ItemMovement(item=item_brake_fluid,
-                                                 type="B",
-                                                 quantity=6,
-                                                 unit_price=250,
-                                                 created=datetime.strptime('07032019', "%d%m%Y"))
-        item_brake_fluid_movement.save()
-        category_brake_fluid.quantity = 6
-        category_brake_fluid.save()
+        # purchase_order_1 = PurchaseOrder(po_number=1, vendor=vendor,
+        #                                  order_date=datetime.strptime('27122018', "%d%m%Y").date(),
+        #                                  completion_date=datetime.strptime('01012019', "%d%m%Y").date(),
+        #                                  status="Complete")
+        # purchase_order_1.save()
+        # purchase_order_1_item_1 = PurchaseOrderItem(quantity=4, description="Windshield wiper for Toyota L300",
+        #                                             unit_price=200, category=category_windshield,
+        #                                             item_type="Physical Measurement", measurement=2, unit="pieces",
+        #                                             brand="Vew Clear",
+        #                                             delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
+        #                                             received=True)
+        # purchase_order_1_item_1.save()
+        # purchase_order_1.po_items.add(purchase_order_1_item_1)
+        # item = Item(category=category_windshield,
+        #             description="Windshield wiper for Toyota L300",
+        #             quantity=4,
+        #             purchase_order=purchase_order_1,
+        #             brand="Vew Clear",
+        #             unit_price=200,
+        #             item_type="Physical Measurement",
+        #             measurement=2, unit="pieces", vendor=vendor, current_measurement=2,
+        #             item_code="WWR001", delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
+        # item.save()
+        # item_movement = ItemMovement(item=item,
+        #                              type="B",
+        #                              quantity=6,
+        #                              unit_price=150,
+        #                              created=datetime.strptime(
+        #                                  '01112018', "%d%m%Y").date())
+        # item_movement.save()
+        #
+        # category_windshield.quantity = 8
+        # category_windshield.save()
+        #
+        # item2 = Item(category=category_light_bulb,
+        #              description="Can be used for brake light or turn signal lights",
+        #              quantity=8,
+        #              purchase_order=purchase_order_1,
+        #              brand="TTW",
+        #              vendor=vendor,
+        #              unit_price=250, item_type="Single Item", item_code="LBB001",
+        #              delivery_date=datetime.strptime('01012019', "%d%m%Y").date())
+        # item2.save()
+        # item_movement_2 = ItemMovement(item=item2,
+        #                                type="B",
+        #                                quantity=10,
+        #                                unit_price=250,
+        #                                created=datetime.strptime(
+        #                                    '02112018', "%d%m%Y").date())
+        # item_movement_2.save()
+        # category_light_bulb.quantity = 8
+        # category_light_bulb.save()
+        #
+        # purchase_order_1_item_2 = PurchaseOrderItem(quantity=8,
+        #                                             description="Can be used for brake light or turn signal lights",
+        #                                             unit_price=250, category=category_light_bulb,
+        #                                             item_type="Physical Measurement", measurement=10, unit="pieces",
+        #                                             brand="TTW",
+        #                                             delivery_date=datetime.strptime('01012019', "%d%m%Y").date(),
+        #                                             received=True)
+        # purchase_order_1_item_2.save()
+        # purchase_order_1.po_items.add(purchase_order_1_item_2)
+        # purchase_order_2 = PurchaseOrder(po_number=2, vendor=vendor2,
+        #                                  order_date=datetime.strptime('14022019', "%d%m%Y").date(),
+        #                                  completion_date=datetime.strptime('17022019', "%d%m%Y").date(),
+        #                                  status="Complete")
+        # purchase_order_2.save()
+        #
+        # purchase_order_2_item_3 = PurchaseOrderItem(quantity=2, description="Pair of brake pads for Mitsubishi L300",
+        #                                             unit_price=800, category=category_brake_pad,
+        #                                             item_type="Physical Measurement", measurement=2, unit="pieces",
+        #                                             brand="Akebono",
+        #                                             delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
+        #                                             received=True)
+        # purchase_order_2_item_3.save()
+        # purchase_order_2.po_items.add(purchase_order_2_item_3)
+        # item3 = Item(category=category_brake_pad,
+        #              description="Pair of brake pads for Mitsubishi L300",
+        #              quantity=2,
+        #              purchase_order=purchase_order_2,
+        #              brand="Akebono",
+        #              vendor=vendor2,
+        #              item_code="BRP001",
+        #              unit_price=900,
+        #              item_type="Physical Measurement", current_measurement=2,
+        #              delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
+        #              measurement=2, unit="Pieces")
+        # item3.save()
+        #
+        # item_movement3 = ItemMovement(item=item3,
+        #                               type="B",
+        #                               quantity=5,
+        #                               unit_price=1300,
+        #                               created=datetime.strptime(
+        #                                   '17022019', "%d%m%Y").date())
+        # item_movement3.save()
+        #
+        # purchase_order_2_item_4 = PurchaseOrderItem(quantity=5, description="Synthetic Performance Gasoline Oil",
+        #                                             unit_price=455, category=category_oil,
+        #                                             item_type="Liquid Measurement", measurement=400, unit="mL",
+        #                                             brand="Apex",
+        #                                             delivery_date=datetime.strptime('17022019', "%d%m%Y").date(),
+        #                                             received=True)
+        #
+        # purchase_order_2_item_4.save()
+        # purchase_order_2.po_items.add(purchase_order_2_item_4)
+        # category_brake_pad.quantity = 4
+        # category_brake_pad.save()
+        #
+        # item4 = Item(category=category_oil,
+        #              description="Synthetic Performance Gasoline Oil",
+        #              quantity=5,
+        #              purchase_order=purchase_order_2,
+        #              brand="Apex",
+        #              vendor=vendor2,
+        #              unit_price=455,
+        #              item_type="Liquid Measurement", current_measurement=400,
+        #              measurement=400, unit="mL", item_code="OIL001",
+        #              delivery_date=datetime.strptime('17022019', "%d%m%Y").date())
+        # item4.save()
+        # category_oil.quantity = 5
+        # category_oil.save()
+        # item_movement4 = ItemMovement(item=item4,
+        #                               type="B",
+        #                               quantity=5,
+        #                               unit_price=455,
+        #                               created=datetime.strptime(
+        #                                   '17022019', "%d%m%Y").date())
+        # item_movement4.save()
+        #
+        # purchase_order_3 = PurchaseOrder(po_number=3, vendor=vendor4,
+        #                                  order_date=datetime.strptime('05032019', "%d%m%Y").date(),
+        #                                  completion_date=datetime.strptime('07032019', "%d%m%Y").date(),
+        #                                  status="Complete")
+        # purchase_order_3.save()
+        # purchase_order_3_item_1 = PurchaseOrderItem(quantity=5,
+        #                                             description="Radial Tires",
+        #                                             unit_price=2500,
+        #                                             category=category_tire,
+        #                                             item_type="Single Item",
+        #                                             measurement=None,
+        #                                             unit=None,
+        #                                             brand="Goodyear",
+        #                                             delivery_date=datetime.strptime('06032019', "%d%m%Y").date(),
+        #                                             received=True)
+        # purchase_order_3_item_1.save()
+        # purchase_order_3.po_items.add(purchase_order_3_item_1)
+        #
+        # item_tire = Item(description="Radial Tires",
+        #                  quantity=5,
+        #                  category=category_tire,
+        #                  unit_price=2500,
+        #                  item_type="Single Item",
+        #                  measurement=None,
+        #                  unit=None,
+        #                  brand="Goodyear",
+        #                  vendor=vendor4,
+        #                  delivery_date=datetime.strptime('06032019', "%d%m%Y"),
+        #                  item_code='TIR001',
+        #                  current_measurement=5,
+        #                  purchase_order=purchase_order_3)
+        # item_tire.save()
+        # item_tire_movement = ItemMovement(item=item_tire,
+        #                                   type="B",
+        #                                   quantity=5,
+        #                                   unit_price=2500,
+        #                                   created=datetime.strptime('06032019', "%d%m%Y"))
+        # item_tire_movement.save()
+        # category_tire.quantity = 5
+        # category_tire.save()
+        #
+        # purchase_order_3_item_2 = PurchaseOrderItem(quantity=6,
+        #                                             description="Super Heavy duty brake and clutch fluid",
+        #                                             unit_price=250,
+        #                                             category=category_brake_fluid,
+        #                                             item_type="Liquid Measurement",
+        #                                             measurement=500,
+        #                                             unit="mL",
+        #                                             brand="Prestone",
+        #                                             delivery_date=datetime.strptime('07032019', "%d%m%Y").date(),
+        #                                             received=True)
+        # purchase_order_3_item_2.save()
+        # purchase_order_3.po_items.add(purchase_order_3_item_2)
+        # item_brake_fluid = Item(description="Super Heavy duty brake and clutch fluid",
+        #                         quantity=6,
+        #                         category=category_brake_fluid,
+        #                         unit_price=250,
+        #                         item_type="Liquid Measurement",
+        #                         measurement=500,
+        #                         unit="mL",
+        #                         brand="Prestone",
+        #                         vendor=vendor4,
+        #                         item_code="BRF001",
+        #                         delivery_date=datetime.strptime('07032019', "%d%m%Y"),
+        #                         current_measurement=500,
+        #                         purchase_order=purchase_order_3)
+        # item_brake_fluid.save()
+        #
+        # item_brake_fluid_movement = ItemMovement(item=item_brake_fluid,
+        #                                          type="B",
+        #                                          quantity=6,
+        #                                          unit_price=250,
+        #                                          created=datetime.strptime('07032019', "%d%m%Y"))
+        # item_brake_fluid_movement.save()
+        # category_brake_fluid.quantity = 6
+        # category_brake_fluid.save()
 
     @staticmethod
     def populate_shuttle():
@@ -376,62 +557,8 @@ class PopulateDatabase:
             shuttle.maintenance_sched = datetime.strptime('25032019', "%d%m%Y").date()
             shuttle.save()
 
-        vendors = ["Ace Hardware", "Handyman", "Budjolex", "Laguna Equipment"]
-        categories = ['Oil', 'Tire', 'Windshield Wiper', 'Light Bulb', 'Brake Pads', 'Brake Fluid']
-        descriptions = {
-            'Oil': ['Engine Oil Enhancer', 'Magnesium Oil', 'An Engine Ceramic coating technology that will coat your '
-                                                            'metallic engine into ceramic'],
-            'Tire': ['205/70R15 96H FM316 Quality SUV Radial Tire', 'PILOT STREET TT/TL',
-                     '65/65R17 RANGER HT603 112H'],
-            'Windshield Wiper': ['Silicone Wiper', 'Wiper Blade', '26" / 15" Aerotwin A432S '],
-            'Light Bulb': ['200W', '350W', '300W'],
-            'Brake Pads': ['GCT', 'KLE650', 'H4N'],
-            'Brake Fluid': ['Silicone Compound', 'Hi Performance', 'DOT3']
-        }
-        brand = {
-            'Oil': ['NOW21', 'X-1R', 'MD10'],
-            'Tire': ['Goodyear', 'Michelin', 'Firemax'],
-            'Windshield Wiper': ['Banana Blade', 'Black horse', 'Universal'],
-            'Light Bulb': ['Eso goal', 'Coromose', 'H4'],
-            'Brake Pads': ['Bendix', 'OEM', 'Hi Q'],
-            'Brake Fluid': ['Dynatext', 'Rock Oil', 'Gas Treatment']
-        }
-
-        findings = {
-            'Oil': ['Low oil', 'Faulty Oil'],
-            'Tire': ["There's a hole", "The tire is smooth"],
-            'Windshield Wiper': ["Old stock", 'Blade is broken'],
-            'Light Bulb': ['Rand out of power', 'It broke'],
-            'Brake Pads': ['Brake pads are smooth', 'The brake pad is cracked'],
-            'Brake Fluid': ['Low fluid', 'Very viscous']
-        }
-
-        problems = {
-            'Oil': ['Not running well', 'Making noises'],
-            'Tire': ['Not running well', 'Too bumpy'],
-            'Windshield Wiper': ['Making noise when wiping', 'Residue when wiping'],
-            'Light Bulb': ['Flickering', 'No light'],
-            'Brake Pads': ['Noise when braking', 'Not braking well'],
-            'Brake Fluid': ['Noise when braking', 'Not braking well']
-        }
-
-        item_types = {
-            'Oil': ['Liquid Measurement', 300, 'mL', 'OIL'],
-            'Tire': ['Single Item', None, None, 'TIR'],
-            'Windshield Wiper': ['Physical Measurement', 2, 'pieces', 'WWR'],
-            'Light Bulb': ['Single Item', None, None, 'LBB'],
-            'Brake Pads': ['Physical Measurement', 2, 'pieces', 'BRP'],
-            'Brake Fluid': ['Liquid Measurement', 400, 'mL', 'BRF'],
-        }
-
-        usernames = ['jerrysantos', 'martingarcia', 'waynemambugan', 'emmantolentino', 'noelpampango',
-                     'carlsinang', 'choloagila', 'roelbautista', 'jonathanlakbayin', 'joserodrigo',
-                     'benignosalo']
-
         liquid_measurement = [500, 450, 300, 250]
         measurement_unit = ["mL", 'L', 'fl. oz']
-
-        degree = ['Minor', 'Intermediate', 'Major']
 
         #  Shuttle 1
         shuttle_1_repair_1 = Repair(shuttle=Shuttle.objects.get(shuttle_number=1),
