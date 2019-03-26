@@ -1504,6 +1504,17 @@ class SubmitRemittance(APIView):
         return True
     
 
+class ShuttleMileage(APIView):
+    @staticmethod
+    def get(request, deployment_id):
+        deployment = Deployment.objects.get(id=deployment_id)
+
+        mileage = deployment.shuttle.mileage
+
+        return Response(data={
+            'mileage': "{:,}".format(mileage)
+        }, status=status.HTTP_200_OK)
+
 class PendingRemittances(APIView):
     @staticmethod
     def get(request, supervisor_id):

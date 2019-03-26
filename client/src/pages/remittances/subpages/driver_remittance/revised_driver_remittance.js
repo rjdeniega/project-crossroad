@@ -714,12 +714,14 @@ class RemittanceForm extends React.Component {
         this.state = {
             "tenPesoTickets": [],
             "twelvePesoTickets": [],
-            "fifteenPesoTickets": []
+            "fifteenPesoTickets": [],
+            "shuttleMileage": null
         }
     }
 
     componentDidMount() {
         this.fetchTickets();
+        this.fetchShuttleMileage();
     }
 
     handleSubmit = (e) => {
@@ -809,6 +811,25 @@ class RemittanceForm extends React.Component {
             }).catch(error => console.log(error));
     }
 
+    fetchShuttleMileage() {
+        console.log(this.props.deployment_id)
+        fetch('/remittances/deployments/mileage/' + this.props.deployment_id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        shuttleMileage: data.mileage
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
     render() {
         const formItemLayout = {
             labelCol: {
@@ -842,7 +863,7 @@ class RemittanceForm extends React.Component {
                     {...formItemLayout}
                     label={
                         <span>
-                            <Tooltip title="Input current mileage of the shuttle">
+                            <Tooltip title={"Previous Mileage: " + this.state.shuttleMileage}>
                                 <Icon type="question-circle-o" className="field-guide"/>
                             </Tooltip>
                             Mileage
