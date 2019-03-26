@@ -15,13 +15,12 @@ class PopulateRemittances():
 
             temp_date = current_date
 
-
             while temp_date < current_date + timedelta(days=15):
                 if temp_date > new_end_date:
                     break
 
                 print(temp_date)
-                #create deployments
+                # create deployments
                 ctr = 0
                 # there are twice the deployments in a day
                 while ctr < 2:
@@ -62,7 +61,7 @@ class PopulateRemittances():
 
         ctr = 1
         for shift in shifts:
-            supervisor = Driver.objects.get(id=supervisor_ids[ctr-1])
+            supervisor = Driver.objects.get(id=supervisor_ids[ctr - 1])
 
             if ctr % 2 == 0:
                 drivers = driver_ids_even
@@ -90,7 +89,7 @@ class PopulateRemittances():
             modified=current_date
         )
 
-        shuttle_ids = [1,2,3,4,5,6,7]
+        shuttle_ids = [1, 2, 3, 4, 5, 6, 7]
         ctr = 0
         for driver in drivers:
             if (ctr == 1 or ctr == 2) and type == 'A':
@@ -159,7 +158,8 @@ class PopulateRemittances():
             num = randint(1, 15)
             if num <= 14 or hasAbsent == True:
 
-                deployment_times = PopulateRemittances.get_deployment_times(date, shift_iteration.shift.type, driver.deployment_type)
+                deployment_times = PopulateRemittances.get_deployment_times(date, shift_iteration.shift.type,
+                                                                            driver.deployment_type)
 
                 deployment = Deployment.objects.create(
                     driver=driver.driver,
@@ -177,7 +177,7 @@ class PopulateRemittances():
                 remittance = PopulateRemittances.submit_remittance(deployment, date)
                 remittance.confirm_remittance()
             else:
-                #deploy supervisor as sub
+                # deploy supervisor as sub
                 hasAbsent = True
                 supervisor = Driver.objects.get(id=driver.shift.supervisor_id)
 
@@ -223,7 +223,7 @@ class PopulateRemittances():
             start_time = temp_date.replace(hour=15)
             temp_end = temp_date + timedelta(days=1)
             end_time = temp_end.replace(hour=1)
-        
+
         return {'start_time': start_time, 'end_time': end_time}
 
     @staticmethod
@@ -248,7 +248,7 @@ class PopulateRemittances():
     def submit_remittance(deployment, date):
         pop = PopulateRemittances()
 
-        #sometimes the shuttle needs fuel
+        # sometimes the shuttle needs fuel
         num = randint(1, 10)
         if num <= 7:
             fuel_cost = 0
@@ -257,7 +257,7 @@ class PopulateRemittances():
             fuel_cost = randint(50, 200)
             fuel_receipt = pop.generate_OR("OR", randint(33450, 35540))
 
-        #sometimes the driver has other costs
+        # sometimes the driver has other costs
         if num <= 9:
             other_cost = 0
         else:
@@ -351,9 +351,9 @@ class PopulateRemittances():
             start_ticket = assigned_ticket.range_from
 
         number_of_passengers = PopulateRemittances.get_number_of_passengers(
-                assigned_ticket.type, 
-                date,
-                remittance_form.deployment.route)
+            assigned_ticket.type,
+            date,
+            remittance_form.deployment.route)
 
         if PopulateRemittances.is_tickets_enough(assigned_ticket, number_of_passengers):
             end_ticket = start_ticket + number_of_passengers
@@ -361,7 +361,7 @@ class PopulateRemittances():
             end_ticket = start_ticket + PopulateRemittances.get_enough_amount(assigned_ticket)
             assigned_ticket.is_consumed = True
             assigned_ticket.save()
-            
+
             # if all tickets are consumed, assign new tickets for driver
             PopulateRemittances.assign_tickets(
                 remittance_form.deployment.driver,
@@ -381,7 +381,7 @@ class PopulateRemittances():
 
     @staticmethod
     def get_number_of_passengers(ticket_type, date, route_type):
-        #If its a holiday
+        # If its a holiday
         pop = PopulateRemittances()
         if pop.is_summer_vacation(date):
             if pop.is_left_route(route_type):
@@ -401,7 +401,7 @@ class PopulateRemittances():
                     return randint(50, 55)
                 else:
                     return randint(18, 22)
-        elif pop.is_holiday(date): 
+        elif pop.is_holiday(date):
             if ticket_type == 'A':
                 return randint(10, 15)
             elif ticket_type == 'B':
@@ -433,7 +433,7 @@ class PopulateRemittances():
                 return randint(60, 65)
             else:
                 return randint(25, 30)
-    
+
     @staticmethod
     def is_weekend(date):
         day = date.weekday()
@@ -498,13 +498,13 @@ class PopulateRemittances():
         if route == 'M' or route == 'Main Road':
             return True
         return False
-    
+
     @staticmethod
     def is_right_route(route):
         if route == "R" or route == 'Kanan' or route == 'Right Route' or route == 'Right':
             return True
         return False
-    
+
     @staticmethod
     def is_left_route(route):
         if route == 'L' or route == 'Kaliwa' or route == 'Left Route' or route == 'Left':
@@ -525,7 +525,6 @@ class PopulateRemittances():
         else:
             return True
 
-
     @staticmethod
     def compute_total(start_ticket, end_ticket, type):
         if type is 'A':
@@ -534,3 +533,24 @@ class PopulateRemittances():
             return (end_ticket - start_ticket) * 12
         else:
             return (end_ticket - start_ticket) * 15
+
+    @staticmethod
+    def replace_times():
+        for item in RemittanceForm.objects.all():
+            if item.deployment.shift_iteration.shift.type == "A" and (
+                    item.deployment.type == "Regular" or item.deployment.type == "R"):
+                item.deployment.start_time = item.deployment.start_time.replace(hour=5, minute=0, second=0,
+                                                                                microsecond=0)
+            elif item.deployment.shift_iteration.shift.type == "A" and (
+                    item.deployment.type == "Early" or item.deployment.type == "E"):
+                item.deployment.start_time = item.deployment.start_time.replace(hour=4, minute=30, second=0,
+                                                                                microsecond=0)
+            elif item.deployment.shift_iteration.shift.type == "P" and (
+                    item.deployment.type == "Regular" or item.deployment.type == "R"):
+                item.deployment.start_time = item.deployment.start_time.replace(hour=14, minute=00, second=0,
+                                                                                microsecond=0)
+            elif item.deployment.shift_iteration.shift.type == "P" and (
+                    item.deployment.type == "Late" or item.deployment.type == "L"):
+                item.deployment.start_time = item.deployment.start_time.replace(hour=16, minute=00, second=0,
+                                                                                microsecond=0)
+            print(f"{item} replaced")
