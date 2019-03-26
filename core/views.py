@@ -2177,10 +2177,12 @@ class ShuttleCostVRevenueReport(APIView):
         total_purchase_cost = 0
         grand_net = 0
         grand_total_major = 0
+        grand_cost_depreciation = 0
 
         for shuttle in Shuttle.objects.all():
             initialMaintenanceCost = 0
             major_repairs_cost = 0
+            cost_depreciation = 0
 
             shuttle_remittance = sum([(item.total + item.fuel_cost) for item in RemittanceForm.objects.filter(
                 deployment__shuttle=shuttle.id,
@@ -2257,11 +2259,14 @@ class ShuttleCostVRevenueReport(APIView):
                 "shuttle_id": f'{shuttle.id}- {shuttle.model} - {shuttle.make}',
                 "shuttle_plate_number": shuttle.plate_number,
                 "shuttle_make": shuttle.make,
+                "revenue_value": shuttle_remittance,
+                "fuel_value": shuttle_fuel_cost,
                 "revenue": "{0:,.2f}".format(shuttle_remittance),
                 "fuel_cost": "{0:,.2f}".format(float(shuttle_fuel_cost)),
                 "major_total": "{0:,.2f}".format(major_repairs_cost),
                 "depreciation": "{0:,.2f}".format(float(total_depreciation)),
                 "cost": "{0:,.2f}".format(float(initialMaintenanceCost)),
+                "cost_depreciation": "{0:,.2f}".format(float(initialMaintenanceCost + total_depreciation)),
                 "value": "{0:,.2f}".format(
                     float(shuttle_remittance) - float(shuttle_fuel_cost) - initialMaintenanceCost),
                 "net_value": "{0:,.2f}".format(float(net_value)),
@@ -2273,15 +2278,16 @@ class ShuttleCostVRevenueReport(APIView):
             total_purchase_cost += value
             grand_net += net_value
             grand_total_major += major_repairs_cost
+            cost_depreciation += (initialMaintenanceCost + total_depreciation)
 
         return Response(data={
             "grand_net": "{0:,.2f}".format(grand_net),
             "total_purchase_cost": "{0:,.2f}".format(total_purchase_cost),
             "total_depreciation": "{0:,.2f}".format(grand_depreciation),
-            "shuttle_maintenance_costs": [(float(item['cost'].replace(',', '')) + float(item['fuel_cost'])) for item in
+            "shuttle_maintenance_costs": [(float(item['cost'].replace(',', '')) + float(item['fuel_cost'].replace(',', ''))) for item in
                                           rows],
-            "shuttle_revenues": [item['revenue'] for item in rows],
-            "shuttle_fuel_costs": [item['fuel_cost'] for item in rows],
+            "shuttle_revenues": [float(item['revenue'].replace(',','')) for item in rows],
+            "shuttle_fuel_costs": [float(item['fuel_cost'].replace(',','')) for item in rows],
             "shuttle_depreciations": [float(item['depreciation'].replace(',', '')) for item in rows],
             "shuttle_major_repairs": [item['major_total'] for item in rows],
             "start_date": start_date.date(),
@@ -2290,6 +2296,7 @@ class ShuttleCostVRevenueReport(APIView):
             "total_costs": "{0:,.2f}".format(total_cost),
             "total_fuel": "{0:,.2f}".format(total_fuel),
             "grand_total": "{0:,.2f}".format(float(total_remittance) - float(total_fuel) - total_cost),
+            "grand_cost_depreciation":"{0:,.2f}".format(grand_cost_depreciation),
             "shuttles": rows,
             "grand_total_major": "{0:,.2f}".format(grand_total_major),
         }, status=status.HTTP_200_OK)

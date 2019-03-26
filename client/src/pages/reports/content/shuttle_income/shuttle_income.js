@@ -53,6 +53,7 @@ class ComponentToPrint extends React.Component {
                         <th>Major Repair Costs</th>
                         <th>Net Income</th>
                         <th>Depreciation</th>
+                        <th>Cost + Depr</th>
                         <th>Net Value</th>
                         </thead>
                         <tbody>
@@ -69,6 +70,7 @@ class ComponentToPrint extends React.Component {
                                         <td className="monetary">{item.cost}</td>
                                         <td className="monetary"><b>{item.value}</b></td>
                                         <td className="monetary"><b>{item.depreciation}</b></td>
+                                        <td className="monetary"><b>{item.cost_depreciation}</b></td>
                                         <td className="monetary"><b>{item.net_value}</b></td>
 
                                     </tr>
@@ -83,6 +85,7 @@ class ComponentToPrint extends React.Component {
                                 <td className="total-line monetary"><b>{this.props.data.total_costs}</b></td>
                                 <td className="total-line monetary"><b>{this.props.data.grand_total}</b></td>
                                 <td className="total-line monetary"><b>{this.props.data.total_depreciation}</b></td>
+                                <td className="total-line monetary"><b>{this.props.data.grand_cost_depreciation}</b></td>
                                 <td className="total-line monetary"><b>{this.props.data.grand_net}</b></td>
                             </tr>
                         </Fragment>

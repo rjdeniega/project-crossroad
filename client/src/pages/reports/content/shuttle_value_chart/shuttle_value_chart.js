@@ -26,7 +26,6 @@ import { Line, Bar } from 'react-chartjs-2';
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 
 
-
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
@@ -36,35 +35,95 @@ class ComponentToPrint extends React.Component {
         data: []
     };
 
+
     componentDidMount() {
         console.log(this.props.data);
     }
+
+    renderTable = () => (
+        <div className="container">
+            <div className="report-body">
+                <table cellSpacing="50" cellPadding="3px">
+                    <thead>
+                    <th>Shuttle</th>
+                    <th>Purchase Date</th>
+                    <th>Purchase Cost</th>
+                    <th>Revenue</th>
+                    <th>Fuel Costs</th>
+                    <th>Major Repair Costs</th>
+                    <th>Net Income</th>
+                    <th>Depreciation</th>
+                    <th>Cost + Depr</th>
+                    <th>Net Value</th>
+                    </thead>
+                    <tbody>
+                    {this.props.data &&
+                    <Fragment>
+                        {this.props.data.shuttles.map((item, index) => (
+                            <Fragment>
+                                <tr>
+                                    <td>{item.shuttle_id}</td>
+                                    <td className="monetary">{item.purchase_date}</td>
+                                    <td className="monetary">{item.purchase_cost}</td>
+                                    <td className="monetary">{item.revenue}</td>
+                                    <td className="monetary">{item.fuel_cost}</td>
+                                    <td className="monetary">{item.cost}</td>
+                                    <td className="monetary"><b>{item.value}</b></td>
+                                    <td className="monetary"><b>{item.depreciation}</b></td>
+                                    <td className="monetary"><b>{item.cost_depreciation}</b></td>
+                                    <td className="monetary"><b>{item.net_value}</b></td>
+
+                                </tr>
+                            </Fragment>
+                        ))}
+                        <tr>
+                            <td><b> Grand Total </b></td>
+                            <td className="total-line monetary"><b></b></td>
+                            <td className="total-line monetary"><b>{this.props.data.total_purchase_cost}</b></td>
+                            <td className="total-line monetary"><b>{this.props.data.total_remittance}</b></td>
+                            <td className="total-line monetary"><b>{this.props.data.total_fuel}</b></td>
+                            <td className="total-line monetary"><b>{this.props.data.total_costs}</b></td>
+                            <td className="total-line monetary"><b>{this.props.data.grand_total}</b></td>
+                            <td className="total-line monetary"><b>{this.props.data.total_depreciation}</b></td>
+                            <td className="total-line monetary"><b>{this.props.data.grand_cost_depreciation}</b></td>
+                            <td className="total-line monetary"><b>{this.props.data.grand_net}</b></td>
+                        </tr>
+                    </Fragment>
+                    }
+                    </tbody>
+                </table>
+                <p className="end-label">END OF REPORT</p>
+            </div>
+        </div>
+    )
+
+
     renderChart = () => {
-          let barChartData = {
+        let barChartData = {
             labels: ['Shuttle # 1', 'Shuttle # 2', 'Shuttle # 3', 'Shuttle # 4', 'Shuttle # 5',
                 'Shuttle # 6', 'Shuttle # 7', 'Shuttle # 8', 'Shuttle # 9'],
             datasets: [{
                 label: 'Shuttle Revenue',
-                backgroundColor: '#ff6f74',
+                backgroundColor: '#2bff94',
                 stack: 'Stack 0',
                 data: this.props.data.shuttle_revenues
 
             },
                 {
                     label: 'Depreciation',
-                    backgroundColor: '#45fad0',
+                    backgroundColor: '#fa6461',
                     stack: 'Stack 1',
                     data: this.props.data.shuttle_depreciations
                 },
                 {
                     label: 'Major Repairs',
-                    backgroundColor: '#269680',
+                    backgroundColor: '#7a3230',
                     stack: 'Stack 1',
                     data: this.props.data.shuttle_major_repairs
                 },
                 {
                     label: 'Fuel Costs',
-                    backgroundColor: '#114a40',
+                    backgroundColor: '#221110',
                     stack: 'Stack 1',
                     data: this.props.data.shuttle_fuel_costs
                 }
@@ -131,13 +190,15 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Shuttle Revenue & Cost report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p> Shuttle Value, Revenue & Cost report for {this.props.data.start_date}
+                             to {this.props.data.end_date} </p>
                         }
                     </Fragment>
                     }
                 </div>
                 <div className="report-body">
                     {this.props.data && this.renderChart()}
+                    {this.props.data && this.renderTable()}
                     {/*<div className="chart-wrapper">*/}
                 </div>
             </div>
