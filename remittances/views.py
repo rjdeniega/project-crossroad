@@ -1532,8 +1532,10 @@ class ScheduledDrivers(APIView):
                 "timeIn": timeIn
             })
         
+
+
         return Response(data={
-            "drivers": drivers
+            "drivers": sorted(drivers, key=lambda k: k['name'])
         }, status=status.HTTP_200_OK)
 
         

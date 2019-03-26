@@ -99,3 +99,13 @@
 .discrepancy-row {
     margin-top: 40px;
 }
+
+.assigned-driver-button {
+    color: blue;
+    cursor: pointer;
+}
+
+.driver-name {
+    float: right;
+    font-weight: 550;
+}

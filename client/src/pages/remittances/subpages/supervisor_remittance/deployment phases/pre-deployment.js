@@ -30,10 +30,103 @@ function Header(props) {
         <div className="phase-header">
             <DeploySubButtons />
             <h3 className="phase-header-title"> {props.title} </h3>       
-            <h5 className="phase-header-description"> {props.description} </h5>
-            
+            <h5 className="phase-header-description"> {props.description} 
+            <Divider type="vertical"/> 
+            <AssignedDrivers />
+            </h5>      
         </div>
     );
+}
+
+class AssignedDrivers extends  React.Component {
+    constructor(props){
+        super(props);
+
+        this.state = {
+            'assigned_drivers': [],
+            'visible': false
+        }
+
+    }
+
+    componentDidMount(){
+        this.fetchAssignedDrivers();
+    }
+
+
+    fetchAssignedDrivers(){
+        const supervisor = JSON.parse(localStorage.user_staff);
+        
+        fetch('/remittances/deployments/assigned/' + supervisor.id)
+            .then(response => {return response;})
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        assigned_drivers: data.drivers
+                    });
+                    console.log(this.state.ten_total)
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
+    showModal = () => {
+        this.setState({
+          visible: true,
+        });
+      }
+    
+    handleOk = () => {
+        this.setState({
+          visible: false,
+        });
+    }
+    
+    handleCancel = (e) => {
+        this.setState({
+          visible: false,
+        });
+    }
+
+    render(){
+        return(
+            <span>
+                <span onClick={this.showModal} className="assigned-driver-button">
+                    Assigned Drivers
+                </span>
+                <Modal
+                    title="Assigned Drivers"
+                    visible={this.state.visible}
+                    onOk={this.handleOk}
+                    onCancel={this.handleCancel}
+                >
+                    {
+                        this.state.assigned_drivers.map((item) => (
+                            <Row gutter={5}>
+                                <Col span={8}>
+                                    <span className="driver-name">
+                                        {item.name}:
+                                    </span>
+                                </Col>
+                                {item.timeIn == null ? (
+                                    <Col span={16}>
+                                        Haven't Timed-In
+                                    </Col>
+                                ) : (
+                                    <Col span={16}>
+                                        {item.timeIn}
+                                    </Col>
+                                )}
+                            </Row>
+                        ))
+                    }
+                </Modal>
+            </span>
+        )
+    }
 }
 
 
@@ -50,6 +143,7 @@ class DeploySubButtons extends React.Component {
         )
     }
 }
+
 
 class RevisedSubButton extends React.Component {
     constructor(props){
