@@ -2026,17 +2026,18 @@ class SupervisorWeeklyReport(APIView):
                         shift_type = driver_assigned.shift.type
                         deployment_type = driver_assigned.deployment_type
 
-
                     expected_arrival = None
                     if shift_type == "A" and (deployment_type == "Regular" or deployment_type == "R"):
-                        expected_arrival = rem.created.replace(hour=5)
+                        expected_arrival = rem.deployment.start_time.replace(hour=5, minute=0, second=0, microsecond=0)
                     if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
-                        expected_arrival = rem.created.replace(hour=4, minute=30)
+                        expected_arrival = rem.deployment.start_time.replace(hour=4, minute=30, second=0,
+                                                                              microsecond=0)
                     if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
-                        expected_arrival = rem.created.replace(hour=14)
+                        expected_arrival = rem.deployment.start_time.replace(hour=14, minute=0, second=0,
+                                                                              microsecond=0)
                     if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
-                        expected_arrival = rem.created.replace(hour=16)
-
+                                                                              microsecond=0)
+                   
                     r_status = "Late" if rem.deployment.start_time > expected_arrival else "On Time"
 
                     # if deployment.driver.id not in [item['driver_id'] for item in
@@ -3034,15 +3035,19 @@ class DriverPerformance(APIView):
 
                 expected_arrival = None
                 if shift_type == "A" and (deployment_type == "Regular" or deployment_type == "R"):
-                    expected_arrival = item.created.replace(hour=5)
+                    expected_arrival = item.deployment.start_time.replace(hour=5,minute=0,second = 0,microsecond=0)
                 if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
-                    expected_arrival = item.created.replace(hour=4, minute=30)
+                    expected_arrival = item.deployment.start_time.replace(hour=4, minute=30, second = 0, microsecond=0)
                 if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
-                    expected_arrival = item.created.replace(hour=14)
+                    expected_arrival = item.deployment.start_time.replace(hour=14, minute=0,second = 0, microsecond=0)
                 if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
-                    expected_arrival = item.created.replace(hour=16)
+                    expected_arrival = item.deployment.start_time.replace(hour=16, minute=0,second = 0,microsecond=0)
 
-                if item.created > expected_arrival:
+                print(shift_type)
+                print(deployment_type)
+                print(item.deployment.start_time)
+                print(expected_arrival)
+                if item.deployment.start_time > expected_arrival:
                     lates += 1
 
             sub_freq_total += sub_freq
