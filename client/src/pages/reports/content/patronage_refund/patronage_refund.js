@@ -28,7 +28,6 @@ import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 
 
-
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
@@ -37,7 +36,7 @@ class ComponentToPrint extends React.Component {
         const { data } = this.props;
         return (
             <div className="container">
-                 <div className="lbatsc-container">
+                <div className="lbatsc-container">
                     <img className="lbatsc" src={LBATSCLogo}/>
                 </div>
                 <div className="report-labels">
@@ -72,12 +71,12 @@ class ComponentToPrint extends React.Component {
                                 </Fragment>
                             ))}
                             {/*<tr>*/}
-                                {/*<td><b> Grand Total </b></td>*/}
-                                {/*<td className="total-line"><b></b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.no_of_beep_total}</b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.beep_grand_total}</b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.no_of_carwash_total}</b></td>*/}
-                                {/*<td className="total-line"><b>{this.props.data.carwash_grand_total}</b></td>*/}
+                            {/*<td><b> Grand Total </b></td>*/}
+                            {/*<td className="total-line"><b></b></td>*/}
+                            {/*<td className="total-line"><b>{this.props.data.no_of_beep_total}</b></td>*/}
+                            {/*<td className="total-line"><b>{this.props.data.beep_grand_total}</b></td>*/}
+                            {/*<td className="total-line"><b>{this.props.data.no_of_carwash_total}</b></td>*/}
+                            {/*<td className="total-line"><b>{this.props.data.carwash_grand_total}</b></td>*/}
 
                             {/*</tr>*/}
                         </Fragment>
@@ -135,8 +134,8 @@ export class PatronageRefund extends Component {
         return (
             <div className="report-body">
                 <Input placeholder="Enter Net Surplus" onChange={this.handleChange}/>
-                <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
-                <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
+                <DatePicker.MonthPicker placeholder="date from" onChange={this.handleStartDateChange}
+                             format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
                         trigger={() => <a href="#">Print this out!</a>}

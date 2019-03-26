@@ -644,27 +644,33 @@ class PatronageRefund(APIView):
             #         for item in serialized_transactions.data:
             #             item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
+
+        # for member in Member.objects.all():
+        #     member_data = MemberSerializer(member).data
+        #     shares = Share.objects.filter(member=member)
+        #     array = []
+        #
+        #     for i in range(1, 13):
+        #         accumulated_month = 0
+        #         for share in shares:
+        #             if (share.date_of_update.month == i and share.date_of_update.year == start_date.year):
+        #                 accumulated_month += share.value
+        #         array.append(accumulated_month)
+        #
+        #     rate_of_refund = sum(array) / 12
+        total_shares = sum([item.total for item in Share.objects.filter(date_of_update__year=start_date.year)])
         for member in Member.objects.all():
-
             member_data = MemberSerializer(member).data
-            shares = Share.objects.filter(member=member)
-            array = []
-
-            for i in range(1, 13):
-                accumulated_month = 0
-                for share in shares:
-                    if (share.date_of_update.month == i and share.date_of_update.year == start_date.year):
-                        accumulated_month += share.value
-                array.append(accumulated_month)
-
-            rate_of_refund = sum(array) / 12
+            shares = sum([item.total for item in Share.objects.filter(member=member,date_of_update__year=start_date.year)])
+            if total_shares == 0:
+                rate_of_refund = 0
+                total_shares = 0
+            rate_of_refund = float(shares)/float(total_shares)
 
             report_items.append({
-                "date": start_date,
                 "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
                 "member": member_data,
-                "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
-                "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * (surplus / 100)),
+                "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * float(surplus)),
             })
 
             # rate_of_refund = (sum([item.total for item in transactions]) + sum(
