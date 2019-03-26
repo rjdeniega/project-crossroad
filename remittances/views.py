@@ -1507,6 +1507,38 @@ class SubmitRemittance(APIView):
         return True
     
 
+class ScheduledDrivers(APIView):
+    @staticmethod
+    def get(request, supervisor_id):
+        active_sched = Schedule.objects.get(start_date__lte=datetime.now().date(), end_date__gte=datetime.now().date())
+        current_shift = Shift.objects.get(schedule=active_sched.id, supervisor=supervisor_id)
+        shift_iteration = ShiftIteration.objects.filter(shift=current_shift.id, date=datetime.now().date()).first()
+
+        query = DriversAssigned.objects.filter(shift=current_shift.id)
+        
+        drivers = list()
+        for driver in DriversAssigned.objects.filter(shift=current_shift.id):
+            timeIn = None
+            for present in PresentDrivers.objects.filter(
+                    datetime__year=datetime.now().year,
+                    datetime__month=datetime.now().month,
+                    datetime__day=datetime.now().day
+                ):
+                if driver.id == present.assignedDriver.id and present.is_dayoff == False:
+                    timeIn = present.datetime.strftime("%r")
+            
+            drivers.append({
+                "name": driver.driver.name,
+                "timeIn": timeIn
+            })
+        
+        return Response(data={
+            "drivers": drivers
+        }, status=status.HTTP_200_OK)
+
+        
+
+
 class ShuttleMileage(APIView):
     @staticmethod
     def get(request, deployment_id):

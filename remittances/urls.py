@@ -17,6 +17,7 @@ remittance_urls = [
     path('tickets/driver/<int:driver_id>', SpecificDriverTicket.as_view()),
 
     path('deployments/mileage/<int:deployment_id>', ShuttleMileage.as_view()),
+    path('deployments/assigned/<int:supervisor_id>', ScheduledDrivers.as_view()),
 
     path('deployments/present/', MarkAsPresent.as_view()),
     path('deployments/present/<int:driver_id>', MarkAsPresent.as_view()),
