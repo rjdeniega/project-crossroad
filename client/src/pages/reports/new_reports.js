@@ -117,14 +117,9 @@ const MAINTENANCE_CARDS = [{
     'description': 'view maintenance cost per shuttle',
     'icon': wrench,
     'content': <MaintenanceReport/>
-}, {
-    'title': 'Shuttle Net Value',
-    'description': 'view accumulated value of shuttle',
-    'icon': wrench,
-    'content': <ShuttleIncome/>
-}, {
-    'title': 'Revenue & Cost per Shuttle',
-    'description': 'view maintenance cost per shuttle',
+},{
+    'title': 'Shuttle Value Report',
+    'description': 'View Revenues, Depreciation, and Major Repair Costs per shuttle',
     'icon': wrench,
     'content': <ShuttleValueChart/>
 }, {
