@@ -49,7 +49,7 @@ class Person(SoftDeletionModel):
 
 
 class Driver(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     remaining_tickets = PositiveIntegerField(default=0)
     is_supervisor = BooleanField(default=False)
     application_date = DateField()
@@ -61,27 +61,27 @@ class Driver(Person):
 
 
 class Clerk(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
 
 
 class Mechanic(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
 
 
 class OperationsManager(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
 
 
 class Supervisor(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     application_date = DateField()
 
 
 class Member(Person):
-    user = OneToOneField(User, on_delete=models.CASCADE, null=True)
+    user = ForeignKey(User, on_delete=models.CASCADE, null=True)
     tin_number = PositiveIntegerField()
     accepted_date = DateField()
     civil_status = CharField(max_length=1, choices=CV_STATUS)
