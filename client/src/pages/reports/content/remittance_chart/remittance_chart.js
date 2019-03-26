@@ -213,6 +213,7 @@ export class RemittanceChart extends Component {
                         <RadioGroup onChange={this.onChange} defaultValue="add">
                             <RadioButton value="day">Day</RadioButton>
                             <RadioButton value="month">Month</RadioButton>
+                            <RadioButton value="quarter">Quarter</RadioButton>
                             <RadioButton value="year">Year</RadioButton>
                         </RadioGroup>
                     </Form.Item>
@@ -233,7 +234,7 @@ export class RemittanceChart extends Component {
                         </Form.Item>
                     </Fragment>
                     }
-                    {(this.state.interval == "month" || this.state.interval == "year") &&
+                    {(this.state.interval == "month" || this.state.interval == "year" || this.state.interval == "quarter") &&
                     <Fragment>
                         <Form.Item
                             {...formItemLayout}

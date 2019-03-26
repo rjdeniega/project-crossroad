@@ -2462,8 +2462,44 @@ class RemittanceForTheMonth(APIView):
                 "kanan_values": reversed(kanan_values),
             }, status=status.HTTP_200_OK)
 
-        else:
-            pass
+        elif data['interval'] == "quarter":
+            days = []
+            temp_date = date
+            temp_date = temp_date.replace(day=1)
+            print(temp_date)
+
+            for i in range(1, 13, 3):
+                days = ['Q1', 'Q2', 'Q3', 'Q4']
+                days_total = 0
+
+                main_road_value = rem.get_remittance_total_quarterly("M", temp_date, i,
+                                                                     i + 2) + rem.get_beep_total_quarterly("M",
+                                                                                                           temp_date, i,
+                                                                                                           i + 2)
+                print(main_road_value)
+                kaliwa_value = rem.get_remittance_total_quarterly("L", temp_date, i,
+                                                                  i + 2) + rem.get_beep_total_quarterly("L",
+                                                                                                        temp_date, i,
+                                                                                                        i + 2)
+                kanan_value = rem.get_remittance_total_quarterly("R", temp_date, i,
+                                                                 i + 2) + rem.get_beep_total_quarterly("R",
+                                                                                                       temp_date, i,
+                                                                                                       i + 2)
+
+                main_road_values.append(main_road_value)
+                kaliwa_values.append(kaliwa_value)
+                kanan_values.append(kanan_value)
+
+                if i == 11:
+                    end_date = temp_date
+            return Response(data={
+                "days": days,
+                "start_date": date.date(),
+                "end_date": end_date.date(),
+                "main_road_values": main_road_values,
+                "kaliwa_values": kaliwa_values,
+                "kanan_values": kanan_values,
+            }, status=status.HTTP_200_OK)
 
         return Response(data={
             "data": "it worked"
@@ -2517,6 +2553,31 @@ class RemittanceForTheMonth(APIView):
     @staticmethod
     def get_beep_total_yearly(route, date):
         beeps = BeepTransaction.objects.filter(shift__date__year=date.year,
+                                               shuttle__route=route)
+        total = 0
+        for beep in beeps:
+            total += beep.total
+        return total
+
+    @staticmethod
+    def get_remittance_total_quarterly(route, date, start_month, end_month):
+        print(date.year)
+        print(start_month)
+        print(end_month)
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date__year=date.year,
+                                                    deployment__shift_iteration__date__month__gte=start_month,
+                                                    deployment__shift_iteration__date__month__lte=end_month,
+                                                    deployment__shuttle__route=route)
+        total = 0
+        for remittance in remittances:
+            total += remittance.get_remittances_only()
+        return total
+
+    @staticmethod
+    def get_beep_total_quarterly(route, date, start_month, end_month):
+        beeps = BeepTransaction.objects.filter(shift__date__year=date.year,
+                                               shift__date__month__gte=start_month,
+                                               shift__date__month__lte=end_month,
                                                shuttle__route=route)
         total = 0
         for beep in beeps:
