@@ -861,6 +861,17 @@ class DeploymentView(APIView):
                 shift_iteration_id=iteration.id
             )
 
+            presents = PresentDrivers.objects.filter(
+                    assignedDriver=driver_assigned, 
+                    datetime__year=datetime.now().year,
+                    datetime__month=datetime.now().month,
+                    datetime__day=datetime.now().day
+                    )
+            
+            for present in presents:
+                present.deployment = deployment
+                present.save()
+
             serialized_deployment = DeploymentSerializer(deployment)
 
             return Response(data={
