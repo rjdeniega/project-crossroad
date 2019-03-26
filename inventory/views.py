@@ -353,6 +353,8 @@ class OutsourceModification(APIView):
         data = json.loads(request.body)
         repair.labor_fee = data['labor_cost']
         repair.status = 'C'
+        repair.shuttle.status = "A"
+        repair.shuttle.save()
         for item in data['items']:
             oi = OutSourcedItems(
                 item=item['item_name'], quantity=item['quantity'], unit_price=item['unit_price'])
@@ -360,7 +362,9 @@ class OutsourceModification(APIView):
             repair.outsourced_items.add(oi)
 
         repair.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(data={
+            'foo': 'barr'
+        }, status=status.HTTP_200_OK)
 
 
 class MaintenanceReport(APIView):
@@ -466,7 +470,9 @@ class StartMaintenance(APIView):
         rp.save()
         repair.problems.add(rp)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(data={
+            'foo': 'bar'
+        }, status=status.HTTP_200_OK)
 
 
 class ShuttleMaintenanceFrequency(APIView):

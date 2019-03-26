@@ -150,7 +150,7 @@ class VendorPerformance(SoftDeletionModel):
     remarks = CharField(max_length=255, null=True)
     created = models.DateTimeField(editable=False, null=True)
     modified = models.DateTimeField(null=True)
-    
+
     def save(self, *args, **kwargs):
         if not self.id:
             self.created = timezone.now()
