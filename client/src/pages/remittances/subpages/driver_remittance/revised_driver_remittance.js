@@ -56,6 +56,7 @@ class OngoingDeployment extends React.Component {
                     this.setState({
                         timeIn: data.timeIn
                     });
+                    console.log(this.state.timeIn)
                 }
                 else {
                     console.log(data.error)
@@ -855,7 +856,7 @@ class RemittanceForm extends React.Component {
                                 {...formItemLayout}
                                 label={
                                     <span>
-                                            <Tooltip title="Input the last consumed ticket of this bundle">
+                                            <Tooltip title={"Ticket Numbers should only range from " + item.start_ticket + " - " + item.end_ticket}>
                                                 <Icon type="question-circle-o" className="field-guide"/>
                                             </Tooltip>
                                             Ticket No. {item.start_ticket} to
@@ -884,7 +885,7 @@ class RemittanceForm extends React.Component {
                                 {...formItemLayout}
                                 label={
                                     <span>
-                                            <Tooltip title="Input the last consumed ticket of this bundle">
+                                            <Tooltip title={"Ticket Numbers should only range from " + item.start_ticket + " - " + item.end_ticket}>
                                                 <Icon type="question-circle-o" className="field-guide"/>
                                             </Tooltip>
                                             Ticket No. {item.start_ticket} to
@@ -913,7 +914,7 @@ class RemittanceForm extends React.Component {
                                 {...formItemLayout}
                                 label={
                                     <span>
-                                            <Tooltip title="Input the last consumed ticket of this bundle">
+                                            <Tooltip title={"Ticket Numbers should only range from " + item.start_ticket + " - " + item.end_ticket}>
                                                 <Icon type="question-circle-o" className="field-guide"/>
                                             </Tooltip>
                                             Ticket No. {item.start_ticket} to

@@ -1247,7 +1247,7 @@ class AccidentDeployment(APIView):
 class DriverDeployment(APIView):
     @staticmethod
     def get(request, driver_id):
-        deployments = Deployment.objects.filter(driver_id=driver_id).order_by('-start_time')
+        deployments = Deployment.objects.filter(driver_id=driver_id).order_by('-start_time')[:90]
 
         data = []
 
