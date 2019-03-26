@@ -34,7 +34,8 @@ class OngoingDeployment extends React.Component {
         super(props);
         
         this.state = {
-            "timeIn": null
+            "timeIn": null,
+            "hasTimedIn": false
         }
 
         this.handleMarkAsPresent = this.handleMarkAsPresent.bind(this);
@@ -54,9 +55,9 @@ class OngoingDeployment extends React.Component {
             .then(data => {
                 if (!data.error) {
                     this.setState({
-                        timeIn: data.timeIn
+                        timeIn: data.timeIn,
+                        hasTimedIn: data.hasTimedIn
                     });
-                    console.log(this.state.timeIn)
                 }
                 else {
                     console.log(data.error)
@@ -85,7 +86,7 @@ class OngoingDeployment extends React.Component {
     render() {
         return(
             <div className="deployment-container">
-                {this.state.timeIn != null ? (
+                {this.state.hasTimedIn == true ? (
                     <TimeInDisplay timeIn={this.state.timeIn} />
                 ) : (
                     <MarkAsPresentButton handleMarkAsPresent={this.handleMarkAsPresent}/>
@@ -100,10 +101,17 @@ class MarkAsPresentButton extends React.Component {
     constructor(props){
         super(props);
 
+        this.state ={
+            "is_disabled": false
+        }
+
         this.handleClick = this.handleClick.bind(this);
     }
 
     handleClick(){
+        this.setState({
+            "is_disabled": true
+        })
         this.props.handleMarkAsPresent();
     }
 
@@ -113,7 +121,12 @@ class MarkAsPresentButton extends React.Component {
                 title="click time-in to ready for deployment"
                 placement="right"
                 >
-                <Button type="primary" icon="clock-circle" onClick={this.handleClick} block>Time-In</Button>
+                {this.state.is_disabled == false ? (
+                    <Button type="primary" icon="clock-circle" onClick={this.handleClick} block>Time-In</Button>
+                ) : (
+                    <Button type="primary" disabled icon="clock-circle" onClick={this.handleClick} block>Time-In</Button>
+                )}
+                
             </Tooltip>
         ) 
     }

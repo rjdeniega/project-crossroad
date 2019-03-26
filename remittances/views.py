@@ -997,11 +997,15 @@ class MarkAsPresent(APIView):
 
         if presents:
             toReturn = presents[0].datetime.strftime("%r")
+            hasTimedIn = True
         else:
             toReturn = None
+            hasTimedIn = False
+
 
         return Response(data={
-            "timeIn": toReturn
+            "timeIn": toReturn,
+            "hasTimedIn": hasTimedIn
         }, status=status.HTTP_200_OK)
 
     @staticmethod
