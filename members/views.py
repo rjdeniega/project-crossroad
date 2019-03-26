@@ -346,7 +346,7 @@ class MemberTransactionView(APIView):
         transactions = []
         transactions_list = []
         for id in id_cards:
-            transactions = BeepTransaction.objects.filter(card_number=id.can)
+            transactions = BeepTransaction.objects.filter(card_number=id.can).order_by('-transaction_date_time')
             transactions_list.append(transactions)
 
         serialized_transactions = BeepTransactionSerializer(transactions, many=True)

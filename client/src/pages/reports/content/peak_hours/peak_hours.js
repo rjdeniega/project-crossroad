@@ -23,6 +23,8 @@ import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
 import { Line } from 'react-chartjs-2';
+import LBATSCLogo from '../../../../images/LBATSCLogo.png'
+
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -372,11 +374,14 @@ class ComponentToPrint extends React.Component {
     render() {
         return (
             <div className="container">
+                 <div className="lbatsc-container">
+                        <img className="lbatsc" src={LBATSCLogo}/>
+                    </div>
                 <div className="report-labels">
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Weekly Peak Hours from {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p><b> Weekly Peak Hours from {this.props.data.start_date} to {this.props.data.end_date}</b> </p>
                         }
                     </Fragment>
                     }

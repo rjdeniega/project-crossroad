@@ -644,7 +644,6 @@ class PatronageRefund(APIView):
             #         for item in serialized_transactions.data:
             #             item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
 
-
         # for member in Member.objects.all():
         #     member_data = MemberSerializer(member).data
         #     shares = Share.objects.filter(member=member)
@@ -661,16 +660,18 @@ class PatronageRefund(APIView):
         total_shares = sum([item.value for item in Share.objects.filter(date_of_update__year=start_date.year)])
         for member in Member.objects.all():
             member_data = MemberSerializer(member).data
-            shares = sum([item.value for item in Share.objects.filter(member=member,date_of_update__year=start_date.year)])
+            shares = sum(
+                [item.value for item in Share.objects.filter(member=member, date_of_update__year=start_date.year)])
             if total_shares == 0:
                 rate_of_refund = 0
                 total_shares = 0
-            rate_of_refund = float(shares)/float(total_shares)
+            rate_of_refund = float(shares) / float(total_shares)
 
             report_items.append({
                 "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
                 "member": member_data,
                 "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * float(surplus)),
+                "start_date": start_date.year
             })
 
             # rate_of_refund = (sum([item.total for item in transactions]) + sum(
@@ -698,7 +699,10 @@ class PatronageRefund(APIView):
             # "grand_total": "{0:,.2f}".format(sum(item['total_transactions'] for item in report_items)),
 
         return Response(data={
-            "report_items": report_items
+            "report_items": report_items,
+            "date": start_date.year,
+            "grand_total": "{0:,.2f}".format(
+                sum(float([item["patronage_refund"].replace(',', '') for item in report_items])))
         }, status=status.HTTP_200_OK)
 
 
@@ -1963,28 +1967,32 @@ class SupervisorWeeklyReport(APIView):
 
                 deployed_drivers = []
                 absent_drivers = []
+                temp_deployed_drivers = [item.driver for item in
+                                         Deployment.objects.filter(shift_iteration=shift_iteration)]
+
                 for drivers_assigned in DriversAssigned.objects.filter(shift=shift_iteration.shift):
                     absent = True
-                    for deployed_driver in deployed_drivers:
-                        if deployed_driver["driver_id"] == drivers_assigned.driver_id:
+                    for deployed_driver in temp_deployed_drivers:
+                        if deployed_driver.id == drivers_assigned.driver_id:
                             absent = False
+                            driver_name = ""
+                        if absent:
+                            sub_driver = SubbedDeployments.objects.filter(absent_driver=drivers_assigned,
+                                                                          deployment__shift_iteration__shift=shift_iteration.shift,
+                                                                          deployment__shift_iteration__date=temp_start)
+                            if len(sub_driver) > 0:
 
-                    driver_name = ""
-                    if absent:
+                                if sub_driver[0].deployment.driver.id not in [item['sub_driver_id'] for item in absent_drivers]:
+                                    sub_driver = sub_driver[0]
+                                    driver = sub_driver.deployment.driver
+                                    absent_drivers.append({
+                                        "driver_id": drivers_assigned.driver_id,
+                                        "driver_name": drivers_assigned.driver.name,
+                                        "sub_driver": driver.name,
+                                        "sub_driver_id": driver.id,
+                                    })
 
-                        sub_driver = SubbedDeployments.objects.filter(absent_driver=drivers_assigned,
-                                                                      deployment__shift_iteration__shift=shift_iteration.shift,
-                                                                      deployment__shift_iteration__date=temp_start)
-                        print(drivers_assigned)
-                        print(sub_driver)
-                        if len(sub_driver) > 0:
-                            sub_driver = sub_driver[0]
-                            driver_name = sub_driver.deployment.driver.name
-                        absent_drivers.append({
-                            "driver_id": drivers_assigned.driver_id,
-                            "driver_name": drivers_assigned.driver.name,
-                            "sub_driver": driver_name
-                        })
+                number_of_drivers += 1
 
                 for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
                     driver_remit = 0
@@ -2007,7 +2015,6 @@ class SupervisorWeeklyReport(APIView):
 
                     if deployment.driver in [item.deployment.driver for item in redeployments]:
                         type = "Redeployed"
-                    print([item.deployment.driver for item in redeployments])
 
                     rem = RemittanceForm.objects.get(deployment=deployment)
                     driver_assigned = DriversAssigned.objects.filter(driver=deployment.driver,
@@ -2019,25 +2026,23 @@ class SupervisorWeeklyReport(APIView):
                         shift_type = driver_assigned.shift.type
                         deployment_type = driver_assigned.deployment_type
 
-                        print(shift_type)
-                        print(deployment_type)
-                    print(rem.deployment.start_time)
+
                     expected_arrival = None
                     if shift_type == "A" and (deployment_type == "Regular" or deployment_type == "R"):
-                        expected_arrival = rem.deployment.start_time.replace(hour=5)
+                        expected_arrival = rem.created.replace(hour=5)
                     if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
-                        expected_arrival = rem.deployment.start_time.replace(hour=4, minutes=30)
+                        expected_arrival = rem.created.replace(hour=4, minute=30)
                     if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
-                        expected_arrival = rem.deployment.start_time.replace(hour=14)
+                        expected_arrival = rem.created.replace(hour=14)
                     if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
-                        expected_arrival = rem.deployment.start_time.replace(hour=16)
+                        expected_arrival = rem.created.replace(hour=16)
 
-                    print(expected_arrival)
                     r_status = "Late" if rem.deployment.start_time > expected_arrival else "On Time"
 
                     # if deployment.driver.id not in [item['driver_id'] for item in
                     #                                 deployed_drivers] and not driver_remit == 0:
-
+                    if type == "Sub-in":
+                        r_status = "On Time"
                     deployed_drivers.append({
                         "type": type,
                         "status": r_status,
@@ -2048,8 +2053,6 @@ class SupervisorWeeklyReport(APIView):
                         "cost": "{0:,.2f}".format(driver_cost),
                         "total": "{0:,.2f}".format(driver_remit - driver_cost),
                     })
-
-                    number_of_drivers += 1
 
                 rows.append({
                     "day": calendar.day_name[temp_start.weekday()],
@@ -2213,13 +2216,13 @@ class ShuttleCostVRevenueReport(APIView):
                         item = Item.objects.get(id=modification.item_used.id)
                         if item.item_type == "Physical Measurement":
                             major_repairs_cost = float(major_repairs_cost) + (
-                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         elif item.item_type == "Liquid Measurement":
                             major_repairs_cost = float(major_repairs_cost) + (
-                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         else:
                             major_repairs_cost = major_repairs_cost + (
-                                    float(modification.quantity) * float(item.unit_price))
+                                float(modification.quantity) * float(item.unit_price))
 
                     for outsourced in repair.outsourced_items.all():
                         amount = outsourced.quantity * outsourced.unit_price
@@ -2232,13 +2235,13 @@ class ShuttleCostVRevenueReport(APIView):
                     item = Item.objects.get(id=modification.item_used.id)
                     if item.item_type == "Physical Measurement":
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     elif item.item_type == "Liquid Measurement":
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     else:
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                                float(modification.quantity) * float(item.unit_price))
+                            float(modification.quantity) * float(item.unit_price))
 
                 for outsourced in repair.outsourced_items.all():
                     amount = outsourced.quantity * outsourced.unit_price
@@ -2527,7 +2530,7 @@ class NotificationItems(APIView):
             print(user_id)
             notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
 
-            unread = NotificationSerializer(Notification.objects.filter(user__id=user_id,is_read=False), many=True)
+            unread = NotificationSerializer(Notification.objects.filter(user__id=user_id, is_read=False), many=True)
             print(unread)
         elif user_type == 'system_admin':
             NotificationItems.get_om_repairs(user_id)
@@ -2538,7 +2541,7 @@ class NotificationItems(APIView):
             print(user_id)
             notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
 
-            unread = NotificationSerializer(Notification.objects.filter(user__id=user_id,is_read=False), many=True)
+            unread = NotificationSerializer(Notification.objects.filter(user__id=user_id, is_read=False), many=True)
 
         elif user_type == 'clerk':
             NotificationItems.get_om_notifs(user_id)
@@ -3002,8 +3005,10 @@ class DriverPerformance(APIView):
         lates_total = 0
 
         for driver in Driver.objects.all().order_by('name'):
-            remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
-                                                        created__lte=end_date)
+            remittances = RemittanceForm.objects.filter(deployment__driver=driver,
+                                                        deployment__shift_iteration__date__gte=start_date,
+                                                        deployment__shift_iteration__date__lte=end_date)
+            print(len(remittances))
             sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver,
                                                             deployment__shift_iteration__date__gte=start_date,
                                                             deployment__shift_iteration__date__lte=end_date))
@@ -3016,7 +3021,7 @@ class DriverPerformance(APIView):
 
             for item in remittances:
                 driver_assigned = DriversAssigned.objects.filter(shift__schedule__start_date__gte=start_date,
-                                                                 shift__schedule__end_date__gte=end_date).first()
+                                                                 shift__schedule__end_date__lte=end_date).first()
                 shift_type = item.deployment.shift_iteration.shift.type
                 deployment_type = 'R'
 
@@ -3028,13 +3033,13 @@ class DriverPerformance(APIView):
                     print(deployment_type)
 
                 expected_arrival = None
-                if shift_type == "A" and deployment_type == "R":
-                    expected_arrival = item.created.replace(hour=7)
-                if shift_type == "A" and deployment_type == "E":
+                if shift_type == "A" and (deployment_type == "Regular" or deployment_type == "R"):
                     expected_arrival = item.created.replace(hour=5)
-                if shift_type == "P" and deployment_type == "R":
+                if shift_type == "A" and (deployment_type == "Early" or deployment_type == "E"):
+                    expected_arrival = item.created.replace(hour=4, minute=30)
+                if shift_type == "P" and (deployment_type == "Regular" or deployment_type == "R"):
                     expected_arrival = item.created.replace(hour=14)
-                if shift_type == "P" and deployment_type == "L":
+                if shift_type == "P" and (deployment_type == "Late" or deployment_type == "L"):
                     expected_arrival = item.created.replace(hour=16)
 
                 if item.created > expected_arrival:

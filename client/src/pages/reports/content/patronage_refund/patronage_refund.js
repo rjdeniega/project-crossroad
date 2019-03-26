@@ -43,7 +43,7 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.start_date &&
-                        <p><b></b> Patronage Refund for {this.props.data.start_date}</p>
+                        <p><b></b> Patronage Refund for the year {this.props.data.start_date}</p>
                         }
                     </Fragment>
                     }
@@ -70,15 +70,15 @@ class ComponentToPrint extends React.Component {
                                     </tr>
                                 </Fragment>
                             ))}
-                            {/*<tr>*/}
-                            {/*<td><b> Grand Total </b></td>*/}
-                            {/*<td className="total-line"><b></b></td>*/}
-                            {/*<td className="total-line"><b>{this.props.data.no_of_beep_total}</b></td>*/}
-                            {/*<td className="total-line"><b>{this.props.data.beep_grand_total}</b></td>*/}
-                            {/*<td className="total-line"><b>{this.props.data.no_of_carwash_total}</b></td>*/}
-                            {/*<td className="total-line"><b>{this.props.data.carwash_grand_total}</b></td>*/}
+                            <tr>
+                            <td><b></b></td>
+                            <td><b></b></td>
+                            <td><b></b></td>
+                            <td className="total-line"><b>
+                                Total : {this.props.data.grand_total}
+                            </b></td>
 
-                            {/*</tr>*/}
+                            </tr>
                         </Fragment>
                         }
                         </tbody>

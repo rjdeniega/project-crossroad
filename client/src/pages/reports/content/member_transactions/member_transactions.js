@@ -131,6 +131,7 @@ export class MemberTransactions extends Component {
     render() {
         return (
             <div className="report-body">
+
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                 <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
