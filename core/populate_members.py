@@ -135,7 +135,7 @@ class PopulateMembers:
                     am_today_random_time = current_date.replace(hour=randint(6, 23), minute=randint(0, 59))
 
                     BeepTransaction.objects.create(shift=shift,
-                                                   card_number=PopulateMembers.random_with_n_digits(8),
+                                                   card_number=cards.first().can,
                                                    transaction_date_time=am_today_random_time,
                                                    shuttle=Shuttle.objects.order_by("?").first(),
                                                    total=12)
