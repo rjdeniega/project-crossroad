@@ -211,17 +211,18 @@ class PopulateRemittances():
     def get_deployment_times(date, shift_type, deployment_type):
         temp_date = date
         if deployment_type == 'Early':
-            start_time = temp_date.replace(hour=5)
-            end_time = temp_date.replace(hour=12)
+            start_time = temp_date.replace(hour=4, minute=30)
+            end_time = temp_date.replace(hour=1, minute=30)
         elif deployment_type == 'Regular' and shift_type == 'A':
-            start_time = temp_date.replace(hour=7)
+            start_time = temp_date.replace(hour=5)
             end_time = temp_date.replace(hour=14)
         elif deployment_type == 'Regular' and shift_type == 'P':
             start_time = temp_date.replace(hour=14)
-            end_time = temp_date.replace(hour=21)
-        else:
-            start_time = temp_date.replace(hour=16)
             end_time = temp_date.replace(hour=23)
+        else:
+            start_time = temp_date.replace(hour=15)
+            temp_end = temp_date + timedelta(days=1)
+            end_time = temp_end.replace(hour=1)
         
         return {'start_time': start_time, 'end_time': end_time}
 
