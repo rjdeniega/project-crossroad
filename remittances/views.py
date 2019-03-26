@@ -1396,76 +1396,79 @@ class SubmitRemittance(APIView):
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
             if "value" in ticket_used:
-                # Get current tickets
-                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
-                last_consumed = consumed_tickets.order_by('-end_ticket').first()
+                if ticket_used["value"]:
+                    # Get current tickets
+                    consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                    last_consumed = consumed_tickets.order_by('-end_ticket').first()
 
-                new_consumed = ConsumedTicket()
-                new_consumed.assigned_ticket = assigned
-                if last_consumed is not None:
-                    new_consumed.start_ticket = last_consumed.end_ticket + 1
-                else:
-                    new_consumed.start_ticket = assigned.range_from
-                new_consumed.end_ticket = ticket_used["value"]
-                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 10
-                new_consumed.remittance_form = rem_form
-                new_consumed.save()
+                    new_consumed = ConsumedTicket()
+                    new_consumed.assigned_ticket = assigned
+                    if last_consumed is not None:
+                        new_consumed.start_ticket = last_consumed.end_ticket + 1
+                    else:
+                        new_consumed.start_ticket = assigned.range_from
+                    new_consumed.end_ticket = ticket_used["value"]
+                    new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 10
+                    new_consumed.remittance_form = rem_form
+                    new_consumed.save()
 
-                rem_form.total += new_consumed.total
+                    rem_form.total += new_consumed.total
 
-                if assigned.range_to == new_consumed.end_ticket:
-                    assigned.is_consumed = True
-                    assigned.save()
+                    if assigned.range_to == new_consumed.end_ticket:
+                        assigned.is_consumed = True
+                        assigned.save()
 
         for ticket_used in data["twelve_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
             if "value" in ticket_used:
-                # Get current tickets
-                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
-                last_consumed = consumed_tickets.order_by('-end_ticket').first()
+                if ticket_used["value"]:
+                    # Get current tickets
+                    consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                    last_consumed = consumed_tickets.order_by('-end_ticket').first()
 
-                new_consumed = ConsumedTicket()
-                new_consumed.assigned_ticket = assigned
-                if last_consumed is not None:
-                    new_consumed.start_ticket = last_consumed.end_ticket + 1
-                else:
-                    new_consumed.start_ticket = assigned.range_from
-                new_consumed.end_ticket = ticket_used["value"]
-                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 12
-                new_consumed.remittance_form = rem_form
-                new_consumed.save()
+                    new_consumed = ConsumedTicket()
+                    new_consumed.assigned_ticket = assigned
+                    if last_consumed is not None:
+                        new_consumed.start_ticket = last_consumed.end_ticket + 1
+                    else:
+                        new_consumed.start_ticket = assigned.range_from
+                    new_consumed.end_ticket = ticket_used["value"]
+                    new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 12
+                    new_consumed.remittance_form = rem_form
+                    new_consumed.save()
 
-                rem_form.total += new_consumed.total
+                    rem_form.total += new_consumed.total
 
-                if assigned.range_to == new_consumed.end_ticket:
-                    assigned.is_consumed = True
-                    assigned.save()
+                    if assigned.range_to == new_consumed.end_ticket:
+                        assigned.is_consumed = True
+                        assigned.save()
 
         for ticket_used in data["fifteen_peso_tickets"]:
             assigned = AssignedTicket.objects.get(id=ticket_used["id"])
 
             if "value" in ticket_used:
-                # Get current tickets
-                consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
-                last_consumed = consumed_tickets.order_by('-end_ticket').first()
+                if ticket_used["value"]:
+                    # Get current tickets
+                    consumed_tickets = ConsumedTicket.objects.filter(assigned_ticket=assigned)
+                    last_consumed = consumed_tickets.order_by('-end_ticket').first()
 
-                new_consumed = ConsumedTicket()
-                new_consumed.assigned_ticket = assigned
-                if last_consumed is not None:
-                    new_consumed.start_ticket = last_consumed.end_ticket + 1
-                else:
-                    new_consumed.start_ticket = assigned.range_from
-                new_consumed.end_ticket = ticket_used["value"]
-                new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 15
-                new_consumed.remittance_form = rem_form
-                new_consumed.save()
+                    new_consumed = ConsumedTicket()
+                    new_consumed.assigned_ticket = assigned
+                    if last_consumed is not None:
+                        new_consumed.start_ticket = last_consumed.end_ticket + 1
+                    else:
+                        new_consumed.start_ticket = assigned.range_from
+                    new_consumed.end_ticket = ticket_used["value"]
+                    new_consumed.total = (float(new_consumed.end_ticket) - float(new_consumed.start_ticket)) * 15
+                    new_consumed.remittance_form = rem_form
+                    new_consumed.save()
 
-                rem_form.total += new_consumed.total
+                    rem_form.total += new_consumed.total
 
-                if assigned.range_to == new_consumed.end_ticket:
-                    assigned.is_consumed = True
-                    assigned.save()
+                    if assigned.range_to == new_consumed.end_ticket:
+                        assigned.is_consumed = True
+                        assigned.save()
 
         rem_form.total -= (float(rem_form.fuel_cost) + float(rem_form.other_cost))
         deployment.shuttle.save()
