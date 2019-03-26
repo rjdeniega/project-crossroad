@@ -602,7 +602,7 @@ class NonDeployedDrivers(APIView):
 class BackUpShuttles(APIView):
     @staticmethod
     def get(request):
-        shuttles = Shuttle.objects.filter(status='B')
+        shuttles = Shuttle.objects.filter(route='B', status="A")
 
         deployed_shuttles = []
         for shuttle in shuttles:
@@ -1035,6 +1035,7 @@ class MarkAsPresent(APIView):
         print(driver)
         presentDriver = PresentDrivers()
         presentDriver.assignedDriver = driver
+        presentDriver.datetime = datetime.now()
         presentDriver.save()
 
         return Response({
