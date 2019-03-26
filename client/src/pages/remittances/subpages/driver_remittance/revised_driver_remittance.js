@@ -148,7 +148,8 @@ class DeploymentList extends React.Component {
 
         this.state = {
             'deployments': [],
-            'drawer_visibility': false
+            'drawer_visibility': false,
+            'is_shown': true
         }
     }
 
@@ -166,6 +167,7 @@ class DeploymentList extends React.Component {
 
     componentDidMount() {
         this.fetchDeployments();
+        this.fetchShouldShowTimeIn();
     }
 
     fetchDeployments() {
@@ -194,12 +196,38 @@ class DeploymentList extends React.Component {
             }).catch(error => console.log(error));
     }
 
+    fetchShouldShowTimeIn() {
+        let driver = null;
+        console.log(this.props.driver);
+        if (this.props.driver == undefined || this.props.driver == null) {
+            driver = JSON.parse(localStorage.user_staff);
+        }
+        else {
+            driver = this.props.driver
+        }
+        fetch('/remittances/deployments/time-in/shown/' + driver.id)
+            .then(response => {
+                return response;
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    this.setState({
+                        is_shown: data.is_shown
+                    });
+                }
+                else {
+                    console.log(data.error)
+                }
+            }).catch(error => console.log(error));
+    }
+
     render() {
-
-
         return (
             <div className="list-container">
-                <OngoingDeployment />
+                {this.state.is_shown &&
+                    <OngoingDeployment /> 
+                }
                 <List
                     header={<div> List of Deployments </div>}
                     dataSource={this.state.deployments}
