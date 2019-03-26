@@ -537,20 +537,31 @@ class PopulateRemittances():
     @staticmethod
     def replace_times():
         for item in RemittanceForm.objects.all():
+            deployment_type = DriversAssigned.objects.filter(driver=item.deployment.driver,
+                                                             shift=item.deployment.shift_iteration.shift).first()
+            if deployment_type is None:
+                deployment_type = "Regular"
+            else:
+                deployment_type = deployment_type.deployment_type
+            print(item.deployment.shift_iteration.shift.type)
+            print(deployment_type)
             if item.deployment.shift_iteration.shift.type == "A" and (
-                    item.deployment.type == "Regular" or item.deployment.type == "R"):
+                            deployment_type == "Regular" or deployment_type == "R"):
                 item.deployment.start_time = item.deployment.start_time.replace(hour=5, minute=0, second=0,
                                                                                 microsecond=0)
             elif item.deployment.shift_iteration.shift.type == "A" and (
-                    item.deployment.type == "Early" or item.deployment.type == "E"):
+                            deployment_type == "Early" or deployment_type == "E"):
                 item.deployment.start_time = item.deployment.start_time.replace(hour=4, minute=30, second=0,
                                                                                 microsecond=0)
             elif item.deployment.shift_iteration.shift.type == "P" and (
-                    item.deployment.type == "Regular" or item.deployment.type == "R"):
+                            deployment_type == "Regular" or deployment_type == "R"):
                 item.deployment.start_time = item.deployment.start_time.replace(hour=14, minute=00, second=0,
                                                                                 microsecond=0)
             elif item.deployment.shift_iteration.shift.type == "P" and (
-                    item.deployment.type == "Late" or item.deployment.type == "L"):
+                            deployment_type == "Late" or deployment_type == "L"):
                 item.deployment.start_time = item.deployment.start_time.replace(hour=16, minute=00, second=0,
                                                                                 microsecond=0)
+            item.save()
+            item.deployment.save()
+            print(item.deployment.start_time)
             print(f"{item} replaced")
