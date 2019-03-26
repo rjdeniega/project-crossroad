@@ -658,10 +658,10 @@ class PatronageRefund(APIView):
         #         array.append(accumulated_month)
         #
         #     rate_of_refund = sum(array) / 12
-        total_shares = sum([item.total for item in Share.objects.filter(date_of_update__year=start_date.year)])
+        total_shares = sum([item.value for item in Share.objects.filter(date_of_update__year=start_date.year)])
         for member in Member.objects.all():
             member_data = MemberSerializer(member).data
-            shares = sum([item.total for item in Share.objects.filter(member=member,date_of_update__year=start_date.year)])
+            shares = sum([item.value for item in Share.objects.filter(member=member,date_of_update__year=start_date.year)])
             if total_shares == 0:
                 rate_of_refund = 0
                 total_shares = 0
@@ -2527,9 +2527,8 @@ class NotificationItems(APIView):
             print(user_id)
             notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
 
-            unread = NotificationSerializer(Notification.objects
-                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
-                '-created'), many=True)
+            unread = NotificationSerializer(Notification.objects.filter(user__id=user_id,is_read=False), many=True)
+            print(unread)
         elif user_type == 'system_admin':
             NotificationItems.get_om_repairs(user_id)
             NotificationItems.get_om_notifs(user_id)
@@ -2539,9 +2538,8 @@ class NotificationItems(APIView):
             print(user_id)
             notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
 
-            unread = NotificationSerializer(Notification.objects
-                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
-                '-created'), many=True)
+            unread = NotificationSerializer(Notification.objects.filter(user__id=user_id,is_read=False), many=True)
+
         elif user_type == 'clerk':
             NotificationItems.get_om_notifs(user_id)
             NotificationItems.get_clerk_notifs(user_id)

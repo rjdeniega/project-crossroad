@@ -68,8 +68,8 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.no_of_beep}</td>
                                         <td className="monetary">{item.beep_total_decimal}</td>
                                         <td>{item.no_of_carwash}</td>
-                                        <td>{item.carwash_total_decimal}</td>
-                                        <td className="monetary"><b>{item.total_transactions}</b></td>
+                                        <td className="monetary">{item.carwash_total_decimal}</td>
+                                        <td className="monetary"><b>{item.total_transactions_decimal}</b></td>
 
                                     </tr>
                                 </Fragment>
