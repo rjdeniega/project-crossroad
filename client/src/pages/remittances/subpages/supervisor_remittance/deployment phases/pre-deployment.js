@@ -582,7 +582,7 @@ function DeploymentListDetails(props) {
                                 Shuttle:
                             </span>
                             {props.is_shuttle_deployed == true ? (
-                                <Tooltip title="shuttle under deployment" placement="right">
+                                <Tooltip title="shuttle still deployed" placement="right">
                                     <span className="detail-items-value">
                                         <Badge dot status="warning">{props.shuttle}</Badge>
                                     </span>
