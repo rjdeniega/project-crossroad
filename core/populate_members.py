@@ -404,16 +404,9 @@ class PopulateMembers:
 
     @staticmethod
     def generate_beep(current_date):
-        six_to_nine = [10, 11, 12]
-        ten_to_one = [5, 6, 7]
-        two_to_three = [5, 6, 7]
-        four_to_six = [20, 21, 22]
-        seven_to_twelve = [15, 16, 17]
-        three_to_five = [2, 3, 4]
-
         am_shift = BeepShift.objects.create(type='A', date=current_date)
         pm_shift = BeepShift.objects.create(type='P', date=current_date)
-        values = [10.00, 13.00, 15.00]
+
 
         # 6 - 9
         # 6 o clock

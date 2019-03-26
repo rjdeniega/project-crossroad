@@ -598,91 +598,103 @@ class PatronageRefund(APIView):
         start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
         surplus = int(data['surplus'])
         print(surplus)
+        report_items = []
         if "end_date" in request.data:
             end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
         else:
             end_date = None
 
-        rate_of_refund = surplus / (sum([item.total for item in BeepTransaction.objects.all()]) + sum(
-            [item.total for item in CarwashTransaction.objects.all()]))
 
-        report_items = []
+
+            # rate_of_refund = surplus / (sum([item.total for item in BeepTransaction.objects.all()]) + sum(
+            #     [item.total for item in CarwashTransaction.objects.all()]))
+            #
+            # report_items = []
+            # for member in Member.objects.all():
+            #
+            #     member_data = MemberSerializer(member).data
+            #     try:
+            #         id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member.id))
+            #     except ObjectDoesNotExist:
+            #         report_items.append({
+            #             "member": MemberSerializer(member).data,
+            #             "transactions": None,
+            #             "total_transactions": 0
+            #         })
+            #         id_card = None
+            #
+            #     if len(id_cards) > 0:
+            #         member_data["id_card"] = id_cards.last().can
+            #         transactions = []
+            #         for id_card in id_cards:
+            #             for item in BeepTransaction.objects.filter(card_number=id_card.can):
+            #                 transactions.append(item)
+            #
+            #         carwash_transactions = [item for item in
+            #                                 CarwashTransaction.objects.all() if item.member == member]
+            #         if end_date is not None:
+            #             transactions = [item for item in transactions if
+            #                             start_date.date() <= item.shift.date <= end_date.date()]
+            #             carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+            #                                     start_date.date() <= item.date <= end_date.date()]
+            #         else:
+            #             transactions = [item for item in transactions if start_date.date() == item.shift.date]
+            #             carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
+            #                                     start_date.date() == item.date]
+            #
+            #         serialized_transactions = BeepTransactionSerializer(transactions, many=True)
+            #         for item in serialized_transactions.data:
+            #             item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+
         for member in Member.objects.all():
 
             member_data = MemberSerializer(member).data
-            try:
-                id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member.id))
-            except ObjectDoesNotExist:
-                report_items.append({
-                    "member": MemberSerializer(member).data,
-                    "transactions": None,
-                    "total_transactions": 0
-                })
-                id_card = None
+            shares = Share.objects.filter(member=member)
+            array = []
 
-            if id_cards is not None:
-                member_data["id_card"] = id_cards.last().can
-                transactions = []
-                for id_card in id_cards:
-                    for item in BeepTransaction.objects.filter(card_number=id_card.can):
-                        transactions.append(item)
+            for i in range(1, 13):
+                accumulated_month = 0
+                for share in shares:
+                    if (share.date_of_update.month == i and share.date_of_update.year == start_date.year):
+                        accumulated_month += share.value
+                array.append(accumulated_month)
 
-                carwash_transactions = [item for item in
-                                        CarwashTransaction.objects.all() if item.member == member]
-                if end_date is not None:
-                    transactions = [item for item in transactions if
-                                    start_date.date() <= item.shift.date <= end_date.date()]
-                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
-                                            start_date.date() <= item.date <= end_date.date()]
-                else:
-                    transactions = [item for item in transactions if start_date.date() == item.shift.date]
-                    carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions if
-                                            start_date.date() == item.date]
+            rate_of_refund = sum(array) / 12
 
-                serialized_transactions = BeepTransactionSerializer(transactions, many=True)
-                for item in serialized_transactions.data:
-                    item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+            report_items.append({
+                "date": start_date,
+                "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
+                "member": member_data,
+                "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
+                "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * (surplus / 100)),
+            })
 
-                shares = Share.objects.filter(member=member)
-                array = []
+            # rate_of_refund = (sum([item.total for item in transactions]) + sum(
+            #     [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
 
-                for i in range(1, 13):
-                    accumulated_month = 0
-                    for share in shares:
-                        if (share.date_of_update.month == i and share.date_of_update.year == start_date.year):
-                            accumulated_month += share.value
-                    array.append(accumulated_month)
+            # "no_of_beep": len(transactions),
+            # "no_of_carwash": len(carwash_transactions),
+            # "beep_total": sum([item.total for item in transactions]),
+            # "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
+            # "carwash_total_decimal": "{0:,.2f}".format(
+            #     sum([float(item['total']) for item in serialized_transactions.data])),
+            # "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
+            # "beep_transactions": serialized_transactions.data,
+            # "carwash_transactions": carwash_transactions,
+            # "total_transactions": sum([float(item.total) for item in transactions]) + sum(
+            #     [float(item['total']) for item in carwash_transactions]),
+            # "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
+            # "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
+            #     [float(item['total']) for item in carwash_transactions])),
 
-                rate_of_refund = sum(array) / 12
 
-                # rate_of_refund = (sum([item.total for item in transactions]) + sum(
-                #     [item.total for item in carwash_transactions])) / surplus if surplus != 0 else 0
-                report_items.append({
-                    "date": start_date,
-                    "member": member_data,
-                    "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
-                    "no_of_beep": len(transactions),
-                    "no_of_carwash": len(carwash_transactions),
-                    "beep_total": sum([item.total for item in transactions]),
-                    "beep_total_decimal": "{0:,.2f}".format(sum([item.total for item in transactions])),
-                    "carwash_total_decimal": "{0:,.2f}".format(
-                        sum([float(item['total']) for item in serialized_transactions.data])),
-                    "carwash_total": sum([float(item['total']) for item in carwash_transactions]),
-                    "beep_transactions": serialized_transactions.data,
-                    "carwash_transactions": carwash_transactions,
-                    "total_transactions": sum([float(item.total) for item in transactions]) + sum(
-                        [float(item['total']) for item in carwash_transactions]),
-                    "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
-                    "total_transactions_decimal": "{0:,.2f}".format(sum([item.total for item in transactions]) + sum(
-                        [float(item['total']) for item in carwash_transactions])),
-                    "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * (surplus / 100)),
-                })
+            # "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
+            # "no_of_carwash_total": sum(item['no_of_carwash'] for item in report_items),
+            # "beep_grand_total": "{0:,.2f}".format(sum(item['beep_total'] for item in report_items)),
+            # "carwash_grand_total": "{0:,.2f}".format(sum(item['carwash_total'] for item in report_items)),
+            # "grand_total": "{0:,.2f}".format(sum(item['total_transactions'] for item in report_items)),
+
         return Response(data={
-            "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
-            "no_of_carwash_total": sum(item['no_of_carwash'] for item in report_items),
-            "beep_grand_total": "{0:,.2f}".format(sum(item['beep_total'] for item in report_items)),
-            "carwash_grand_total": "{0:,.2f}".format(sum(item['carwash_total'] for item in report_items)),
-            "grand_total": "{0:,.2f}".format(sum(item['total_transactions'] for item in report_items)),
             "report_items": report_items
         }, status=status.HTTP_200_OK)
 
@@ -1947,32 +1959,7 @@ class SupervisorWeeklyReport(APIView):
                 daily_income = 0
 
                 deployed_drivers = []
-
-                for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
-                    driver_remit = 0
-                    driver_fuel = 0
-                    driver_cost = 0
-                    for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
-                        daily_remittance += consumed_ticket.total
-                        driver_remit += consumed_ticket.total
-                    for remittance in RemittanceForm.objects.filter(deployment=deployment):
-                        daily_cost += remittance.fuel_cost + remittance.other_cost
-                        daily_income += remittance.total
-                        driver_cost += remittance.fuel_cost + remittance.other_cost
-
-                    deployed_drivers.append({
-                        "driver_id": deployment.driver.id,
-                        "driver_name": deployment.driver.name,
-                        "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
-                        "remittance": "{0:,.2f}".format(driver_remit),
-                        "cost": "{0:,.2f}".format(driver_cost),
-                        "total": "{0:,.2f}".format(driver_remit - driver_cost),
-                    })
-
-                    number_of_drivers += 1
-
                 absent_drivers = []
-
                 for drivers_assigned in DriversAssigned.objects.filter(shift=shift_iteration.shift):
                     absent = True
                     for deployed_driver in deployed_drivers:
@@ -1995,6 +1982,70 @@ class SupervisorWeeklyReport(APIView):
                             "driver_name": drivers_assigned.driver.name,
                             "sub_driver": driver_name
                         })
+
+                for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
+                    driver_remit = 0
+                    driver_fuel = 0
+                    driver_cost = 0
+                    for consumed_ticket in ConsumedTicket.objects.filter(remittance_form__deployment=deployment):
+                        daily_remittance += consumed_ticket.total
+                        driver_remit += consumed_ticket.total
+                    for remittance in RemittanceForm.objects.filter(deployment=deployment):
+                        daily_cost += remittance.fuel_cost + remittance.other_cost
+                        daily_income += remittance.total
+                        driver_cost += remittance.fuel_cost + remittance.other_cost
+
+                    temp_absent_drivers = [item['sub_driver'] for item in absent_drivers]
+                    type = "Normal"
+                    if deployment.driver.name in temp_absent_drivers:
+                        type = "Sub-in"
+
+                    redeployments = Redeployments.objects.filter(deployment=deployment)
+
+                    if deployment.driver in [item.deployment.driver for item in redeployments]:
+                        type = "Redeployed"
+                    print([item.deployment.driver for item in redeployments])
+
+                    rem = RemittanceForm.objects.get(deployment=deployment)
+                    driver_assigned = DriversAssigned.objects.filter(driver=deployment.driver,
+                                                                     shift=deployment.shift_iteration.shift).first()
+                    shift_type = rem.deployment.shift_iteration.shift.type
+                    deployment_type = 'R'
+
+                    if driver_assigned is not None:
+                        shift_type = driver_assigned.shift.type
+                        deployment_type = driver_assigned.deployment_type
+
+                        print(shift_type)
+                        print(deployment_type)
+
+                    expected_arrival = None
+                    if shift_type == "A" and deployment_type == "R":
+                        expected_arrival = rem.created.replace(hour=7)
+                    if shift_type == "A" and deployment_type == "E":
+                        expected_arrival = rem.created.replace(hour=5)
+                    if shift_type == "P" and deployment_type == "R":
+                        expected_arrival = rem.created.replace(hour=14)
+                    if shift_type == "P" and deployment_type == "L":
+                        expected_arrival = rem.created.replace(hour=16)
+
+                    r_status = "Late" if rem.created > expected_arrival else "On Time"
+
+                    # if deployment.driver.id not in [item['driver_id'] for item in
+                    #                                 deployed_drivers] and not driver_remit == 0:
+
+                    deployed_drivers.append({
+                        "type": type,
+                        "status": r_status,
+                        "driver_id": deployment.driver.id,
+                        "driver_name": deployment.driver.name,
+                        "shuttle": f'{deployment.shuttle.shuttle_number} - {deployment.shuttle.plate_number}',
+                        "remittance": "{0:,.2f}".format(driver_remit),
+                        "cost": "{0:,.2f}".format(driver_cost),
+                        "total": "{0:,.2f}".format(driver_remit - driver_cost),
+                    })
+
+                    number_of_drivers += 1
 
                 rows.append({
                     "day": calendar.day_name[temp_start.weekday()],
@@ -2201,8 +2252,9 @@ class ShuttleCostVRevenueReport(APIView):
                 shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
             print("{0:,.2f}".format(shuttle_remittance))
             rows.append({
+                "purchase_date": shuttle.date_acquired,
                 "purchase_cost": "{0:,.2f}".format(float(value)),
-                "shuttle_id": shuttle.id,
+                "shuttle_id": f'{shuttle.id}- {shuttle.model} - {shuttle.make}',
                 "shuttle_plate_number": shuttle.plate_number,
                 "shuttle_make": shuttle.make,
                 "revenue": "{0:,.2f}".format(shuttle_remittance),
@@ -2495,7 +2547,7 @@ class NotificationItems(APIView):
                 .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
                 '-created'), many=True)
             notifications = NotificationSerializer(Notification.objects
-                                                   .filter(Q(type='I') | Q(type='N')).filter(user__id=user_id).order_by(
+                .filter(Q(type='I') | Q(type='N')).filter(user__id=user_id).order_by(
                 '-created'), many=True)
             unread = NotificationSerializer(Notification.objects
                 .filter(Q(type='N') | Q(type='I')).filter(is_read=False).order_by(
@@ -2518,13 +2570,13 @@ class NotificationItems(APIView):
     @staticmethod
     def get_clerk_notifs(user_id):
         Notification.objects.filter(user__id=user_id,
-                                                   description="Please upload AM beep CSV").hard_delete()
+                                    description="Please upload AM beep CSV").hard_delete()
         Notification.objects.filter(user__id=user_id,
                                     description="Please upload PM beep CSV").hard_delete()
         is_am = NotificationItems.is_time_between(time(4, 00), time(13, 59))
         is_pm = NotificationItems.is_time_between(time(14, 00), time(1, 00))
-        beep_shift_am = BeepShift.objects.filter(date=datetime.now(),type='A')
-        beep_shift_pm = BeepShift.objects.filter(date=datetime.now(),type='P')
+        beep_shift_am = BeepShift.objects.filter(date=datetime.now(), type='A')
+        beep_shift_pm = BeepShift.objects.filter(date=datetime.now(), type='P')
         print(is_am)
         print(is_pm)
         print(f'the user id is {user_id}')
@@ -2933,19 +2985,52 @@ class DriverPerformance(APIView):
         absences_total = 0
         remittance_total = 0
         payables_total = 0
+        lates_total = 0
 
-        for driver in Driver.objects.filter(is_supervisor=False).order_by('name'):
+        for driver in Driver.objects.all().order_by('name'):
             remittances = RemittanceForm.objects.filter(deployment__driver=driver, created__gte=start_date,
                                                         created__lte=end_date)
-            sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver))
-            absences = len(SubbedDeployments.objects.filter(absent_driver__driver=driver))
+            sub_freq = len(SubbedDeployments.objects.filter(deployment__driver=driver,
+                                                            deployment__shift_iteration__date__gte=start_date,
+                                                            deployment__shift_iteration__date__lte=end_date))
+            absences = len(SubbedDeployments.objects.filter(absent_driver__driver=driver,
+                                                            deployment__shift_iteration__date__gte=start_date,
+                                                            deployment__shift_iteration__date__lte=end_date))
             total = sum([item.total for item in remittances])
             payables = sum([item.discrepancy for item in remittances])
+            lates = 0
+
+            for item in remittances:
+                driver_assigned = DriversAssigned.objects.filter(shift__schedule__start_date__gte=start_date,
+                                                                 shift__schedule__end_date__gte=end_date).first()
+                shift_type = item.deployment.shift_iteration.shift.type
+                deployment_type = 'R'
+
+                if driver_assigned is not None:
+                    shift_type = driver_assigned.shift.type
+                    deployment_type = driver_assigned.deployment_type
+
+                    print(shift_type)
+                    print(deployment_type)
+
+                expected_arrival = None
+                if shift_type == "A" and deployment_type == "R":
+                    expected_arrival = item.created.replace(hour=7)
+                if shift_type == "A" and deployment_type == "E":
+                    expected_arrival = item.created.replace(hour=5)
+                if shift_type == "P" and deployment_type == "R":
+                    expected_arrival = item.created.replace(hour=14)
+                if shift_type == "P" and deployment_type == "L":
+                    expected_arrival = item.created.replace(hour=16)
+
+                if item.created > expected_arrival:
+                    lates += 1
 
             sub_freq_total += sub_freq
             absences_total += absences
             remittance_total += total
             payables_total += payables
+            lates_total += lates
 
             data.append({
                 "driver": DriverSerializer(driver).data,
@@ -2953,6 +3038,7 @@ class DriverPerformance(APIView):
                 "payables": "{0:,.2f}".format(payables),
                 "sub_freq": sub_freq,
                 "absences": absences,
+                "lates": lates,
             })
 
         print(data)
@@ -2961,6 +3047,7 @@ class DriverPerformance(APIView):
             "end_date": end_date.date(),
             "data": data,
             "payables_total": "{0:,.2f}".format(payables_total),
+            "lates_total": lates_total,
             "absences_total": absences_total,
             "sub_freq_total": sub_freq_total,
             "remittance_total": "{0:,.2f}".format(remittance_total)
@@ -2987,7 +3074,9 @@ class RemittancePerYear(APIView):
             days = 365 * x
             for i in range(1, 13):
                 filter_date = (date - timedelta(days=days)).year
-                total = RemittancePerYear.get_total(BeepTransaction.objects.filter(transaction_date_time__year=filter_date, transaction_date_time__month=i))
+                total = RemittancePerYear.get_total(
+                    BeepTransaction.objects.filter(transaction_date_time__year=filter_date,
+                                                   transaction_date_time__month=i))
                 total = sum([item.total for item in
                              RemittanceForm.objects.filter(
                                  deployment__shift_iteration__date__year=filter_date,

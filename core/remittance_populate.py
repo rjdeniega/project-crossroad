@@ -20,6 +20,7 @@ class PopulateRemittances():
                 if temp_date > new_end_date:
                     break
 
+                print(temp_date)
                 #create deployments
                 ctr = 0
                 # there are twice the deployments in a day
@@ -511,7 +512,7 @@ class PopulateRemittances():
 
     @staticmethod
     def is_summer_vacation(date):
-        if date > datetime(date.year, 3, 20) or date < datetime(date.year, 6, 5):
+        if date > datetime(date.year, 3, 20) and date < datetime(date.year, 6, 5):
             return True
         return False
 

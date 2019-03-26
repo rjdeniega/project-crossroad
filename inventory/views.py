@@ -572,6 +572,7 @@ class ShuttleMaintenanceFrequency(APIView):
 
             rows.append({
                 "shuttle": shuttle.id,
+                "total_frequency": major_maintenanceTimes + minor_maintenanceTimes + intermediate_maintenanceTimes,
                 "total": "{0:,.2f}".format(
                     major_maintenanceCost + minor_maintenanceCost + intermediate_maintenanceCost),
                 "year_purchased": shuttle.date_acquired,
@@ -631,6 +632,7 @@ class ShuttleMaintenanceFrequency(APIView):
             "minor_average_maintenance_cost": minor_total_average_maintenance_cost,
             "intermediate_total_maintenance_cost": intermediate_total_maintenance_cost,
             "intermediate_average_maintenance_cost": intermediate_total_average_maintenance_cost,
+            "grand_total_frequency": major_count + minor_count + intermediate_count,
             "grand_total": "{0:,.2f}".format(grand_total),
             "minor_count": minor_count,
             "major_count": major_count,

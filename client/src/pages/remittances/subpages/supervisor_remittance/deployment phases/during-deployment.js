@@ -211,7 +211,7 @@ function DeploymentListDetails(props) {
                     driver_id={props.driver_id}
                     driver_name={driver_name}
                     deployment_id={props.deployment_id}
-                    route={props.route}
+                    route={route_label}
                     shuttle={props.shuttle}
                 />
             </div>

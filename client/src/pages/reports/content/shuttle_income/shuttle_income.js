@@ -45,7 +45,8 @@ class ComponentToPrint extends React.Component {
                 <div className="report-body">
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
-                        <th>Shuttle #</th>
+                        <th>Shuttle</th>
+                        <th>Purchase Date</th>
                         <th>Purchase Cost</th>
                         <th>Revenue</th>
                         <th>Fuel Costs</th>
@@ -61,6 +62,7 @@ class ComponentToPrint extends React.Component {
                                 <Fragment>
                                     <tr>
                                         <td>{item.shuttle_id}</td>
+                                        <td className="monetary">{item.purchase_date}</td>
                                         <td className="monetary">{item.purchase_cost}</td>
                                         <td className="monetary">{item.revenue}</td>
                                         <td className="monetary">{item.fuel_cost}</td>
@@ -74,6 +76,7 @@ class ComponentToPrint extends React.Component {
                             ))}
                             <tr>
                                 <td><b> Grand Total </b></td>
+                                <td className="total-line monetary"><b></b></td>
                                 <td className="total-line monetary"><b>{this.props.data.total_purchase_cost}</b></td>
                                 <td className="total-line monetary"><b>{this.props.data.total_remittance}</b></td>
                                 <td className="total-line monetary"><b>{this.props.data.total_fuel}</b></td>

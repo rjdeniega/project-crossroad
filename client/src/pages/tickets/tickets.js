@@ -226,8 +226,8 @@ export class TicketsPage extends Component {
                                 <Tag>₱15-{item.fifteen_total} </Tag>
                             </div>
                         }
-                        title={<b>{!item.has_missing &&
-                                        <AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />}{item.name}</b>}
+                        title={<b>{item.has_missing == "Yes" ?
+                            <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />{item.name}</p> : <p>{item.name}</p>}</b>}
                     />
                     <Button type="primary" size="small" onClick={() => this.showModal(item.key, item.name)}>Assign
                         Ticket</Button>
