@@ -293,7 +293,6 @@ class StopDeploymentButton extends React.Component {
 
         this.handleShuttleChange = this.handleShuttleChange.bind(this);
         this.handleDriverChange = this.handleDriverChange.bind(this);
-        this.handleRadioChange = this.handleRadioChange.bind(this);
 
         const shuttleBreakdown = (
             <ShuttleBreakdown
@@ -312,7 +311,6 @@ class StopDeploymentButton extends React.Component {
             shuttle_replacement: null,
             confirmLoading: false,
             is_disabled: true,
-            is_shuttle_breakdown: true,
             'ten_peso_tickets': [],
             'twelve_peso_tickets': [],
             'fifteen_peso_tickets': [],
@@ -400,7 +398,6 @@ class StopDeploymentButton extends React.Component {
 
     handleAccident(){
         let data = {
-            "is_breakdown": this.state.is_shuttle_breakdown,
             "deployment_id": this.props.deployment_id
         }
 
@@ -428,12 +425,6 @@ class StopDeploymentButton extends React.Component {
             driver_replacement: value
         });
         this.fetchSubDriverTickets(value)
-    }
-
-    handleRadioChange(value) {
-        this.setState({
-            is_shuttle_breakdown: value
-        })
     }
 
     fetchSubDriverTickets(sub_driver_id) {
@@ -547,7 +538,6 @@ class StopDeploymentButton extends React.Component {
         
         const accident = (
             <Accident 
-                onRadioChange={this.handleRadioChange}
             />
         )
 
@@ -623,12 +613,6 @@ class StopDeploymentButton extends React.Component {
 class Accident extends React.Component {
     constructor(props) {
         super(props);
-
-        this.onSelectChange = this.onSelectChange.bind(this);
-    }
-
-    onSelectChange = (e) => {
-        this.props.onRadioChange(e.target.value);
     }
 
     render() {
@@ -636,11 +620,6 @@ class Accident extends React.Component {
         return(
             <div>
                 <Divider />
-                <label>Is the shuttle in need of inspection?</label>
-                <RadioGroup onChange={this.onSelectChange} defaultValue={true}>
-                    <Radio value={true}>Yes</Radio>
-                    <Radio value={false}>No</Radio>
-                </RadioGroup>
             </div>
             
         );

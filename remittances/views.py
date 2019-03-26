@@ -1239,8 +1239,8 @@ class AccidentDeployment(APIView):
         
         deployment.set_deployment_accident()
         
-        if data["is_breakdown"]:
-            deployment.shuttle.status = 'FI'
+        deployment.shuttle.status = 'FI'
+        deployment.shuttle.save()
         
         return Response(data={
             "message": "Deployment has been successfully stopped",
