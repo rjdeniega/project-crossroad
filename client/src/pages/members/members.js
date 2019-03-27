@@ -127,6 +127,7 @@ export class TransactionsPane extends Component {
         date_object: moment('2015/01/01', dateFormat),
         function: 'add',
         with_select: false,
+        type: "small"
     };
 
     componentDidMount() {
@@ -312,7 +313,7 @@ export class TransactionsPane extends Component {
                                 label="Vehicle Type"
                             >
                                 <Select defaultValue="small" style={{ width: 300 }} onChange={this.handleTypeSelect}>
-                                    <Option value="small"> Small (Sedan)</Option>
+                                    <Option value="small"> Small (Sedan) </Option>
                                     <Option value="medium">Medium (Minivan)</Option>
                                     <Option value="large">Large (SUV) </Option>
                                     <Option value="xlarge">XL (L300) </Option>
