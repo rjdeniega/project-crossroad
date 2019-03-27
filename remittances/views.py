@@ -447,13 +447,13 @@ class NonDeployedDrivers(APIView):
         query = DriversAssigned.objects.filter(shift=current_shift.id)
         print(query)
         isAbsent = list()
-        if current_shift.type == "A" and datetime.now().hour > 15:
+        if current_shift.type == "A" and (datetime.now().hour > 12 or datetime.now().hour < 4):
             print("AM is disabled")
             return Response(data={
                 "non_deployed_drivers": [],
                 "disabled": "AM"
             }, status=status.HTTP_200_OK)
-        elif current_shift.type == "P" and datetime.now().hour > 23:
+        elif current_shift.type == "P" and (datetime.now().hour > 23 or datetime.now().hour < 13):
             print("PM is disabled")
             return Response(data={
                 "non_deployed_drivers": [],

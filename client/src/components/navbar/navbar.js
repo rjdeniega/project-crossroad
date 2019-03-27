@@ -25,6 +25,7 @@ import { HistoryPage } from "../../pages/driver_history/driver_history";
 import {fileTextO} from 'react-icons-kit/fa/fileTextO'
 import {ic_receipt} from 'react-icons-kit/md/ic_receipt'
 import {ic_history} from 'react-icons-kit/md/ic_history'
+import {SupervisorReportsPage} from '../../pages/supervisor_reports/supervisor_reports'
 
 
 
@@ -115,6 +116,12 @@ const SUPERVISOR_TABS = [
         path: '/om_deployment',
         component: OMDeployment,
         image: ic_receipt
+    },{
+        name: "My Reports",
+        key: "reports",
+        path: '/supervisor_reports',
+        component: SupervisorReportsPage,
+        image: fileTextO
     },
 ];
 const MEMBER_TABS = [

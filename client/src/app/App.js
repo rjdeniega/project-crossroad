@@ -13,6 +13,7 @@ import { TicketsPage } from "../pages/tickets/tickets";
 import { ProfilePage } from "../pages/profile/profile";
 import { HistoryPage } from "../pages/driver_history/driver_history";
 import { OMDeployment } from "../pages/om_deployment/om_deployment";
+import { SupervisorReportsPage } from "../pages/supervisor_reports/supervisor_reports";
 
 
 import {
@@ -194,6 +195,7 @@ export default class App extends Component {
                     <Route path="/tickets" render={() => <TicketsPage />}/>
                     <Route path="/profile" render={() => <ProfilePage />}/>
                     <Route path="/history" render={() => <HistoryPage />}/>
+                    <Route path="/supervisor_reports" render={() => <SupervisorReportsPage/>}/>
                     <Route path="/om_deployment" render={() => <OMDeployment />}/>
 
 
