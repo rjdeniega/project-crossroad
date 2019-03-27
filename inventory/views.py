@@ -491,11 +491,17 @@ class ShuttleMaintenanceFrequency(APIView):
 
         for shuttle in shuttles:
             major_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                      degree="Major", end_date__gte=start_date,end_date__lte=end_date).count()
+                                                                                      degree="Major",
+                                                                                      end_date__gte=start_date,
+                                                                                      end_date__lte=end_date).count()
             minor_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                      degree="Minor", end_date__gte=start_date,end_date__lte=end_date).count()
+                                                                                      degree="Minor",
+                                                                                      end_date__gte=start_date,
+                                                                                      end_date__lte=end_date).count()
             intermediate_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                             degree="Intermediate", end_date__gte=start_date,end_date__lte=end_date).count()
+                                                                                             degree="Intermediate",
+                                                                                             end_date__gte=start_date,
+                                                                                             end_date__lte=end_date).count()
             major_maintenanceCost = 0
             minor_maintenanceCost = 0
             intermediate_maintenanceCost = 0
@@ -1115,4 +1121,33 @@ class AddItemRemark(APIView):
 
         return Response(data={
             'foo': 'bar'
+        }, status=status.HTTP_200_OK)
+
+
+class VendorReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = data['start_date']
+        end_date = data['end_date']
+        vendor_performances = VendorPerformance.objects.filter(expected_delivery__gte=start_date,
+                                                               expected_delivery__lte=end_date)
+        vendors = Vendor.objects.order_by('name')
+        vendor_performance = []
+        for vendor in vendors:
+            late = vendor_performances.filter(vendor=vendor,
+                                              expected_delivery__lt=F('actual_delivery')).count()
+            on_time = vendor_performances.filter(vendor=vendor,
+                                                 expected_delivery__gte=F('actual_delivery')).count()
+            defective = vendor_performances.exclude(defective_category__isnull=True).count()
+            vendor_performance.append({
+                'name': vendor.name,
+                'late': late,
+                'on_time': on_time,
+                'defective': defective,
+                'total': late + on_time + defective
+            })
+
+        return Response(data={
+            "vendors": vendor_performance
         }, status=status.HTTP_200_OK)
