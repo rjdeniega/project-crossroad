@@ -39,8 +39,8 @@ export class VendorReport extends Component {
         });
 
         let data = {
-            start_date: start_date.toDate(),
-            end_date: end_date.toDate(),
+            start_date: start_date,
+            end_date: end_date,
         };
 
         postData('inventory/vendor/report/', data).then(data => {
@@ -151,8 +151,8 @@ export class VendorReport extends Component {
         return (
             <div>
                 <Form.Item label="Date Range" {...datePickerLayout}>
-                    <DatePicker.RangePicker disabledDate={disabledDate} onChange={(date) => {
-                        this.setState({start_date: date[0], end_date: date[1]}, () => console.log(this.state))
+                    <DatePicker.RangePicker disabledDate={disabledDate} onChange={(date, dateString) => {
+                        this.setState({start_date: dateString[0], end_date: dateString[1]}, () => console.log(this.state))
                     }}/>
                 </Form.Item>
                 <Form.Item {...buttonLayout}>
@@ -180,7 +180,7 @@ export class VendorReport extends Component {
                                 <Col span={12}>
                                     <Typography type='secondary' style={{textAlign: 'center'}} strong>Vendor
                                         Performance Report
-                                        from {start_date.toDate().toLocaleDateString()} to {end_date.toDate().toLocaleDateString()}</Typography>
+                                        from {start_date} to {end_date}</Typography>
                                 </Col>
                             </Row>
                             <br/>
@@ -194,7 +194,7 @@ export class VendorReport extends Component {
                             <Row type='flex' justify='center'>
                                 <Col span={12}>
                                     <Typography type='secondary' style={{textAlign: 'center'}}>Vendor Performance
-                                        from {start_date.toDate().toLocaleDateString()} to {end_date.toDate().toLocaleDateString()}</Typography>
+                                        from {start_date} to {end_date}</Typography>
                                 </Col>
                             </Row>
                             <br/>

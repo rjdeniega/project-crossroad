@@ -1151,8 +1151,8 @@ class VendorReport(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        start_date = data['start_date']
-        end_date = data['end_date']
+        start_date = datetime.strptime(data['start_date'], '%Y-%m-%d')
+        end_date = datetime.strptime(data['end_date'], '%Y-%m-%d')
         vendor_performances = VendorPerformance.objects.filter(expected_delivery__gte=start_date,
                                                                expected_delivery__lte=end_date)
         vendors = Vendor.objects.order_by('name')
