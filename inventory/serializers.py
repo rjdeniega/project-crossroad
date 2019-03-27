@@ -78,3 +78,9 @@ class ItemRequestSerializer(ModelSerializer):
     class Meta:
         model = ItemRequest
         fields = "__all__"
+
+
+class VendorPerformanceSerializer(ModelSerializer):
+    class Meta:
+        model = VendorPerformance
+        fields = "__all__"

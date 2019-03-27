@@ -491,11 +491,17 @@ class ShuttleMaintenanceFrequency(APIView):
 
         for shuttle in shuttles:
             major_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                      degree="Major", end_date__gte=start_date,end_date__lte=end_date).count()
+                                                                                      degree="Major",
+                                                                                      end_date__gte=start_date,
+                                                                                      end_date__lte=end_date).count()
             minor_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                      degree="Minor", end_date__gte=start_date,end_date__lte=end_date).count()
+                                                                                      degree="Minor",
+                                                                                      end_date__gte=start_date,
+                                                                                      end_date__lte=end_date).count()
             intermediate_maintenanceTimes = Repair.objects.filter(shuttle=shuttle.id).filter(status="C",
-                                                                                             degree="Intermediate", end_date__gte=start_date,end_date__lte=end_date).count()
+                                                                                             degree="Intermediate",
+                                                                                             end_date__gte=start_date,
+                                                                                             end_date__lte=end_date).count()
             major_maintenanceCost = 0
             minor_maintenanceCost = 0
             intermediate_maintenanceCost = 0
@@ -892,9 +898,9 @@ class PurchaseOrderItemView(APIView):
         item_movement = ItemMovement(item=added_item, type="B", quantity=item.quantity, unit_price=item.unit_price)
         item_movement.save()
 
-        vendor_performance = VendorPerformance(vendor=vendor, purchase_order=purchase_order,
+        vendor_performance = VendorPerformance(vendor=vendor, item_category=category, purchase_order=purchase_order,
                                                expected_delivery=purchase_order.expected_delivery,
-                                               actual_delivery=datetime.now())
+                                               actual_delivery=datetime.now(), defective=False)
         vendor_performance.save()
         return Response(data={
             'foo': added_item.description
@@ -1108,11 +1114,71 @@ class AddItemRemark(APIView):
         item_category = ItemCategory.objects.get(id=data['category'])
         remarks = data['remarks']
 
-        vendor_performance = VendorPerformance(vendor=purchase_order.vendor, defective_category=item_category,
+        vendor_performance = VendorPerformance(vendor=purchase_order.vendor, item_category=item_category,
+                                               defective=True,
                                                purchase_order=purchase_order, remarks=remarks,
                                                actual_delivery=datetime.now())
         vendor_performance.save()
 
         return Response(data={
             'foo': 'bar'
+        }, status=status.HTTP_200_OK)
+
+
+class VendorReport(APIView):
+    @staticmethod
+    def post(request):
+        data = json.loads(request.body)
+        start_date = data['start_date']
+        end_date = data['end_date']
+        vendor_performances = VendorPerformance.objects.filter(expected_delivery__gte=start_date,
+                                                               expected_delivery__lte=end_date)
+        vendors = Vendor.objects.order_by('name')
+        vendor_performance = []
+        grand_total_late = 0
+        grand_total_on_time = 0
+        grand_total_defective = 0
+        for vendor in vendors:
+            vendor_performance.append({
+                'name': vendor.name
+            })
+            total_late = 0
+            total_on_time = 0
+            total_defective = 0
+            for item in VendorItem.objects.filter(vendor=vendor).order_by('category__category'):
+                late = vendor_performances.filter(vendor=vendor, item_category=item.category,
+                                                  expected_delivery__lt=F('actual_delivery')).count()
+                total_late += late
+                on_time = vendor_performances.filter(vendor=vendor, item_category=item.category,
+                                                     expected_delivery__gte=F('actual_delivery')).count()
+                total_on_time += on_time
+                defective = vendor_performances.filter(item_category=item.category, defective=True).count()
+                total_defective += defective
+                vendor_performance.append({
+                    'item': item.category.category,
+                    'late': late,
+                    'on_time': on_time,
+                    'defective': defective,
+                    'total': late + on_time + defective
+                })
+            grand_total_late += total_late
+            grand_total_on_time += total_on_time
+            grand_total_defective += total_defective
+            vendor_performance.append({
+                'item': "Total",
+                'late': total_late,
+                'on_time': total_on_time,
+                'defective': total_defective,
+                'total': total_late + total_on_time + total_defective
+            })
+        vendor_grand_totals = [{
+            'item': "Grand Total",
+            'late': grand_total_late,
+            'on_time': grand_total_on_time,
+            'defective': grand_total_defective,
+            'total': grand_total_on_time + grand_total_defective + grand_total_late
+        }]
+        return Response(data={
+            "vendors": vendor_performance,
+            'grand_totals': vendor_grand_totals,
         }, status=status.HTTP_200_OK)

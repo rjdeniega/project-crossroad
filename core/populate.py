@@ -176,11 +176,21 @@ class PopulateDatabase:
                                             received=True, status='Delivered')
                 po_item.save()
                 purchase_order.po_items.add(po_item)
-                vendor_performance = VendorPerformance(vendor=vendor,
-                                                       purchase_order=purchase_order,
-                                                       expected_delivery=expected_delivery,
-                                                       actual_delivery=end_date)
-                vendor_performance.save()
+                defective = randint(1, 6)
+                if defective == 3:
+                    vendor_performance = VendorPerformance(vendor=vendor,
+                                                           item_category=category,
+                                                           purchase_order=purchase_order,
+                                                           expected_delivery=expected_delivery,
+                                                           actual_delivery=end_date, defective=True)
+                    vendor_performance.save()
+                else:
+                    vendor_performance = VendorPerformance(vendor=vendor,
+                                                           item_category=category,
+                                                           purchase_order=purchase_order,
+                                                           expected_delivery=expected_delivery,
+                                                           actual_delivery=end_date, defective=False)
+                    vendor_performance.save()
                 item = Item(category=category,
                             description=item_description,
                             quantity=0, brand=item_brand, unit_price=item_price,

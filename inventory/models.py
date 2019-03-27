@@ -143,7 +143,8 @@ class PurchaseOrder(SoftDeletionModel):
 
 class VendorPerformance(SoftDeletionModel):
     vendor = ForeignKey(Vendor, on_delete=models.CASCADE)
-    defective_category = ForeignKey(ItemCategory, on_delete=models.CASCADE, null=True)
+    item_category = ForeignKey(ItemCategory, on_delete=models.CASCADE)
+    defective = BooleanField()
     purchase_order = ForeignKey(PurchaseOrder, on_delete=models.CASCADE, null=True)
     expected_delivery = models.DateTimeField(null=True)
     actual_delivery = models.DateTimeField(null=True)
