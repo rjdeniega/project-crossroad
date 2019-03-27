@@ -1243,6 +1243,44 @@ class RedeployDriver(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class ShouldShowTimeIn(APIView):
+    @staticmethod
+    def get(request, driver_id):
+        ss = ShouldShowTimeIn()
+        active_sched = RemittanceUtilities.get_active_schedule();
+
+        driver = None
+        for shift in Shift.objects.filter(schedule=active_sched):
+            for assignedDriver in DriversAssigned.objects.filter(shift=shift):
+                if assignedDriver.driver.id == driver_id:
+                    driver = assignedDriver
+        
+        is_shown = False
+        if ss.is_PM(driver.shift.type) and datetime.now().hour >= 12:
+            is_shown = True
+        
+        if ss.is_AM(driver.shift.type) and (datetime.now().hour >= 3 and datetime.now().hour < 12):
+            is_shown = True
+        
+        print(datetime.now().hour)
+        print(is_shown)
+        return Response(data={
+            "is_shown": is_shown
+        }, status=status.HTTP_200_OK)
+        
+    @staticmethod
+    def is_PM(shift):
+        if shift == 'P' or shift == 'PM':
+            return True
+        return False
+
+    @staticmethod
+    def is_AM(shift):
+        print(shift)
+        if shift == 'A' or shift == 'AM':
+            return True
+        return False
+
 class AccidentDeployment(APIView):
     @staticmethod
     def post(request):
