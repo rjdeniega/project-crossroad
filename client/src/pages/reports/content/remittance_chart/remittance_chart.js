@@ -115,10 +115,7 @@ class ComponentToPrint extends React.Component {
             ]
         };
         return <Line data={data} options={{
-            title: {
-                display: true,
-                text: "Remittance Trend for " + this.props.data.start_date + " to " + this.props.data.end_date
-            }
+
         }}/>
 
     };
@@ -212,6 +209,7 @@ export class RemittanceChart extends Component {
                     >
                         <RadioGroup onChange={this.onChange} defaultValue="add">
                             <RadioButton value="day">Day</RadioButton>
+                            <RadioButton value="week">Week</RadioButton>
                             <RadioButton value="month">Month</RadioButton>
                             <RadioButton value="quarter">Quarter</RadioButton>
                             <RadioButton value="year">Year</RadioButton>
@@ -234,7 +232,7 @@ export class RemittanceChart extends Component {
                         </Form.Item>
                     </Fragment>
                     }
-                    {(this.state.interval == "month" || this.state.interval == "year" || this.state.interval == "quarter") &&
+                    {(this.state.interval == "week" || this.state.interval == "month" || this.state.interval == "year" || this.state.interval == "quarter") &&
                     <Fragment>
                         <Form.Item
                             {...formItemLayout}
