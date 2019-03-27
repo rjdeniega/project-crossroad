@@ -201,11 +201,33 @@ class RepairProblems(APIView):
     def get(request, pk):
         shuttle = Shuttle.objects.get(id=pk)
 
-        repairs = RepairSerializer(Repair.objects.all()
-                                   .filter(shuttle=shuttle)
-                                   .order_by("-date_requested"), many=True)
+        serialized_repairs = Repair.objects.all().filter(shuttle=shuttle).order_by("-date_requested")
+        repairs = []
+        for repair in serialized_repairs:
+            finding = repair.findings.first()
+            cost = 0
+            if repair.labor_fee:
+                cost += repair.labor_fee
+
+            for item_used in RepairModifications.objects.filter(repair=repair.id):
+                item = Item.objects.get(pk=item_used.item_used.pk)
+                if item.item_type == "Physical Measurement":
+                    cost += (item.unit_price / item.measurement / item_used.quantity)
+                elif item.item_type == "Liquid Measurement":
+                    cost += (item.unit_price / item.measurement / item_used.quantity)
+                else:
+                    cost += item_used.quantity * item.unit_price
+
+            repairs.append({
+                'id': repair.id,
+                'category': finding.item_defect.category,
+                'date_requested': repair.date_requested,
+                'cost': cost,
+                'status': repair.status,
+            })
+
         return Response(data={
-            "repairs": repairs.data
+            "repairs": repairs
         }, status=status.HTTP_200_OK)
 
     @staticmethod

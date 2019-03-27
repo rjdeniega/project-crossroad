@@ -53,7 +53,7 @@ usernames = ['jerrysantos', 'martingarcia', 'waynemambugan', 'emmantolentino', '
 findings = {
     'Oil': ['Low oil', 'Faulty Oil'],
     'Windshield Wiper': ["Old stock", 'Blade is broken'],
-    'Light Bulb': ['Rand out of power', 'It broke'],
+    'Light Bulb': ['Ran out of power', 'It broke'],
     'Brake Pads': ['Brake pads are smooth', 'The brake pad is cracked'],
     'Brake Fluid': ['Low fluid', 'Very viscous']
 }
