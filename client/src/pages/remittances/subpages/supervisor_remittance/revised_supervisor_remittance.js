@@ -1,4 +1,4 @@
-import { Row, Col } from 'antd';
+import { Row, Col, Alert } from 'antd';
 import React, { Component } from 'react';
 import { Header } from '../../components/header/remittance_header';
 import { PreDeployment } from './deployment phases/pre-deployment';
@@ -13,6 +13,7 @@ export class SupervisorRemittance extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            'disabled': "No",
             'plannedDrivers': [],
             'deployedDrivers': [],
             'pendingDeployments': []
@@ -38,8 +39,10 @@ export class SupervisorRemittance extends React.Component {
             .then(response => response.json())
             .then(data => {
                 if (!data.error) {
+                    console.log(data);
                     this.setState({
-                        plannedDrivers: data.non_deployed_drivers
+                        plannedDrivers: data.non_deployed_drivers,
+                        disabled: data.disabled
                     });
                 }
                 else {
@@ -92,18 +95,45 @@ export class SupervisorRemittance extends React.Component {
                 <PerfectScrollbar>
                     <Header />
                     <Row className="remittance-body" gutter={16}>
+                        {console.log(this.state.disabled)}
+                        {console.log(this.state.disabled=="AM")}
+                        {this.state.disabled == "AM" &&
+                            <Col span={8}>
+                                <Alert
+                                    message="AM Disabled"
+                                    description="AM Driver deployment at this hour is restricted"
+                                    type="warning"
+                                    showIcon
+                                />
+                            </Col>
+                        }
+                        {this.state.disabled == "PM" &&
+                            <Col span={8}>
+                                <Alert
+                                    message="PM Disabled"
+                                    description="PM Driver deployment at this hour is restricted"
+                                    type="warning"
+                                    showIcon
+                                />
+                            </Col>
+                        }
+
+
+                        {this.state.disabled == "No" &&
                         <Col span={8}>
-                            <PreDeployment 
+                            <PreDeployment
                                 plannedDrivers={this.state.plannedDrivers}
+                                is_disabled={this.state.disabled}
                             />
                         </Col>
+                        }
                         <Col span={8}>
-                            <DuringDeployment 
+                            <DuringDeployment
                                 deployedDrivers={this.state.deployedDrivers}
                             />
                         </Col>
                         <Col span={8}>
-                            <PostDeployment 
+                            <PostDeployment
                                 pendingDeployments={this.state.pendingDeployments}
                             />
                         </Col>
