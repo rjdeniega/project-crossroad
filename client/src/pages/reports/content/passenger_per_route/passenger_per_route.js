@@ -4,7 +4,7 @@ import moment from 'moment';
 import { postData } from '../../../../network_requests/general';
 import './style.css';
 
-import { Select, Divider, Button, DatePicker, Pagination, InputNumber } from 'antd';
+import { Icon as AntIcon, Select, Divider, Button, DatePicker, Pagination, InputNumber } from 'antd';
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
@@ -243,9 +243,8 @@ export class PassengerPerRoute extends React.Component {
                                     <td></td>
                                     <td ></td>
                                     <td></td>
-                                    <td><b>{item.mr_total}</b></td>
-                                    <td><b> {item.mr_total}
-                                    </b></td>
+                                    <td><b>{this.state.threshold > item.mr_total ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />{item.mr_total}</p> : item.mr_total}</b></td>
+                                    <td><b> {this.state.threshold > item.mr_total ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />{item.mr_total}</p> : item.mr_total}</b></td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -258,9 +257,8 @@ export class PassengerPerRoute extends React.Component {
                                     <td></td>
                                     <td ></td>
                                     <td></td>
-                                    <td><b>{item.kaliwa_total}</b></td>
-                                    <td><b> {item.kaliwa_total}
-                                    </b></td>
+                                    <td><b>{this.state.threshold > item.kaliwa_total ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />{item.kaliwa_total}</p> : item.kaliwa_total}</b></td>
+                                    <td><b> {this.state.threshold > item.kaliwa_total ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />{item.kaliwa_total}</p> : item.kaliwa_total}</b></td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -273,8 +271,8 @@ export class PassengerPerRoute extends React.Component {
                                     <td></td>
                                     <td ></td>
                                     <td></td>
-                                    <td><b>{item.kanan_total}</b></td>
-                                    <td><b> {item.kanan_total}
+                                    <td><b>{this.state.threshold > item.kanan_total ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />{item.kanan_total}</p> : item.kanan_total}</b></td>
+                                    <td><b> {this.state.threshold > item.kanan_total ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" />{item.kanan_total}</p> : item.kanan_total}
                                     </b></td>
                                 </tr>
                                 <tr>
@@ -386,7 +384,7 @@ export class PassengerPerRoute extends React.Component {
     onThresholdChange = (value) => {
         let values = this.state.chart_data
 
-        for(var i=0; i<values.length; i++){
+        for (var i = 0; i < values.length; i++) {
             values[i]["threshold"] = value
         }
         console.log("onTHresholdChange")
@@ -396,13 +394,19 @@ export class PassengerPerRoute extends React.Component {
         })
         console.log(this.state.chart_data)
     }
+    changeThreshold = (value) => {
+        console.log("entered here");
+        this.setState({
+            threshold: value
+        })
+    }
 
     render() {
         return (
             <div style={{ padding: "10px" }}>
                 <div>
                     <DateSelect onDateChange={this.onDateChange}/>
-                    <ThresholdSelect onThresholdChange={this.onThresholdChange}/> 
+                    <ThresholdSelect changeThreshold={this.changeThreshold} onThresholdChange={this.onThresholdChange}/>
                 </div>
                 <Divider />
                 <ReportTitle
@@ -499,8 +503,6 @@ class ReportBody extends React.Component {
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.behavior = "zoomY";
 
-        
-
 
         // Add legend
         chart.legend = new am4charts.Legend();
@@ -572,10 +574,11 @@ class ThresholdSelect extends React.Component {
         }
     }
 
-    onChange(value){
-       this.setState({
-           "threshold": value
-       })
+    onChange(value) {
+        this.props.changeThreshold(value);
+        this.setState({
+            "threshold": value
+        })
     }
 
     submitThreshold = () => {
@@ -592,11 +595,11 @@ class ThresholdSelect extends React.Component {
                     placeholder="Threshold"
                     style={{ width: 200 }}
                 />
-                <Button 
-                    type="primary" 
+                <Button
+                    type="primary"
                     style={{ marginLeft: 5 }}
                     onClick={this.submitThreshold}
-                    >
+                >
                     Plot Threshold
                 </Button>
             </span>
