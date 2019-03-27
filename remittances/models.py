@@ -220,7 +220,7 @@ class Deployment(models.Model):
 
 class PresentDrivers(models.Model):
     assignedDriver = ForeignKey(DriversAssigned, related_name="assigned_driver", on_delete=models.CASCADE)
-    datetime = DateTimeField(default=timezone.now)
+    datetime = DateTimeField(default=datetime.now)
     deployment = ForeignKey(Deployment, on_delete=models.CASCADE, null=True)
     is_dayoff = BooleanField(default=False)
 

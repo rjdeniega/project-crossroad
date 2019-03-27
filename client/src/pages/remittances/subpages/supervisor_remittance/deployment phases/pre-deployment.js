@@ -872,7 +872,7 @@ class DeployWithDiffShuttle extends React.Component {
             'shuttle_id': null,
             'driver_id': this.props.driver_id,
             'backup_shuttles': [],
-            'is_modal_ok_disabled': false
+            'is_modal_ok_disabled': true
         }
         this.handleShuttleChange = this.handleShuttleChange.bind(this);
     }
@@ -936,9 +936,9 @@ class DeployWithDiffShuttle extends React.Component {
                         backup_shuttles: data.shuttles
                     });
 
-                    if(data.shuttles.length == 0)
+                    if(data.shuttles.length != 0)
                         this.setState({
-                            is_modal_ok_disabled: true
+                            is_modal_ok_disabled: false
                         }) 
                 }
                 else {
@@ -964,7 +964,9 @@ class DeployWithDiffShuttle extends React.Component {
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
                     okText="Deploy"
-                    
+                    okButtonProps={this.state.is_modal_ok_disabled ?
+                        { disabled: true } : { disabled: false }
+                    }
                 >
                     <DeployShuttleContent
                         shuttle_display={this.props.shuttle_display}
@@ -1030,6 +1032,12 @@ class DeployShuttleContent extends React.Component {
                                 ))
                             }
                         </Select>
+                        {this.props.backUpShuttles.length == 0 &&
+                            <div>
+                                <div>There is no back-up shuttle available</div>
+                                <div>Driver should be day-offed</div>
+                            </div>
+                        }
                     </Col>
                 </Row>
             </div>

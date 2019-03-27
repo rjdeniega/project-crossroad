@@ -602,7 +602,7 @@ class NonDeployedDrivers(APIView):
 class BackUpShuttles(APIView):
     @staticmethod
     def get(request):
-        shuttles = Shuttle.objects.filter(status='B')
+        shuttles = Shuttle.objects.filter(route='B', status="A")
 
         deployed_shuttles = []
         for shuttle in shuttles:
@@ -693,13 +693,13 @@ class SubDrivers(APIView):
             many=True)
 
         sub_drivers = drivers_assigned.data
-        supervisors = Driver.objects.filter(is_supervisor=True)
-        print(supervisors)
-        for supervisor in supervisors:
-            info = DriverSerializer(supervisor)
-            sub_drivers.append({
+        
+        info = DriverSerializer(current_shift.supervisor)
+
+        sub_drivers.append({
                 "driver": info.data
             })
+
         return Response(data={
             "sub_drivers": sub_drivers
         }, status=status.HTTP_200_OK)
@@ -1035,6 +1035,7 @@ class MarkAsPresent(APIView):
         print(driver)
         presentDriver = PresentDrivers()
         presentDriver.assignedDriver = driver
+        presentDriver.datetime = datetime.now()
         presentDriver.save()
 
         return Response({
