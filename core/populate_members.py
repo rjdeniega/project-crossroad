@@ -105,10 +105,10 @@ class PopulateMembers:
     @staticmethod
     def add_member_shares(current_date):
         temp_date = current_date.replace(day=1)
-        for i in range (0,15):
+        for i in range(0, 15):
             value = calendar.monthrange(temp_date.year, temp_date.month)[1]
             day = value
-            update = datetime(temp_date.year,temp_date.month,randint(1,15))
+            update = datetime(temp_date.year, temp_date.month, randint(1, 15))
             for member in Member.objects.all():
                 Share.objects.create(
                     member=member,
@@ -606,3 +606,90 @@ class PopulateMembers:
                                                shuttle=Shuttle.objects.order_by("?").first(),
                                                total=10)
             print(f'created {x}')
+
+    @staticmethod
+    def populate_users():
+        user1 = User.objects.create(
+            username="member",
+            password="admin1234"
+        )
+        user2 = User.objects.create(
+            username="member2",
+            password="admin1234"
+        )
+        user3 = User.objects.create(
+            username="member3",
+            password="admin1234"
+        )
+        user4 = User.objects.create(
+            username="member4",
+            password="admin1234"
+        )
+        Member.objects.create(user=user1,
+                              tin_number=11435,
+                              accepted_date='2011-10-19',
+                              civil_status='S',
+                              educational_attainment='V',
+                              occupation='Engineer',
+                              no_of_dependents=5,
+                              religion='Catholic',
+                              contact_no='01234',
+                              annual_income=500000,
+                              termination_date=None,
+                              name='Lissa Magpantay',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='F'
+                              )
+        Member.objects.create(user=user2,
+                              tin_number=11436,
+                              accepted_date='2011-10-19',
+                              civil_status='S',
+                              educational_attainment='V',
+                              occupation='Engineer',
+                              no_of_dependents=5,
+                              religion='Catholic',
+                              contact_no='01234',
+                              annual_income=500000,
+                              termination_date=None,
+                              name='Erwin Heusaff',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='F'
+                              )
+        Member.objects.create(user=user3,
+                              tin_number=11437,
+                              accepted_date='2011-10-19',
+                              civil_status='S',
+                              educational_attainment='V',
+                              occupation='Engineer',
+                              no_of_dependents=5,
+                              religion='Catholic',
+                              contact_no='01234',
+                              annual_income=500000,
+                              termination_date=None,
+                              name='Angel Aquino',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='F'
+                              )
+        Member.objects.create(user=user4,
+                              tin_number=11438,
+                              accepted_date='2011-10-19',
+                              civil_status='S',
+                              educational_attainment='V',
+                              occupation='Engineer',
+                              no_of_dependents=5,
+                              religion='Catholic',
+                              contact_no='01234',
+                              annual_income=500000,
+                              termination_date=None,
+                              name='Paolo Manlapaz',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
