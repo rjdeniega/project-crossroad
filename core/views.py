@@ -1969,7 +1969,9 @@ class SupervisorWeeklyReport(APIView):
                 absent_drivers = []
                 temp_deployed_drivers = [item.driver for item in
                                          Deployment.objects.filter(shift_iteration=shift_iteration)]
-
+                print(temp_deployed_drivers)
+                present_drivers = PresentDrivers.objects.filter(datetime__date=temp_start)
+                print(present_drivers)
                 for drivers_assigned in DriversAssigned.objects.filter(shift=shift_iteration.shift):
                     absent = True
                     for deployed_driver in temp_deployed_drivers:
@@ -1981,7 +1983,6 @@ class SupervisorWeeklyReport(APIView):
                                                                           deployment__shift_iteration__shift=shift_iteration.shift,
                                                                           deployment__shift_iteration__date=temp_start)
                             if len(sub_driver) > 0:
-
                                 if sub_driver[0].deployment.driver.id not in [item['sub_driver_id'] for item in
                                                                               absent_drivers]:
                                     sub_driver = sub_driver[0]
@@ -1992,10 +1993,21 @@ class SupervisorWeeklyReport(APIView):
                                         "sub_driver": driver.name,
                                         "sub_driver_id": driver.id,
                                     })
+                            else:
+                                if drivers_assigned.driver_id not in [item['driver_id'] for item in
+                                                                      absent_drivers] and drivers_assigned.driver_id not in [
+                                    item.assignedDriver.driver.id for item in present_drivers]:
+                                    absent_drivers.append({
+                                        "driver_id": drivers_assigned.driver_id,
+                                        "driver_name": drivers_assigned.driver.name,
+                                        "sub_driver": "",
+                                        "sub_driver_id": "",
+                                    })
 
                 number_of_drivers += 1
+                deployments = Deployment.objects.filter(shift_iteration=shift_iteration)
 
-                for deployment in Deployment.objects.filter(shift_iteration=shift_iteration):
+                for deployment in deployments:
                     driver_remit = 0
                     driver_fuel = 0
                     driver_cost = 0
@@ -2056,6 +2068,19 @@ class SupervisorWeeklyReport(APIView):
                         "cost": "{0:,.2f}".format(driver_cost),
                         "total": "{0:,.2f}".format(driver_remit - driver_cost),
                     })
+
+                for item in present_drivers:
+                    if item.is_dayoff:
+                        deployed_drivers.append({
+                            "type": "Day Off",
+                            "status": "On Time",
+                            "driver_id": item.assignedDriver.driver.id,
+                            "driver_name": item.assignedDriver.driver.name,
+                            "shuttle": "N/A",
+                            "remittance": "{0:,.2f}".format(0),
+                            "cost": "{0:,.2f}".format(0),
+                            "total": "{0:,.2f}".format(0),
+                        })
 
                 rows.append({
                     "day": calendar.day_name[temp_start.weekday()],

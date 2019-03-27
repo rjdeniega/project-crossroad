@@ -95,32 +95,32 @@ export class PassengerPerRoute extends React.Component {
         postData('ticket_type_per_day/', data).then(data => {
             console.log(data);
             if (!data.error) {
-               console.log(data);
-            console.log(data.days.length);
-            let length = Math.round(data.days.length);
+                console.log(data);
+                console.log(data.days.length);
+                let length = Math.round(data.days.length);
 
-            if (!data.error) {
-                this.setState({
-                    original_data: data,
-                    data:data,
-                });
-                if (data.days.length < 2) {
+                if (!data.error) {
                     this.setState({
+                        original_data: data,
                         data: data,
-                        length: length * 10,
-                    })
-                }
-                else {
-                    let new_data = {...data};
-                    new_data.days = this.changeContents([...this.state.original_data.days]);
-                    console.log(new_data);
-                    this.setState({
-                        data: new_data,
-                        length: length * 10,
                     });
-                    console.log(this.state.original_data)
+                    if (data.days.length < 2) {
+                        this.setState({
+                            data: data,
+                            length: length * 10,
+                        })
+                    }
+                    else {
+                        let new_data = { ...data };
+                        new_data.days = this.changeContents([...this.state.original_data.days]);
+                        console.log(new_data);
+                        this.setState({
+                            data: new_data,
+                            length: length * 10,
+                        });
+                        console.log(this.state.original_data)
+                    }
                 }
-            }
             }
         });
     }
@@ -131,7 +131,7 @@ export class PassengerPerRoute extends React.Component {
         this.fetchTransactions(date)
     }
     handlePagination = (current) => {
-        let new_array = {...this.state.original_data};
+        let new_array = { ...this.state.original_data };
         this.setState({
             start: current
         }, () => {
@@ -416,7 +416,7 @@ class ReportBody extends React.Component {
 
         // Create value axis
         let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-        valueAxis.title.text = "Passenger Per Route";
+        valueAxis.title.text = "Passenger Per Route"
 
         // Create series
         let series1 = chart.series.push(new am4charts.LineSeries());

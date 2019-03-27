@@ -163,8 +163,11 @@ class AssignedDriverView(APIView):
             driver["ten_total"] = ten_total
             driver["twelve_total"] = twelve_total
             driver["fifteen_total"] = fifteen_total
-            driver["has_missing"] = "No" if driver['ten_total'] >= 50 or driver['twelve_total'] >= 50 or driver[
-                                                                                                               'fifteen_total'] >= 80 else "Yes"
+            print(ten_total)
+            print(twelve_total)
+            print(fifteen_total)
+            print(ten_total < 50 or twelve_total < 80 or fifteen_total < 50)
+            driver["has_missing"] = "Yes" if ten_total< 50 or twelve_total < 80 or fifteen_total < 50 else "No"
         return Response(data={
             "drivers": drivers
         }, status=status.HTTP_200_OK)
