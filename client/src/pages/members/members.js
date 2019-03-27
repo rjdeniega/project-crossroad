@@ -172,6 +172,7 @@ export class TransactionsPane extends Component {
     handleOk = (e) => {
 
         const formData = new FormData();
+        console.log(this.state.total);
         formData.append('member', this.props.activeUser.id);
         formData.append('total', this.state.total);
         formData.append('date', this.state.date);
@@ -249,6 +250,7 @@ export class TransactionsPane extends Component {
         })
     }
     handleTypeSelect = (value) => {
+        console.log("enters here")
         console.log(value);
         this.setState({
             type: value,
@@ -316,60 +318,42 @@ export class TransactionsPane extends Component {
                                     <Option value="xlarge">XL (L300) </Option>
                                 </Select>
                             </Form.Item>
+
                             {this.state.type == "small" &&
                             <Form.Item
                                 {...formItemLayout}
                                 label="Transaction: "
                             >
                                 <Select defaultValue={70} style={{ width: 300 }} onChange={this.handleValueSelect}>
-                                    <Option value={70}> Vacuum Only</Option>
-                                    <Option value={100}> Regular Foam Wash</Option>
-                                    <Option value={130}> W/ Liquid Wax </Option>
-                                    <Option value={250}> W/ Turtle Wax & Manual Buffing</Option>
-                                    <Option value={350}> W/ Wax & Buffing Machine</Option>
-                                    <Option value={2000}> W/ Interior Detailing</Option>
-                                    <Option value={2000}> W/ Exterior Detailing</Option>
-                                    <Option value={80}> W/ Seat Cover Removal/Installation </Option>
-                                    <Option value={120}> W/ Seat Cover Replacement</Option>
-                                    <Option value={550}> W/ Glass Stain Removal</Option>
+                                    <Option value={70}> ₱70 - Vacuum Only</Option>
+                                    <Option value={100}> ₱100 - Regular Foam Wash</Option>
+                                    <Option value={130}> ₱130 - W/ Liquid Wax </Option>
+                                    <Option value={250}> ₱250 - W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={350}> ₱350 - W/ Wax & Buffing Machine</Option>
+                                    <Option value={2000}> ₱2000 - W/ Interior Detailing</Option>
+                                    <Option value={2000}> ₱2000 - W/ Exterior Detailing</Option>
+                                    <Option value={80}> ₱80 - W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={120}> ₱120 - W/ Seat Cover Replacement</Option>
+                                    <Option value={550}> ₱550 - W/ Glass Stain Removal</Option>
                                 </Select>
                             </Form.Item>
                             }
-                             {this.state.type == "medium" &&
+                            {this.state.type == "medium" &&
                             <Form.Item
                                 {...formItemLayout}
                                 label="Transaction: "
                             >
                                 <Select defaultValue={80} style={{ width: 300 }} onChange={this.handleValueSelect}>
-                                    <Option value={80}> Vacuum Only</Option>
-                                    <Option value={130}> Regular Foam Wash</Option>
-                                    <Option value={150}> W/ Liquid Wax </Option>
-                                    <Option value={280}> W/ Turtle Wax & Manual Buffing</Option>
-                                    <Option value={400}> W/ Wax & Buffing Machine</Option>
-                                    <Option value={2500}> W/ Interior Detailing</Option>
-                                    <Option value={2500}> W/ Exterior Detailing</Option>
-                                    <Option value={100}> W/ Seat Cover Removal/Installation </Option>
-                                    <Option value={150}> W/ Seat Cover Replacement</Option>
-                                    <Option value={650}> W/ Glass Stain Removal</Option>
-                                </Select>
-                            </Form.Item>
-                            }
-                             {this.state.type == "large" &&
-                            <Form.Item
-                                {...formItemLayout}
-                                label="Transaction: "
-                            >
-                                <Select defaultValue={90} style={{ width: 300 }} onChange={this.handleValueSelect}>
-                                    <Option value={90}> Vacuum Only</Option>
-                                    <Option value={170}> Regular Foam Wash</Option>
-                                    <Option value={200}> W/ Liquid Wax </Option>
-                                    <Option value={300}> W/ Turtle Wax & Manual Buffing</Option>
-                                    <Option value={480}> W/ Wax & Buffing Machine</Option>
-                                    <Option value={3000}> W/ Interior Detailing</Option>
-                                    <Option value={3000}> W/ Exterior Detailing</Option>
-                                    <Option value={140}> W/ Seat Cover Removal/Installation </Option>
-                                    <Option value={200}> W/ Seat Cover Replacement</Option>
-                                    <Option value={950}> W/ Glass Stain Removal</Option>
+                                    <Option value={80}> ₱80 - Vacuum Only</Option>
+                                    <Option value={130}> ₱130 - Regular Foam Wash</Option>
+                                    <Option value={150}> ₱150 - W/ Liquid Wax </Option>
+                                    <Option value={280}> ₱280 - W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={400}> ₱400 - W/ Wax & Buffing Machine</Option>
+                                    <Option value={2500}> ₱2500 - W/ Interior Detailing</Option>
+                                    <Option value={2500}> ₱ 2500 - W/ Exterior Detailing</Option>
+                                    <Option value={100}> ₱100 - W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={150}> ₱150 - W/ Seat Cover Replacement</Option>
+                                    <Option value={650}> ₱650 - W/ Glass Stain Removal</Option>
                                 </Select>
                             </Form.Item>
                             }
@@ -378,17 +362,36 @@ export class TransactionsPane extends Component {
                                 {...formItemLayout}
                                 label="Transaction: "
                             >
+                                <Select defaultValue={90} style={{ width: 300 }} onChange={this.handleValueSelect}>
+                                    <Option value={90}> ₱90 - Vacuum Only</Option>
+                                    <Option value={170}> ₱170 - Regular Foam Wash</Option>
+                                    <Option value={200}> ₱200 - W/ Liquid Wax </Option>
+                                    <Option value={300}> ₱300 - W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={480}> ₱480 - W/ Wax & Buffing Machine</Option>
+                                    <Option value={3000}> ₱3000 - W/ Interior Detailing</Option>
+                                    <Option value={3000}> ₱3000 - W/ Exterior Detailing</Option>
+                                    <Option value={140}> ₱140 - W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={200}> ₱200 - W/ Seat Cover Replacement</Option>
+                                    <Option value={950}> ₱950 - W/ Glass Stain Removal</Option>
+                                </Select>
+                            </Form.Item>
+                            }
+                            {this.state.type == "xlarge" &&
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Transaction: "
+                            >
                                 <Select defaultValue={100} style={{ width: 300 }} onChange={this.handleValueSelect}>
-                                    <Option value={100}> Vacuum Only</Option>
-                                    <Option value={200}> Regular Foam Wash</Option>
-                                    <Option value={230}> W/ Liquid Wax </Option>
-                                    <Option value={350}> W/ Turtle Wax & Manual Buffing</Option>
-                                    <Option value={550}> W/ Wax & Buffing Machine</Option>
-                                    <Option value={3500}> W/ Interior Detailing</Option>
-                                    <Option value={3500}> W/ Exterior Detailing</Option>
-                                    <Option value={200}> W/ Seat Cover Removal/Installation </Option>
-                                    <Option value={250}> W/ Seat Cover Replacement</Option>
-                                    <Option value={1250}> W/ Glass Stain Removal</Option>
+                                    <Option value={100}> ₱100 - Vacuum Only</Option>
+                                    <Option value={200}> ₱200 - Regular Foam Wash</Option>
+                                    <Option value={230}> ₱230 - W/ Liquid Wax </Option>
+                                    <Option value={350}> ₱350 - W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={550}> ₱550 - W/ Wax & Buffing Machine</Option>
+                                    <Option value={3500}> ₱3500 - W/ Interior Detailing</Option>
+                                    <Option value={3500}> ₱3500 - W/ Exterior Detailing</Option>
+                                    <Option value={200}> ₱200 - W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={250}> ₱250 - W/ Seat Cover Replacement</Option>
+                                    <Option value={1250}> ₱1250 - W/ Glass Stain Removal</Option>
                                 </Select>
                             </Form.Item>
                             }
