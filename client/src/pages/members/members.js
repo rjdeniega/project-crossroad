@@ -120,14 +120,14 @@ export class TransactionsPane extends Component {
     state = {
         transactions: null,
         total_transactions: null,
-        total: null,
+        total: 70,
         receipt: null,
         visible: false,
         date: "now",
         date_object: moment('2015/01/01', dateFormat),
         function: 'add',
         with_select: false,
-        type: "small"
+        type: "small",
     };
 
     componentDidMount() {
@@ -252,11 +252,9 @@ export class TransactionsPane extends Component {
     }
     handleTypeSelect = (value) => {
         console.log("enters here")
-        console.log(value);
         this.setState({
             type: value,
-        })
-        console.log(this.state.type)
+        }, () => console.log(this.state.type))
     }
 
     render() {
