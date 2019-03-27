@@ -14,7 +14,21 @@ import { search } from "react-icons-kit/fa/search";
 import "./style.css";
 import emptyStateImage from "../../images/empty state record.png";
 import users from "../../images/default.png";
-import { message, Tabs, Spin, Input, Table, Button, Modal, InputNumber, Divider, DatePicker, Radio, Form, Select } from "antd";
+import {
+    message,
+    Tabs,
+    Spin,
+    Input,
+    Table,
+    Button,
+    Modal,
+    InputNumber,
+    Divider,
+    DatePicker,
+    Radio,
+    Form,
+    Select
+} from "antd";
 import { Icon } from "react-icons-kit";
 import { driversLicenseO } from "react-icons-kit/fa/driversLicenseO";
 import { TicketingPane } from "../../pages/remittances/tabs/ticketing/ticketing";
@@ -234,6 +248,13 @@ export class TransactionsPane extends Component {
             total: value,
         })
     }
+    handleTypeSelect = (value) => {
+        console.log(value);
+        this.setState({
+            type: value,
+        })
+        console.log(this.state.type)
+    }
 
     render() {
         const { activeUser } = this.props;
@@ -286,23 +307,91 @@ export class TransactionsPane extends Component {
                             {/*</Form.Item>*/}
                             <Form.Item
                                 {...formItemLayout}
-                                label="Value Of Transaction"
+                                label="Vehicle Type"
                             >
-                                <Select defaultValue={120} style={{ width: 200 }} onChange={this.handleDaySelect}>
-                                    <Option value={120}> ₱120 - Small (Sedan)</Option>
-                                    <Option value={130}>₱130 - Medium (Minivan)</Option>
-                                    <Option value={170}>₱170 - Large (SUV) </Option>
-                                    <Option value={230}> ₱230 - XL (L300) </Option>
-                                    <Option value={380}>₱380 - XXL (Van)</Option>
+                                <Select defaultValue="small" style={{ width: 300 }} onChange={this.handleTypeSelect}>
+                                    <Option value="small"> Small (Sedan)</Option>
+                                    <Option value="medium">Medium (Minivan)</Option>
+                                    <Option value="large">Large (SUV) </Option>
+                                    <Option value="xlarge">XL (L300) </Option>
                                 </Select>
                             </Form.Item>
-                            {/*<Form.Item*/}
-                            {/*{...formItemLayout}*/}
-                            {/*label="Value of Transaction:"*/}
-                            {/*>*/}
-                            {/*<InputNumber className="user-input" addOnBefore="Php" placeholder="value"*/}
-                            {/*onChange={this.formListener("total")}/>*/}
-                            {/*</Form.Item>*/}
+                            {this.state.type == "small" &&
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Transaction: "
+                            >
+                                <Select defaultValue={70} style={{ width: 300 }} onChange={this.handleValueSelect}>
+                                    <Option value={70}> Vacuum Only</Option>
+                                    <Option value={100}> Regular Foam Wash</Option>
+                                    <Option value={130}> W/ Liquid Wax </Option>
+                                    <Option value={250}> W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={350}> W/ Wax & Buffing Machine</Option>
+                                    <Option value={2000}> W/ Interior Detailing</Option>
+                                    <Option value={2000}> W/ Exterior Detailing</Option>
+                                    <Option value={80}> W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={120}> W/ Seat Cover Replacement</Option>
+                                    <Option value={550}> W/ Glass Stain Removal</Option>
+                                </Select>
+                            </Form.Item>
+                            }
+                             {this.state.type == "medium" &&
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Transaction: "
+                            >
+                                <Select defaultValue={80} style={{ width: 300 }} onChange={this.handleValueSelect}>
+                                    <Option value={80}> Vacuum Only</Option>
+                                    <Option value={130}> Regular Foam Wash</Option>
+                                    <Option value={150}> W/ Liquid Wax </Option>
+                                    <Option value={280}> W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={400}> W/ Wax & Buffing Machine</Option>
+                                    <Option value={2500}> W/ Interior Detailing</Option>
+                                    <Option value={2500}> W/ Exterior Detailing</Option>
+                                    <Option value={100}> W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={150}> W/ Seat Cover Replacement</Option>
+                                    <Option value={650}> W/ Glass Stain Removal</Option>
+                                </Select>
+                            </Form.Item>
+                            }
+                             {this.state.type == "large" &&
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Transaction: "
+                            >
+                                <Select defaultValue={90} style={{ width: 300 }} onChange={this.handleValueSelect}>
+                                    <Option value={90}> Vacuum Only</Option>
+                                    <Option value={170}> Regular Foam Wash</Option>
+                                    <Option value={200}> W/ Liquid Wax </Option>
+                                    <Option value={300}> W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={480}> W/ Wax & Buffing Machine</Option>
+                                    <Option value={3000}> W/ Interior Detailing</Option>
+                                    <Option value={3000}> W/ Exterior Detailing</Option>
+                                    <Option value={140}> W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={200}> W/ Seat Cover Replacement</Option>
+                                    <Option value={950}> W/ Glass Stain Removal</Option>
+                                </Select>
+                            </Form.Item>
+                            }
+                            {this.state.type == "large" &&
+                            <Form.Item
+                                {...formItemLayout}
+                                label="Transaction: "
+                            >
+                                <Select defaultValue={100} style={{ width: 300 }} onChange={this.handleValueSelect}>
+                                    <Option value={100}> Vacuum Only</Option>
+                                    <Option value={200}> Regular Foam Wash</Option>
+                                    <Option value={230}> W/ Liquid Wax </Option>
+                                    <Option value={350}> W/ Turtle Wax & Manual Buffing</Option>
+                                    <Option value={550}> W/ Wax & Buffing Machine</Option>
+                                    <Option value={3500}> W/ Interior Detailing</Option>
+                                    <Option value={3500}> W/ Exterior Detailing</Option>
+                                    <Option value={200}> W/ Seat Cover Removal/Installation </Option>
+                                    <Option value={250}> W/ Seat Cover Replacement</Option>
+                                    <Option value={1250}> W/ Glass Stain Removal</Option>
+                                </Select>
+                            </Form.Item>
+                            }
                         </Form>
                     </Modal>
                     <div className="table-container">

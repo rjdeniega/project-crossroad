@@ -453,7 +453,7 @@ class NonDeployedDrivers(APIView):
                 "non_deployed_drivers": [],
                 "disabled": "AM"
             }, status=status.HTTP_200_OK)
-        elif current_shift.type == "P" and (datetime.now().hour > 1 or datetime.now().hour < 13):
+        elif current_shift.type == "P" and (datetime.now().hour > 23 or datetime.now().hour < 13):
             print("PM is disabled")
             return Response(data={
                 "non_deployed_drivers": [],
