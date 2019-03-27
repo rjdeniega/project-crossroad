@@ -416,7 +416,7 @@ export class UpdatePurchaseOrder extends Component {
                                         <span>
                                       <Tag color="blue">{item.quantity} pc</Tag>
                                       <Divider type="vertical"/>
-                                      <Tag color="green">Php{item.unit_price}</Tag>
+                                      <Tag color="green">Unit Price: Php{item.unit_price}</Tag>
                                   </span>)} size="small"
                                     className="item-form-container">
                                     {item.status === "Awaiting Delivery" ?
