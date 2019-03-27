@@ -222,12 +222,12 @@ class PopulateDatabase:
                 item_movement_2.save()
             repair.save()
 
-        start_date = datetime.strptime('25032019', "%d%m%Y").date(),
-        end_date = datetime.strptime('28032019', "%d%m%Y").date(),
+        start_date = datetime.strptime('25032019', "%d%m%Y").date()
+        end_date = datetime.strptime('28032019', "%d%m%Y").date()
         # Oil, Windshield Wiper, Lightbulb, Ace hardware
         purchase_order_1 = PurchaseOrder(po_number=301, vendor=Vendor.objects.get(name="Ace Hardware"),
-                                       order_date=start_date, completion_date=end_date,
-                                       status='Complete', expected_delivery=end_date)
+                                         order_date=start_date, completion_date=end_date,
+                                         status='Complete', expected_delivery=end_date)
         purchase_order_1.save()
 
         # Oil
@@ -409,7 +409,6 @@ class PopulateDatabase:
         item_movement_5.save()
         brake_fluids.quantity = 2
         brake_fluids.save()
-
 
         # purchase_order_1 = PurchaseOrder(po_number=1, vendor=vendor,
         #                                  order_date=datetime.strptime('27122018', "%d%m%Y").date(),
