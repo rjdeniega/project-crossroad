@@ -74,7 +74,7 @@ class ComponentToPrint extends React.Component {
                             <td><b></b></td>
                             <td><b></b></td>
                             <td><b></b></td>
-                            <td className="total-line"><b>
+                            <td className="total-line monetary"><b>
                                 Total : {this.props.data.grand_total}
                             </b></td>
 

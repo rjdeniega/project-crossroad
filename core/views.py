@@ -702,7 +702,7 @@ class PatronageRefund(APIView):
             "report_items": report_items,
             "date": start_date.year,
             "grand_total": "{0:,.2f}".format(
-                sum(float([item["patronage_refund"].replace(',', '') for item in report_items])))
+                sum([float(item["patronage_refund"].replace(',', '')) for item in report_items]))
         }, status=status.HTTP_200_OK)
 
 
