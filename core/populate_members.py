@@ -610,86 +610,220 @@ class PopulateMembers:
     @staticmethod
     def populate_users():
         user1 = User.objects.create(
-            username="member",
+            username="joeymanalo",
             password="admin1234"
         )
         user2 = User.objects.create(
-            username="member2",
+            username="ramonmagsaysay",
             password="admin1234"
         )
         user3 = User.objects.create(
-            username="member3",
+            username="jerrysantos",
             password="admin1234"
         )
         user4 = User.objects.create(
-            username="member4",
+            username="martingarcia",
             password="admin1234"
         )
-        Member.objects.create(user=user1,
-                              tin_number=11435,
-                              accepted_date='2011-10-19',
-                              civil_status='S',
-                              educational_attainment='V',
-                              occupation='Engineer',
-                              no_of_dependents=5,
-                              religion='Catholic',
+        user5 = User.objects.create(
+            username="waynemambugan",
+            password="admin1234"
+        )
+        user6 = User.objects.create(
+            username="emmantolentino",
+            password="admin1234"
+        )
+        user7 = User.objects.create(
+            username="noelpampango",
+            password="admin1234"
+        )
+        user8 = User.objects.create(
+            username="carlsinang",
+            password="admin1234"
+        )
+        user9 = User.objects.create(
+            username="choloagila",
+            password="admin1234"
+        )
+        user10 = User.objects.create(
+            username="roelbautista",
+            password="admin1234"
+        )
+        user11 = User.objects.create(
+            username="jonathanlakbayin",
+            password="admin1234"
+        )
+        user12 = User.objects.create(
+            username="joserodrigo",
+            password="admin1234"
+        )
+        user13 = User.objects.create(
+            username="benignosalo",
+            password="admin1234"
+        )
+        user14 = User.objects.create(
+            username="natanielvelasco",
+            password="admin1234"
+        )
+        user15 = User.objects.create(
+            username="juanaliangan",
+            password="admin1234"
+        )
+        user16 = User.objects.create(
+            username="matthewyoingco",
+            password="admin1234"
+        )
+        user17 = User.objects.create(
+            username="clerk",
+            password="admin1234"
+        )
+        user18 = User.objects.create(
+            username="mechanic",
+            password="admin1234"
+        )
+        Driver.objects.create(user=user1,
                               contact_no='01234',
-                              annual_income=500000,
-                              termination_date=None,
-                              name='Lissa Magpantay',
+                              name='Joey Manalo',
                               email='asd@gmail.com',
                               address='Laguna',
                               birth_date='2010-9-06',
-                              sex='F'
+                              sex='M',
+                              is_supervisor=True,
                               )
-        Member.objects.create(user=user2,
-                              tin_number=11436,
-                              accepted_date='2011-10-19',
-                              civil_status='S',
-                              educational_attainment='V',
-                              occupation='Engineer',
-                              no_of_dependents=5,
-                              religion='Catholic',
+        Driver.objects.create(user=user2,
                               contact_no='01234',
-                              annual_income=500000,
-                              termination_date=None,
-                              name='Erwin Heusaff',
+                              name='Ramon Magsaysay',
                               email='asd@gmail.com',
                               address='Laguna',
                               birth_date='2010-9-06',
-                              sex='F'
+                              sex='M',
+                              is_supervisor=True
                               )
-        Member.objects.create(user=user3,
-                              tin_number=11437,
-                              accepted_date='2011-10-19',
-                              civil_status='S',
-                              educational_attainment='V',
-                              occupation='Engineer',
-                              no_of_dependents=5,
-                              religion='Catholic',
+        Driver.objects.create(user=user3,
                               contact_no='01234',
-                              annual_income=500000,
-                              termination_date=None,
-                              name='Angel Aquino',
-                              email='asd@gmail.com',
-                              address='Laguna',
-                              birth_date='2010-9-06',
-                              sex='F'
-                              )
-        Member.objects.create(user=user4,
-                              tin_number=11438,
-                              accepted_date='2011-10-19',
-                              civil_status='S',
-                              educational_attainment='V',
-                              occupation='Engineer',
-                              no_of_dependents=5,
-                              religion='Catholic',
-                              contact_no='01234',
-                              annual_income=500000,
-                              termination_date=None,
-                              name='Paolo Manlapaz',
+                              name='Jerry Santos',
                               email='asd@gmail.com',
                               address='Laguna',
                               birth_date='2010-9-06',
                               sex='M'
                               )
+        Driver.objects.create(user=user4,
+                              contact_no='01234',
+                              name='Martin Garcia',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user5,
+                              contact_no='01234',
+                              name='Wayne Mambugan',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user6,
+                              contact_no='01234',
+                              name='Emman Tolentino',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user7,
+                              contact_no='01234',
+                              name='Noel Pampango',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user8,
+                              contact_no='01234',
+                              name='Carl Sinang',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user9,
+                              contact_no='01234',
+                              name='Cholo Agila',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user10,
+                              contact_no='01234',
+                              name='Roel Bautista',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user11,
+                              contact_no='01234',
+                              name='Jonathan Lakbayin',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user12,
+                              contact_no='01234',
+                              name='Jose Rodrigo',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user13,
+                              contact_no='01234',
+                              name='Benigno Salo',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user14,
+                              contact_no='01234',
+                              name='Nataniel Velasco',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user15,
+                              contact_no='01234',
+                              name='Juan Aliangan',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Driver.objects.create(user=user16,
+                              contact_no='01234',
+                              name='Matthew Yoingco',
+                              email='asd@gmail.com',
+                              address='Laguna',
+                              birth_date='2010-9-06',
+                              sex='M'
+                              )
+        Clerk.objects.create(user=user17,
+                             contact_no='01234',
+                             name='Janella Clerk',
+                             email='asd@gmail.com',
+                             address='Laguna',
+                             birth_date='2010-9-06',
+                             sex='M'
+                             )
+        Mechanic.objects.create(user=user18,
+                                contact_no='01234',
+                                name='Tony Stark',
+                                email='asd@gmail.com',
+                                address='Laguna',
+                                birth_date='2010-9-06',
+                                sex='M'
+                                )
