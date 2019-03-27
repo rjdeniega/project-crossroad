@@ -681,8 +681,10 @@ class PopulateMembers:
             username="mechanic",
             password="admin1234"
         )
+
         Driver.objects.create(user=user1,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Joey Manalo',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -692,6 +694,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user2,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Ramon Magsaysay',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -701,6 +704,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user3,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Jerry Santos',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -709,6 +713,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user4,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Martin Garcia',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -717,6 +722,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user5,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Wayne Mambugan',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -725,6 +731,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user6,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Emman Tolentino',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -733,6 +740,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user7,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Noel Pampango',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -741,6 +749,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user8,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Carl Sinang',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -749,6 +758,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user9,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Cholo Agila',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -757,6 +767,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user10,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Roel Bautista',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -765,6 +776,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user11,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Jonathan Lakbayin',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -773,6 +785,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user12,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Jose Rodrigo',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -781,6 +794,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user13,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Benigno Salo',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -789,6 +803,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user14,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Nataniel Velasco',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -797,6 +812,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user15,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Juan Aliangan',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -805,6 +821,7 @@ class PopulateMembers:
                               )
         Driver.objects.create(user=user16,
                               contact_no='01234',
+                              application_date='2016-10-23',
                               name='Matthew Yoingco',
                               email='asd@gmail.com',
                               address='Laguna',
@@ -813,6 +830,7 @@ class PopulateMembers:
                               )
         Clerk.objects.create(user=user17,
                              contact_no='01234',
+                             application_date='2016-10-23',
                              name='Janella Clerk',
                              email='asd@gmail.com',
                              address='Laguna',
@@ -821,6 +839,7 @@ class PopulateMembers:
                              )
         Mechanic.objects.create(user=user18,
                                 contact_no='01234',
+                                application_date='2016-10-23',
                                 name='Tony Stark',
                                 email='asd@gmail.com',
                                 address='Laguna',
