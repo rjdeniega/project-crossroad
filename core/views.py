@@ -2802,7 +2802,8 @@ class PassengerPerRoute(APIView):
                 "day": temp_date.strftime("%A"),
                 "main_road": PassengerPerRoute.getPassengersFromDate('M', temp_date),
                 "kaliwa": PassengerPerRoute.getPassengersFromDate('L', temp_date),
-                "kanan": PassengerPerRoute.getPassengersFromDate('R', temp_date)
+                "kanan": PassengerPerRoute.getPassengersFromDate('R', temp_date),
+                "threshold": 0
             })
 
             temp_date = temp_date + timedelta(days=1)

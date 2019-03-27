@@ -4,7 +4,7 @@ import moment from 'moment';
 import { postData } from '../../../../network_requests/general';
 import './style.css';
 
-import { Select, Divider, DatePicker, Pagination } from 'antd';
+import { Select, Divider, Button, DatePicker, Pagination, InputNumber } from 'antd';
 
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
@@ -37,6 +37,7 @@ export class PassengerPerRoute extends React.Component {
 
         this.fetchChartData = this.fetchChartData.bind(this);
         this.onDateChange = this.onDateChange.bind(this);
+        this.onThresholdChange = this.onThresholdChange.bind(this);
     }
 
     componentDidMount() {
@@ -151,6 +152,7 @@ export class PassengerPerRoute extends React.Component {
         new_array.push(array[index]);
         return new_array;
     }
+
     renderTable = () => (
         <div className="formatted-container">
             <div className="report-labels">
@@ -381,10 +383,27 @@ export class PassengerPerRoute extends React.Component {
         </div>
     )
 
+    onThresholdChange = (value) => {
+        let values = this.state.chart_data
+
+        for(var i=0; i<values.length; i++){
+            values[i]["threshold"] = value
+        }
+        console.log("onTHresholdChange")
+        console.log(values)
+        this.setState({
+            chart_data: values
+        })
+        console.log(this.state.chart_data)
+    }
+
     render() {
         return (
             <div style={{ padding: "10px" }}>
-                <DateSelect onDateChange={this.onDateChange}/>
+                <div>
+                    <DateSelect onDateChange={this.onDateChange}/>
+                    <ThresholdSelect onThresholdChange={this.onThresholdChange}/> 
+                </div>
                 <Divider />
                 <ReportTitle
                     report_title="Passenger Count Per Route"
@@ -467,8 +486,21 @@ class ReportBody extends React.Component {
         labelBullet3.label.text = "{kanan}";
         labelBullet3.label.dy = -20;
 
+        let series4 = chart.series.push(new am4charts.LineSeries());
+        series4.dataFields.valueY = "threshold";
+        series4.dataFields.categoryX = "day";
+        series4.name = 'Threshold';
+        series4.strokeWidth = 3;
+        series4.stroke = am4core.color('red');
+        series4.legendSettings.valueText = "{valueY}";
+        series4.strokeDasharray = "4";
+
+
         chart.cursor = new am4charts.XYCursor();
         chart.cursor.behavior = "zoomY";
+
+        
+
 
         // Add legend
         chart.legend = new am4charts.Legend();
@@ -483,8 +515,13 @@ class ReportBody extends React.Component {
     }
 
     componentDidUpdate(oldProps) {
+        console.log("component updated")
+        console.log(oldProps.data)
+        console.log(this.props.data)
+        this.chart.invalidateData();
         if (oldProps.data != this.props.data) {
             this.chart.data = this.props.data;
+            console.log(this.chart.data)
         }
     }
 
@@ -513,17 +550,60 @@ class DateSelect extends React.Component {
 
     render() {
         return (
-            <div>
+            <span>
                 <label className="date-select-label">Start Date: </label>
                 <DatePicker
                     onChange={this.onChange}
                     placeholder="Select Date"
                     disabledDate={this.disabledDate}
                 />
-            </div>
+            </span>
         );
     }
 }
+
+class ThresholdSelect extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.onChange = this.onChange.bind(this);
+        this.state = {
+            "threshold": null
+        }
+    }
+
+    onChange(value){
+       this.setState({
+           "threshold": value
+       })
+    }
+
+    submitThreshold = () => {
+        console.log(this.state.threshold)
+        this.props.onThresholdChange(this.state.threshold);
+    }
+
+    render() {
+        return (
+            <span>
+                <label className="date-select-label">Threshold: </label>
+                <InputNumber
+                    onChange={this.onChange}
+                    placeholder="Threshold"
+                    style={{ width: 200 }}
+                />
+                <Button 
+                    type="primary" 
+                    style={{ marginLeft: 5 }}
+                    onClick={this.submitThreshold}
+                    >
+                    Plot Threshold
+                </Button>
+            </span>
+        );
+    }
+}
+
 
 function ReportTitle(props) {
     return (
