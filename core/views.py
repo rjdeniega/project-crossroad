@@ -584,6 +584,8 @@ class MemberTransactionByReport(APIView):
                 })
         print(report_items)
         return Response(data={
+            "start_date": start_date.date(),
+            "end_date": end_date.date(),
             "no_of_beep_total": sum(item['no_of_beep'] for item in report_items),
             "no_of_carwash_total": sum(item['no_of_carwash'] for item in report_items),
             "beep_grand_total": "{0:,.2f}".format(sum(item['beep_total'] for item in report_items)),
@@ -701,6 +703,7 @@ class PatronageRefund(APIView):
             # "grand_total": "{0:,.2f}".format(sum(item['total_transactions'] for item in report_items)),
 
         return Response(data={
+            "start_date": start_date.year,
             "report_items": report_items,
             "date": start_date.year,
             "grand_total": "{0:,.2f}".format(
