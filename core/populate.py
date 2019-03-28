@@ -222,6 +222,194 @@ class PopulateDatabase:
                 item_movement_2.save()
             repair.save()
 
+        start_date = datetime.strptime('25032019', "%d%m%Y").date()
+        end_date = datetime.strptime('28032019', "%d%m%Y").date()
+        # Oil, Windshield Wiper, Lightbulb, Ace hardware
+        purchase_order_1 = PurchaseOrder(po_number=301, vendor=Vendor.objects.get(name="Ace Hardware"),
+                                         order_date=start_date, completion_date=end_date,
+                                         status='Complete', expected_delivery=end_date)
+        purchase_order_1.save()
+
+        # Oil
+        po_item_1 = PurchaseOrderItem(quantity=2, description="Oil for L300", unit_price=250,
+                                      category=ItemCategory.objects.get(category="Oil"),
+                                      item_type=item_types['Oil'][0],
+                                      measurement=item_types['Oil'][1],
+                                      unit=item_types['Oil'][2],
+                                      brand="WD-40",
+                                      received=True, status='Delivered')
+        po_item_1.save()
+        purchase_order_1.po_items.add(po_item_1)
+        vendor_performance_1 = VendorPerformance(vendor=Vendor.objects.get(name="Ace Hardware"),
+                                                 item_category=ItemCategory.objects.get(category='Oil'),
+                                                 purchase_order=purchase_order_1, expected_delivery=end_date,
+                                                 actual_delivery=end_date, defective=False)
+        vendor_performance_1.save()
+
+        item_1 = Item(category=ItemCategory.objects.get(category="Oil"),
+                      description=descriptions["Oil"][0],
+                      brand="WD-40", quantity=2, unit_price=250, item_type=item_types['Oil'][0],
+                      measurement=item_types['Oil'][1], vendor=Vendor.objects.get(name="Ace Hardware"),
+                      unit=item_types['Oil'][2], item_code="OIL857", delivery_date=end_date,
+                      purchase_order=purchase_order_1)
+        item_1.save()
+        item_movement = ItemMovement(item=item_1, type="B", quantity=2, unit_price=250, created=end_date)
+        item_movement.save()
+        category = ItemCategory.objects.get(category="Oil")
+        category.quantity = 2
+        category.save()
+
+        # Windshield Wiper
+        ace_hardware = Vendor.objects.get(name="Ace Hardware")
+        category = ItemCategory.objects.get(category="Windshield Wiper")
+
+        po_item_2 = PurchaseOrderItem(quantity=2, description="Windshield wiper for L300",
+                                      unit_price=300,
+                                      category=category,
+                                      item_type=item_types['Windshield Wiper'][0],
+                                      measurement=2, unit="pieces",
+                                      brand=brand['Windshield Wiper'][0],
+                                      received=True, status='Delivered')
+        po_item_2.save()
+        purchase_order_1.po_items.add(po_item_2)
+        vendor_performance_2 = VendorPerformance(vendor=ace_hardware,
+                                                 item_category=category,
+                                                 purchase_order=purchase_order_1,
+                                                 expected_delivery=end_date,
+                                                 actual_delivery=end_date,
+                                                 defective=False)
+        vendor_performance_2.save()
+
+        item_2 = Item(category=category,
+                      description=descriptions['Windshield Wiper'][0],
+                      brand=brand['Windshield Wiper'][0],
+                      quantity=2,
+                      unit_price=300,
+                      item_type=['Windshield Wiper'][0],
+                      measurement=2,
+                      vendor=ace_hardware,
+                      unit='pieces',
+                      item_code="WWR328",
+                      delivery_date=end_date,
+                      purchase_order=purchase_order_1)
+        item_2.save()
+        item_movement_2 = ItemMovement(item=item_2, type="B", quantity=2, unit_price=300, created=end_date)
+        item_movement_2.save()
+        category.quantity = 4
+        category.save()
+
+        # Lightbulb
+        lightbulb = ItemCategory.objects.get(category="Light Bulb")
+
+        po_item_3 = PurchaseOrderItem(quantity=2, description=descriptions['Light Bulb'][0],
+                                      unit_price=200, category=lightbulb, item_type=item_types['Light Bulb'][0],
+                                      measurement=2, unit='pieces', brand=brand['Light Bulb'][0],
+                                      received=True, status='Delivered')
+        po_item_3.save()
+        purchase_order_1.po_items.add(po_item_3)
+        vendor_performance_3 = VendorPerformance(vendor=ace_hardware,
+                                                 item_category=lightbulb,
+                                                 purchase_order=purchase_order_1,
+                                                 expected_delivery=end_date,
+                                                 actual_delivery=end_date,
+                                                 defective=False)
+        vendor_performance_3.save()
+
+        item_3 = Item(category=lightbulb,
+                      description=descriptions['Light Bulb'][0],
+                      brand=brand['Light Bulb'][0],
+                      quantity=2,
+                      unit_price=200,
+                      item_type=['Light Bulb'][0],
+                      measurement=2,
+                      vendor=ace_hardware,
+                      unit='pieces',
+                      item_code='LBB631',
+                      delivery_date=end_date,
+                      purchase_order=purchase_order_1)
+        item_3.save()
+        item_movement_3 = ItemMovement(item=item_3, type='B', quantity=2, unit_price=200, created=end_date)
+        item_movement_3.save()
+        lightbulb.quantity = 4
+        lightbulb.save()
+
+        # Brake pads, brake fluids, Handyman
+        handyman = Vendor.objects.get(name="Handyman")
+        purchase_order_2 = PurchaseOrder(po_number=302, vendor=handyman, order_date=start_date,
+                                         completion_date=end_date, status='Complete', expected_delivery=end_date)
+        purchase_order_2.save()
+
+        # Brake Pads
+        brake_pads = ItemCategory.objects.get(category='Brake Pads')
+        po_item_4 = PurchaseOrderItem(quantity=2, description=descriptions['Brake Pads'][0], unit_price=700,
+                                      category=brake_pads, item_type=item_types['Brake Pads'][0],
+                                      measurement=2, unit='pieces',
+                                      brand=brand['Brake Pads'][0],
+                                      received=True, status='Delivered')
+        po_item_4.save()
+        purchase_order_2.po_items.add(po_item_4)
+        vendor_performance_4 = VendorPerformance(vendor=handyman,
+                                                 item_category=brake_pads,
+                                                 purchase_order=purchase_order_2,
+                                                 expected_delivery=end_date,
+                                                 actual_delivery=end_date,
+                                                 defective=False)
+        vendor_performance_4.save()
+        item_4 = Item(category=brake_pads,
+                      description=descriptions['Brake Pads'][0],
+                      brand=brand['Brake Pads'][0],
+                      quantity=2,
+                      unit_price=700,
+                      item_type=['Brake Pads'][0],
+                      measurement=2,
+                      vendor=handyman,
+                      unit='pieces',
+                      item_code="BRP943",
+                      delivery_date=end_date,
+                      purchase_order=purchase_order_2)
+        item_4.save()
+        item_movement_4 = ItemMovement(item=item_4, type='B', quantity=2, unit_price=700, created=end_date)
+        item_movement_4.save()
+        brake_pads.quantity = 4
+        brake_pads.save()
+
+        # Brake Fluids
+        brake_fluids = ItemCategory.objects.get(category="Brake Fluid")
+
+        po_item_5 = PurchaseOrderItem(quantity=2, description=descriptions['Brake Fluid'][0],
+                                      unit_price=300,
+                                      category=brake_fluids, item_type=item_types['Brake Fluid'][0],
+                                      measurement=item_types['Brake Fluid'][1],
+                                      unit=item_types['Brake Fluid'][2],
+                                      brand=brand['Brake Fluid'][0],
+                                      received=True, status='Delivered')
+        po_item_5.save()
+        purchase_order_2.po_items.add(po_item_5)
+        vendor_performance_5 = VendorPerformance(vendor=handyman,
+                                                 item_category=brake_fluids,
+                                                 purchase_order=purchase_order_2,
+                                                 expected_delivery=end_date,
+                                                 actual_delivery=end_date,
+                                                 defective=False)
+        vendor_performance_5.save()
+
+        item_5 = Item(category=brake_fluids,
+                      description=descriptions['Brake Fluid'][0],
+                      brand=brand['Brake Fluid'][0],
+                      quantity=2,
+                      unit_price=300,
+                      item_type=item_types['Brake Fluid'][0],
+                      measurement=item_types['Brake Fluid'][1],
+                      vendor=handyman,
+                      unit=item_types['Brake Fluid'][2],
+                      item_code='BRF285', delivery_date=end_date,
+                      purchase_order=purchase_order_2)
+        item_5.save()
+        item_movement_5 = ItemMovement(item=item_5, type='B', quantity=2, unit_price=300, created=end_date)
+        item_movement_5.save()
+        brake_fluids.quantity = 2
+        brake_fluids.save()
+
         # purchase_order_1 = PurchaseOrder(po_number=1, vendor=vendor,
         #                                  order_date=datetime.strptime('27122018', "%d%m%Y").date(),
         #                                  completion_date=datetime.strptime('01012019', "%d%m%Y").date(),
