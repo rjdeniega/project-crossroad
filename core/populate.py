@@ -251,7 +251,8 @@ class PopulateDatabase:
                       brand="WD-40", quantity=2, unit_price=250, item_type=item_types['Oil'][0],
                       measurement=item_types['Oil'][1], vendor=Vendor.objects.get(name="Ace Hardware"),
                       unit=item_types['Oil'][2], item_code="OIL857", delivery_date=end_date,
-                      purchase_order=purchase_order_1)
+                      purchase_order=purchase_order_1,
+                      current_measurement=item_types['Oil'][1])
         item_1.save()
         item_movement = ItemMovement(item=item_1, type="B", quantity=2, unit_price=250, created=end_date)
         item_movement.save()
@@ -285,13 +286,14 @@ class PopulateDatabase:
                       brand=brand['Windshield Wiper'][0],
                       quantity=2,
                       unit_price=300,
-                      item_type=['Windshield Wiper'][0],
+                      item_type=item_types['Windshield Wiper'][0],
                       measurement=2,
                       vendor=ace_hardware,
                       unit='pieces',
                       item_code="WWR328",
                       delivery_date=end_date,
-                      purchase_order=purchase_order_1)
+                      purchase_order=purchase_order_1,
+                      current_measurement=2)
         item_2.save()
         item_movement_2 = ItemMovement(item=item_2, type="B", quantity=2, unit_price=300, created=end_date)
         item_movement_2.save()
@@ -320,13 +322,14 @@ class PopulateDatabase:
                       brand=brand['Light Bulb'][0],
                       quantity=2,
                       unit_price=200,
-                      item_type=['Light Bulb'][0],
+                      item_type=item_types['Light Bulb'][0],
                       measurement=2,
                       vendor=ace_hardware,
                       unit='pieces',
                       item_code='LBB631',
                       delivery_date=end_date,
-                      purchase_order=purchase_order_1)
+                      purchase_order=purchase_order_1,
+                      current_measurement=2)
         item_3.save()
         item_movement_3 = ItemMovement(item=item_3, type='B', quantity=2, unit_price=200, created=end_date)
         item_movement_3.save()
@@ -360,13 +363,14 @@ class PopulateDatabase:
                       brand=brand['Brake Pads'][0],
                       quantity=2,
                       unit_price=700,
-                      item_type=['Brake Pads'][0],
+                      item_type=item_types['Brake Pads'][0],
                       measurement=2,
                       vendor=handyman,
                       unit='pieces',
                       item_code="BRP943",
                       delivery_date=end_date,
-                      purchase_order=purchase_order_2)
+                      purchase_order=purchase_order_2,
+                      current_measurement=2)
         item_4.save()
         item_movement_4 = ItemMovement(item=item_4, type='B', quantity=2, unit_price=700, created=end_date)
         item_movement_4.save()
@@ -403,7 +407,8 @@ class PopulateDatabase:
                       vendor=handyman,
                       unit=item_types['Brake Fluid'][2],
                       item_code='BRF285', delivery_date=end_date,
-                      purchase_order=purchase_order_2)
+                      purchase_order=purchase_order_2,
+                      current_measurement=item_types['Brake Fluid'][1])
         item_5.save()
         item_movement_5 = ItemMovement(item=item_5, type='B', quantity=2, unit_price=300, created=end_date)
         item_movement_5.save()

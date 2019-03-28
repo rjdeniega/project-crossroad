@@ -52,6 +52,7 @@ class ContactOperationManager extends Component {
             console.log(data);
             putData('inventory/return_to_operations_manager/', data).then(data => {
                 console.log(data);
+                message.success("Forwarded to operations manager!");
                 this.props.loadNewRepair(this.props.repair_id);
             })
 
