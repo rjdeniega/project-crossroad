@@ -34,6 +34,8 @@ from remittances.models import *
 from remittances.serializers import (BeepTransactionSerializer,
                                      CarwashTransactionSerializer)
 from remittances.views import IterationUtilites
+from datetime import datetime
+from dateutil import relativedelta
 
 
 class SignInView(APIView):
@@ -2281,9 +2283,9 @@ class ShuttleCostVRevenueReport(APIView):
             temp_start_date = shuttle.date_acquired
             total_depreciation = 0
 
-            months = ShuttleCostVRevenueReport.diff_month(temp_start_date, end_date)
-
+            months = ShuttleCostVRevenueReport.diff_month(end_date,shuttle.date_acquired)
             total_depreciation = depreciation_rate * months
+            print(months)
 
             net_value = float(value) + float(shuttle_remittance) - float(
                 shuttle_fuel_cost) - initialMaintenanceCost - total_depreciation
@@ -2340,7 +2342,7 @@ class ShuttleCostVRevenueReport(APIView):
 
     @staticmethod
     def diff_month(d1, d2):
-        value = (d1.year - d2.year) * 12 + d1.month - d2.month == 0
+        value = (d1.year - d2.year) * 12 + d1.month - d2.month
         return value if value != 0 else 1
 
 
