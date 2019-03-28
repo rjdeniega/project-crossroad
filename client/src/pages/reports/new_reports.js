@@ -56,8 +56,8 @@ const REMITTANCE_CARDS = [
         'icon': money,
         'content': <BeepTickets/>
     }, {
-        'title': 'Driver Remittance & Payables',
-        'description': 'View Absences, Lates, and Payables of Drivers',
+        'title': 'Driver Remittance & Discrepancies',
+        'description': 'View Absences, Lates, and Discrepancies of Drivers',
         'icon': money,
         'content': <DriverPerformance/>
     }, {
@@ -137,11 +137,6 @@ const MAINTENANCE_CARDS = [
     }];
 const MEMBER_CARDS = [
     {
-        'title': 'Shares Accumulation Report',
-        'description': 'View accumulation of member shares for a year',
-        'icon': driversLicenseO,
-        'content': <SharesAccumulationReport/>
-    }, {
         'title': 'Member Transactions',
         'description': 'View transactions of members over a period of time',
         'icon': driversLicenseO,
@@ -151,6 +146,12 @@ const MEMBER_CARDS = [
         'description': 'Allocated Patronage Refund Per Member',
         'icon': driversLicenseO,
         'content': <PatronageRefund/>
+    },
+    {
+        'title': 'Shares Accumulation Report',
+        'description': 'View accumulation of member shares for a year',
+        'icon': driversLicenseO,
+        'content': <SharesAccumulationReport/>
     },];
 export class ReportsPage extends Component {
     state = {
