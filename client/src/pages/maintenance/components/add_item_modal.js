@@ -100,7 +100,6 @@ export class AddItems extends Component {
         postData('inventory/mechanic/items/add/' + this.props.repair, data).then(data => {
             console.log(data);
             this.props.close();
-            this.props.loadItems();
         })
     }
 
@@ -137,7 +136,9 @@ export class AddItems extends Component {
         getData('inventory/items/').then(data => {
             let items = [];
             data.items.forEach(function (item) {
-                items[item.id] = item;
+                if(item.quantity > 0){
+                    items[item.id] = item;
+                }
             });
             this.setState({
                 items: items,

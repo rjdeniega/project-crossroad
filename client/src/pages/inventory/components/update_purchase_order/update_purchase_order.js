@@ -421,7 +421,7 @@ export class UpdatePurchaseOrder extends Component {
                                     className="item-form-container">
                                     {item.status === "Awaiting Delivery" ?
                                         <Tag color="geekblue">Awaiting Delivery</Tag> :
-                                        item.status === "Returned" ? <Tag color="gold">Returned</Tag> :
+                                        item.status === "Returned" ? <Tag color="gold">Returned {item.times_returned} time/s</Tag> :
                                             item.status === "Delivered" && <Tag color="green">Delivered</Tag>}
                                     <br/>
                                     <Text>{item.brand}&nbsp;{categories[item.id] && categories[item.id]}</Text>

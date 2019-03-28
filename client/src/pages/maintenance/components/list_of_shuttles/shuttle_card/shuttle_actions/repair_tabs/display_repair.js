@@ -114,7 +114,7 @@ export class RepairDisplay extends Component {
     render() {
         let {repair, problems, findings, modifications, outsourcedItems, items} = this.props;
         const {categories} = this.state;
-
+        console.log(repair);
         return (
             <div style={{
                 border: 'solid', width: '100%',

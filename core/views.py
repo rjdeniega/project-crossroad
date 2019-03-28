@@ -2249,17 +2249,17 @@ class ShuttleCostVRevenueReport(APIView):
                         item = Item.objects.get(id=modification.item_used.id)
                         if item.item_type == "Physical Measurement":
                             major_repairs_cost = float(major_repairs_cost) + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         elif item.item_type == "Liquid Measurement":
                             major_repairs_cost = float(major_repairs_cost) + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         else:
                             major_repairs_cost = major_repairs_cost + (
-                                float(modification.quantity) * float(item.unit_price))
+                                    float(modification.quantity) * float(item.unit_price))
 
                     for outsourced in repair.outsourced_items.all():
-                        amount = outsourced.quantity * outsourced.unit_price
-                        major_repairs_cost += amount
+                        amount = float(outsourced.quantity * outsourced.unit_price)
+                        major_repairs_cost += float(amount)
 
                 if repair.labor_fee:
                     initialMaintenanceCost = float(initialMaintenanceCost) + float(repair.labor_fee)
@@ -2268,17 +2268,17 @@ class ShuttleCostVRevenueReport(APIView):
                     item = Item.objects.get(id=modification.item_used.id)
                     if item.item_type == "Physical Measurement":
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     elif item.item_type == "Liquid Measurement":
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     else:
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                            float(modification.quantity) * float(item.unit_price))
+                                float(modification.quantity) * float(item.unit_price))
 
                 for outsourced in repair.outsourced_items.all():
                     amount = outsourced.quantity * outsourced.unit_price
-                    initialMaintenanceCost = initialMaintenanceCost + amount
+                    initialMaintenanceCost = initialMaintenanceCost + float(amount)
 
             value = (shuttle.purchase_price - shuttle.salvage_value)
             depreciation_rate = float((shuttle.purchase_price - shuttle.salvage_value)) * float(1 / shuttle.lifespan)
@@ -2286,7 +2286,7 @@ class ShuttleCostVRevenueReport(APIView):
             temp_start_date = shuttle.date_acquired
             total_depreciation = 0
 
-            months = ShuttleCostVRevenueReport.diff_month(end_date,shuttle.date_acquired)
+            months = ShuttleCostVRevenueReport.diff_month(end_date, shuttle.date_acquired)
             total_depreciation = depreciation_rate * months
             print(months)
 
@@ -2515,9 +2515,10 @@ class RemittanceForTheMonth(APIView):
                 days = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
                 days_total = 0
 
-                main_road_value = rem.get_remittance_total_weekly("M", temp_date, i, i+6) + rem.get_beep_total_weekly("M",
-                                                                                                     temp_date, i,
-                                                                                                     i + 6)
+                main_road_value = rem.get_remittance_total_weekly("M", temp_date, i, i + 6) + rem.get_beep_total_weekly(
+                    "M",
+                    temp_date, i,
+                    i + 6)
                 print(main_road_value)
                 kaliwa_value = rem.get_remittance_total_weekly("L", temp_date, i,
                                                                i + 6) + rem.get_beep_total_weekly("L",
@@ -2624,7 +2625,6 @@ class RemittanceForTheMonth(APIView):
             total += beep.total
         return total
 
-
     @staticmethod
     def get_remittance_total_weekly(route, date, start_date, end_date):
         print(date.year)
@@ -2704,10 +2704,8 @@ class NotificationItems(APIView):
             #                                        .filter(Q(type='I') | Q(type='R')).order_by('-created'), many=True)
             print(user_id)
             notifications = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
+            unread = NotificationSerializer(Notification.objects.filter(user__id=user_id), many=True)
 
-            unread = NotificationSerializer(Notification.objects
-                .filter(Q(type='I') | Q(type='R')).filter(is_read=False).order_by(
-                '-created'), many=True)
         elif user_type == 'mechanic':
             NotificationItems.get_mechanic_notifs(user_id)
             # notifications = NotificationSerializer(Notification.objects
@@ -2837,7 +2835,8 @@ class NotificationItems(APIView):
         # Notification.objects.filter(user__id=user_id).hard_delete()
         notification = None
         for item in ItemCategory.objects.all():
-            if item.quantity <= item.minimum_quantity:
+            if item.quantity < item.minimum_quantity:
+                print(item.category + " - " + str(item.quantity) + " - " + str(item.minimum_quantity))
                 notification = Notification.objects.filter(user__id=user_id,
                                                            description=f'{item.category} is low on stocks ({item.quantity} pcs)')
                 if len(notification) == 0:
@@ -2846,23 +2845,10 @@ class NotificationItems(APIView):
                         type='I',
                         description=f'{item.category} is low on stocks ({item.quantity} pcs)'
                     )
-        return notification
+            else:
+                notification = Notification.objects.filter(user__id=user_id,
+                                                           description=f'{item.category} is low on stocks ({item.quantity} pcs)').hard_delete()
 
-    @staticmethod
-    def get_om_notifs(user_id):
-        member_id = user_id
-        # Notification.objects.filter(user__id=user_id).hard_delete()
-        notification = None
-        for item in ItemCategory.objects.all():
-            if item.quantity <= 3:
-                notification = Notification.objects.filter(user__id=user_id,
-                                                           description=f'{item.category} is low on stocks ({item.quantity} pcs)')
-                if len(notification) == 0:
-                    notification = Notification.objects.create(
-                        user=User.objects.get(pk=user_id),
-                        type='I',
-                        description=f'{item.category} is low on stocks ({item.quantity} pcs)'
-                    )
         return notification
 
     @staticmethod
@@ -3177,7 +3163,7 @@ class DriverPerformance(APIView):
                                                             deployment__shift_iteration__date__lte=end_date))
             total = sum([item.total for item in remittances])
             payables = sum([item.discrepancy for item in remittances])
-            discrepancy_frequency = len([item.discrepancy for item in remittances if item.discrepancy>0])
+            discrepancy_frequency = len([item.discrepancy for item in remittances if item.discrepancy > 0])
             lates = 0
 
             for item in remittances:

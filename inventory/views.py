@@ -205,25 +205,41 @@ class RepairProblems(APIView):
         repairs = []
         for repair in serialized_repairs:
             finding = repair.findings.first()
-            cost = 0
+            cost = float(0)
             if repair.labor_fee:
-                cost += repair.labor_fee
+                cost += float(repair.labor_fee)
 
             for item_used in RepairModifications.objects.filter(repair=repair.id):
                 item = Item.objects.get(pk=item_used.item_used.pk)
+                if repair.id == 599:
+                    print(ItemSerializer(item))
                 if item.item_type == "Physical Measurement":
-                    cost += (item.unit_price / item.measurement / item_used.quantity)
+                    if repair.id == 599:
+                        print('----asd----')
+                        print(repair.id)
+                        print(item.measurement)
+                        print(item.unit_price)
+                        print(item_used.quantity)
+                        print("---stop---")
+                    cost += (float(item.unit_price) / float(item.measurement / item_used.quantity))
                 elif item.item_type == "Liquid Measurement":
-                    cost += (item.unit_price / item.measurement / item_used.quantity)
+                    cost += (float(item.unit_price) / float(item.measurement / item_used.quantity))
                 else:
-                    cost += item_used.quantity * item.unit_price
+                    cost += float(item_used.quantity * item.unit_price)
 
             repairs.append({
                 'id': repair.id,
                 'category': finding.item_defect.category,
                 'date_requested': repair.date_requested,
                 'cost': cost,
+                'shuttle': repair.shuttle.id,
                 'status': repair.status,
+                'labor_fee': repair.labor_fee,
+                'schedule': repair.schedule,
+                'start_date': repair.start_date,
+                'end_date': repair.end_date,
+                'recommendation': repair.recommendation,
+                'remarks': repair.remarks
             })
 
         return Response(data={
@@ -787,7 +803,28 @@ class PurchaseOrderSpecific(APIView):
     def get(request, pk):
         purchase_order = PurchaseOrder.objects.get(id=pk)
         purchase_order_details = PurchaseOrderSerializer(purchase_order)
-        items = PurchaseOrderItemSerializer(purchase_order.po_items.all(), many=True)
+        items = []
+        for item in purchase_order.po_items.all():
+            times_returned = VendorPerformance.objects.filter(purchase_order=purchase_order,
+                                                              item_category=item.category,
+                                                              defective=True).count()
+            items.append({
+                'id': item.id,
+                'quantity': item.quantity,
+                'description': item.description,
+                'unit_price': item.unit_price,
+                'category': item.category.id,
+                'item_type': item.item_type,
+                'measurement': item.measurement,
+                'unit': item.unit,
+                'brand': item.brand,
+                'delivery_date': item.delivery_date,
+                'received': item.received,
+                'returned': item.returned,
+                'remarks': item.remarks,
+                'status': item.status,
+                'times_returned': times_returned
+            })
         categories = {}
         for item in purchase_order.po_items.all():
             category = ItemCategory.objects.get(id=item.category.id)
@@ -795,7 +832,7 @@ class PurchaseOrderSpecific(APIView):
         vendor = VendorSerializer(Vendor.objects.get(id=purchase_order.vendor.id))
         return Response(data={
             'purchase_order': purchase_order_details.data,
-            'items': items.data,
+            'items': items,
             'vendor': vendor.data,
             'categories': categories
         }, status=status.HTTP_200_OK)
