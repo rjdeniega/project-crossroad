@@ -3159,6 +3159,7 @@ class DriverPerformance(APIView):
         remittance_total = 0
         payables_total = 0
         lates_total = 0
+        discrepancy_frequency_total = 0
 
         for driver in Driver.objects.all().order_by('name'):
             remittances = RemittanceForm.objects.filter(deployment__driver=driver,
@@ -3173,6 +3174,7 @@ class DriverPerformance(APIView):
                                                             deployment__shift_iteration__date__lte=end_date))
             total = sum([item.total for item in remittances])
             payables = sum([item.discrepancy for item in remittances])
+            discrepancy_frequency = len([item.discrepancy for item in remittances if item.discrepancy>0])
             lates = 0
 
             for item in remittances:
@@ -3210,11 +3212,13 @@ class DriverPerformance(APIView):
             remittance_total += total
             payables_total += payables
             lates_total += lates
+            discrepancy_frequency_total += discrepancy_frequency
 
             data.append({
                 "driver": DriverSerializer(driver).data,
                 "remittance": "{0:,.2f}".format(total),
                 "payables": "{0:,.2f}".format(payables),
+                "discrepancy_freq": discrepancy_frequency,
                 "sub_freq": sub_freq,
                 "absences": absences,
                 "lates": lates,
@@ -3229,7 +3233,8 @@ class DriverPerformance(APIView):
             "lates_total": lates_total,
             "absences_total": absences_total,
             "sub_freq_total": sub_freq_total,
-            "remittance_total": "{0:,.2f}".format(remittance_total)
+            "remittance_total": "{0:,.2f}".format(remittance_total),
+            "discrepancy_freq_total": discrepancy_frequency_total
         }, status=status.HTTP_200_OK)
 
 

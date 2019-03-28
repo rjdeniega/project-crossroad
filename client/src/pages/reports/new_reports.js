@@ -45,94 +45,96 @@ import { InventoryReport } from './content/inventory_report/inventory_report'
 import { ItemMovementReport } from './content/item_movement/inventory_movement'
 import { PassengerPerRoute } from './content/passenger_per_route/passenger_per_route';
 import { DriverPerformance } from './content/driver_performance/driver_performance';
-import {VendorReport} from "./content/vendors/vendor_report";
+import { VendorReport } from "./content/vendors/vendor_report";
 
 const TabPane = Tabs.TabPane;
 const { Meta } = Card;
-const REMITTANCE_CARDS = [{
-    'title': 'Remittance Report',
-    'description': 'View Ticketing Remittances',
-    'icon': money,
-    'content': <RemittanceSummary/>
-}, {
-    'title': 'Supervisor Report',
-    'description': 'Weekly Supervisor Report for Drivers',
-    'icon': money,
-    'content': <WeeklySupervisorReport/>
-}, {
-    'title': 'Remittance Per Route',
-    'description': 'View Shuttle Remittances Per Route',
-    'icon': money,
-    'content': <RemittanceSummaryRoute/>
-}, {
-    'title': 'Remittance Per Year',
-    'description': 'View monthly remittances per year',
-    'icon': money,
-    'content': <RemittancePerYear/>
-}, {
-    'title': 'Driver Remittance & Payables',
-    'description': 'View Absences, Lates, and Payables of Drivers',
-    'icon': money,
-    'content': <DriverPerformance/>
-}, {
-    'title': 'Tickets Report',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <TicketReport/>
-}, {
-    'title': 'Ticket Per Day',
-    'description': 'View Passenger Count Per Shuttle Per Day',
-    'icon': money,
-    'content': <TicketPerDay/>
-}, {
-    'title': 'Beep + Tickets',
-    'description': 'View Beep and Ticketing passenger count',
-    'icon': money,
-    'content': <BeepTickets/>
-}, {
-    'title': 'Remittance Trend',
-    'description': 'view beep and ticketing passenger count',
-    'icon': money,
-    'content': <RemittanceChart/>
-}, {
-    'title': 'Passenger Per Route',
-    'description': 'View the remittance per route comparison',
-    'icon': money,
-    'content': <PassengerPerRoute />
-}, {
-    'title': 'Peak Hours',
-    'description': 'View peak hours for beep transactions',
-    'icon': money,
-    'content': <PeakHours />
-}, {
-    'title': 'Ticket chart per week',
-    'description': 'View ticket breakdown per time interval',
-    'icon': money,
-    'content': <TicketStack/>
-},];
+const REMITTANCE_CARDS = [
+    {
+        'title': 'Beep + Tickets',
+        'description': 'View Beep and Ticketing passenger count',
+        'icon': money,
+        'content': <BeepTickets/>
+    }, {
+        'title': 'Driver Remittance & Payables',
+        'description': 'View Absences, Lates, and Payables of Drivers',
+        'icon': money,
+        'content': <DriverPerformance/>
+    }, {
+        'title': 'Passenger Per Route',
+        'description': 'View the remittance per route comparison',
+        'icon': money,
+        'content': <PassengerPerRoute />
+    }, {
+        'title': 'Peak Hours',
+        'description': 'View peak hours for beep transactions',
+        'icon': money,
+        'content': <PeakHours />
+    }, {
+        'title': 'Remittance Report',
+        'description': 'View Ticketing Remittances',
+        'icon': money,
+        'content': <RemittanceSummary/>
+    }, {
+        'title': 'Remittance Per Route',
+        'description': 'View Shuttle Remittances Per Route',
+        'icon': money,
+        'content': <RemittanceSummaryRoute/>
+    }, {
+        'title': 'Remittance Per Year',
+        'description': 'View monthly remittances per year',
+        'icon': money,
+        'content': <RemittancePerYear/>
+    }, {
+        'title': 'Remittance Trend',
+        'description': 'view beep and ticketing passenger count',
+        'icon': money,
+        'content': <RemittanceChart/>
+    }, {
+        'title': 'Supervisor Report',
+        'description': 'Weekly Supervisor Report for Drivers',
+        'icon': money,
+        'content': <WeeklySupervisorReport/>
+    }, {
+        'title': 'Tickets Report',
+        'description': 'view beep and ticketing passenger count',
+        'icon': money,
+        'content': <TicketReport/>
+    }, {
+        'title': 'Ticket Per Day',
+        'description': 'View Passenger Count Per Shuttle Per Day',
+        'icon': money,
+        'content': <TicketPerDay/>
+    }, {
+        'title': 'Ticket chart per week',
+        'description': 'View ticket breakdown per time interval',
+        'icon': money,
+        'content': <TicketStack/>
+    },];
 
 
-const MAINTENANCE_CARDS = [{
-    'title': 'Maintenance Report',
-    'description': 'View Minor, Intermediate, and Major repair frequency and costs',
-    'icon': wrench,
-    'content': <MaintenanceReport/>
-},{
-    'title': 'Shuttle Value Report',
-    'description': 'View Revenues, Depreciation, and Major Repair Costs per shuttle',
-    'icon': wrench,
-    'content': <ShuttleValueChart/>
-}, {
-    'title': 'Item Movement Report',
-    'description': 'View Items Bought and Used for a time frame',
-    'icon': wrench,
-    'content': <ItemMovementReport/>
-}, {
-    'title': 'Vendor Report',
-    'description': 'View vendor performance',
-    'icon': wrench,
-    'content': <VendorReport/>
-}];
+const MAINTENANCE_CARDS = [
+    {
+        'title': 'Item Movement Report',
+        'description': 'View Items Bought and Used for a time frame',
+        'icon': wrench,
+        'content': <ItemMovementReport/>
+    }, {
+        'title': 'Maintenance Report',
+        'description': 'View Minor, Intermediate, and Major repair frequency and costs',
+        'icon': wrench,
+        'content': <MaintenanceReport/>
+    }, {
+        'title': 'Shuttle Value Report',
+        'description': 'View Revenues, Depreciation, and Major Repair Costs per shuttle',
+        'icon': wrench,
+        'content': <ShuttleValueChart/>
+    }, {
+        'title': 'Vendor Report',
+        'description': 'View vendor performance',
+        'icon': wrench,
+        'content': <VendorReport/>
+    }];
 const MEMBER_CARDS = [
     {
         'title': 'Shares Accumulation Report',
@@ -233,7 +235,7 @@ export class ReportsPage extends Component {
             />
         </Card>
     );
-    callback = (key) =>  {
+    callback = (key) => {
         console.log(key);
     }
     renderModal = () => (
@@ -247,7 +249,6 @@ export class ReportsPage extends Component {
             {this.state.content}
         </Modal>
     );
-
 
 
     render() {

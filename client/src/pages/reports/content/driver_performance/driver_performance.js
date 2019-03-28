@@ -54,8 +54,9 @@ class ComponentToPrint extends React.Component {
                         <thead>
                         <th>Driver Name</th>
                         <th>Remittance</th>
-                        <th>Payables</th>
-                        <th>Late Remittances</th>
+                        <th>Discrepancy Frequency</th>
+                        <th>Discrepancies</th>
+                        <th>Lates</th>
                         <th>Absences</th>
                         </thead>
                         <tbody>
@@ -66,6 +67,7 @@ class ComponentToPrint extends React.Component {
                                     <tr>
                                         <td>{item.driver.name}</td>
                                         <td>{item.remittance}</td>
+                                         <td>{item.discrepancy_freq}</td>
                                         <td>{item.payables}</td>
                                         <td>{item.lates}</td>
                                         <td>{item.absences}</td>
@@ -75,6 +77,7 @@ class ComponentToPrint extends React.Component {
                             <tr>
                                 <td><b> Total </b></td>
                                 <td className="total-line"><b>{this.props.data.remittance_total}</b></td>
+                                 <td className="total-line"><b>{this.props.data.discrepancy_freq_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.payables_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.lates_total}</b></td>
                                 <td className="total-line"><b>{this.props.data.absences_total}</b></td>
