@@ -2420,8 +2420,8 @@ class RemittanceForTheMonth(APIView):
                     end_date = temp_date
             return Response(data={
                 "days": days,
-                "start_date": date.date(),
-                "end_date": end_date.date(),
+                "start_date": f'{date.date().month} {date.date().year}',
+                "end_date": f'{end_date.date().month} {end_date.date().year}',
                 "main_road_values": main_road_values,
                 "kaliwa_values": kaliwa_values,
                 "kanan_values": kanan_values,
@@ -2494,8 +2494,45 @@ class RemittanceForTheMonth(APIView):
                     end_date = temp_date
             return Response(data={
                 "days": days,
-                "start_date": date.date(),
-                "end_date": end_date.date(),
+                "start_date": date.date().year,
+                "end_date": date.date().year,
+                "main_road_values": main_road_values,
+                "kaliwa_values": kaliwa_values,
+                "kanan_values": kanan_values,
+            }, status=status.HTTP_200_OK)
+
+        elif data['interval'] == "week":
+            days = []
+            temp_date = date
+            print(temp_date)
+
+            for i in range(1, 28, 7):
+                days = ['Week 1', 'Week 2', 'Week 3', 'Week 4']
+                days_total = 0
+
+                main_road_value = rem.get_remittance_total_weekly("M", temp_date, i, i+6) + rem.get_beep_total_weekly("M",
+                                                                                                     temp_date, i,
+                                                                                                     i + 6)
+                print(main_road_value)
+                kaliwa_value = rem.get_remittance_total_weekly("L", temp_date, i,
+                                                               i + 6) + rem.get_beep_total_weekly("L",
+                                                                                                  temp_date, i,
+                                                                                                  i + 6)
+                kanan_value = rem.get_remittance_total_weekly("R", temp_date, i,
+                                                              i + 6) + rem.get_beep_total_weekly("R",
+                                                                                                 temp_date, i,
+                                                                                                 i + 6)
+
+                main_road_values.append(main_road_value)
+                kaliwa_values.append(kaliwa_value)
+                kanan_values.append(kanan_value)
+
+                if i == 11:
+                    end_date = temp_date
+            return Response(data={
+                "days": days,
+                "start_date": f'{calendar.month_name[date.date().month]} {date.date().year}',
+                "end_date": f'{calendar.month_name[date.date().month]} {date.date().year}',
                 "main_road_values": main_road_values,
                 "kaliwa_values": kaliwa_values,
                 "kanan_values": kanan_values,
@@ -2562,8 +2599,6 @@ class RemittanceForTheMonth(APIView):
     @staticmethod
     def get_remittance_total_quarterly(route, date, start_month, end_month):
         print(date.year)
-        print(start_month)
-        print(end_month)
         remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date__year=date.year,
                                                     deployment__shift_iteration__date__month__gte=start_month,
                                                     deployment__shift_iteration__date__month__lte=end_month,
@@ -2578,6 +2613,32 @@ class RemittanceForTheMonth(APIView):
         beeps = BeepTransaction.objects.filter(shift__date__year=date.year,
                                                shift__date__month__gte=start_month,
                                                shift__date__month__lte=end_month,
+                                               shuttle__route=route)
+        total = 0
+        for beep in beeps:
+            total += beep.total
+        return total
+
+
+    @staticmethod
+    def get_remittance_total_weekly(route, date, start_date, end_date):
+        print(date.year)
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__date__year=date.year,
+                                                    deployment__shift_iteration__date__month=date.month,
+                                                    deployment__shift_iteration__date__day__gte=start_date,
+                                                    deployment__shift_iteration__date__day__lte=end_date,
+                                                    deployment__shuttle__route=route)
+        total = 0
+        for remittance in remittances:
+            total += remittance.get_remittances_only()
+        return total
+
+    @staticmethod
+    def get_beep_total_weekly(route, date, start_day, end_day):
+        beeps = BeepTransaction.objects.filter(shift__date__year=date.year,
+                                               shift__date__month=date.month,
+                                               shift__date__day__gte=start_day,
+                                               shift__date__day__lte=end_day,
                                                shuttle__route=route)
         total = 0
         for beep in beeps:
