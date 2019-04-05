@@ -115,7 +115,8 @@ export class ShiftManagementPane extends Component {
                 //ant tables accept values {"key": value, "column_name" : "value" } format
                 //I cant just pass the raw array since its a collection of objects
                 //append drivers with their ids as key
-                if (!data.error) {
+                console.log(data)
+                if (!data.error && !data.message) {
                     if (data != undefined) {
                         this.setState({
                             current_start_date: data['start_date'],

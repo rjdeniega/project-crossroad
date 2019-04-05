@@ -427,12 +427,13 @@ export class ShiftHistoryPane extends Component {
                     "name": item.name,
                     "photo": item.photo
                 }));
-
                 this.setState({
-                    startDateObject: moment(data["expected_start_date"]),
-                    startDate: moment(data["expected_start_date"]).format('YYYY-MM-DD'),
-                    endDateObject: moment(data["expected_end_date"]),
-                    currentSched: moment(data["expected_start_date"]),
+                    startDateObject: moment(data["start_date"]),
+                    startDate: moment(data["start_date"]).format('YYYY-MM-DD'),
+                    startDateString: moment(data["start_date"]).format('YYYY-MM-DD'),
+                    endDateObject: moment(data["end_date"]),
+                    endDateString: moment(data["end_date"]).format('YYYY-MM-DD'),
+                    currentSched: moment(data["start_date"]),
                     am_shift_drivers: data.shifts[0].drivers,
                     am_shift_drivers_formatted: am_drivers,
                     amSupervisor: data.shifts[0].supervisor_name,
@@ -469,7 +470,7 @@ export class ShiftHistoryPane extends Component {
             <div className="buttons-container">
                 <Button onClick={this.showModal}>Edit Schedule </Button>
                 <ReactToPrint
-                    trigger={() => <Button>Print this out!</Button>}
+                    trigger={() => <Button>Print Schedule</Button>}
                     content={() => this.componentRef}
                 />
             </div>
@@ -644,6 +645,7 @@ export class ShiftPrint extends Component {
     render() {
         return (
             <div className="history-tables-wrapper">
+                <p> Shift assignment from {this.props.data.startDateString} to {this.props.data.endDateString} </p>
                 <div className="sched-am-shift-pane">
                     <div className="shifts-label-div">
                         <div className="tab-label-type">AM</div>
