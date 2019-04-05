@@ -135,7 +135,8 @@ export class DriverPerformance extends Component {
                 <DatePicker placeholder="date to" onChange={this.handleEndDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
-                        trigger={() => <a href="#">Print this out!</a>}
+                        trigger={() => <Button style={{ 'margin-top': '5px' }} size="small" type="primary">Print
+                            Report</Button>}
                         content={() => this.componentRef}
                     />
                     {this.state.data &&

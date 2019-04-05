@@ -15,7 +15,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Form } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -23,6 +23,7 @@ import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
+import YearPicker from "react-year-picker";
 
 
 
@@ -232,16 +233,25 @@ export class RemittancePerYear extends Component {
             end_date: dateString
         }, () => this.fetchTransactions())
     };
+     handleYearChange = (date) => {
+        this.setState({
+            start_date: date,
+        }, () => this.fetchTransactions())
+    }
 
 
     render() {
         return (
             <div className="report-body">
-                <DatePicker.MonthPicker placeholder="date from" onChange={this.handleStartDateChange}
-                                        format={dateFormat}/>
+                <Form>
+                    <Form.Item label="select year">
+                        <YearPicker className="yearpicker" onChange={this.handleYearChange}/>
+                    </Form.Item>
+                </Form>
                 <div className="report-modal-container">
                     <ReactToPrint
-                        trigger={() => <a href="#">Print this out!</a>}
+                        trigger={() => <Button style={{ 'margin-top': '5px' }} size="small" type="primary">Print
+                            Report</Button>}
                         content={() => this.componentRef}
                     />
                     <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>

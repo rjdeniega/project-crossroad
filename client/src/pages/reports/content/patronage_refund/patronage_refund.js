@@ -18,7 +18,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select } from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select, Form } from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -26,6 +26,7 @@ import { money } from 'react-icons-kit/fa/money'
 import moment from "moment";
 import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
+import YearPicker from "react-year-picker";
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -43,7 +44,7 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.start_date &&
-                        <p><b></b> Patronage Refund for the year {this.props.data.start_date}</p>
+                        <p><b> Patronage Refund for the year {this.props.data.start_date}</b></p>
                         }
                     </Fragment>
                     }
@@ -53,6 +54,7 @@ class ComponentToPrint extends React.Component {
                         <thead>
                         <th>Member ID</th>
                         <th>Name</th>
+                        <th>Shares</th>
                         <th>Rate of Refund</th>
                         <th>Patronage Refund (Php)</th>
                         </thead>
@@ -64,6 +66,7 @@ class ComponentToPrint extends React.Component {
                                     <tr>
                                         <td>{item.member.id}</td>
                                         <td>{item.member.name}</td>
+                                        <td>{item.number_of_shares}</td>
                                         <td>{item.rate_of_refund}</td>
                                         <td className="monetary">{item.patronage_refund}</td>
 
@@ -71,12 +74,13 @@ class ComponentToPrint extends React.Component {
                                 </Fragment>
                             ))}
                             <tr>
-                            <td><b></b></td>
-                            <td><b></b></td>
-                            <td><b></b></td>
-                            <td className="total-line monetary"><b>
-                                Total : {this.props.data.grand_total}
-                            </b></td>
+                                <td><b></b></td>
+                                <td><b></b></td>
+                                <td><b></b></td>
+                                <td><b></b></td>
+                                <td className="total-line monetary"><b>
+                                    Total : {this.props.data.grand_total}
+                                </b></td>
 
                             </tr>
                         </Fragment>
@@ -128,17 +132,26 @@ export class PatronageRefund extends Component {
             'surplus': event.target.value
         })
     }
+    handleYearChange = (date) => {
+        this.setState({
+            start_date: date,
+        }, () => this.fetchTransactions())
+    }
 
 
     render() {
         return (
             <div className="report-body">
                 <Input placeholder="Enter Net Surplus" onChange={this.handleChange}/>
-                <DatePicker.MonthPicker placeholder="date from" onChange={this.handleStartDateChange}
-                             format={dateFormat}/>
+                <Form>
+                    <Form.Item label="select year">
+                        <YearPicker className="yearpicker" onChange={this.handleYearChange}/>
+                    </Form.Item>
+                </Form>
                 <div className="report-modal-container">
                     <ReactToPrint
-                        trigger={() => <a href="#">Print this out!</a>}
+                        trigger={() => <Button style={{ 'margin-top': '5px' }} size="small" type="primary">Print
+                            Report</Button>}
                         content={() => this.componentRef}
                     />
                     <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>

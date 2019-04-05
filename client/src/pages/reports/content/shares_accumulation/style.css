@@ -2,3 +2,9 @@
     display: flex;
     justify-content: center;
     }
+.picker-panel .header{
+    min-width: 235px!important;
+    }
+.year-picker{
+    width: 200px!important;
+    }

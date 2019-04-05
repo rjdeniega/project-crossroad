@@ -60,7 +60,7 @@ class ComponentToPrint extends React.Component {
                             <th>Deployed Driver</th>
                             <th>Shuttle</th>
                             <th>Deployment Type</th>
-                            <th>Remit Time</th>
+                            <th>Time-In</th>
                             <th>Remittance</th>
                             <th>Cost</th>
                             <th>Total</th>

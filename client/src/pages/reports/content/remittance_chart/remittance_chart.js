@@ -21,6 +21,7 @@ import moment from "moment";
 import ReactToPrint from "react-to-print";
 import { Line } from 'react-chartjs-2';
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
+import YearPicker from "react-year-picker";
 
 
 const dateFormat = "YYYY-MM-DD";
@@ -114,9 +115,7 @@ class ComponentToPrint extends React.Component {
                 },
             ]
         };
-        return <Line data={data} options={{
-
-        }}/>
+        return <Line data={data} options={{}}/>
 
     };
 
@@ -129,8 +128,20 @@ class ComponentToPrint extends React.Component {
                 <div className="report-labels">
                     {this.props.data &&
                     <Fragment>
-                        {this.props.data.end_date &&
+                        {this.props.data.type == "day" &&
                         <p> Remittance Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        }
+                         {this.props.data.type == "week" &&
+                        <p> Weekly Remittance trend Report for the Month of {this.props.start_date} </p>
+                        }
+                        {this.props.data.type == "month" &&
+                        <p> Monthky Remittance trend Report for the Year {this.props.start_date} </p>
+                        }
+                        {this.props.data.type == "quarter" &&
+                        <p> Quarterly Remittance trend Report for the Year {this.props.start_date} </p>
+                        }
+                        {this.props.data.type == "year" &&
+                        <p> Remittance trend Report from the Year {this.props.start_date} to {this.props.start_date}</p>
                         }
                     </Fragment>
                     }
@@ -196,6 +207,11 @@ export class RemittanceChart extends Component {
         })
         console.log(`radio checked:${e.target.value}`);
     }
+    handleYearChange = (date) => {
+        this.setState({
+            start_date: date,
+        }, () => this.fetchTransactions())
+    }
 
 
     render() {
@@ -232,14 +248,24 @@ export class RemittanceChart extends Component {
                         </Form.Item>
                     </Fragment>
                     }
-                    {(this.state.interval == "week" || this.state.interval == "month" || this.state.interval == "year" || this.state.interval == "quarter") &&
+                    {(this.state.interval == "week") &&
                     <Fragment>
                         <Form.Item
                             {...formItemLayout}
-                            label="Select Month/Year"
+                            label="Select Month"
                         >
                             <MonthPicker placeholder="date from" onChange={this.handleStartDateChange}
                                          format={dateFormat}/>
+                        </Form.Item>
+                    </Fragment>
+                    }
+                    {(this.state.interval == "month" || this.state.interval == "year" || this.state.interval == "quarter") &&
+                    <Fragment>
+                        <Form.Item
+                            {...formItemLayout}
+                            label="Select Year"
+                        >
+                            <YearPicker className="yearpicker" onChange={this.handleYearChange}/>
                         </Form.Item>
                     </Fragment>
                     }
@@ -249,7 +275,8 @@ export class RemittanceChart extends Component {
 
                 <div className="report-modal-container">
                     <ReactToPrint
-                        trigger={() => <a href="#">Print this out!</a>}
+                        trigger={() => <Button style={{ 'margin-top': '5px' }} size="small" type="primary">Print
+                            Report</Button>}
                         content={() => this.componentRef}
                     />
                     <ComponentToPrint data={this.state.data} ref={el => (this.componentRef = el)}/>

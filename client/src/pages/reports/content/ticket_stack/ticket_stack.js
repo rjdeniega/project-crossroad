@@ -217,7 +217,8 @@ export class TicketStack extends Component {
                 <DatePicker placeholder="date from" onChange={this.handleStartDateChange} format={dateFormat}/>
                 <div className="report-modal-container">
                     <ReactToPrint
-                        trigger={() => <a href="#">Print this out!</a>}
+                        trigger={() => <Button style={{ 'margin-top': '5px' }} size="small" type="primary">Print
+                            Report</Button>}
                         content={() => this.componentRef}
                     />
                     <ComponentToPrint

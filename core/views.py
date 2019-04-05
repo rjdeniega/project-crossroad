@@ -599,7 +599,8 @@ class PatronageRefund(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        # start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        start_date = data['start_date']
         surplus = int(data['surplus'])
         print(surplus)
         report_items = []
@@ -661,11 +662,11 @@ class PatronageRefund(APIView):
         #         array.append(accumulated_month)
         #
         #     rate_of_refund = sum(array) / 12
-        total_shares = sum([item.value for item in Share.objects.filter(date_of_update__year=start_date.year)])
+        total_shares = sum([item.value for item in Share.objects.filter(date_of_update__year=start_date)])
         for member in Member.objects.all():
             member_data = MemberSerializer(member).data
             shares = sum(
-                [item.value for item in Share.objects.filter(member=member, date_of_update__year=start_date.year)])
+                [item.value for item in Share.objects.filter(member=member, date_of_update__year=start_date)])
             if total_shares == 0:
                 rate_of_refund = 0
                 total_shares = 0
@@ -673,9 +674,10 @@ class PatronageRefund(APIView):
 
             report_items.append({
                 "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
+                "number_of_shares": shares,
                 "member": member_data,
                 "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * float(surplus)),
-                "start_date": start_date.year
+                "start_date": start_date
             })
 
             # rate_of_refund = (sum([item.total for item in transactions]) + sum(
@@ -703,9 +705,9 @@ class PatronageRefund(APIView):
             # "grand_total": "{0:,.2f}".format(sum(item['total_transactions'] for item in report_items)),
 
         return Response(data={
-            "start_date": start_date.year,
+            "start_date": start_date,
             "report_items": report_items,
-            "date": start_date.year,
+            "date": start_date,
             "grand_total": "{0:,.2f}".format(
                 sum([float(item["patronage_refund"].replace(',', '')) for item in report_items]))
         }, status=status.HTTP_200_OK)
@@ -2126,7 +2128,8 @@ class AccumulatedSharesReport(APIView):
         print(request.body)
         data = json.loads(request.body)
         members = Member.objects.all().order_by('name')
-        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        # start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        start_date = datetime(data['start_date'],1,1,0,0,0)
 
         rows = []
 
@@ -2353,11 +2356,6 @@ class RemittanceForTheMonth(APIView):
     @staticmethod
     def post(request):
         data = json.loads(request.body)
-        date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        if "end_date" in request.data:
-            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
-        else:
-            end_date = date + timedelta(days=6)
 
         main_road_values = []
         kaliwa_values = []
@@ -2368,6 +2366,11 @@ class RemittanceForTheMonth(APIView):
         print(data['interval'])
 
         if data["interval"] == "day":
+            date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+            if "end_date" in request.data:
+                end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+            else:
+                end_date = date + timedelta(days=6)
             year = date.year
             month = date.month
             num_days = calendar.monthrange(year, month)[1]
@@ -2389,6 +2392,7 @@ class RemittanceForTheMonth(APIView):
 
             return Response(data={
                 "days": new_days,
+                "type": "day",
                 "start_date": date.date(),
                 "end_date": end_date.date(),
                 "main_road_values": main_road_values,
@@ -2398,8 +2402,8 @@ class RemittanceForTheMonth(APIView):
 
         elif data["interval"] == "month":
             days = []
-            temp_date = date
-            temp_date = temp_date.replace(day=1)
+            date = datetime(data['start_date'],1,1)
+            temp_date = datetime(data['start_date'],1,1)
             print(temp_date)
 
             for i in range(0, 12):
@@ -2425,18 +2429,18 @@ class RemittanceForTheMonth(APIView):
                     end_date = temp_date
             return Response(data={
                 "days": days,
-                "start_date": f'{date.date().month} {date.date().year}',
+                "start_date": f'{date.date().year}',
                 "end_date": f'{end_date.date().month} {end_date.date().year}',
                 "main_road_values": main_road_values,
                 "kaliwa_values": kaliwa_values,
+                "type": "month",
                 "kanan_values": kanan_values,
             }, status=status.HTTP_200_OK)
 
         elif data["interval"] == "year":
+            date = datetime(data['start_date'], 1, 1)
             days = []
-            temp_date = date
-            temp_date = temp_date.replace(day=1)
-            temp_date = temp_date.replace(month=1)
+            temp_date = datetime(data['start_date'],1,1)
             print(temp_date)
 
             for i in range(0, 5):
@@ -2465,12 +2469,13 @@ class RemittanceForTheMonth(APIView):
                 "main_road_values": reversed(main_road_values),
                 "kaliwa_values": reversed(kaliwa_values),
                 "kanan_values": reversed(kanan_values),
+                "type": "year",
             }, status=status.HTTP_200_OK)
 
         elif data['interval'] == "quarter":
             days = []
-            temp_date = date
-            temp_date = temp_date.replace(day=1)
+            date = datetime(data['start_date'], 1, 1)
+            temp_date = datetime(data['start_date'],1,1)
             print(temp_date)
 
             for i in range(1, 13, 3):
@@ -2504,9 +2509,15 @@ class RemittanceForTheMonth(APIView):
                 "main_road_values": main_road_values,
                 "kaliwa_values": kaliwa_values,
                 "kanan_values": kanan_values,
+                "type": "quarter",
             }, status=status.HTTP_200_OK)
 
         elif data['interval'] == "week":
+            date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+            if "end_date" in request.data:
+                end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
+            else:
+                end_date = date + timedelta(days=6)
             days = []
             temp_date = date
             print(temp_date)
@@ -2542,6 +2553,7 @@ class RemittanceForTheMonth(APIView):
                 "main_road_values": main_road_values,
                 "kaliwa_values": kaliwa_values,
                 "kanan_values": kanan_values,
+                "type": "week",
             }, status=status.HTTP_200_OK)
 
         return Response(data={
@@ -3230,12 +3242,12 @@ class DriverPerformance(APIView):
 class RemittancePerYear(APIView):
     @staticmethod
     def post(request):
+        print("enters here")
         data = json.loads(request.body)
-        date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        if "end_date" in request.data:
-            end_date = datetime.strptime(request.data["end_date"], '%Y-%m-%d')
-        else:
-            end_date = date - timedelta(days=1095)
+        # date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        date = datetime(data["start_date"],1,1)
+        end_date =datetime(date.year,12,31)
+
 
         year = date.year
         month = date.month

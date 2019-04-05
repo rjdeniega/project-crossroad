@@ -387,8 +387,8 @@ export class ShiftManagementPane extends Component {
         let endDateObject = null;
         console.log(moment(date).date());
         if (moment(date).date() < 16) {
-            endDateString = moment(date).add(15, 'days').format('YYYY-MM-DD');
-            endDateObject = moment(date).add(15, 'days');
+            endDateString = moment(date).add(14, 'days').format('YYYY-MM-DD');
+            endDateObject = moment(date).add(14, 'days');
         }
         else {
             endDateString = moment(date).endOf('month');
