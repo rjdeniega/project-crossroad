@@ -25,7 +25,6 @@ import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 
 
-
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
@@ -41,11 +40,21 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data.end_date &&
-                        <p> Member Transactions Report for {this.props.data.start_date} to {this.props.data.end_date} </p>
+                        <p><b> Member Transactions Report for {this.props.data.start_date}
+                            to {this.props.data.end_date}</b> </p>
                         }
                     </Fragment>
                     }
                 </div>
+                {this.props.data &&
+                <Fragment>
+                    <div className="tag-div">
+                        <p style={{ 'margin-right': '7px' }}><b> Tags: </b></p>
+                        <AntIcon style={{ 'margin-top': '3px' }} type="credit-card" theme="twoTone"/>
+                        <p>Has Beep Card</p>
+                    </div>
+                </Fragment>
+                }
                 <div className="report-body">
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
@@ -63,7 +72,9 @@ class ComponentToPrint extends React.Component {
                             {this.props.data.report_items.map((item, index) => (
                                 <Fragment>
                                     <tr>
-                                        <td>{item.has_beep ? <p><AntIcon type="credit-card" theme="twoTone"/>  {item.member_id}</p> : <p>{item.member_id}</p>} </td>
+                                        <td>{item.has_beep ?
+                                            <p><AntIcon type="credit-card" theme="twoTone"/> {item.member_id}</p> :
+                                            <p>{item.member_id}</p>} </td>
                                         <td>{item.member.name}</td>
                                         <td>{item.no_of_beep}</td>
                                         <td className="monetary">{item.beep_total_decimal}</td>

@@ -22,7 +22,6 @@ import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 
 
-
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
@@ -38,11 +37,23 @@ class ComponentToPrint extends React.Component {
                     {this.props.data &&
                     <Fragment>
                         {this.props.data &&
-                        <p><b> Shares Accumulation Report for {this.props.data.year}</b></p>
+                        <Fragment>
+                            <p><b> Shares Accumulation Report for {this.props.data.year}</b></p>
+                        </Fragment>
                         }
                     </Fragment>
                     }
                 </div>
+                {this.props.data &&
+                <Fragment>
+                    <div className="tag-div">
+                        <p style={{'margin-right': '7px'}}><b> Tags: </b></p>
+                        <AntIcon type="warning" theme="twoTone"
+                                 twoToneColor="#eb2f96"/>
+                        <p>Not enough accumulated shares</p>
+                    </div>
+                </Fragment>
+                }
                 <div className="report-body">
                     <table cellSpacing="50" cellPadding="3px">
                         <thead>
@@ -86,7 +97,10 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.months[10].added_amount}</td>
                                         <td>{item.months[11].added_amount}</td>
                                         <td><b>{item.accumulated_shares}</b></td>
-                                        <td><b>{(item.total_shares < 50 && !item.is_new) ? <p><AntIcon type="warning" theme="twoTone" twoToneColor="#eb2f96" /> {item.total_shares}</p> : item.total_shares }</b></td>
+                                        <td><b>{(item.total_shares < 50 && !item.is_new) ?
+                                            <p><AntIcon type="warning" theme="twoTone"
+                                                        twoToneColor="#eb2f96"/> {item.total_shares}
+                                            </p> : item.total_shares }</b></td>
                                     </tr>
                                 </Fragment>
                             ))}
