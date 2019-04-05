@@ -250,6 +250,9 @@ export class TransactionsPane extends Component {
             total: value,
         })
     }
+    disabledDate = (current) => {
+        return current > moment().endOf('day')
+    }
     handleTypeSelect = (value) => {
         console.log("enters here")
         this.setState({
@@ -289,7 +292,7 @@ export class TransactionsPane extends Component {
                                 {...formItemLayout}
                                 label=" "
                             >
-                                <DatePicker className="user-input" onChange={this.handleDateChange}
+                                <DatePicker className="user-input" disabledDate={this.disabledDate} onChange={this.handleDateChange}
                                             format={dateFormat}/>
                             </Form.Item>
                             }
@@ -593,6 +596,9 @@ export class SharesManagementPane extends Component {
         })
         console.log(`radio checked:${e.target.value}`);
     }
+    disabledDate = (current) => {
+        return current > moment().endOf('day')
+    }
 
     render() {
         const { activeUser } = this.props;
@@ -630,7 +636,7 @@ export class SharesManagementPane extends Component {
                                 {...formItemLayout}
                                 label=" "
                             >
-                                <DatePicker className="user-input" onChange={this.handleDateChange}
+                                <DatePicker className="user-input" onChange={this.handleDateChange} disabledDate={this.disabledDate}
                                             format={dateFormat}/>
                             </Form.Item>
                             }

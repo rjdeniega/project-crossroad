@@ -116,7 +116,7 @@ export class ShiftManagementPane extends Component {
                 //I cant just pass the raw array since its a collection of objects
                 //append drivers with their ids as key
                 if (!data.error) {
-                    if(data != undefined) {
+                    if (data != undefined) {
                         this.setState({
                             current_start_date: data['start_date'],
                             current_end_date: data['end_date'],
@@ -382,8 +382,17 @@ export class ShiftManagementPane extends Component {
 
     //component change handlers
     handleDateChange = (date, dateString) => {
-        const endDateString = moment(date).add(15, 'days').format('YYYY-MM-DD');
-        const endDateObject = moment(date).add(15, 'days');
+        let endDateString = null;
+        let endDateObject = null;
+        console.log(moment(date).date());
+        if (moment(date).date() < 16) {
+            endDateString = moment(date).add(15, 'days').format('YYYY-MM-DD');
+            endDateObject = moment(date).add(15, 'days');
+        }
+        else {
+            endDateString = moment(date).endOf('month');
+            endDateObject = moment(date).endOf('month');
+        }
         const startDateString = moment(date).format('YYYY-MM-DD');
 
         console.log(dateString);
@@ -482,6 +491,10 @@ export class ShiftManagementPane extends Component {
             {this.state.supervisors && this.renderSupervisors()}
         </Menu>
     );
+    disabledDate = (current) => {
+        // Can not select days before today and today
+        return current.date() != 1 && current.date() != 16
+    }
 //JSX rendering functions
 //     renderDeploymentOptions = () => {
 //         if (this.state.selected_shift_type = "AM") {
@@ -498,6 +511,7 @@ export class ShiftManagementPane extends Component {
 //         }
 //
 //     }
+
     renderShiftTables = () => (
         <div className="tables-wrapper">
             <Modal
@@ -557,6 +571,7 @@ export class ShiftManagementPane extends Component {
                     <DatePicker
                         className="date-picker"
                         format="YYYY-MM-DD"
+                        disabledDate = {this.disabledDate}
                         placeholder="Start Date"
                         onChange={(date, dateString) => this.handleDateChange(date, dateString)}
                     />

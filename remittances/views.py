@@ -193,7 +193,7 @@ class ScheduleHistoryView(APIView):
             })
 
         return Response(data={
-            "schedule_history": schedulehistory
+            "schedule_history": reversed(schedulehistory)
         }, status=status.HTTP_200_OK)
 
 

@@ -2,6 +2,8 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 from datetime import datetime, timedelta
 from .models import *
+from calendar import monthrange
+import calendar
 
 
 class DriversAssignedSerializer(ModelSerializer):
@@ -48,7 +50,11 @@ class ScheduleSerializer(ModelSerializer):
         shifts_data = original.pop('shifts')
         schedule = Schedule.objects.create(**original)
         date = datetime.strptime(schedule.start_date, "%Y-%m-%d")
-        schedule.end_date = date + timedelta(days=14)  # start_date + 14 days = 15 days (changed to +15 since every 15 days)
+        if date.day < 16:
+            schedule.end_date = date + timedelta(days=14)  # start_date + 14 days = 15 days (changed to +15 since every 15 days)
+        else:
+            end_day = calendar.monthrange(date.year,date.month)[1]
+            schedule.end_date = datetime(date.month,end_day,date.year)
         schedule.save()
         new_sched = Schedule.objects.get(id=schedule.id)  # gets django object to be used
         for shift_data in shifts_data:
