@@ -88,6 +88,7 @@ class ScheduleSerializer(ModelSerializer):
 
     # TODO validate that there are am shifts, pm shifts, and mn shifts in the schedule
     def validate(self, data):
+        print(data)
         schedules = Schedule.objects.all()
         for schedule in schedules:
              if data['start_date'] <= schedule.end_date:

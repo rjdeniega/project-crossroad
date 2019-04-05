@@ -474,6 +474,9 @@ export class ShiftManagementPane extends Component {
                     console.log(data);
                     message.error(data['errors']['non_field_errors'])
                 }
+                else if(data['error']){
+                    message.error(data['error'])
+                }
                 else {
                     console.log(data['start_date']);
                     message.success("Shift creation successful for " + data['start_date'] + "to" + data['end_date']);

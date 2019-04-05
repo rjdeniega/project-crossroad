@@ -73,6 +73,13 @@ class CreateSchedule(APIView):
     def post(request):
         data = json.loads(request.body)
 
+        for shift in data["shifts"]:
+            print(len(shift['drivers_assigned']))
+            if len(shift['drivers_assigned']) < 7:
+                return Response(data={
+                    "error": "There must be 7 drivers per shift"
+                }, status=status.HTTP_200_OK)
+
         schedule = Schedule()
         schedule.start_date = data['start_date']
         schedule.create()
@@ -459,7 +466,7 @@ class NonDeployedDrivers(APIView):
                 "non_deployed_drivers": [],
                 "disabled": "PM"
             }, status=status.HTTP_200_OK)
-        
+
         for driver in DriversAssigned.objects.filter(shift=current_shift.id):
             isPresent = False
             for present in PresentDrivers.objects.filter(
@@ -693,12 +700,12 @@ class SubDrivers(APIView):
             many=True)
 
         sub_drivers = drivers_assigned.data
-        
+
         info = DriverSerializer(current_shift.supervisor)
 
         sub_drivers.append({
-                "driver": info.data
-            })
+            "driver": info.data
+        })
 
         return Response(data={
             "sub_drivers": sub_drivers
@@ -1254,20 +1261,20 @@ class ShouldShowTimeIn(APIView):
             for assignedDriver in DriversAssigned.objects.filter(shift=shift):
                 if assignedDriver.driver.id == driver_id:
                     driver = assignedDriver
-        
+
         is_shown = False
         if ss.is_PM(driver.shift.type) and datetime.now().hour >= 12:
             is_shown = True
-        
+
         if ss.is_AM(driver.shift.type) and (datetime.now().hour >= 3 and datetime.now().hour < 12):
             is_shown = True
-        
+
         print(datetime.now().hour)
         print(is_shown)
         return Response(data={
             "is_shown": is_shown
         }, status=status.HTTP_200_OK)
-        
+
     @staticmethod
     def is_PM(shift):
         if shift == 'P' or shift == 'PM':
@@ -1280,6 +1287,7 @@ class ShouldShowTimeIn(APIView):
         if shift == 'A' or shift == 'AM':
             return True
         return False
+
 
 class AccidentDeployment(APIView):
     @staticmethod
