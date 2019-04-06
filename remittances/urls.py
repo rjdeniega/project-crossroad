@@ -60,6 +60,7 @@ remittance_urls = [
     path('remittance_form/add_discrepancy/<int:remittance_form_id>', AddDiscrepancy.as_view()),
 
     path('get_carwash_transaction/<int:member_id>', CarwashTransactionView.as_view()),
+    path('get_carwash_transaction_with_filter/<int:member_id>', CarwashTransactionWithFilterView.as_view()),
     path('carwash_transaction/', CarwashTransactionView.as_view()),
 
     path('shift_iteration/', ShiftIterationView.as_view()),

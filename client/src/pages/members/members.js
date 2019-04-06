@@ -42,6 +42,7 @@ const TabPane = Tabs.TabPane;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const Option = Select.Option
+const RangePicker = DatePicker.RangePicker;
 const antIcon = (
     <AntIcon
         type="loading"
@@ -165,6 +166,36 @@ export class TransactionsPane extends Component {
         });
     }
 
+    fetchBeepWithFilter() {
+        const { activeUser } = this.props;
+        let data = {
+            start_date: this.state.start_date,
+            end_date: this.state.end_date,
+        }
+        postData('/members/transactions/' + activeUser.id, JSON.stringify(data)).then(data => {
+            console.log(data.transactions);
+            this.setState({
+                transactions: data.transactions,
+                total_transactions: data.total_transactions
+            })
+        });
+    }
+
+    fetchCarwashTransactionsWithFilter() {
+        const { activeUser } = this.props;
+        let data = {
+            start_date: this.state.start_date,
+            end_date: this.state.end_date,
+        }
+        postData('/remittances/get_carwash_transaction_with_filter/' + activeUser.id, JSON.stringify(data)).then(data => {
+            console.log(data);
+            this.setState({
+                carwash_transactions: data.carwash_transactions,
+                total_carwash_transactions: parseInt(data.carwash_transaction_total),
+            })
+        });
+    }
+
     showModal = () => {
         this.setState({
             visible: true,
@@ -259,6 +290,27 @@ export class TransactionsPane extends Component {
             type: value,
         }, () => console.log(this.state.type))
     }
+    onChangeTransactionDate = (date, dateString) => {
+        console.log(dateString[0]);
+        console.log(dateString[1]);
+        this.setState({
+            start_date: dateString[0],
+            end_date: dateString[1],
+        }, () => {
+            this.fetchCarwashTransactionsWithFilter();
+        })
+    }
+    onChangeBeep = (date, dateString) => {
+        console.log(dateString[0]);
+        console.log(dateString[1]);
+        this.setState({
+            start_date: dateString[0],
+            end_date: dateString[1],
+        }, () => {
+            this.fetchBeepWithFilter();
+        })
+    }
+
 
     render() {
         const { activeUser } = this.props;
@@ -292,7 +344,8 @@ export class TransactionsPane extends Component {
                                 {...formItemLayout}
                                 label=" "
                             >
-                                <DatePicker className="user-input" disabledDate={this.disabledDate} onChange={this.handleDateChange}
+                                <DatePicker className="user-input" disabledDate={this.disabledDate}
+                                            onChange={this.handleDateChange}
                                             format={dateFormat}/>
                             </Form.Item>
                             }
@@ -404,6 +457,8 @@ export class TransactionsPane extends Component {
                             Beep transactions
                         </div>
                         <p> total transaction cost: <b>{this.state.total_transactions} </b></p>
+                        <RangePicker onChange={this.onChangeBeep} style={{ 'margin-bottom': '5px' }}
+                                     disabledDate={this.disabledDate} size="small"/>
                         <Table bordered size="medium"
                                className="remittance-table"
                                pagination={{
@@ -420,6 +475,8 @@ export class TransactionsPane extends Component {
                             <Button onClick={this.showModal}>Add Transaction</Button>
                         </div>
                         <p> total transaction cost: <b>{this.state.total_carwash_transactions} </b></p>
+                        <RangePicker onChange={this.onChangeTransactionDate} style={{ 'margin-bottom': '5px' }}
+                                     disabledDate={this.disabledDate} size="small"/>
                         <Table bordered size="medium"
                                className="remittance-table"
                                pagination={{
@@ -636,7 +693,8 @@ export class SharesManagementPane extends Component {
                                 {...formItemLayout}
                                 label=" "
                             >
-                                <DatePicker className="user-input" onChange={this.handleDateChange} disabledDate={this.disabledDate}
+                                <DatePicker className="user-input" onChange={this.handleDateChange}
+                                            disabledDate={this.disabledDate}
                                             format={dateFormat}/>
                             </Form.Item>
                             }

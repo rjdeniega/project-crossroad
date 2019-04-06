@@ -2807,7 +2807,10 @@ class CarwashTransactionView(APIView):
     def get(request, member_id):
         print("enters here")
         transactions = CarwashTransaction.objects.all().order_by("date")
-        carwash_transactions = [item for item in transactions if item.member.id == member_id]
+        start_date = datetime.now()
+        end_date = start_date - timedelta(days=90)
+        carwash_transactions = CarwashTransaction.objects.filter(member__id=member_id, date__gte=end_date,
+                                                                 date__lte=start_date)
         serialized_carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions]
         return Response(data={
             "carwash_transactions": reversed(serialized_carwash_transactions),
@@ -2838,3 +2841,19 @@ class CarwashTransactionView(APIView):
             return Response(data={
                 "errors": transaction_serializer.errors
             })
+
+class CarwashTransactionWithFilterView(APIView):
+    @staticmethod
+    def post(request, member_id):
+        print("enters here")
+        data = json.loads(request.data)
+        transactions = CarwashTransaction.objects.all().order_by("date")
+        start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        end_date = datetime.strptime(data["end_date"], '%Y-%m-%d')
+        carwash_transactions = CarwashTransaction.objects.filter(member__id=member_id, date__gte=start_date,
+                                                                 date__lte=end_date)
+        serialized_carwash_transactions = [CarwashTransactionSerializer(item).data for item in carwash_transactions]
+        return Response(data={
+            "carwash_transactions": reversed(serialized_carwash_transactions),
+            "carwash_transaction_total": sum([float(item["total"]) for item in serialized_carwash_transactions])
+        }, status=status.HTTP_200_OK)

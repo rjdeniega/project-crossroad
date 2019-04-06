@@ -11,6 +11,9 @@ from remittances.serializers import BeepTransactionSerializer, DriversAssignedSe
 from remittances.views import TicketUtilities
 from .models import *
 import json
+from datetime import datetime, time
+from datetime import timedelta
+
 
 
 class SupervisorView(APIView):
@@ -349,7 +352,30 @@ class MemberTransactionView(APIView):
         transactions = []
         transactions_list = []
         for id in id_cards:
-            transactions = BeepTransaction.objects.filter(card_number=id.can).order_by('-transaction_date_time')
+            start_date = datetime.now() - timedelta(days=90)
+            end_date = datetime.now()
+            transactions = BeepTransaction.objects.filter(card_number=id.can, transaction_date_time__gte=start_date, transaction_date_time__lte=end_date).order_by('-transaction_date_time')
+            transactions_list.append(transactions)
+
+        serialized_transactions = BeepTransactionSerializer(transactions, many=True)
+        for item in serialized_transactions.data:
+            item["shift_date"] = BeepShift.objects.get(pk=item["shift"]).date
+            item["total"] = "{0:,.2f}".format(float(item["total"]))
+        return Response(data={
+            "transactions": serialized_transactions.data,
+            "total_transactions": sum([float(item["total"]) for item in serialized_transactions.data])
+        }, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def post(request, member_id):
+        data = json.loads(request.data)
+        id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member_id))
+        transactions = []
+        transactions_list = []
+        for id in id_cards:
+            start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+            end_date = datetime.strptime(data["end_date"], '%Y-%m-%d') + timedelta(days=1)
+            transactions = BeepTransaction.objects.filter(card_number=id.can, transaction_date_time__gte=start_date, transaction_date_time__lte=end_date).order_by('-transaction_date_time')
             transactions_list.append(transactions)
 
         serialized_transactions = BeepTransactionSerializer(transactions, many=True)
