@@ -12,7 +12,7 @@ import React, { Component, Fragment } from 'react'
 import '../../../../utilities/colorsFonts.css'
 import './style.css'
 import { Button } from 'antd'
-import { Icon as AntIcon, Input, Card, Table, DatePicker, Select , Form} from 'antd'
+import { Icon as AntIcon, Input, Card, Table, DatePicker, Select , Form, Radio} from 'antd'
 import { getData, postData } from '../../../../network_requests/general'
 import { Icon } from 'react-icons-kit'
 import { fileTextO } from 'react-icons-kit/fa/fileTextO'
@@ -22,7 +22,8 @@ import ReactToPrint from "react-to-print";
 import LBATSCLogo from '../../../../images/LBATSCLogo.png'
 import YearPicker from "react-year-picker";
 
-
+const RadioButton = Radio.Button;
+const RadioGroup = Radio.Group;
 const dateFormat = "YYYY-MM-DD";
 const Option = Select.Option;
 
@@ -138,14 +139,17 @@ class ComponentToPrint extends React.Component {
 
 
 export class SharesAccumulationReport extends Component {
-    state = {};
+    state = {
+        filter:"name"
+    };
 
     componentDidMount() {
     }
 
     fetchTransactions() {
         let data = {
-            start_date: this.state.start_date
+            start_date: this.state.start_date,
+            filter: this.state.filter,
         };
         postData('/accumulated_shares_report/', data).then(data => {
             console.log(data);
@@ -180,6 +184,12 @@ export class SharesAccumulationReport extends Component {
             start_date: date,
         }, () => this.fetchTransactions())
     }
+    onChange = (e) => {
+        this.setState({
+            filter: e.target.value
+        }, () => this.fetchTransactions())
+        console.log(`radio checked:${e.target.value}`);
+    }
 
     render() {
         return (
@@ -188,6 +198,12 @@ export class SharesAccumulationReport extends Component {
                 <Form>
                     <Form.Item label="select year">
                         <YearPicker className="yearpicker" onChange={this.handleYearChange}/>
+                    </Form.Item>
+                    <Form.Item label="Sort by">
+                        <RadioGroup size="small" onChange={this.onChange} defaultValue="add">
+                            <RadioButton value="name">Name</RadioButton>
+                            <RadioButton value="date">Application Date</RadioButton>
+                        </RadioGroup>
                     </Form.Item>
                 </Form>
                 <div className="report-modal-container">

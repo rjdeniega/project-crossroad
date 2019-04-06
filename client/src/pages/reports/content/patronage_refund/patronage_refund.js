@@ -65,7 +65,7 @@ class ComponentToPrint extends React.Component {
                                 <Fragment>
                                     <tr>
                                         <td>{item.member.id}</td>
-                                        <td>{item.member.name}</td>
+                                        <td>{item.member_name}</td>
                                         <td>{item.number_of_shares}</td>
                                         <td>{item.rate_of_refund}</td>
                                         <td className="monetary">{item.patronage_refund}</td>

@@ -47,6 +47,22 @@ class Person(SoftDeletionModel):
     def get_user_type(self):
         return self.user_type
 
+    @property
+    def formatted_name(self):
+        name = self.name
+        name = name.split()
+        return f'{name[1], name[0]}'
+    @property
+    def last_name(self):
+        name = self.name
+        name = name.split()
+        return name[1]
+
+    @property
+    def first_name(self):
+        name = self.name
+        name = name.split()
+        return name[0]
 
 class Driver(Person):
     user = ForeignKey(User, on_delete=models.CASCADE, null=True)

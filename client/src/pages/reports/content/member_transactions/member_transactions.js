@@ -76,7 +76,7 @@ class ComponentToPrint extends React.Component {
                                         <td>{item.has_beep ?
                                             <p><AntIcon type="credit-card" theme="twoTone"/> {item.member_id}</p> :
                                             <p>{item.member_id}</p>} </td>
-                                        <td>{item.member.name}</td>
+                                        <td>{item.member_name}</td>
                                         <td>{item.no_of_beep}</td>
                                         <td className="monetary">{item.beep_total_decimal}</td>
                                         <td>{item.no_of_carwash}</td>

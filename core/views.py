@@ -505,7 +505,12 @@ class MemberTransactionByReport(APIView):
             end_date = None
 
         report_items = []
-        for member in Member.objects.all():
+        members = Member.objects.all()
+        sorted_members = sorted([item.last_name for item in members])
+        members = []
+        for item in sorted_members:
+            members.append(Member.objects.filter(name__contains=item)[0])
+        for member in members:
             member_data = MemberSerializer(member).data
             id_cards = IDCards.objects.filter(member=Member.objects.get(pk=member.id))
             if len(id_cards) == 0:
@@ -522,6 +527,7 @@ class MemberTransactionByReport(APIView):
                 report_items.append({
                     "member_id": member.id,
                     "member": member_data,
+                    "member_name": f'{member.last_name}, {member.first_name}',
                     "member_card": None,
                     "no_of_beep": 0,
                     "has_beep": False,
@@ -564,6 +570,7 @@ class MemberTransactionByReport(APIView):
                 report_items.append({
                     "member_id": member.id,
                     "member": member_data,
+                    "member_name": f'{member.last_name}, {member.first_name}',
                     "has_beep": True,
                     "member_card": IDCardSerializer(IDCards.objects.filter(member=member).last()).data,
                     "no_of_beep": len(transactions),
@@ -663,7 +670,12 @@ class PatronageRefund(APIView):
         #
         #     rate_of_refund = sum(array) / 12
         total_shares = sum([item.value for item in Share.objects.filter(date_of_update__year=start_date)])
-        for member in Member.objects.all():
+        members = Member.objects.all()
+        sorted_members = sorted([item.last_name for item in members])
+        members = []
+        for item in sorted_members:
+            members.append(Member.objects.filter(name__contains=item)[0])
+        for member in members:
             member_data = MemberSerializer(member).data
             shares = sum(
                 [item.value for item in Share.objects.filter(member=member, date_of_update__year=start_date)])
@@ -676,6 +688,7 @@ class PatronageRefund(APIView):
                 "rate_of_refund": "{0:,.2f}".format(rate_of_refund),
                 "number_of_shares": shares,
                 "member": member_data,
+                "member_name": f'{member.last_name}, {member.first_name}',
                 "patronage_refund": "{0:,.2f}".format(float(rate_of_refund) * float(surplus)),
                 "start_date": start_date
             })
@@ -2128,8 +2141,16 @@ class AccumulatedSharesReport(APIView):
         print(request.body)
         data = json.loads(request.body)
         members = Member.objects.all().order_by('name')
-        # start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        start_date = datetime(data['start_date'],1,1,0,0,0)
+        if data['filter'] == "name":
+            sorted_members = sorted([item.last_name for item in members])
+            members = []
+            for item in sorted_members:
+                members.append(Member.objects.filter(name__contains=item)[0])
+        elif data['filter'] == "date":
+            members = Member.objects.all().order_by('-accepted_date')
+
+            # start_date = datetime.strptime(data["start_date"], '%Y-%m-%d')
+        start_date = datetime(data['start_date'], 1, 1, 0, 0, 0)
 
         rows = []
 
@@ -2164,7 +2185,7 @@ class AccumulatedSharesReport(APIView):
 
             rows.append({
                 "is_new": member.accepted_date > (datetime.now() - timedelta(days=366)).date(),
-                "name": member.name,
+                "name": f'{member.last_name}, {member.first_name}',
                 "accepted_date": member.accepted_date,
                 "prior_shares": prior_shares,
                 "accumulated_shares": accumulated_shares,
@@ -2252,13 +2273,13 @@ class ShuttleCostVRevenueReport(APIView):
                         item = Item.objects.get(id=modification.item_used.id)
                         if item.item_type == "Physical Measurement":
                             major_repairs_cost = float(major_repairs_cost) + (
-                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         elif item.item_type == "Liquid Measurement":
                             major_repairs_cost = float(major_repairs_cost) + (
-                                    float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                         else:
                             major_repairs_cost = major_repairs_cost + (
-                                    float(modification.quantity) * float(item.unit_price))
+                                float(modification.quantity) * float(item.unit_price))
 
                     for outsourced in repair.outsourced_items.all():
                         amount = float(outsourced.quantity * outsourced.unit_price)
@@ -2271,13 +2292,13 @@ class ShuttleCostVRevenueReport(APIView):
                     item = Item.objects.get(id=modification.item_used.id)
                     if item.item_type == "Physical Measurement":
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     elif item.item_type == "Liquid Measurement":
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                                float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
+                            float(item.unit_price) / (float(item.measurement) / float(modification.quantity)))
                     else:
                         initialMaintenanceCost = float(initialMaintenanceCost) + (
-                                float(modification.quantity) * float(item.unit_price))
+                            float(modification.quantity) * float(item.unit_price))
 
                 for outsourced in repair.outsourced_items.all():
                     amount = outsourced.quantity * outsourced.unit_price
@@ -2402,8 +2423,8 @@ class RemittanceForTheMonth(APIView):
 
         elif data["interval"] == "month":
             days = []
-            date = datetime(data['start_date'],1,1)
-            temp_date = datetime(data['start_date'],1,1)
+            date = datetime(data['start_date'], 1, 1)
+            temp_date = datetime(data['start_date'], 1, 1)
             print(temp_date)
 
             for i in range(0, 12):
@@ -2440,7 +2461,7 @@ class RemittanceForTheMonth(APIView):
         elif data["interval"] == "year":
             date = datetime(data['start_date'], 1, 1)
             days = []
-            temp_date = datetime(data['start_date'],1,1)
+            temp_date = datetime(data['start_date'], 1, 1)
             print(temp_date)
 
             for i in range(0, 5):
@@ -2475,7 +2496,7 @@ class RemittanceForTheMonth(APIView):
         elif data['interval'] == "quarter":
             days = []
             date = datetime(data['start_date'], 1, 1)
-            temp_date = datetime(data['start_date'],1,1)
+            temp_date = datetime(data['start_date'], 1, 1)
             print(temp_date)
 
             for i in range(1, 13, 3):
@@ -3245,9 +3266,8 @@ class RemittancePerYear(APIView):
         print("enters here")
         data = json.loads(request.body)
         # date = datetime.strptime(data["start_date"], '%Y-%m-%d')
-        date = datetime(data["start_date"],1,1)
-        end_date =datetime(date.year,12,31)
-
+        date = datetime(data["start_date"], 1, 1)
+        end_date = datetime(date.year, 12, 31)
 
         year = date.year
         month = date.month
