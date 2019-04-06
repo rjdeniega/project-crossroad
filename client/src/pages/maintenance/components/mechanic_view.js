@@ -85,7 +85,7 @@ class ContactOperationManager extends Component {
 
         return (
             <div style={{width: 400}}>
-                <Form.Item label="Remarks" {...formItemLayout}>
+                <Form.Item label="Message" {...formItemLayout}>
                     <Input.TextArea rows={3}
                                     onChange={e => this.setState({remarks: e.target.value}, () => console.log(this.state))}/>
                 </Form.Item>

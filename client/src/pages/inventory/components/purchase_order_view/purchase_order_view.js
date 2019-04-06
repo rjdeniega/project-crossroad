@@ -261,7 +261,12 @@ export class PurchaseOrderView extends Component {
                         <br/>
                         <Row>
                             <Col span={8}>
-                                <h3>Authorized by: <Divider/></h3>
+                                <h3>Authorized by: <Divider style={{marginTop: 32, marginBottom: 4}}/></h3>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={8}>
+                                Signature over printed name
                             </Col>
                         </Row>
                     </div>

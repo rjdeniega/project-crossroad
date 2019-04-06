@@ -141,6 +141,21 @@ export class RepairDisplay extends Component {
                             {!repair.end_date ? '' : (
                                 <p><b>End date: </b>{repair.end_date}</p>
                             )}
+                            {repair.status === "RO" && (
+                                <div>
+                                    <Typography.Text strong>Mechanic Recommendations: </Typography.Text>
+                                    <Typography>{repair.remarks}</Typography>
+                                    <br/>
+                                    <Button htmlType='button' type='primary'
+                                                    onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Send to Repair Shop</Button>
+                                </div>
+                            )}
+                            {repair.status === "NS" && (
+                                <div>
+                                    <Typography>Mechanic Recommendations: {repair.recommendation}</Typography>
+                                    <br/>
+                                </div>
+                            )}
                             <br/>
                             <List size='small' header={<div><h3>Problems</h3></div>}
                                   bordered>
@@ -196,8 +211,6 @@ export class RepairDisplay extends Component {
                             {repair.status === "NS" && (
                                 <div>
                                     <Typography.Text strong>Select degree of repair: </Typography.Text>
-                                    <Typography>Mechanic Recommendation: {repair.recommendation}</Typography>
-                                    <br/>
                                     <Button.Group>
                                         <Popover trigger="click" content={
                                             <div style={{width: '10vw', height: '16vh'}}>
@@ -224,15 +237,6 @@ export class RepairDisplay extends Component {
                                                     onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Major</Button>
                                         </Tooltip>
                                     </Button.Group>
-                                </div>
-                            )}
-                            {repair.status === "RO" && (
-                                <div>
-                                    <Typography.Text strong>Mechanic Remarks: </Typography.Text>
-                                    <Typography>{repair.remarks}</Typography>
-                                    <br/>
-                                    <Button htmlType='button' type='primary'
-                                                    onClick={() => this.updateRepairStatus(repair.id, "FO", "Major")}>Send to Repair Shop</Button>
                                 </div>
                             )}
                         </PerfectScrollbar>

@@ -82,7 +82,7 @@ class ReportProblem extends Component {
         };
         return (
             <div>
-                <Form.Item label="Remarks" {...formItemLayout}>
+                <Form.Item label="Problem" {...formItemLayout}>
                     <Input.TextArea rows={3} onChange={e => this.setState({remarks: e.target.value})}/>
                 </Form.Item>
                 <Form.Item {...buttonLayout}>
