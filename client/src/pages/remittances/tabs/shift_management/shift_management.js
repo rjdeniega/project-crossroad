@@ -183,15 +183,32 @@ export class ShiftManagementPane extends Component {
         return fetch('/inventory/shuttles').then(response => response.json()).then(data => {
 
             //Were not appending it to a table so no necessary adjustments needed
-            this.setState({ shuttles: data["shuttles"] },
+            this.setState({
+                    shuttles: data["shuttles"],
+                    am_shuttles: data["shuttles"],
+                    pm_shuttles: data["shuttles"],
+                },
                 () => console.log(this.state.shuttles));
         });
     }
 
     showModal = event => {
+        console.log(this.state.selected_shift_type)
+        console.log(this.state.am_shuttles)
+        console.log(this.state.pm_shuttles)
+        if (this.state.selected_shift_type == 'AM') {
+            this.setState({
+                shuttles: [...this.state.am_shuttles]
+            })
+        }
+        else if (this.state.selected_shift_type == 'PM') {
+            this.setState({
+                shuttles: [...this.state.pm_shuttles]
+            })
+        }
         this.setState({
-            visible: true
-        })
+            visible: true,
+        });
     };
     handleConfirm = (e) => {
         const assignment = {
@@ -232,8 +249,32 @@ export class ShiftManagementPane extends Component {
         // this function is to handle drop-downs
         const state = { ...this.state };
         state[fieldName] = value;
+        if (fieldName == "assigned_shuttle") {
+            console.log("shuttle");
+            console.log(this.state.selected_shift_type);
+            console.log(this.state.shuttles);
+            if (this.state.selected_shift_type == 'AM') {
+                let array = [...this.state.shuttles]
+
+                array = array.filter((item) => {
+                    return item.shuttle_number != value
+                })
+                const new_array = [...array];
+                console.log(new_array);
+                state.am_shuttles = [...new_array]
+            }
+            else if (this.state.selected_shift_type == 'PM') {
+                let array = [...this.state.shuttles]
+                array = array.filter((item) => {
+                    return item.shuttle_number != value
+                })
+                const new_array = [...array];
+                state.pm_shuttles = [...new_array]
+            }
+        }
         console.log(value);
         console.log(fieldName);
+        console.log(state.shuttles);
         this.setState({
             ...state
         });
@@ -251,8 +292,9 @@ export class ShiftManagementPane extends Component {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "AM"
+                }, () => {
+                     this.showModal();
                 });
-                this.showModal();
                 let removed_driver = null;
                 console.log(current);
                 console.log(this.state.pm_drivers_display);
@@ -308,8 +350,9 @@ export class ShiftManagementPane extends Component {
                 this.setState({
                     driver_selected: current,
                     selected_shift_type: "PM"
+                }, () => {
+                    this.showModal();
                 });
-                this.showModal();
                 let removed_driver = null;
                 this.state.am_drivers_display.forEach(x => {
                     if (x.key == current) {
@@ -475,7 +518,7 @@ export class ShiftManagementPane extends Component {
                     console.log(data);
                     message.error(data['errors']['non_field_errors'])
                 }
-                else if(data['error']){
+                else if (data['error']) {
                     message.error(data['error'])
                 }
                 else {
@@ -575,7 +618,7 @@ export class ShiftManagementPane extends Component {
                     <DatePicker
                         className="date-picker"
                         format="YYYY-MM-DD"
-                        disabledDate = {this.disabledDate}
+                        disabledDate={this.disabledDate}
                         placeholder="Start Date"
                         onChange={(date, dateString) => this.handleDateChange(date, dateString)}
                     />
