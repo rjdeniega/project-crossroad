@@ -1241,7 +1241,6 @@ class RedeployDriver(APIView):
         )
 
         deployment.set_deployment_early()
-        deployment.end_deployment()
 
         serialized_deployment = DeploymentSerializer(new_deployment)
 
@@ -1444,7 +1443,7 @@ class SubmitRemittance(APIView):
         if "vulcanizing_cost" in data:
             rem_form.other_cost = data["vulcanizing_cost"]
         else:
-            rem_form.fuel_cost = 0
+            rem_form.other_cost = 0
 
         rem_form.km_from = deployment.shuttle.mileage
         rem_form.km_to = data["mileage"]
@@ -1533,7 +1532,12 @@ class SubmitRemittance(APIView):
 
         rem_form.total -= (float(rem_form.fuel_cost) + float(rem_form.other_cost))
         deployment.shuttle.save()
-        deployment.end_deployment()
+        if deployment.status is not "F":
+            if deployment.status is "O":
+                deployment.end_time = datetime.now()
+                deployment.result = 'S'
+            deployment.status = 'F'
+            deployment.save()
         rem_form.save()
 
         serialized_rem_form = RemittanceFormSerializer(rem_form)
@@ -1631,15 +1635,14 @@ class PendingRemittances(APIView):
     def get(request, supervisor_id):
         current_shift_iteration = ShiftIteration.objects.filter(shift__supervisor=supervisor_id).order_by(
             "-date").first()
-        deployments = Deployment.objects.filter(shift_iteration_id=current_shift_iteration.id, status='F')
 
         # only serialize those that have pending remittances
         to_serialize = []
-        for deployment in deployments:
-            remittance = RemittanceForm.objects.filter(deployment=deployment, status='P').first()
+        
+        remittances = RemittanceForm.objects.filter(deployment__shift_iteration__shift__supervisor=supervisor_id, status='P')
 
-            if remittance:
-                to_serialize.append(deployment)
+        for remittance in remittances:
+            to_serialize.append(remittance.deployment)
 
         deployments_serializer = DeploymentSerializer(to_serialize, many=True)
 

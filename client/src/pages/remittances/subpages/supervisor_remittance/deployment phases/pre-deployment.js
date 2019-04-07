@@ -637,7 +637,6 @@ function DeploymentListDetails(props) {
 }
 
 export function TicketDisplay(props) {
-
     if (props.total >= 100) {
         var content = (
             <div className="popover-container">

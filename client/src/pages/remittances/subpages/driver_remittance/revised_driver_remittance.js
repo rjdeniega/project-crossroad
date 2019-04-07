@@ -629,7 +629,7 @@ class RemittanceInfo extends React.Component {
                 <Row gutter={16}>
                     <Col span={16}>
                         <span className="view-remittances-tag">
-                            Other Costs:
+                            Vulacanizing Costs:
                         </span>
                     </Col>
                     <Col span={8}>
@@ -809,6 +809,7 @@ class RemittanceForm extends React.Component {
                     .then(response => {
                         if (!response.error) {
                             message.success("Remittance form has been submitted");
+                            this.props.onClose()
                         }
                         else {
                             message.error(response.error);
@@ -905,7 +906,7 @@ class RemittanceForm extends React.Component {
                                 message: "Please input the shuttle's current mileage"
                             },]
                         })(
-                            <Input />
+                            <Input type="number"/>
                         )
                     }
                 </Form.Item>
@@ -930,7 +931,7 @@ class RemittanceForm extends React.Component {
                                     getFieldDecorator('ten_peso-'.concat(item.id), {
                                         rules: []
                                     })(
-                                        <Input />
+                                        <Input type="number"/>
                                     )
                                 }
                             </Form.Item>
@@ -959,7 +960,7 @@ class RemittanceForm extends React.Component {
                                     getFieldDecorator('twelve_peso-'.concat(item.id), {
                                         rules: []
                                     })(
-                                        <Input />
+                                        <Input type="number"/>
                                     )
                                 }
                             </Form.Item>
@@ -988,7 +989,7 @@ class RemittanceForm extends React.Component {
                                     getFieldDecorator('fifteen_peso-'.concat(item.id), {
                                         rules: []
                                     })(
-                                        <Input />
+                                        <Input type="number"/>
                                     )
                                 }
                             </Form.Item>
@@ -1010,9 +1011,12 @@ class RemittanceForm extends React.Component {
                 >
                     {
                         getFieldDecorator('fuel_costs', {
-                            rules: []
+                            rules: [{
+                                required: true,
+                                message: "Fuel Cost is Required"
+                            },]
                         })(
-                            <Input />
+                            <Input type="number"/>
                         )
                     }
                 </Form.Item>
@@ -1029,7 +1033,10 @@ class RemittanceForm extends React.Component {
                 >
                     {
                         getFieldDecorator('or_number', {
-                            rules: []
+                            rules: [{
+                                required: true,
+                                message: "OR Number for Fuel Cost is Required"
+                            },]
                         })(
                             <Input />
                         )
@@ -1050,7 +1057,7 @@ class RemittanceForm extends React.Component {
                         getFieldDecorator('vulcanizing_cost', {
                             rules: []
                         })(
-                            <Input />
+                            <Input type="number"/>
                         )
                     }
                 </Form.Item>

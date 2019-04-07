@@ -97,12 +97,12 @@ function DeploymentListDetails(props) {
         return (
             <div>
                 <div className="deployment-header">
-                    <Avatar 
-                        src={props.photo} 
-                        style={{ backgroundColor: '#68D3B7' }} 
+                    <Avatar
+                        src={props.photo}
+                        style={{ backgroundColor: '#68D3B7' }}
                         shape="square"
                         icon="user"
-                        />
+                    />
                     <span className="deployment-name">
                         {props.name}
                     </span>
@@ -156,19 +156,19 @@ function DeploymentListDetails(props) {
             <div>
                 <div className="deployment-header">
                     <Tooltip title={prompt_text} placement="topLeft">
-                        <Avatar 
+                        <Avatar
                             src={absent_driver.photo}
-                            style={{ backgroundColor: '#68D3B7' }} 
+                            style={{ backgroundColor: '#68D3B7' }}
                             shape="square"
                             icon="user"
-                            />
+                        />
                         <Icon type="arrow-right" className="sub-arrow" />
-                        <Avatar 
-                            src={props.photo} 
-                            style={{ backgroundColor: '#68D3B7' }} 
+                        <Avatar
+                            src={props.photo}
+                            style={{ backgroundColor: '#68D3B7' }}
                             shape="square"
                             icon="user"
-                            />
+                        />
                         <span className="deployment-name">
                             {props.name}
                         </span>
@@ -346,7 +346,7 @@ class StopDeploymentButton extends React.Component {
         console.log(this.state.modal_body)
         if (this.state.modal_body == 1) {
             this.handleBreakdownRedeploy()
-        } else if (this.state.modal_body == 2){
+        } else if (this.state.modal_body == 2) {
             this.handleDriverRedeploy()
         } else {
             this.handleAccident()
@@ -396,7 +396,7 @@ class StopDeploymentButton extends React.Component {
             });
     }
 
-    handleAccident(){
+    handleAccident() {
         let data = {
             "deployment_id": this.props.deployment_id
         }
@@ -436,19 +436,19 @@ class StopDeploymentButton extends React.Component {
             .then(response => response.json())
             .then(data => {
                 if (!data.error) {
-                    if (this.props.route == 'Main Road'){
+                    if (this.props.route == 'Main Road' || this.props.route == 'M' || this.props.route == 'Main Route') {
                         console.log(this.state.ten_total)
-                        if (data.ten_total >= 100 && data.twelve_total >= 100 && data.fifteen_total >= 100)
+                        if (data.ten_total >= 50 && data.twelve_total >= 80 && data.fifteen_total >= 50)
                             var is_disabled = false
                         else
                             var is_disabled = true
                     } else {
-                        if (data.ten_total >= 100 && data.twelve_total >= 100)
+                        if (data.ten_total >= 50 && data.twelve_total >= 80)
                             var is_disabled = false
                         else
                             var is_disabled = true
                     }
-
+                    console.log(this.state.is_disabled)
                     const earlyLeave = (
                         <EarlyLeave
                             deployment_id={this.props.deployment_id}
@@ -490,9 +490,9 @@ class StopDeploymentButton extends React.Component {
         let earlyend_message = "early leave of driver is when the driver requests for an early end of deployment for personal reasons";
         let accident_message = "accident is when the driver met with an unexpected accident that makes him/her unable to continue the deployment";
 
-        if(value == 1)
+        if (value == 1)
             var tooltip_message = breakdown_message;
-        else if(value == 2)
+        else if (value == 2)
             var tooltip_message = earlyend_message;
         else
             var tooltip_message = accident_message;
@@ -535,19 +535,19 @@ class StopDeploymentButton extends React.Component {
                 fifteen_total={this.state.fifteen_total}
             />
         )
-        
+
         const accident = (
-            <Accident 
+            <Accident
             />
         )
 
-        if(value == 1)
+        if (value == 1)
             var content = shuttleBreakdown;
-        else if(value == 2)
+        else if (value == 2)
             var content = earlyLeave;
         else
             var content = accident;
-        
+
 
         this.setState({
             modal_body: modal_body,
@@ -617,11 +617,11 @@ class Accident extends React.Component {
 
     render() {
         const RadioGroup = Radio.Group;
-        return(
+        return (
             <div>
                 <Divider />
             </div>
-            
+
         );
     }
 }
@@ -684,7 +684,7 @@ class ShuttleBreakdown extends React.Component {
                     <OptGroup label="Back-up Shuttles">
                         {
                             this.state.availableShuttles.map((item) => {
-                                if(item.route == 'B')
+                                if (item.route == 'B')
                                     return (
                                         <option value={item.id} key={item.id}>
                                             Shuttle#{item.shuttle_number} - {item.plate_number}
@@ -696,7 +696,7 @@ class ShuttleBreakdown extends React.Component {
                     <OptGroup label="Other Available Shuttles">
                         {
                             this.state.availableShuttles.map((item) => {
-                                if(item.route != 'B')
+                                if (item.route != 'B')
                                     return (
                                         <option value={item.id} key={item.id}>
                                             Shuttle#{item.shuttle_number} - {item.plate_number}
@@ -768,24 +768,44 @@ class EarlyLeave extends React.Component {
     }
 
     render() {
+        const { Option, OptGroup } = Select;
         return (
             <div>
                 <Divider orientation="left">
                     Redeploy with a replacement driver
                 </Divider>
                 <label className="modal-detail-title">Available Drivers: </label>
-                <Select
+                <Select 
                     style={{ width: 200 }}
                     onChange={this.handleChange}
                     className="modal-detail-value"
-                >
-                    {
-                        this.state.availableDrivers.map((item) => (
-                            <option value={item.id} key={item.id}>
-                                {item.name}
-                            </option>
-                        ))
-                    }
+                    >
+                    <OptGroup label="Supervisor">
+                        {
+                            this.state.availableDrivers.map((item) => {
+                                if (item.is_supervisor == true)
+                                    return (
+                                        <option value={item.id} key={item.id}>
+                                            {item.name}
+                                        </option>
+                                    )
+
+                            })
+                        }
+                    </OptGroup>
+                    <OptGroup label="Other Drivers">
+                        {
+                            this.state.availableDrivers.map((item) => {
+                                if (item.is_supervisor == false)
+                                    return (
+                                        <option value={item.id} key={item.id}>
+                                            {item.name}
+                                        </option>
+                                    )
+
+                            })
+                        }
+                    </OptGroup>
                 </Select>
                 <ModalDetails
                     title="Shuttle"

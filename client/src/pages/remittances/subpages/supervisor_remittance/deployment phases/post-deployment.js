@@ -451,7 +451,7 @@ class RemittanceInfo extends React.Component {
                 <Row gutter={16}>
                     <Col span={16}>
                         <span className="view-remittances-tag">
-                            Other Costs:
+                            Vulcanizing Costs:
                         </span>
                     </Col>
                     <Col span={8}>
@@ -506,6 +506,7 @@ class ConfirmRemittanceForm extends React.Component {
                 console.log('Received values of form:', values);
             }
         });
+        this.props.onClose();
     }
 
     render() {
